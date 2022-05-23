@@ -1,0 +1,137 @@
+<script lang="ts" setup>
+import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router';
+import { editMonitor, info, Monitor } from '../../../apis/project';
+import { copy, toast } from '../../../utils';
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
+const route = useRoute()
+const projectId = <string>route.params.id
+
+const monitor = ref(<Monitor>{
+  isOn: false,
+  spider: ''
+})
+
+const jsSRC = computed(() => `https://iconlake.com/visit/monitor/${projectId}.js`)
+
+async function getProject() {
+  const res = await info(projectId, 'monitor')
+  monitor.value = res.monitor
+}
+
+getProject()
+
+function switchStatus() {
+  monitor.value.isOn = !monitor.value.isOn
+  editMonitor(projectId, <Monitor>{
+    isOn: monitor.value.isOn
+  })
+}
+
+function copyJS() {
+  copy(jsSRC.value)
+  toast(t('copyDone'))
+}
+
+async function saveSpider() {
+  await editMonitor(projectId, <Monitor>{
+    spider: monitor.value.spider
+  })
+  toast(t('saveDone'))
+}
+</script>
+
+<template>
+  <div class="monitor">
+    <div>
+      <div class="switch" :class="{off: !monitor.isOn}" @click="switchStatus"></div>
+    </div>
+    <p>{{t('monitorUsingGuide')}}</p>
+    <div class="file flex section" @click="copyJS">
+      <span>{{jsSRC}}</span>
+      <i class="iconfont icon-copy"></i>
+    </div>
+    <p>{{t('iconFindFunction')}}</p>
+    <div class="function section">
+      <div>
+        <p>funcation  spider（）{</p>
+        <p>const  list=[]</p>
+        <p class="flex">
+          <textarea class="m-right" placeholder="不填则使用默认的抓取方法" v-model="monitor.spider"></textarea>
+          <textarea readonly>
+/** 
+ * 注：以下代码为默认抓取方法。
+ *
+ * list元素的数据类型为：
+ *   elem: Element
+ *   code: String
+ *   prefix: String
+ *   className: String
+ */
+const className = 'iconfont'
+const prefix = 'icon-'
+const iconReg = new RegExp(`${prefix}(\\S+)`, 'i')
+document.body.querySelectorAll(`.${className}`).forEach(elem => {
+  const m = elem.className.match(iconReg)
+  const code = m ? m[1] : null
+  if (code) {
+    list.push({
+      elem,
+      code,
+      prefix,
+      className
+    })
+  }
+})</textarea>
+        </p>
+        <p>return list;</p>
+        <p>}</p>
+      </div>
+      <div class="operate flex center">
+        <button class="btn" @click="saveSpider">{{t('save')}}</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.monitor {
+  background-color: #fff;
+	border-radius: 0.4rem;
+  padding: 3.6rem 5.2rem;
+}
+p {
+  margin: 1.7rem 0;
+}
+.section {
+  background: #f5f7fd;
+  color: #476de8;
+  padding: 1.8rem 2.8rem;
+  border-radius: 0.4rem;
+}
+.file {
+  cursor: pointer;
+  margin-bottom: 3.5rem;
+}
+.function {
+  p {
+    padding-left: 2em;
+    &:first-child,
+    &:last-child {
+      padding-left: 0;
+    }
+  }
+  textarea {
+    width: 100%;
+    height: 30rem;
+    border: solid 0.1rem #cccccc;
+    border-radius: 0;
+    padding: 1rem;
+    background: #fff;
+    line-height: 1.6;
+  }
+}
+</style>
