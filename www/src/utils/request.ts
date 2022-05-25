@@ -6,7 +6,11 @@ function showErrorMsg (res: any) {
   if (res.error) {
     toast.error(res.error)
   }
-  if (res.error === 'tokenExpired') {
+  const redirectError = {
+    tokenExpired: true,
+    userNotLogin: true
+  }
+  if (res.error in redirectError) {
     location.href = `/login?referer=${encodeURIComponent(location.href.replace(location.origin, ''))}`
   }
 }
