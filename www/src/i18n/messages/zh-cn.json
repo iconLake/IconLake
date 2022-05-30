@@ -74,5 +74,6 @@
   "updateTime": "更新时间",
   "statPeriod": "统计周期",
   "last30d": "近30天",
-  "refererPageLink": "被引用页面地址"
+  "refererPageLink": "被引用页面地址",
+  "back": "返回"
 }

@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 
 const $props = defineProps<{
   back?: string | boolean
@@ -16,8 +18,10 @@ const backUrl = computed(() => {
 
 <template>
   <div class="header flex">
-    <router-link v-if="back" :to="backUrl" class="iconfont icon-back back"></router-link>
-    <a href="/" class="logo">iconLake</a>
+    <router-link v-if="back" :to="backUrl" class="iconfont icon-back back" :title="t('back')"></router-link>
+    <a href="/" class="logo" title="iconLake, make icon in control.">
+      <img :src="'/imgs/logo.svg'" alt="logo">
+    </a>
     <slot></slot>
   </div>
 </template>
@@ -28,6 +32,13 @@ const backUrl = computed(() => {
   justify-content: flex-start;
   .back {
     padding: 1.5rem;
+  }
+  .logo {
+    align-self: flex-start;
+    img {
+      width: 5rem;
+      height: 5rem;
+    }
   }
 }
 </style>
