@@ -6,6 +6,7 @@ const { t } = useI18n()
 
 const $props = defineProps<{
   back?: string | boolean
+  white?: boolean
 }>()
 
 const $route = useRoute()
@@ -17,10 +18,10 @@ const backUrl = computed(() => {
 </script>
 
 <template>
-  <div class="header flex">
+  <div :class="`header flex ${white ? 'white' : ''}`">
     <router-link v-if="back" :to="backUrl" class="iconfont icon-back back" :title="t('back')"></router-link>
     <a href="/" class="logo" title="iconLake, make icon in control.">
-      <img :src="'/imgs/logo.svg'" alt="logo">
+      <img :src="`/imgs/logo${white ? '-white' : ''}.svg`" alt="logo">
     </a>
     <slot></slot>
   </div>
@@ -30,6 +31,9 @@ const backUrl = computed(() => {
 .header {
   height: 6rem;
   justify-content: flex-start;
+  &.white {
+    color: #fff;
+  }
   .back {
     padding: 1.5rem;
   }

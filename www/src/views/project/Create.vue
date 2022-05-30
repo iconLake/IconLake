@@ -51,7 +51,7 @@ async function addSource () {
 </script>
 
 <template>
-  <HeaderVue back="/home" />
+  <HeaderVue back="/home" :white="true" />
   <div class="main flex stretch">
     <!-- form -->
     <div class="project bg-main grow flex center">
@@ -93,7 +93,6 @@ async function addSource () {
 .header {
   position: absolute;
   z-index: 1;
-  color: #fff;
 }
 .main {
   min-height: 100vh;
