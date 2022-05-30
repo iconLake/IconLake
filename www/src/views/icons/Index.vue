@@ -147,7 +147,8 @@ function updateMainWidth () {
     const icon = iconListDom.value.querySelector('.icon-item')
     if (icon) {
       const w = icon.getBoundingClientRect().width * 3 / 2
-      mainDom.value.style.width = `${Math.floor(window.innerWidth / w) * w}px`
+      // - 20 用于消除滚动条的影响
+      mainDom.value.style.width = `${Math.floor((window.innerWidth - 20) / w) * w}px`
     }
   }
 }
