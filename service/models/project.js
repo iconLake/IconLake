@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import { SOURCE_TYPE } from '../utils/const.js'
 const { Schema, model } = mongoose
 
-const SourceSchema = new Schema({
+export const SourceSchema = new Schema({
   name: String,
   type: {
     default: SOURCE_TYPE.ICONFONT,
@@ -25,7 +25,7 @@ const GroupSchema = new Schema({
   }
 })
 
-const IconSchema = new Schema({
+export const IconSchema = new Schema({
   sourceId: Schema.Types.ObjectId,
   groupId: Schema.Types.ObjectId,
   name: String,

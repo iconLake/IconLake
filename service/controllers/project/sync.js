@@ -1,5 +1,6 @@
 import axios from 'axios'
 import filterObject from 'filter-obj'
+import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
 import { SOURCE_TYPE } from '../../utils/const.js'
 
@@ -29,7 +30,7 @@ function syncIconInfo (iconInfo, originalData) {
 }
 
 /**
- * 挺不图标
+ * 同步图标
  * @param {array} icons 全部图标
  * @param {array} originalData 同步过来的原始数据
  * @param {string} sourceId 源的ID
@@ -45,11 +46,12 @@ function syncIcons (icons, originalData, sourceId, sourceType) {
       iconMap.set(e.code, e)
     }
   })
+  const syncTime = new Date()
   originalData.forEach(e => {
     const icon = {
       sourceId,
       sourceType,
-      syncTime: new Date(),
+      syncTime,
       originalData: e
     }
     syncIconInfo(icon, e)
@@ -58,12 +60,28 @@ function syncIcons (icons, originalData, sourceId, sourceType) {
       if (!info.name) {
         info.name = icon.name
       }
-      info.syncTime = icon.syncTime
+      info.syncTime = syncTime
       info.originalData = icon.originalData
     } else {
       icons.push(icon)
     }
   })
+  // 移除的icon放到存档里
+  const history = {
+    icons: []
+  }
+  for (let i = 0; i < icons.length; i++) {
+    const icon = icons[i]
+    if (icon.syncTime < syncTime) {
+      history.icon.push(icon)
+      icons.splice(i, 1)
+      --i
+    }
+  }
+  return {
+    icons,
+    history
+  }
 }
 
 /**
@@ -132,7 +150,23 @@ export default async function sync (req, res) {
     }, {
       $set
     })
-    syncIcons(project.icons, sourceData[iconsKey], sourceId, sourceType)
+    const result = syncIcons(project.icons, sourceData[iconsKey], sourceId, sourceType)
+    if (result.history.icons.length) {
+      const history = await History.findById(projectId, 'sources')
+      if (history && history.sources.length) {
+        const source = history.sources[history.sources.length - 1]
+        History.updateOne({
+          _id: projectId
+        }, {
+          $push: {
+            icons: result.history.icons.map(e => {
+              e.sourceId = source._id
+              return e
+            })
+          }
+        })
+      }
+    }
     // TODO: 同时多个同步操作会导致数据覆盖问题，后续需要优化
     await Project.updateOne({
       _id: projectId
