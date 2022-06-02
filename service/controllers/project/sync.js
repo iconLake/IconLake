@@ -73,7 +73,7 @@ function syncIcons (icons, originalData, sourceId, sourceType) {
   for (let i = 0; i < icons.length; i++) {
     const icon = icons[i]
     if (icon.syncTime < syncTime) {
-      history.icon.push(icon)
+      history.icons.push(icon)
       icons.splice(i, 1)
       --i
     }
@@ -155,7 +155,7 @@ export default async function sync (req, res) {
       const history = await History.findById(projectId, 'sources')
       if (history && history.sources.length) {
         const source = history.sources[history.sources.length - 1]
-        History.updateOne({
+        await History.updateOne({
           _id: projectId
         }, {
           $push: {

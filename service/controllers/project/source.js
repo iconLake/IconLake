@@ -4,13 +4,13 @@ import { Project } from '../../models/project.js'
 import { sourceEqual } from '../../utils/index.js'
 
 /**
- * 保存源的历史记录
+ * 存档源
  * @param {string} projectId 项目ID
  * @param {object} source 源
  */
 async function saveSourceHistory (projectId, source) {
   let info = await History.findById(projectId)
-  delete source._id
+  source._id = new mongoose.Types.ObjectId()
   if (!info) {
     info = new History({
       _id: projectId,
@@ -23,6 +23,43 @@ async function saveSourceHistory (projectId, source) {
     }, {
       $push: {
         sources: source
+      }
+    })
+  }
+  return source
+}
+
+/**
+ * 存档图标
+ * @param {string} projectId 项目ID
+ * @param {string} sourceIdOld 旧的源ID
+ * @param {string} sourceIdNew 新的源ID
+ */
+async function saveIconHistoryBySource (projectId, sourceIdOld, sourceIdNew) {
+  const project = await Project.findById(projectId, 'icons')
+  const icons = []
+  for (let i = project.icons.length - 1; i > -1; --i) {
+    if (project.icons[i].sourceId.toString() === sourceIdOld) {
+      project.icons[i].sourceId = sourceIdNew
+      icons.push(project.icons[i])
+      project.icons.splice(i, 1)
+    }
+  }
+  if (icons.length > 0) {
+    await Project.updateOne({
+      _id: projectId
+    }, {
+      $set: {
+        icons: project.icons
+      }
+    })
+    await History.updateOne({
+      _id: projectId
+    }, {
+      $push: {
+        icons: {
+          $each: icons
+        }
       }
     })
   }
@@ -59,7 +96,7 @@ export async function edit (req, res) {
       // 记录历史
       const sourceOld = info.sources.id(_id).toObject()
       if (!sourceEqual(sourceOld, req.body)) {
-        saveSourceHistory(req.body.projectId, sourceOld)
+        await saveSourceHistory(req.body.projectId, sourceOld)
       }
     }
   } else {
@@ -98,8 +135,9 @@ export async function del (req, res) {
   if (info) {
     // 记录源历史
     const sourceOld = info.sources.id(req.body._id).toObject()
-    saveSourceHistory(req.body.projectId, sourceOld)
-    // TODO: 关联的所有图标全部删除，并且记录历史
+    const sourceNew = await saveSourceHistory(req.body.projectId, sourceOld)
+    // 关联的所有图标全部删除，并且记录历史
+    await saveIconHistoryBySource(req.body.projectId, sourceOld._id.toString(), sourceNew._id.toString())
   }
   await Project.updateOne({
     _id: req.body.projectId,
