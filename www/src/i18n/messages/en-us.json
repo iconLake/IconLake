@@ -64,7 +64,7 @@
   "cleanDone": "Clean Done",
   "cleanProject": "Clean Project",
   "deleteProject": "Delete Project",
-  "delProjectWarning": "Cleaning or deleting the project will cause permanent loss of all data. Please be careful!",
+  "delProjectWarning": "Cleaning or deleting the project will delete all related icons. Please be careful!",
   "inputForSafe": "To prevent incorrect operation, please enter the project name",
   "fillProjectName": "Fill in the project name",
   "pageRefererCount": "References",
