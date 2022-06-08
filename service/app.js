@@ -51,7 +51,9 @@ if (config.https && config.https.port) {
  * 初始化数据库
  */
 initDB()
+
 /**
  * 初始化定时任务
+ * TODO: 集群部署会导致同时触发，需要优化
  */
 initCron()

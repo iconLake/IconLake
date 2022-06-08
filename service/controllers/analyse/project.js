@@ -19,12 +19,15 @@ export function start () {
 
 async function getList (cursor = 0, done) {
   const list = await Project.find({}, 'icons sources').skip(cursor * pageSize).limit(pageSize)
-  if (list.length === 0) {
-    done()
-    return
-  }
   for (let i = 0, len = list.length; i < len; ++i) {
     await analyseProject(list[i])
+  }
+  if (list.length < pageSize) {
+    done()
+  } else {
+    setTimeout(() => {
+      getList(cursor + 1, done)
+    })
   }
 }
 
@@ -91,6 +94,7 @@ async function analyseProject (project) {
       const iconItem = analyse.icons.find(e => e._id.toString() === iconId)
       iconItem.pages = visit
     }
+    analyse.updateTime = new Date()
     await analyse.save()
   }
 }
