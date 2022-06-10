@@ -1,8 +1,10 @@
 import express, { Router } from 'express'
-import { getLocale, setLocale } from '../utils/index.js'
+import { getLocale, setLocale, getNodeEnv } from '../utils/index.js'
 import { User } from '../models/user.js'
+import { ENV } from '../utils/const.js'
 
-const maxAge = process.env.NODE_ENV === 'production' ? 7 * 24 * 3600 * 1000 : 0
+const env = getNodeEnv()
+const maxAge = (env === ENV.PRODUCTION) ? 7 * 24 * 3600 * 1000 : 0
 const root = process.cwd()
 
 const router = Router()

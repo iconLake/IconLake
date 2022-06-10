@@ -6,7 +6,13 @@
     "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview"
   },
+  "engines": {
+    "node": ">=16",
+    "pnpm": ">=6"
+  },
   "packageManager": "pnpm",
+  "author": "iconlake",
+  "license": "AGPLv3",
   "dependencies": {
     "@types/js-cookie": "^3.0.1",
     "axios": "^0.24.0",
