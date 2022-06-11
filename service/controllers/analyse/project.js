@@ -1,8 +1,7 @@
 import { Project } from '../../models/project.js'
 import { Analyse } from '../../models/analyse.js'
 import { Visit } from '../../models/visit.js'
-
-const pageSize = 10
+import { center as fetchCenter } from '../../utils/fetch.js'
 
 let startTime = Date.now()
 let endTime = Date.now()
@@ -12,21 +11,27 @@ export function start () {
     return
   }
   startTime = Date.now()
-  getList(0, () => {
+  getList(() => {
     endTime = Date.now()
   })
 }
 
-async function getList (cursor = 0, done) {
-  const list = await Project.find({}, 'icons sources').skip(cursor * pageSize).limit(pageSize)
+/**
+ * 获取执行列表
+ * @param {function} doneCB 完成后的回调
+ */
+async function getList (doneCB) {
+  const task = await fetchCenter('/task/pull')
+  const list = task.ids
   for (let i = 0, len = list.length; i < len; ++i) {
-    await analyseProject(list[i])
+    const project = await Project.findById(list[i], 'icons sources')
+    await analyseProject(project)
   }
-  if (list.length < pageSize) {
-    done()
+  if (list.length === 0) {
+    doneCB()
   } else {
     setTimeout(() => {
-      getList(cursor + 1, done)
+      getList(doneCB)
     })
   }
 }
