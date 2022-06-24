@@ -1,17 +1,45 @@
+/**
+ * 获取参数
+ * @param {string} name 参数名
+ * @returns {string}
+ */
+function getArgv (name) {
+  const { argv } = process
+  for (let i = 0, len = argv.length; i < len; ++i) {
+    if (`--${argv[i]}` === name) {
+      return argv[i + 1] || ''
+    }
+  }
+  return ''
+}
+
 const ENV = {
   PRODUCTION: 'production',
   TEST: 'test',
   DEVELOPMENT: 'development'
 }
 
+const env = getArgv('env') || ENV.DEVELOPMENT
+
+// pro环境配置，默认
+let name = 'center'
+let watch = false
+
+if (env === ENV.DEVELOPMENT) { // dev环境
+  name += '-dev'
+  watch = ['./app.js', './routes', './controllers', './models', './utils', './config']
+} else if (env === ENV.TEST) { // test环境
+  name += '-test'
+}
+
 module.exports = {
   apps: [{
-    name: 'center',
+    name,
     script: './app.js',
-    env_production: {
+    [`env_${ENV.PRODUCTION}`]: {
       NODE_ENV: ENV.PRODUCTION
     },
-    env_test: {
+    [`env_${ENV.TEST}`]: {
       NODE_ENV: ENV.TEST
     },
     env: {
@@ -19,9 +47,7 @@ module.exports = {
     },
     instances: 1,
     exec_mode: 'fork',
-    watch: process.env.NODE_ENV === ENV.PRODUCTION
-      ? false
-      : ['./app.js', './routes', './controllers', './models', './utils', './config'],
+    watch,
     max_memory_restart: '4G'
   }]
 }
