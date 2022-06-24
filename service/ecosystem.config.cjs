@@ -6,7 +6,7 @@
 function getArgv (name) {
   const { argv } = process
   for (let i = 0, len = argv.length; i < len; ++i) {
-    if (`--${argv[i]}` === name) {
+    if (`--${name}` === argv[i]) {
       return argv[i + 1] || ''
     }
   }
