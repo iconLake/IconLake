@@ -6,9 +6,7 @@ export async function success (userInfo, req, res) {
   if (userInfo.id && userInfo.from) {
     const token = nanoid()
     let user = await User.findOne({
-      [userInfo.from]: {
-        id: userInfo.id
-      }
+      [`${userInfo.from}.id`]: userInfo.id
     })
     const maxAge = TOKEN_MAX_AGE
     if (user) {
@@ -22,6 +20,7 @@ export async function success (userInfo, req, res) {
         name: userInfo.name,
         avatar: userInfo.avatar,
         token,
+        tokenExpire: new Date(Date.now() + maxAge),
         [userInfo.from]: userInfo
       })
     }
