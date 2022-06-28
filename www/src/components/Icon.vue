@@ -13,6 +13,9 @@ const data = reactive({
 })
 
 async function getIcon () {
+  if (!props.source.resourceUrl) {
+    return
+  }
   const icons = await parse(props.source.resourceUrl, props.source.type)
   data.svgPath = icons[`${props.source.prefix}${props.info.code}`]
 }

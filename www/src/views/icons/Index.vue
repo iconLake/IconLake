@@ -40,9 +40,6 @@ const batchGroupFormDom = ref(<Element>{})
 async function getIcons () {
   const res = await getProjectInfo(data._id, 'name icons sources groups')
   data.name = res.name
-  if (res.icons instanceof Array) {
-    data.icons = res.icons
-  }
   if (res.groups instanceof Array) {
     data.groups = res.groups.sort((a, b) => b.num - a.num)
     res.groups.forEach(e => {
@@ -56,9 +53,12 @@ async function getIcons () {
     })
     await Promise.all(qSources)
   }
-  if (res.icons.length > 0) {
-    getList()
-    nextTick(updateMainWidth)
+  if (res.icons instanceof Array) {
+    data.icons = res.icons
+    if (res.icons.length > 0) {
+      getList()
+      nextTick(updateMainWidth)
+    }
   }
 }
 
