@@ -10,8 +10,8 @@ export async function success (userInfo, req, res) {
     })
     const maxAge = TOKEN_MAX_AGE
     if (user) {
-      user.name = userInfo.name
-      user.avatar = userInfo.avatar
+      userInfo.name && (user.name = userInfo.name)
+      userInfo.avatar && (user.avatar = userInfo.avatar)
       user.token = token
       user.tokenExpire = new Date(Date.now() + maxAge)
       user[userInfo.from] = userInfo

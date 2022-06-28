@@ -1,8 +1,8 @@
-interface UserInfo {
-  _id: String,
-  name: String,
-  avatar: String,
-  token: String,
+export interface UserInfo {
+  _id: string,
+  name: string,
+  avatar: string,
+  token: string,
   tokenExpire: Date,
 }
 
@@ -12,7 +12,15 @@ const baseURL = '/api/user/'
 
 let userInfo: UserInfo
 
-export async function info() {
+/**
+ * 获取用户信息
+ * @param isRefresh 是否刷新
+ * @returns {UserInfo}
+ */
+export async function info(isRefresh?: boolean) {
+  if (userInfo && !isRefresh) {
+    return userInfo
+  }
   userInfo = await request({
     url: '/info',
     baseURL
