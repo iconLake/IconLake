@@ -5,16 +5,16 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev:server": "pnpm exec pm2 reload ecosystem.config.cjs && pnpm exec pm2 logs service",
+    "dev:server": "pnpm exec pm2 reload ecosystem.config.cjs && pnpm exec pm2 logs service-dev",
     "dev:front": "pnpm exec gulp",
     "dev": "pnpm exec npm-run-all -p dev:*",
-    "dev-clean": "pnpm exec pm2 delete service",
+    "dev-clean": "pnpm exec pm2 delete service-dev",
     "pro": "pm2 reload ecosystem.config.cjs --env production",
     "test": "pm2 reload ecosystem.config.cjs --env test"
   },
   "engines": {
     "node": ">=16",
-    "pnpm": ">=6"
+    "pnpm": ">=7"
   },
   "packageManager": "pnpm",
   "author": "iconlake",
