@@ -19,7 +19,10 @@ const config = getConfig(env)
 const app = express()
 
 app.use(helmet({
-  contentSecurityPolicy: false
+  contentSecurityPolicy: false,
+  referrerPolicy: {
+    policy: 'no-referrer-when-downgrade'
+  }
 }))
 app.use(compression())
 
