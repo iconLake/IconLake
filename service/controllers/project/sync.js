@@ -125,6 +125,7 @@ export default async function sync (req, res) {
     syncStartTime: new Date(),
     type: sourceType
   }
+  // TODO: axios 替换为node-fetch
   const syncRes = await axios.get(syncUrl, {
     headers: {
       'User-Agent': 'iconLake'

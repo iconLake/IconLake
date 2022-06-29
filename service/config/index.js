@@ -21,6 +21,9 @@ export const configs = {
     github: {
       clientId: '',
       clientSecret: ''
+    },
+    center: {
+      domain: 'http://127.0.0.1:9999'
     }
   },
   test: {
@@ -43,6 +46,9 @@ export const configs = {
     github: {
       clientId: '',
       clientSecret: ''
+    },
+    center: {
+      domain: 'http://127.0.0.1:9669'
     }
   },
   development: {
@@ -59,6 +65,9 @@ export const configs = {
     github: {
       clientId: '',
       clientSecret: ''
+    },
+    center: {
+      domain: 'http://127.0.0.1:9009'
     }
   }
 }
@@ -66,7 +75,7 @@ export const configs = {
 /**
  * 获取配置
  * @param {string} [env='production']
- * @returns {{http: {port: number}, https: {port: number, ca: string, key: string, cert: string}, mongodb: {uri: string}, gitee: {clientId: string, clientSecret: string}, github: {clientId: string, clientSecret: string}}}
+ * @returns {{http: {port: number}, https: {port: number, ca: string, key: string, cert: string}, mongodb: {uri: string}, gitee: {clientId: string, clientSecret: string}, github: {clientId: string, clientSecret: string}, center: {domain: string}}}
  */
 export function getConfig (env) {
   const config = configs[env || getNodeEnv()]

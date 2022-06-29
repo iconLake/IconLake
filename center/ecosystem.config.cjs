@@ -22,17 +22,14 @@ const ENV = {
 const env = getArgv('env') || ENV.DEVELOPMENT
 
 // pro环境配置，默认
-let name = 'service'
-let instances = -1
+let name = 'center'
 let watch = false
 
 if (env === ENV.DEVELOPMENT) { // dev环境
   name += '-dev'
-  instances = 1
-  watch = ['./app.js', './routes', './controllers', './models', './utils', './config', './public/monitor/index.js']
+  watch = ['./app.js', './routes', './controllers', './models', './utils', './config']
 } else if (env === ENV.TEST) { // test环境
   name += '-test'
-  instances = 2
 }
 
 module.exports = {
@@ -48,8 +45,8 @@ module.exports = {
     env: {
       NODE_ENV: ENV.DEVELOPMENT
     },
-    instances,
-    exec_mode: 'cluster',
+    instances: 1,
+    exec_mode: 'fork',
     watch,
     max_memory_restart: '4G'
   }]

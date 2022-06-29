@@ -5,20 +5,20 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev:server": "pnpm exec pm2 reload ecosystem.config.cjs && pnpm exec pm2 logs service",
+    "dev:server": "pnpm exec pm2 reload ecosystem.config.cjs && pnpm exec pm2 logs service-dev",
     "dev:front": "pnpm exec gulp",
     "dev": "pnpm exec npm-run-all -p dev:*",
-    "dev-clean": "pnpm exec pm2 delete service",
+    "dev-clean": "pnpm exec pm2 delete service-dev",
     "pro": "pm2 reload ecosystem.config.cjs --env production",
     "test": "pm2 reload ecosystem.config.cjs --env test"
   },
   "engines": {
     "node": ">=16",
-    "pnpm": ">=6"
+    "pnpm": ">=7"
   },
   "packageManager": "pnpm",
-  "author": "shirf",
-  "license": "ISC",
+  "author": "iconlake",
+  "license": "AGPLv3",
   "dependencies": {
     "axios": "^0.24.0",
     "compression": "^1.7.4",
@@ -28,7 +28,7 @@
     "express": "^4.17.2",
     "filter-obj": "^3.0.0",
     "helmet": "^4.6.0",
-    "mongoose": "^6.1.4",
+    "mongoose": "^6.3.6",
     "nanoid": "^3.1.30",
     "node-fetch": "^3.1.0"
   },

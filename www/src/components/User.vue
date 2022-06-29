@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import Cookies from 'js-cookie'
-import { logout } from '../apis/user'
+import { logout, info, UserInfo } from '../apis/user'
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
@@ -22,6 +22,13 @@ const language = <{
 
 let isPopShow = ref(false)
 let popTimer = 0
+const userInfo = reactive({} as UserInfo)
+
+async function getUserInfo () {
+  Object.assign(userInfo, await info())
+}
+
+getUserInfo()
 
 function setLocale (v:string) {
   locale.value = v
@@ -56,8 +63,11 @@ async function userLogout() {
 
 <template>
   <div class="user" @mouseenter="showPop(true)" @mouseleave="showPop(false)">
-    <div class="avatar bg-main">
-      <img :src="'/imgs/avatar.png'">
+    <div v-if="userInfo.avatar" class="avatar img">
+      <img :src="userInfo.avatar" :alt="userInfo.name">
+    </div>
+    <div v-else class="avatar bg-main text flex center">
+      <span>{{userInfo.name ? userInfo.name[0] : 'U'}}</span>
     </div>
     <div class="pop" :class="{active: isPopShow}">
       <div class="item flex" @click="toggleLocale">
@@ -83,6 +93,14 @@ async function userLogout() {
     height: 4rem;
     border-radius: 2rem;
     overflow: hidden;
+    cursor: pointer;
+    &.img {
+      background: #fff;
+      font-size: 0;
+    }
+    &.text {
+      font-size: 1.8rem;
+    }
     img {
       width: 100%;
       height: 100%;
