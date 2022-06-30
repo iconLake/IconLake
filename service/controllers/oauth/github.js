@@ -9,13 +9,14 @@ import { getConfig } from '../../config/index.js'
  * https://github.com/login/oauth/authorize?client_id=
  */
 
-const config = getConfig().github
+const config = getConfig()
 
 export async function login (req, res) {
   if (req.query.code) {
     const query = (new URLSearchParams({
-      client_id: config.clientId,
-      client_secret: config.clientSecret,
+      client_id: config.github.clientId,
+      client_secret: config.github.clientSecret,
+      redirect_uri: `${config.domain}/api/oauth/github`,
       code: req.query.code
     })).toString()
     const q = await fetch(`https://github.com/login/oauth/access_token?${query}`, {

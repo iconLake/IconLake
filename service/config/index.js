@@ -2,6 +2,7 @@ import { getNodeEnv } from '../utils/index.js'
 
 export const configs = {
   production: {
+    domain: 'https://iconlake.com',
     http: {
       port: 80
     },
@@ -27,6 +28,7 @@ export const configs = {
     }
   },
   test: {
+    domain: 'https://iconlake.com:8443',
     http: {
       port: 8080
     },
@@ -52,6 +54,7 @@ export const configs = {
     }
   },
   development: {
+    domain: 'http://127.0.0.1:8088',
     http: {
       port: 8088
     },
@@ -75,7 +78,7 @@ export const configs = {
 /**
  * 获取配置
  * @param {string} [env='production']
- * @returns {{http: {port: number}, https: {port: number, ca: string, key: string, cert: string}, mongodb: {uri: string}, gitee: {clientId: string, clientSecret: string}, github: {clientId: string, clientSecret: string}, center: {domain: string}}}
+ * @returns {{domain: string, http: {port: number}, https: {port: number, ca: string, key: string, cert: string}, mongodb: {uri: string}, gitee: {clientId: string, clientSecret: string}, github: {clientId: string, clientSecret: string}, center: {domain: string}}}
  */
 export function getConfig (env) {
   const config = configs[env || getNodeEnv()]
