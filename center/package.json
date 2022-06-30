@@ -7,15 +7,15 @@
   "scripts": {
     "pro": "pm2 reload ecosystem.config.cjs --env production",
     "test": "pm2 reload ecosystem.config.cjs --env test",
-    "dev": "pnpm exec pm2 reload ecosystem.config.cjs && pnpm exec pm2 logs center"
+    "dev": "pnpm exec pm2 reload ecosystem.config.cjs && pnpm exec pm2 logs center-dev"
   },
   "keywords": [],
   "engines": {
     "node": ">=16",
-    "pnpm": ">=6"
+    "pnpm": ">=7"
   },
   "packageManager": "pnpm",
-  "author": "iconlake",
+  "author": "iconLake",
   "license": "AGPLv3",
   "dependencies": {
     "express": "^4.18.1",

@@ -14,8 +14,11 @@ import * as projectInvite from '../controllers/project/invite.js'
 import * as projectMember from '../controllers/project/member.js'
 import * as projectIcon from '../controllers/project/icon.js'
 import * as iconInfo from '../controllers/icon/info.js'
+import { params as loginParams } from '../controllers/login/index.js'
 
 const router = Router()
+
+router.get('/login/params', loginParams)
 
 router.get('/oauth/github', oauthGithub)
 router.get('/oauth/gitee', oauthGitee)
