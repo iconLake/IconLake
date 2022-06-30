@@ -11,9 +11,8 @@ import visitRouter from './routes/visit.js'
 import { init as initDB } from './models/index.js'
 import { init as initCron } from './controllers/analyse/cron.js'
 import { getConfig } from './config/index.js'
-import { getNodeEnv } from './utils/index.js'
+import { NODE_ENV as env } from './utils/const.js'
 
-const env = getNodeEnv()
 const config = getConfig(env)
 
 const app = express()
@@ -57,6 +56,5 @@ initDB()
 
 /**
  * 初始化定时任务
- * TODO: 集群部署会导致同时触发，需要优化
  */
 initCron()

@@ -1,11 +1,7 @@
 import express, { Router } from 'express'
-import { getLocale, setLocale, getNodeEnv } from '../utils/index.js'
-import { User } from '../models/user.js'
-import { ENV } from '../utils/const.js'
-
-const env = getNodeEnv()
-const maxAge = (env === ENV.PRODUCTION) ? 7 * 24 * 3600 * 1000 : 0
-const root = process.cwd()
+import { getLocale, setLocale } from '../utils/index.js'
+import { ROOT as root, RESOURCE_MAX_AGE as maxAge } from '../utils/const.js'
+import loginIndex from '../controllers/login/index.js'
 
 const router = Router()
 
@@ -17,25 +13,7 @@ router.get('/', (req, res) => {
   })
 })
 
-router.get('/login', async (req, res) => {
-  setLocale(req, res)
-  if (req.cookies.token) {
-    const user = await User.findOne({
-      token: req.cookies.token,
-      tokenExpire: {
-        $gt: new Date()
-      }
-    })
-    if (user) {
-      res.redirect(req.query.redirect || '/manage')
-      return
-    }
-  }
-  res.sendFile(`./public/login/index.${getLocale(req)}.html`, {
-    root,
-    maxAge
-  })
-})
+router.get('/login', loginIndex)
 
 router.use('/', express.static('public', { maxAge }), (req, res, next) => {
   if (/^\/manage\//i.test(req.path)) {

@@ -1,4 +1,4 @@
-import { getNodeEnv } from '../utils/index.js'
+import { NODE_ENV } from '../utils/const.js'
 
 export const configs = {
   production: {
@@ -81,7 +81,7 @@ export const configs = {
  * @returns {{domain: string, http: {port: number}, https: {port: number, ca: string, key: string, cert: string}, mongodb: {uri: string}, gitee: {clientId: string, clientSecret: string}, github: {clientId: string, clientSecret: string}, center: {domain: string}}}
  */
 export function getConfig (env) {
-  const config = configs[env || getNodeEnv()]
+  const config = configs[env || NODE_ENV]
   if (!(config.http && config.http.port) && !(config.https && config.https.port)) {
     throw new Error('[ConfigError] HTTP(S) port is required.')
   }
