@@ -9,15 +9,14 @@ import { getConfig } from '../../config/index.js'
  * https://gitee.com/oauth/authorize?client_id=&redirect_uri=https%3A%2F%2Fwww.iconlake.com%2Fapi%2Foauth%2Fgitee&response_type=code
  */
 
-const config = getConfig().gitee
-const redirectUri = 'https://iconlake.com/api/oauth/gitee'
+const config = getConfig()
 
 export async function login (req, res) {
   if (req.query.code) {
     const query = (new URLSearchParams({
       grant_type: 'authorization_code',
-      client_id: config.clientId,
-      redirect_uri: redirectUri,
+      client_id: config.gitee.clientId,
+      redirect_uri: `${config.domain}/api/oauth/gitee`,
       code: req.query.code
     })).toString()
     const q = await fetch(`https://gitee.com/oauth/token?${query}`, {
@@ -26,7 +25,7 @@ export async function login (req, res) {
         'Content-Type': 'application/json;charset=UTF-8'
       },
       body: JSON.stringify({
-        client_secret: config.clientSecret
+        client_secret: config.gitee.clientSecret
       })
     })
     const data = await q.json()

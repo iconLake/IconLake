@@ -18,3 +18,19 @@ export const ENV = {
   TEST: 'test',
   DEVELOPMENT: 'development'
 }
+
+/**
+ * node运行环境
+ * @type {'production'|'test'|'development'}
+ */
+export const NODE_ENV = Object.values(ENV).indexOf(process.env.NODE_ENV) > -1 ? process.env.NODE_ENV : ENV.PRODUCTION
+
+/**
+ * 根路径
+ */
+export const ROOT = process.cwd()
+
+/**
+ * 资源缓存时长
+ */
+export const RESOURCE_MAX_AGE = (NODE_ENV === ENV.PRODUCTION) ? 7 * 24 * 3600 * 1000 : 0
