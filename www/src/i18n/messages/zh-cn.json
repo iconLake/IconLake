@@ -63,7 +63,7 @@
   "iconFindFunction": "图标抓取函数",
   "cleanDone": "清空完成",
   "cleanProject": "清空项目",
-  "deleteProject": "清空项目",
+  "deleteProject": "删除项目",
   "delProjectWarning": "清空或删除项目将导致项目的所有数据永久性丢失，请谨慎操作！",
   "inputForSafe": "为防止操作错误，请输入项目名称",
   "fillProjectName": "填写项目名称",
