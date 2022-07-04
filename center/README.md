@@ -8,17 +8,36 @@ iconLake中心服务，用于承载任务队列、调度、监控等。
 
 此服务为内部服务，仅可内网调用。
 
+## 环境要求
+1. nodejs >= 16
+2. pnpm >= 7
+
 ## 开发
 
-### 环境要求：
-1. nodejs >= 16
-2. pnpm >= 6
+### 配置
+修改`config/index.js`文件里的配置项。
+### 安装
+```
+pnpm i
+```
+### 启动
+```
+pnpm run dev
+```
 
-#### 安装
-> pnpm i
-#### 开发环境启动
-> pnpm run dev
-#### 测试环境启动
-> pnpm run test
-#### 生产环境启动
-> pnpm run pro
+## 部署
+
+### 配置
+修改`config/index.js`文件里的配置项。
+### 安装
+```
+pnpm i -P
+```
+### 测试环境启动
+```
+pnpm run test
+```
+### 生产环境启动
+```
+pnpm run pro
+```

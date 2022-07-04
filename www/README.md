@@ -4,16 +4,21 @@
 
 ### 环境要求：
 1. nodejs >= 16
-2. pnpm >= 6
+2. pnpm >= 7
 3. vue >= 3
 
 ### 安装
-> pnpm i
+```
+pnpm i
+```
 ### 启动开发环境
-> pnpm run dev
+```
+pnpm run dev
+```
 ### 发布
-> pnpm run build
-
+```
+pnpm run build
+```
 ## 注意事项
 
 1. 一律使用rem作为单位，很细的border例外可以使用px；
@@ -27,7 +32,7 @@ Vue 3 `<script setup>` SFC [使用文档](https://v3.vuejs.org/api/sfc-script-se
 
 ## IDE
 
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=vue.volar)
 
 ## 支持 `.vue` Imports in TS
 
