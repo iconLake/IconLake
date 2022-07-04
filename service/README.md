@@ -36,4 +36,4 @@ pnpm run pro
 
 ## 注意事项
 
-1. windows系统下无法启动service服务，是因为pm2对esmodule支持得不太好导致的，解决方案：找到node_modules\pm2\lib\ProcessContainer.js:301，修改为“import(`file://${process.env.pm_exec_path}`);”。
+1. windows系统下无法启动服务，是因为pm2对esmodule支持得不太好导致的，解决方案：找到node_modules\pm2\lib\ProcessContainer.js:301，修改为“import(\`file://${process.env.pm_exec_path}\`);”。
