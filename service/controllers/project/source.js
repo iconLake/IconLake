@@ -6,10 +6,11 @@ import { sourceEqual } from '../../utils/index.js'
 /**
  * 存档源
  * @param {string} projectId 项目ID
- * @param {object} source 源
+ * @param {object} sourceOld 源
  */
-async function saveSourceHistory (projectId, source) {
+async function saveSourceHistory (projectId, sourceOld) {
   let info = await History.findById(projectId)
+  const source = Object.assign({}, sourceOld)
   source._id = new mongoose.Types.ObjectId()
   if (!info) {
     info = new History({
