@@ -10,10 +10,8 @@ import { sourceEqual } from '../../utils/index.js'
  */
 async function saveSourceHistory (projectId, sourceOld) {
   let info = await History.findById(projectId)
-  console.log('1111111', sourceOld._id)
   const source = Object.assign({}, sourceOld)
   source._id = new mongoose.Types.ObjectId()
-  console.log('22222222222', sourceOld._id)
   if (!info) {
     info = new History({
       _id: projectId,
