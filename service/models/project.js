@@ -20,6 +20,8 @@ export const IconSchema = new Schema({
 export const ProjectSchema = new Schema({
   name: String,
   desc: String,
+  prefix: String,
+  className: String,
   userId: Schema.Types.ObjectId,
   createTime: Date,
   members: [{

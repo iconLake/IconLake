@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, nextTick, reactive, ref, watchEffect } from "vue";
-import { addTag, delTag, editIcon, Group, Icon, Source } from "../../apis/project";
+import { addTag, delTag, editIcon, Group, Icon } from "../../apis/project";
 import IconComponent from "../../components/Icon.vue";
 import { copy, toast } from '../../utils';
 import { useI18n } from 'vue-i18n'
@@ -10,7 +10,6 @@ const { t } = useI18n()
 const props = defineProps<{
   projectId: string
   info: Icon
-  source: Source
   top: string
   left: string
   isShow?: boolean
@@ -109,7 +108,7 @@ async function saveInfo(key: 'name' | 'groupId') {
   <div class="detail" ref="root">
     <div class="flex start">
       <div>
-        <IconComponent :info="info" :source="source" />
+        <IconComponent :info="info" />
         <router-link :to="`/analyse/icon/${projectId}/${info._id}`" class="count-use c-main">{{t('pageRefererCount')}} {{info.analyse?.pageCount}}</router-link>
       </div>
       <div class="info grow">
@@ -129,17 +128,9 @@ async function saveInfo(key: 'name' | 'groupId') {
           <i class="iconfont icon-edit pointer" @click="nameFocus()"></i>
         </div>
         <div class="item">
-          <div class="label">{{t('oriName')}}</div>
-          <div class="value">{{info.originalData?.name}}</div>
-        </div>
-        <div class="item">
           <div class="label">Class</div>
           <div class="value">{{info.code}}</div>
           <i class="iconfont icon-copy pointer" @click="copyClassName"></i>
-        </div>
-        <div class="item">
-          <div class="label">{{t('source')}}</div>
-          <div class="value">{{source.name}}</div>
         </div>
         <div class="item">
           <div class="label">{{t('group')}}</div>

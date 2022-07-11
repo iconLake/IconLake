@@ -27,10 +27,6 @@ getProject()
   <UserVue />
   <div class="flex start main">
     <div class="menu">
-      <router-link class="item" active-class="active" to="./source">
-        <i class="iconfont icon-source-fill"></i>
-        <span>{{t('iconSource')}}</span>
-      </router-link>
       <router-link class="item" active-class="active" to="./group">
         <i class="iconfont icon-group"></i>
         <span>{{t('iconGroup')}}</span>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { Group, Icon, Source, info as getProjectInfo, delIcon, batchGroupIcon } from "../../apis/project";
+import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon } from "../../apis/project";
 import IconVue from "../../components/Icon.vue";
 import { confirm, toast } from '../../utils';
 import Detail from "./Detail.vue";
@@ -19,12 +19,9 @@ const data = reactive({
   icons: <Icon[]>[],
   groups: <Group[]>[],
   groupMap: <any>{},
-  sources: <Source[]>[],
-  sourceMap: <any>{},
   list: <Group[]>[],
   detail: {
     info: <Icon>{},
-    source: <Source>{},
     top: '-50rem',
     left: '-50rem',
     isShow: false
@@ -45,13 +42,6 @@ async function getIcons () {
     res.groups.forEach(e => {
       data.groupMap[e._id] = e
     })
-  }
-  if (res.sources instanceof Array) {
-    data.sources = res.sources
-    const qSources = res.sources.map(async e => {
-      data.sourceMap[e._id] = e
-    })
-    await Promise.all(qSources)
   }
   if (res.icons instanceof Array) {
     data.icons = res.icons
@@ -123,7 +113,6 @@ function showDetail (icon: Icon, e: Event) {
   const left = iconPosition.left + (right > 0 ? -right : 0) - listPosition.left
   data.detail = {
     info: icon,
-    source: data.sourceMap[icon.sourceId],
     top: `${top}px`,
     left: `${left}px`,
     isShow: true
@@ -260,7 +249,7 @@ watch(() => data.keyword, () => {
             @mouseleave="hideDetail()"
             @click="selectIcon(icon)"
           >
-            <IconVue :info="icon" :source="data.sourceMap[icon.sourceId]"/>
+            <IconVue :info="icon"/>
             <div class="name">{{icon.name}}</div>
             <div class="code">{{icon.code}}</div>
           </div>
@@ -270,7 +259,6 @@ watch(() => data.keyword, () => {
         ref="detailDom"
         :project-id="data._id"
         :info="data.detail.info"
-        :source="data.detail.source"
         :top="data.detail.top"
         :left="data.detail.left"
         :is-show="data.detail.isShow"

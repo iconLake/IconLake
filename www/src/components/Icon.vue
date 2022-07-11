@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { reactive, watchEffect } from "vue";
-import { Icon, Source } from "../apis/project";
+import { Icon } from "../apis/project";
 import { parse } from "../utils/resource";
 
 const props = defineProps<{
   info: Icon
-  source: Source
 }>()
 
 const data = reactive({
@@ -13,15 +12,11 @@ const data = reactive({
 })
 
 async function getIcon () {
-  if (!props.source.resourceUrl) {
-    return
-  }
-  const icons = await parse(props.source.resourceUrl, props.source.type)
-  data.svgPath = icons[`${props.source.prefix}${props.info.code}`]
+  data.svgPath = props.info.svg
 }
 
 watchEffect(() => {
-  if (props.info && props.source) {
+  if (props.info) {
     getIcon()
   }
 })

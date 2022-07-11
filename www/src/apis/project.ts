@@ -8,13 +8,11 @@ export interface OriginalIcon {
 
 export interface Icon {
   _id: string
-  sourceId: string
   groupId: string
   name: string
   code: string
   tags: string[]
-  syncTime: string
-  originalData: OriginalIcon
+  svg: string
   analyse?: {
     pageCount: number
   }
@@ -38,17 +36,6 @@ export interface Monitor {
   spider: string
 }
 
-export interface Source {
-  _id: string
-  name: string
-  type: number
-  resourceUrl: string
-  syncUrl: string
-  prefix: string
-  className: string
-  iconPath?: any
-}
-
 export interface Member {
   _id: string
   userId: string
@@ -69,15 +56,12 @@ export interface Project {
   userId: string
   name: string
   desc: string
+  prefix: string
+  className: string
   icons: Icon[]
   groups: Group[]
-  sources: Source[]
   monitor: Monitor
   invite?: Invite
-}
-
-export interface ProjectSource extends Source {
-  projectId: string
 }
 
 export interface Res {
@@ -132,17 +116,6 @@ export function clean(_id: string, name: string) {
   })
 }
 
-export function sync(projectId: string, _id: string) {
-  return <Promise<Res>>request({
-    method: 'POST',
-    url: `/sync/${projectId}`,
-    baseURL,
-    data: {
-      _id
-    }
-  })
-}
-
 export function info(id: string, fields: string) {
   return <Promise<Project>>request({
     url: `/info/${id}`,
@@ -165,27 +138,6 @@ export function editInfo(_id: string, info: {
       _id,
       ...info
     }
-  })
-}
-
-export function editSource(data: ProjectSource) {
-  return <Promise<IdRes>>request({
-    method: 'POST',
-    url: '/source/edit',
-    baseURL,
-    data,
-  })
-}
-
-export function delSource(projectId: string, _id: string) {
-  return <Promise<Res>>request({
-    method: 'POST',
-    url: '/source/del',
-    baseURL,
-    data: {
-      projectId,
-      _id
-    },
   })
 }
 
@@ -274,7 +226,6 @@ export function acceptInvite(_id: string, code: string) {
 export function getIcon(projectId: string, _id: string) {
   return <Promise<{
     info: Icon
-    source: Source
   }>>request({
     method: 'GET',
     url: '/icon/info',
