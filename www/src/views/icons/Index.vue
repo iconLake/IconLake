@@ -217,9 +217,9 @@ watch(() => data.keyword, () => {
       </div>
     </div>
     <div class="operate flex">
-      <router-link :to="`/project/${data._id}/setting/source`" class="operate-item flex">
-        <span>{{t('sync')}}</span>
-        <i class="iconfont icon-sync-cloud"></i>
+      <router-link :to="`/icons/${data._id}/create`" class="operate-item flex">
+        <span>{{t('createIcons')}}</span>
+        <i class="iconfont icon-plus"></i>
       </router-link>
       <div class="operate-item flex" @click="data.isBatching=!data.isBatching">
         <span>{{t(data.isBatching ? 'cancelBatchOperation' : 'batchOperation')}}</span>

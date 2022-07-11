@@ -14,7 +14,10 @@ export const IconSchema = new Schema({
   name: String,
   code: String,
   tags: [String],
-  svg: String
+  svg: {
+    viewBox: String,
+    path: String
+  }
 })
 
 export const ProjectSchema = new Schema({

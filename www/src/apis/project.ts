@@ -12,7 +12,10 @@ export interface Icon {
   name: string
   code: string
   tags: string[]
-  svg: string
+  svg: {
+    viewBox: string
+    path: string
+  }
   analyse?: {
     pageCount: number
   }

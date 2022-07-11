@@ -75,5 +75,6 @@
   "statPeriod": "统计周期",
   "last30d": "近30天",
   "refererPageLink": "被引用页面地址",
-  "back": "返回"
+  "back": "返回",
+  "createIcons": "添加图标"
 }
