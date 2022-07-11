@@ -1,4 +1,5 @@
 import { Analyse } from '../../models/analyse.js'
+import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
 
 /**
@@ -31,6 +32,24 @@ export async function info (req, res) {
 }
 
 /**
+ * @api {post} /project/icon/add 添加图标
+ */
+export async function add (req, res) {
+  const icons = req.body.icons
+  const _id = req.body.projectId
+  await Project.updateOne({
+    _id
+  }, {
+    $push: {
+      icons: {
+        $each: icons
+      }
+    }
+  })
+  res.json({})
+}
+
+/**
  * @api {post} /project/icon/del 删除图标
  */
 export async function del (req, res) {
@@ -42,20 +61,35 @@ export async function del (req, res) {
     })
     return
   }
+  const project = await Project.findById(projectId, 'members icons')
+  if (!project || !project.members.some(e => e.isAdmin && e.userId === req.user._id)) {
+    res.json({
+      error: 'noPermission'
+    })
+    return
+  }
   await Project.updateOne({
-    _id: projectId,
-    members: {
-      $elemMatch: {
-        userId: req.user._id,
-        isAdmin: true
-      }
-    }
+    _id: projectId
   }, {
     $pull: {
       icons: {
         _id: {
           $in: _ids
         }
+      }
+    }
+  })
+  // 记录历史
+  const icons = []
+  _ids.forEach(e => {
+    icons.push(project.icons.id(e))
+  })
+  await History.updateOne({
+    _id: projectId
+  }, {
+    $push: {
+      icons: {
+        $each: icons
       }
     }
   })

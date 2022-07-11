@@ -6,9 +6,7 @@ import * as userInfo from '../controllers/user/info.js'
 import userMiddleware from '../controllers/user/middleware.js'
 import * as projectInfo from '../controllers/project/info.js'
 import * as projectList from '../controllers/project/list.js'
-import projectSync from '../controllers/project/sync.js'
 import * as projectGroup from '../controllers/project/group.js'
-import * as projectSource from '../controllers/project/source.js'
 import * as projectMonitor from '../controllers/project/monitor.js'
 import * as projectInvite from '../controllers/project/invite.js'
 import * as projectMember from '../controllers/project/member.js'
@@ -32,11 +30,8 @@ router.get('/project/info/:id', userMiddleware, projectInfo.info)
 router.post('/project/info/edit', userMiddleware, projectInfo.edit)
 router.post('/project/del', userMiddleware, projectInfo.del)
 router.post('/project/clean', userMiddleware, projectInfo.clean)
-router.post('/project/sync/:id', userMiddleware, projectSync)
 router.post('/project/group/edit', userMiddleware, projectGroup.edit)
 router.post('/project/group/del', userMiddleware, projectGroup.del)
-router.post('/project/source/edit', userMiddleware, projectSource.edit)
-router.post('/project/source/del', userMiddleware, projectSource.del)
 router.post('/project/monitor/edit', userMiddleware, projectMonitor.edit)
 router.post('/project/invite/updateCode', userMiddleware, projectInvite.updateCode)
 router.post('/project/invite/accept', userMiddleware, projectInvite.accept)
