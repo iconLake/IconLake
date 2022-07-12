@@ -1,30 +1,19 @@
 <script setup lang="ts">
-import { reactive, watchEffect } from "vue";
-import { Icon } from "../apis/project";
-import { parse } from "../utils/resource";
+import { Icon } from "../apis/project"
 
 const props = defineProps<{
   info: Icon
 }>()
-
-const data = reactive({
-  svgPath: ''
-})
-
-async function getIcon () {
-  data.svgPath = props.info.svg
-}
-
-watchEffect(() => {
-  if (props.info) {
-    getIcon()
-  }
-})
 </script>
 
 <template>
   <div class="icon">
-    <svg class="icon-svg" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" v-html="data.svgPath"></svg>
+    <svg
+      class="icon-svg"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      :viewBox="props.info.svg?.viewBox"
+      v-html="props.info.svg?.path"></svg>
   </div>
 </template>
 

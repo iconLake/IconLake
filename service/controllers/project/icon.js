@@ -37,6 +37,12 @@ export async function info (req, res) {
 export async function add (req, res) {
   const icons = req.body.icons
   const _id = req.body.projectId
+  if (typeof _id !== 'string' || _id.length === 0 || !(icons instanceof Array) || icons.length === 0) {
+    res.json({
+      error: 'argsError'
+    })
+    return
+  }
   await Project.updateOne({
     _id
   }, {

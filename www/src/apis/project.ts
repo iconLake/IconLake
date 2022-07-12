@@ -6,16 +6,19 @@ export interface OriginalIcon {
   name: string
 }
 
-export interface Icon {
-  _id: string
-  groupId: string
+export interface BaseIcon {
   name: string
   code: string
-  tags: string[]
   svg: {
     viewBox: string
     path: string
   }
+}
+
+export interface Icon extends BaseIcon {
+  _id: string
+  groupId: string
+  tags: string[]
   analyse?: {
     pageCount: number
   }
@@ -236,6 +239,18 @@ export function getIcon(projectId: string, _id: string) {
     params: {
       projectId,
       _id
+    },
+  })
+}
+
+export function addIcon(projectId: string, icons: BaseIcon[]) {
+  return <Promise<Res>>request({
+    method: 'POST',
+    url: '/icon/add',
+    baseURL,
+    data: {
+      projectId,
+      icons
     },
   })
 }

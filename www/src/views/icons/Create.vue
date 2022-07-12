@@ -1,27 +1,22 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router'
-import { info } from '../../apis/project'
+import { useRoute, useRouter } from 'vue-router'
+import { addIcon, BaseIcon, info } from '../../apis/project'
 import HeaderVue from '../../components/Header.vue'
 import { toast } from '../../utils';
 
 const { t } = useI18n()
 
-interface Icon {
+interface Icon extends BaseIcon {
   id?: string
-  code?: string
-  name?: string
   prefix?: string
-  svg?: {
-    viewBox: string
-    path: string
-  }
 }
 
 type Tab = 'svg'|'iconfont'
 
 const $route = useRoute()
+const $router = useRouter()
 
 const data = reactive({
   _id: <string>$route.params.id,
@@ -56,7 +51,7 @@ let cachedIcons = new Map<string, Icon>()
 function updateIcons() {
   const icons: Icon[] = []
   cachedIcons.forEach(e => {
-    if (e.prefix) {
+    if (e.prefix && e.id) {
       e.code = e.id?.substring(e.prefix.length)
     }
     icons.push(e)
@@ -124,7 +119,7 @@ function onIconfontJSChange(e: Event) {
               }
             }
             if (!cachedIcons.has(svg.id)) {
-              cachedIcons.set(svg.id, {})
+              cachedIcons.set(svg.id, <Icon>{})
             }
             Object.assign(<Icon>cachedIcons.get(svg.id), svg)
           }
@@ -155,7 +150,7 @@ function onIconfontJSONChange(e: Event) {
           json.glyphs.forEach((icon: any) => {
             const id = `${prefix}${icon.font_class}`
             if (!cachedIcons.has(id)) {
-              cachedIcons.set(id, {})
+              cachedIcons.set(id, <Icon>{})
             }
             Object.assign(<Icon>cachedIcons.get(id), {
               name: icon.name,
@@ -174,8 +169,10 @@ function onIconfontJSONChange(e: Event) {
   }
 }
 
-function save () {
-  console.log(data.icons)
+async function save () {
+  await addIcon(data._id, data.icons)
+  toast.success('保存成功')
+  $router.replace(`/icons/${data._id}`)
 }
 </script>
 
