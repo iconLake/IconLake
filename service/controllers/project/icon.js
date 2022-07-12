@@ -68,7 +68,8 @@ export async function del (req, res) {
     return
   }
   const project = await Project.findById(projectId, 'members icons')
-  if (!project || !project.members.some(e => e.isAdmin && e.userId === req.user._id)) {
+  const uid = req.user.id
+  if (!project || !project.members.some(e => e.isAdmin && e.userId.toString() === uid)) {
     res.json({
       error: 'noPermission'
     })
