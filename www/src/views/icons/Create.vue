@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
+import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router'
 import { info } from '../../apis/project'
 import HeaderVue from '../../components/Header.vue'
 import { toast } from '../../utils';
+
+const { t } = useI18n()
 
 interface Icon {
   id?: string
@@ -16,30 +19,36 @@ interface Icon {
   }
 }
 
+type Tab = 'svg'|'iconfont'
+
 const $route = useRoute()
 
 const data = reactive({
   _id: <string>$route.params.id,
   name: '',
-  activeTab: 'iconfont',
+  activeTab: <Tab>'svg',
   icons: <Icon[]>[]
 })
 
+const oldIcons: {[propName: string]: any} = {}
+
 async function getInfo () {
   const res = await info(data._id, 'name icons')
-  Object.assign(data, res)
+  data.name = res.name
+  res.icons.forEach(e => {
+    oldIcons[e.code] = e
+  })
 }
 
-function getTabClass(type: 'svg'|'iconfont') {
+getInfo()
+
+function getTabClass(type: Tab) {
   return data.activeTab === type ? 'active' : ''
 }
 
-function setTabActive(type: 'svg'|'iconfont') {
+function setTabActive(type: Tab) {
   data.activeTab = type
-}
-
-function onSVGChange() {
-
+  data.icons.length = 0
 }
 
 let cachedIcons = new Map<string, Icon>()
@@ -53,6 +62,42 @@ function updateIcons() {
     icons.push(e)
   })
   data.icons = icons
+}
+
+function onSVGChange(e: Event) {
+  const files = (<HTMLInputElement>e.target).files
+  if (files && files.length > 0) {
+    Array.from(files).forEach(file => {
+      if (file.type !== 'image/svg+xml') {
+        return
+      }
+      const reader = new FileReader()
+      reader.readAsText(file, 'utf-8')
+      reader.onload = () => {
+        try {
+          const parser = new DOMParser()
+          const doc = parser.parseFromString(<string>reader.result, 'image/svg+xml')
+          const code = file.name.substring(0, file.name.lastIndexOf('.'))
+          const svg = {
+            code,
+            name: code,
+            svg: {
+              viewBox: doc.documentElement.getAttribute('viewBox') || '',
+              path: Array.from(doc.documentElement.children).map(node => node.outerHTML).join('')
+            }
+          }
+          cachedIcons.set(code, svg)
+          updateIcons()
+        } catch (err) {
+          console.error(err)
+          toast.error('文件无法解析')
+        }
+      }
+      reader.onerror = () => {
+        toast.error('文件加载失败')
+      }
+    })
+  }
 }
 
 function onIconfontJSChange(e: Event) {
@@ -129,7 +174,9 @@ function onIconfontJSONChange(e: Event) {
   }
 }
 
-getInfo()
+function save () {
+  console.log(data.icons)
+}
 </script>
 
 <template>
@@ -141,7 +188,7 @@ getInfo()
     <div class="item" :class="getTabClass('iconfont')" @click="setTabActive('iconfont')">导入iconfont</div>
   </div>
   <div v-if="data.activeTab === 'svg'" class="upload-svg">
-    <input type="file" @change="onSVGChange" >
+    <input type="file" @change="onSVGChange" accept="image/svg+xml" multiple >
   </div>
   <div v-if="data.activeTab === 'iconfont'">
     <div>iconfont.js文件</div>
@@ -159,6 +206,10 @@ getInfo()
       <svg :viewBox="item.svg?.viewBox" v-html="item.svg?.path"></svg>
       <div class="name">{{item.name}}</div>
     </div>
+  </div>
+  <!-- button -->
+  <div class="flex center">
+    <button class="btn" :disabled="data.icons.length === 0" @click="save">{{t('save')}}</button>
   </div>
 </template>
 
