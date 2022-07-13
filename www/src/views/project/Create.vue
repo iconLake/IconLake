@@ -11,7 +11,7 @@ const { t } = useI18n()
 const fmData = reactive({
   _id: '',
   name: '',
-  desc: ''
+  description: ''
 })
 
 const isChecked = computed(() => {
@@ -22,10 +22,13 @@ async function create () {
   toast(t('creatingProject'))
   const data = await createProject({
     name: fmData.name,
+    description: fmData.description
   })
   fmData._id = data._id
   router.replace(`/icons/${data._id}`)
+  toast.success(t('creatingProjectDone'))
 }
+
 </script>
 
 <template>
@@ -36,7 +39,7 @@ async function create () {
       <div class="slogan-left">Make</div>
       <form @submit.prevent="create" class="fm">
         <h1>{{t('newProject')}}</h1>
-        <h2>{{t('fillProjectNameAndSource')}}</h2>
+        <h2>{{t('fillProjectNameAndDescription')}}</h2>
         <div class="item">
           <label>{{t('projectName')}}</label>
           <div class="input flex">
@@ -45,14 +48,11 @@ async function create () {
           </div>
         </div>
         <div class="item">
-          <label>{{t('iconSourceOfIconfont')}}</label>
+          <label>{{t('projectDescription')}}</label>
           <div class="input flex">
             <i class="iconfont icon-source"></i>
-            <input class="grow" autocomplete="off" maxlength="100" type="text" name="resourceUrl" v-model="fmData.desc">
+            <input class="grow" autocomplete="off" maxlength="100" type="text" name="description" v-model="fmData.description">
           </div>
-          <p class="t-right">
-            <router-link to="/help" class="link">{{t('howToGetOnlineLink')}}</router-link>
-          </p>
         </div>
         <button class="bg-danger" type="submit" :disabled="!isChecked">{{t('createNow')}}</button>
       </form>

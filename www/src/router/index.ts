@@ -69,11 +69,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/analyse/icon/:projectId/:id',
     name: 'analyseIcon',
     component: () => import('../views/analyse/Icon.vue')
-  },
-  {
-    path: '/help',
-    name: 'help',
-    component: () => import('../views/help/Index.vue')
   }
 ]
 
