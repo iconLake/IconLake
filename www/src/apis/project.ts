@@ -336,3 +336,15 @@ export function batchGroupIcon(projectId: string, _ids: string[], groupId: strin
     },
   })
 }
+
+export function genIcon(projectId: string, type: 'css'|'js') {
+  return <Promise<Res>>request({
+    method: 'POST',
+    url: '/icon/gen',
+    baseURL,
+    data: {
+      projectId,
+      type
+    },
+  })
+}

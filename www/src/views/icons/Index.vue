@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon } from "../../apis/project";
+import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon, genIcon } from "../../apis/project";
 import IconVue from "../../components/Icon.vue";
 import { confirm, toast } from '../../utils';
 import Detail from "./Detail.vue";
@@ -95,6 +95,9 @@ function groupFilter (group: Group) {
 }
 
 getIcons()
+
+// dev
+genIcon(data._id, 'js')
 
 const mainDom = ref(<HTMLElement>{})
 const iconListDom = ref(<Element>{})

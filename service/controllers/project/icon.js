@@ -1,3 +1,6 @@
+import fs from 'fs'
+import { writeFile, mkdir } from 'fs/promises'
+import SVGIcons2SVGFontStream from 'svgicons2svgfont'
 import { Analyse } from '../../models/analyse.js'
 import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
@@ -43,6 +46,11 @@ export async function add (req, res) {
     })
     return
   }
+  const project = await Project.findById(_id, 'iconIndex')
+  const startIndex = (project.iconIndex || 0) + 1
+  icons.forEach((e, i) => {
+    e.unicode = `\\u${startIndex + i}`
+  })
   await Project.updateOne({
     _id
   }, {
@@ -50,6 +58,9 @@ export async function add (req, res) {
       icons: {
         $each: icons
       }
+    },
+    $inc: {
+      iconIndex: icons.length
     }
   })
   res.json({})
@@ -265,4 +276,72 @@ export async function batchGroup (req, res) {
     ]
   })
   res.json(result.matchedCount > 0 ? {} : { error: 'argsError' })
+}
+
+/**
+ * icon生成资源路径
+ */
+export const srcPath = new URL('../../public/src/', import.meta.url)
+
+if (!fs.existsSync(srcPath)) {
+  fs.mkdirSync(srcPath)
+}
+
+/**
+ * @api {post} /project/icon/gen 生成字体或者js
+ */
+export async function gen(req, res) {
+  const { projectId, type } = req.body
+  if (!projectId || !type) {
+    res.json({
+      error: 'argsError'
+    })
+    return
+  }
+  const project = await Project.findById(projectId, 'class icons')
+  if (!project) {
+    res.json({
+      error: 'argsError'
+    })
+    return
+  }
+  const dir = new URL(`${projectId}/${Date.now()}/`, srcPath)
+  await mkdir(dir, {
+    recursive: true
+  })
+  const svgStream = new SVGIcons2SVGFontStream({
+    fontName: project.class,
+    normalize: true
+  })
+  const svgFile = new URL('iconlake.svg', dir)
+  await writeFile(svgFile, '')
+  svgStream.pipe(fs.createWriteStream(svgFile))
+    .on('finish', () => {
+      res.json({})
+    })
+    .on('error', (err) => {
+      console.error(err)
+      res.json({
+        error: 'fail'
+      })
+    })
+  const svgsPath = new URL('svgs/', dir)
+  await mkdir(svgsPath)
+  const svgs = await Promise.all(project.icons.map(async icon => {
+    const file = new URL(`${icon.code}.svg`, svgsPath)
+    await writeFile(file, `<svg viewBox="${icon.svg.viewBox}" version="1.1" xmlns="http://www.w3.org/2000/svg">${icon.svg.path}</svg>`)
+    return {
+      file,
+      metadata: {
+        unicode: [icon.unicode],
+        name: icon.code
+      }
+    }
+  }))
+  svgs.forEach(svg => {
+    const readStream = fs.createReadStream(svg.file)
+    readStream.metadata = svg.metadata
+    svgStream.write(readStream)
+  })
+  svgStream.end()
 }

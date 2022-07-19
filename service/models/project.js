@@ -13,6 +13,7 @@ export const IconSchema = new Schema({
   groupId: Schema.Types.ObjectId,
   name: String,
   code: String,
+  unicode: String,
   tags: [String],
   svg: {
     viewBox: String,
@@ -23,8 +24,14 @@ export const IconSchema = new Schema({
 export const ProjectSchema = new Schema({
   name: String,
   desc: String,
-  prefix: String,
-  className: String,
+  prefix: {
+    type: String,
+    default: 'icon-'
+  },
+  class: {
+    type: String,
+    default: 'iconlake'
+  },
   userId: Schema.Types.ObjectId,
   createTime: Date,
   members: [{
@@ -34,6 +41,10 @@ export const ProjectSchema = new Schema({
       default: false
     }
   }],
+  iconIndex: {
+    type: Number,
+    default: 0
+  },
   icons: [IconSchema],
   groups: [GroupSchema],
   monitor: {
