@@ -97,7 +97,7 @@ function groupFilter (group: Group) {
 getIcons()
 
 // dev
-genIcon(data._id, 'js')
+// genIcon(data._id, 'js')
 
 const mainDom = ref(<HTMLElement>{})
 const iconListDom = ref(<Element>{})

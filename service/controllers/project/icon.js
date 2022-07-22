@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { writeFile, mkdir } from 'fs/promises'
-import SVGIcons2SVGFontStream from 'svgicons2svgfont'
+import { webfont } from 'webfont'
 import { Analyse } from '../../models/analyse.js'
 import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
@@ -49,7 +49,7 @@ export async function add (req, res) {
   const project = await Project.findById(_id, 'iconIndex')
   const startIndex = (project.iconIndex || 0) + 1
   icons.forEach((e, i) => {
-    e.unicode = `\\u${startIndex + i}`
+    e.unicode = (startIndex + i).toString(16)
   })
   await Project.updateOne({
     _id
@@ -290,7 +290,7 @@ if (!fs.existsSync(srcPath)) {
 /**
  * @api {post} /project/icon/gen 生成字体或者js
  */
-export async function gen(req, res) {
+export async function gen (req, res) {
   const { projectId, type } = req.body
   if (!projectId || !type) {
     res.json({
@@ -298,50 +298,62 @@ export async function gen(req, res) {
     })
     return
   }
-  const project = await Project.findById(projectId, 'class icons')
+  const project = await Project.findById(projectId, 'class prefix icons')
   if (!project) {
     res.json({
       error: 'argsError'
     })
     return
   }
-  const dir = new URL(`${projectId}/${Date.now()}/`, srcPath)
+  if (project.icons.length === 0) {
+    res.json({})
+    return
+  }
+  const dirRelativePath = `${projectId}/${Date.now()}/`
+  const dir = new URL(dirRelativePath, srcPath)
   await mkdir(dir, {
     recursive: true
   })
-  const svgStream = new SVGIcons2SVGFontStream({
-    fontName: project.class,
-    normalize: true
-  })
-  const svgFile = new URL('iconlake.svg', dir)
-  await writeFile(svgFile, '')
-  svgStream.pipe(fs.createWriteStream(svgFile))
-    .on('finish', () => {
-      res.json({})
-    })
-    .on('error', (err) => {
-      console.error(err)
-      res.json({
-        error: 'fail'
-      })
-    })
-  const svgsPath = new URL('svgs/', dir)
+  const svgsRelativePath = 'svgs/'
+  const svgsPath = new URL(svgsRelativePath, dir)
   await mkdir(svgsPath)
-  const svgs = await Promise.all(project.icons.map(async icon => {
+  const metaMap = new Map()
+  await Promise.all(project.icons.map(async icon => {
     const file = new URL(`${icon.code}.svg`, svgsPath)
     await writeFile(file, `<svg viewBox="${icon.svg.viewBox}" version="1.1" xmlns="http://www.w3.org/2000/svg">${icon.svg.path}</svg>`)
-    return {
-      file,
-      metadata: {
-        unicode: [icon.unicode],
-        name: icon.code
-      }
-    }
+    metaMap.set(icon.code, {
+      unicode: [String.fromCharCode(+`0x${icon.unicode}`)],
+      unicodeNum: icon.unicode
+    })
   }))
-  svgs.forEach(svg => {
-    const readStream = fs.createReadStream(svg.file)
-    readStream.metadata = svg.metadata
-    svgStream.write(readStream)
+  webfont({
+    files: `public/src/${dirRelativePath}${svgsRelativePath}*.svg`,
+    template: './controllers/project/icon/gen/template.css.njk',
+    fontName: project.class,
+    classPrefix: project.prefix,
+    formats: ['ttf', 'woff', 'woff2'],
+    addHashInFontUrl: true,
+    glyphTransformFn (obj) {
+      const meta = metaMap.get(obj.name)
+      Object.assign(obj, meta)
+      return obj
+    },
+    svgicons2svgfont: {
+      normalize: true,
+      fontHeight: 1000,
+      log () {}
+    }
+  }).then((result) => {
+    writeFile(new URL(`${result.config.fontName}.css`, dir), result.template)
+    writeFile(new URL(`${result.config.fontName}.ttf`, dir), result.ttf)
+    writeFile(new URL(`${result.config.fontName}.woff`, dir), result.woff)
+    writeFile(new URL(`${result.config.fontName}.woff2`, dir), result.woff2)
+    res.json({})
+    return result
+  }).catch(err => {
+    console.error(err)
+    res.json({
+      error: 'fail'
+    })
   })
-  svgStream.end()
 }

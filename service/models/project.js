@@ -43,7 +43,7 @@ export const ProjectSchema = new Schema({
   }],
   iconIndex: {
     type: Number,
-    default: 0
+    default: 0x60000
   },
   icons: [IconSchema],
   groups: [GroupSchema],
