@@ -292,7 +292,7 @@ if (!fs.existsSync(srcPath)) {
  */
 export async function gen (req, res) {
   const { projectId, type } = req.body
-  if (!projectId || !type) {
+  if (!projectId || !type || (type !== 'css' && type !== 'js')) {
     res.json({
       error: 'argsError'
     })
@@ -309,6 +309,17 @@ export async function gen (req, res) {
     res.json({})
     return
   }
+  const fn = {
+    css: genCSS,
+    js: genJS
+  }
+  fn[type](req, res, projectId, project)
+}
+
+/**
+ * 生成css
+ */
+async function genCSS (req, res, projectId, project) {
   const dirRelativePath = `${projectId}/${Date.now()}/`
   const dir = new URL(dirRelativePath, srcPath)
   await mkdir(dir, {
@@ -322,7 +333,7 @@ export async function gen (req, res) {
     const file = new URL(`${icon.code}.svg`, svgsPath)
     await writeFile(file, `<svg viewBox="${icon.svg.viewBox}" version="1.1" xmlns="http://www.w3.org/2000/svg">${icon.svg.path}</svg>`)
     metaMap.set(icon.code, {
-      unicode: [String.fromCharCode(+`0x${icon.unicode}`)],
+      unicode: [String.fromCodePoint(+`0x${icon.unicode}`)],
       unicodeNum: icon.unicode
     })
   }))
@@ -340,7 +351,7 @@ export async function gen (req, res) {
     },
     svgicons2svgfont: {
       normalize: true,
-      fontHeight: 1000,
+      fontHeight: 1024,
       log () {}
     }
   }).then((result) => {
@@ -355,5 +366,18 @@ export async function gen (req, res) {
     res.json({
       error: 'fail'
     })
+  })
+}
+
+/**
+ * 生成js
+ */
+async function genJS (req, res, projectId, project) {
+  const dir = new URL(`${projectId}/${Date.now()}/`, srcPath)
+  await mkdir(dir, {
+    recursive: true
+  })
+  res.json({
+    project
   })
 }
