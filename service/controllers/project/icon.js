@@ -1,6 +1,8 @@
 import fs from 'fs'
-import { writeFile, mkdir } from 'fs/promises'
+import crypto from 'crypto'
+import { writeFile, mkdir, readFile } from 'fs/promises'
 import { webfont } from 'webfont'
+import UglifyJS from 'uglify-js'
 import { Analyse } from '../../models/analyse.js'
 import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
@@ -377,7 +379,15 @@ async function genJS (req, res, projectId, project) {
   await mkdir(dir, {
     recursive: true
   })
-  res.json({
-    project
-  })
+  const data = JSON.stringify(project.icons.map(e => [e.code, e.svg.viewBox, e.svg.path]))
+  const hash = crypto.createHash('md5').update(data).digest('hex')
+  const jsTemp = await readFile(new URL('./icon/gen/template.js', import.meta.url))
+  const ugResult = UglifyJS.minify(
+    jsTemp.toString().replace('[\'__DATA__\']', data).replace('__HASH__', hash)
+  )
+  await writeFile(
+    new URL('iconlake.js', dir),
+    ugResult.code
+  )
+  res.json({})
 }

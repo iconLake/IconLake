@@ -35,6 +35,10 @@ export const ROOT = process.cwd()
  */
 export const RESOURCE_MAX_AGE = (NODE_ENV === ENV.PRODUCTION) ? 7 * 24 * 3600 * 1000 : 0
 
+/**
+ * 错误码
+ */
 export const ERROR_CODE = {
-  ARGS_ERROR: 'argsError'
+  ARGS_ERROR: 'argsError',
+  FAIL: 'fail'
 }

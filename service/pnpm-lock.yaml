@@ -34,6 +34,7 @@ specifiers:
   react: ^17.0.2
   sass: ^1.45.2
   typescript: ^4.5.4
+  uglify-js: ^3.16.2
   webfont: ^11.2.26
 
 dependencies:
@@ -48,6 +49,7 @@ dependencies:
   mongoose: 6.3.6
   nanoid: 3.1.30
   node-fetch: 3.1.0
+  uglify-js: 3.16.2
   webfont: 11.2.26
 
 devDependencies:
@@ -2651,7 +2653,7 @@ packages:
       make-error-cause: 1.2.2
       safe-buffer: 5.2.1
       through2: 2.0.5
-      uglify-js: 3.14.5
+      uglify-js: 3.16.2
       vinyl-sourcemaps-apply: 0.2.1
     dev: true
 
@@ -5575,11 +5577,10 @@ packages:
     hasBin: true
     dev: true
 
-  /uglify-js/3.14.5:
-    resolution: {integrity: sha512-qZukoSxOG0urUTvjc2ERMTcAy+BiFh3weWAkeurLwjrCba73poHmG3E36XEjd/JGukMzwTL7uCxZiAexj8ppvQ==}
+  /uglify-js/3.16.2:
+    resolution: {integrity: sha512-AaQNokTNgExWrkEYA24BTNMSjyqEXPSfhqoS0AxmHkCJ4U+Dyy5AvbGV/sqxuxficEfGGoX3zWw9R7QpLFfEsg==}
     engines: {node: '>=0.8.0'}
     hasBin: true
-    dev: true
 
   /uglify-js/3.4.10:
     resolution: {integrity: sha512-Y2VsbPVs0FIshJztycsO2SfPk7/KAF/T72qzv9u5EpQ4kB2hQoHlhNQTsNyy6ul7lQtqJN/AoWeS23OzEiEFxw==}
