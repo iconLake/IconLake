@@ -32,6 +32,11 @@ export const ProjectSchema = new Schema({
     type: String,
     default: 'iconlake'
   },
+  src: {
+    css: String,
+    font: [String],
+    js: String
+  },
   userId: Schema.Types.ObjectId,
   createTime: Date,
   members: [{

@@ -75,5 +75,8 @@
   "last30d": "近30天",
   "refererPageLink": "被引用页面地址",
   "back": "返回",
-  "createIcons": "添加图标"
+  "createIcons": "添加图标",
+  "class": "CSS样式名",
+  "prefix": "图标样式前缀",
+  "code": "标识"
 }

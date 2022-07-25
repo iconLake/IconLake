@@ -133,6 +133,10 @@ export async function edit (req, res) {
     $set['icons.$.name'] = req.body.name
     isEmpty = false
   }
+  if (req.body.code) {
+    $set['icons.$.code'] = req.body.code
+    isEmpty = false
+  }
   if (typeof req.body.groupId === 'string') {
     $set['icons.$.groupId'] = req.body.groupId ? req.body.groupId : null
     isEmpty = false

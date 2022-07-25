@@ -63,7 +63,7 @@ export interface Project {
   name: string
   desc: string
   prefix: string
-  className: string
+  class: string
   icons: Icon[]
   groups: Group[]
   monitor: Monitor

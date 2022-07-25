@@ -49,7 +49,7 @@ export async function info (req, res) {
  */
 export async function edit (req, res) {
   let _id = req.body._id
-  const data = filterObject(req.body, ['name', 'desc'])
+  const data = filterObject(req.body, ['name', 'desc', 'class', 'prefix'])
   if (typeof _id === 'string' && _id.length > 0) {
     await Project.updateOne({
       _id,

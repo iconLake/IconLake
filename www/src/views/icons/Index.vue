@@ -96,8 +96,8 @@ function groupFilter (group: Group) {
 
 getIcons()
 
-// dev
-// genIcon(data._id, 'js')
+// 生成文件
+// genIcon(data._id, 'vue')
 
 const mainDom = ref(<HTMLElement>{})
 const iconListDom = ref(<Element>{})

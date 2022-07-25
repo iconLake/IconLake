@@ -75,5 +75,8 @@
   "last30d": "Last 30 days",
   "refererPageLink": "Referenced Page Links",
   "back": "Back",
-  "createIcons": "Add Icons"
+  "createIcons": "Add Icons",
+  "class": "CSS Class",
+  "prefix": "Icon Class Prefix",
+  "code": "Code"
 }
