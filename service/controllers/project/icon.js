@@ -6,6 +6,7 @@ import UglifyJS from 'uglify-js'
 import { Analyse } from '../../models/analyse.js'
 import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
+import { ERROR_CODE } from '../../utils/const.js'
 
 /**
  * @api {get} /project/icon/info 获取图标信息
@@ -294,16 +295,16 @@ if (!fs.existsSync(srcPath)) {
  */
 export async function gen (req, res) {
   const { projectId, type } = req.body
-  if (!projectId || !type || (type !== 'css' && type !== 'js')) {
+  if (!projectId || !type || !/^(js|css|vue)$/.test(type)) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
   const project = await Project.findById(projectId, 'class prefix icons')
   if (!project) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -313,7 +314,8 @@ export async function gen (req, res) {
   }
   const fn = {
     css: genCSS,
-    js: genJS
+    js: genJS,
+    vue: genVUE
   }
   fn[type](req, res, projectId, project)
 }
@@ -366,7 +368,7 @@ async function genCSS (req, res, projectId, project) {
   }).catch(err => {
     console.error(err)
     res.json({
-      error: 'fail'
+      error: ERROR_CODE.FAIL
     })
   })
 }
@@ -385,9 +387,27 @@ async function genJS (req, res, projectId, project) {
   const ugResult = UglifyJS.minify(
     jsTemp.toString().replace('[\'__DATA__\']', data).replace('__HASH__', hash)
   )
+  if (ugResult.error) {
+    res.json({
+      error: ERROR_CODE.FAIL
+    })
+    return
+  }
   await writeFile(
     new URL('iconlake.js', dir),
     ugResult.code
   )
   res.json({})
+}
+
+/**
+ * 生成vue
+ */
+async function genVUE (req, res, projectId, project) {
+  const data = JSON.stringify(project.icons.map(e => [e.code, e.svg.viewBox, e.svg.path]))
+  const hash = crypto.createHash('md5').update(data).digest('hex')
+  const vueTemp = await readFile(new URL('./icon/gen/template.vue', import.meta.url))
+  res.json({
+    content: vueTemp.toString().replace('[\'__DATA__\']', data).replace('__HASH__', hash)
+  })
 }

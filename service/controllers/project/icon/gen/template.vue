@@ -33,6 +33,10 @@ const Props = Vue.extend({
 
 @Component
 export default class IconSvg extends Props {
+  get version () {
+    return '__HASH__'
+  }
+
   get viewBox () {
     return this.name in iconMap ? iconMap[this.name].viewBox : '0 0 0 0'
   }
