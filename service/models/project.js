@@ -32,10 +32,15 @@ export const ProjectSchema = new Schema({
     type: String,
     default: 'iconlake'
   },
-  src: {
-    css: String,
-    font: [String],
-    js: String
+  file: {
+    css: {
+      updateTime: Date,
+      hash: String
+    },
+    js: {
+      updateTime: Date,
+      hash: String
+    }
   },
   userId: Schema.Types.ObjectId,
   createTime: Date,
@@ -51,6 +56,7 @@ export const ProjectSchema = new Schema({
     default: 0x60000
   },
   icons: [IconSchema],
+  iconUpdateTime: Date,
   groups: [GroupSchema],
   monitor: {
     isOn: {

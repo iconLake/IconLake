@@ -8,6 +8,7 @@ specifiers:
   compression: ^1.7.4
   cookie-parser: ^1.4.6
   cron: ^1.8.2
+  csso: ^5.0.4
   deep-eql: ^4.0.1
   eslint: ^7.32.0
   eslint-config-standard: ^16.0.3
@@ -42,6 +43,7 @@ dependencies:
   compression: 1.7.4
   cookie-parser: 1.4.6
   cron: 1.8.2
+  csso: 5.0.4
   deep-eql: 4.0.1
   express: 4.17.2
   filter-obj: 3.0.0
@@ -1358,6 +1360,14 @@ packages:
       which: 2.0.2
     dev: true
 
+  /css-tree/2.0.4:
+    resolution: {integrity: sha512-b4IS9ZUMtGBiNjzYbcj9JhYbyei99R3ai2CSxlu8GQDnoPA/P+NU85hAm0eKDc/Zp660rpK6tFJQ2OSdacMHVg==}
+    engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0, npm: '>=7.0.0'}
+    dependencies:
+      mdn-data: 2.0.23
+      source-map-js: 1.0.1
+    dev: false
+
   /css/3.0.0:
     resolution: {integrity: sha512-DG9pFfwOrzc+hawpmqX/dHYHJG+Bsdb0klhyi1sDneOgGOXy9wQIC8hzyVp1e4NRYDBdxcylvywPkkXCHAzTyQ==}
     dependencies:
@@ -1365,6 +1375,13 @@ packages:
       source-map: 0.6.1
       source-map-resolve: 0.6.0
     dev: true
+
+  /csso/5.0.4:
+    resolution: {integrity: sha512-AxnuDS5yBhDT5TQMdNS+6o2OdWTKC8ioi7C+G5a30Zgo8XMAQSuMItktj/jvqh8QWOH85kDf0/S6mH1DMgyq1Q==}
+    engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0, npm: '>=7.0.0'}
+    dependencies:
+      css-tree: 2.0.4
+    dev: false
 
   /cubic2quad/1.2.1:
     resolution: {integrity: sha512-wT5Y7mO8abrV16gnssKdmIhIbA9wSkeMzhh27jAguKrV82i24wER0vL5TGhUJ9dbJNDcigoRZ0IAHFEEEI4THQ==}
@@ -3502,6 +3519,10 @@ packages:
       - supports-color
     dev: true
 
+  /mdn-data/2.0.23:
+    resolution: {integrity: sha512-IonVb7pfla2U4zW8rc7XGrtgq11BvYeCxWN8HS+KFBnLDE7XDK9AAMVhRuG6fj9BBsjc69Fqsp6WEActEdNTDQ==}
+    dev: false
+
   /media-typer/0.3.0:
     resolution: {integrity: sha1-hxDXrwqmJvj/+hzgAWhUUmMlV0g=}
     engines: {node: '>= 0.6'}
@@ -5057,7 +5078,6 @@ packages:
   /source-map-js/1.0.1:
     resolution: {integrity: sha512-4+TN2b3tqOCd/kaGRJ/sTYA0tR0mdXx26ipdolxcwtJVqEnqNYvlCAt1q3ypy4QMlYus+Zh34RNtYLoq2oQ4IA==}
     engines: {node: '>=0.10.0'}
-    dev: true
 
   /source-map-resolve/0.5.3:
     resolution: {integrity: sha512-Htz+RnsXWk5+P2slx5Jh3Q66vhQj1Cllm0zvnaY98+NFx+Dv2CF/f5O/t8x+KaNdrdIAsruNzoh/KpialbqAnw==}

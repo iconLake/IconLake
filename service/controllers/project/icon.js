@@ -1,12 +1,14 @@
 import fs from 'fs'
 import crypto from 'crypto'
-import { writeFile, mkdir, readFile } from 'fs/promises'
+import { writeFile, mkdir, readFile, rm, rename } from 'fs/promises'
 import { webfont } from 'webfont'
 import UglifyJS from 'uglify-js'
 import { Analyse } from '../../models/analyse.js'
 import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
 import { ERROR_CODE } from '../../utils/const.js'
+import { nanoid } from 'nanoid'
+import { minify } from 'csso'
 
 /**
  * @api {get} /project/icon/info 获取图标信息
@@ -328,7 +330,7 @@ export async function gen (req, res) {
  * 生成css
  */
 async function genCSS (req, res, projectId, project) {
-  const dirRelativePath = `${projectId}/${Date.now()}/`
+  const dirRelativePath = `${projectId}/${nanoid()}/`
   const dir = new URL(dirRelativePath, srcPath)
   await mkdir(dir, {
     recursive: true
@@ -362,13 +364,42 @@ async function genCSS (req, res, projectId, project) {
       fontHeight: 1024,
       log () {}
     }
-  }).then((result) => {
-    writeFile(new URL(`${result.config.fontName}.css`, dir), result.template)
-    writeFile(new URL(`${result.config.fontName}.ttf`, dir), result.ttf)
-    writeFile(new URL(`${result.config.fontName}.woff`, dir), result.woff)
-    writeFile(new URL(`${result.config.fontName}.woff2`, dir), result.woff2)
+  }).then(async (result) => {
+    const destPath = new URL(`${projectId}/${result.hash}/`, srcPath)
+    if (fs.existsSync(destPath)) {
+      await rm(destPath, {
+        force: true,
+        recursive: true
+      })
+    }
+    writeFile(new URL('iconlake.css', dir), minify(result.template).css)
+    writeFile(new URL('iconlake.ttf', dir), result.ttf)
+    writeFile(new URL('iconlake.woff', dir), result.woff)
+    writeFile(new URL('iconlake.woff2', dir), result.woff2)
+    await Project.updateOne({
+      _id: projectId,
+      members: {
+        $elemMatch: {
+          userId: req.user._id
+        }
+      }
+    }, {
+      $set: {
+        file: {
+          css: {
+            updateTime: new Date(),
+            hash: result.hash
+          }
+        }
+      }
+    })
     res.json({})
-    return result
+    await rm(svgsPath, {
+      recursive: true,
+      force: true
+    })
+    await rename(dir, destPath)
+    return null
   }).catch(err => {
     console.error(err)
     res.json({
@@ -381,10 +412,6 @@ async function genCSS (req, res, projectId, project) {
  * 生成js
  */
 async function genJS (req, res, projectId, project) {
-  const dir = new URL(`${projectId}/${Date.now()}/`, srcPath)
-  await mkdir(dir, {
-    recursive: true
-  })
   const data = JSON.stringify(project.icons.map(e => [e.code, e.svg.viewBox, e.svg.path]))
   const hash = crypto.createHash('md5').update(data).digest('hex')
   const jsTemp = await readFile(new URL('./icon/gen/template.js', import.meta.url))
@@ -397,10 +424,37 @@ async function genJS (req, res, projectId, project) {
     })
     return
   }
+  const dir = new URL(`${projectId}/${hash}/`, srcPath)
+  if (fs.existsSync(dir)) {
+    await rm(dir, {
+      force: true,
+      recursive: true
+    })
+  }
+  await mkdir(dir, {
+    recursive: true
+  })
   await writeFile(
     new URL('iconlake.js', dir),
     ugResult.code
   )
+  await Project.updateOne({
+    _id: projectId,
+    members: {
+      $elemMatch: {
+        userId: req.user._id
+      }
+    }
+  }, {
+    $set: {
+      file: {
+        js: {
+          updateTime: new Date(),
+          hash
+        }
+      }
+    }
+  })
   res.json({})
 }
 

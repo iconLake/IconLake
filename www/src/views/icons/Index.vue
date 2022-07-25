@@ -35,7 +35,7 @@ const data = reactive({
 const batchGroupFormDom = ref(<Element>{})
 
 async function getIcons () {
-  const res = await getProjectInfo(data._id, 'name icons sources groups')
+  const res = await getProjectInfo(data._id, 'name icons sources groups file')
   data.name = res.name
   if (res.groups instanceof Array) {
     data.groups = res.groups.sort((a, b) => b.num - a.num)
@@ -97,7 +97,7 @@ function groupFilter (group: Group) {
 getIcons()
 
 // 生成文件
-// genIcon(data._id, 'vue')
+// genIcon(data._id, 'css')
 
 const mainDom = ref(<HTMLElement>{})
 const iconListDom = ref(<Element>{})
