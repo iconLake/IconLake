@@ -228,6 +228,10 @@ watch(() => data.keyword, () => {
         <span>{{t(data.isBatching ? 'cancelBatchOperation' : 'batchOperation')}}</span>
         <i class="iconfont icon-batch"></i>
       </div>
+      <router-link :to="`/icons/${data._id}/use`" class="operate-item flex">
+        <span>{{t('useCode')}}</span>
+        <i class="iconfont icon-code"></i>
+      </router-link>
     </div>
     <div class="operate-batch" v-if="data.isBatching">
       <button class="btn" @click="batchDelete" :disabled="data.selectedIcons.size===0">

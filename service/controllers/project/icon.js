@@ -66,6 +66,9 @@ export async function add (req, res) {
     },
     $inc: {
       iconIndex: icons.length
+    },
+    $set: {
+      iconUpdateTime: new Date()
     }
   })
   res.json({})
@@ -100,6 +103,9 @@ export async function del (req, res) {
           $in: _ids
         }
       }
+    },
+    $set: {
+      iconUpdateTime: new Date()
     }
   })
   // 记录历史
@@ -137,6 +143,7 @@ export async function edit (req, res) {
   }
   if (req.body.code) {
     $set['icons.$.code'] = req.body.code
+    $set.iconUpdateTime = new Date()
     isEmpty = false
   }
   if (typeof req.body.groupId === 'string') {
@@ -376,6 +383,10 @@ async function genCSS (req, res, projectId, project) {
     writeFile(new URL('iconlake.ttf', dir), result.ttf)
     writeFile(new URL('iconlake.woff', dir), result.woff)
     writeFile(new URL('iconlake.woff2', dir), result.woff2)
+    const info = {
+      updateTime: new Date(),
+      hash: result.hash
+    }
     await Project.updateOne({
       _id: projectId,
       members: {
@@ -385,15 +396,10 @@ async function genCSS (req, res, projectId, project) {
       }
     }, {
       $set: {
-        file: {
-          css: {
-            updateTime: new Date(),
-            hash: result.hash
-          }
-        }
+        'file.css': info
       }
     })
-    res.json({})
+    res.json(info)
     await rm(svgsPath, {
       recursive: true,
       force: true
@@ -438,6 +444,10 @@ async function genJS (req, res, projectId, project) {
     new URL('iconlake.js', dir),
     ugResult.code
   )
+  const info = {
+    updateTime: new Date(),
+    hash
+  }
   await Project.updateOne({
     _id: projectId,
     members: {
@@ -447,15 +457,10 @@ async function genJS (req, res, projectId, project) {
     }
   }, {
     $set: {
-      file: {
-        js: {
-          updateTime: new Date(),
-          hash
-        }
-      }
+      'file.js': info
     }
   })
-  res.json({})
+  res.json(info)
 }
 
 /**

@@ -57,14 +57,27 @@ export interface Invite {
   expired: string
 }
 
+export interface FileInfo {
+  updateTime: string
+  hash: string
+  content?: string
+}
+
+export interface Files {
+  css?: FileInfo
+  js?: FileInfo
+}
+
 export interface Project {
   _id: string
   userId: string
   name: string
+  file: File
   desc: string
   prefix: string
   class: string
   icons: Icon[]
+  iconUpdateTime: string
   groups: Group[]
   monitor: Monitor
   invite?: Invite
@@ -338,7 +351,7 @@ export function batchGroupIcon(projectId: string, _ids: string[], groupId: strin
 }
 
 export function genIcon(projectId: string, type: 'css'|'js'|'vue') {
-  return <Promise<Res>>request({
+  return <Promise<FileInfo>>request({
     method: 'POST',
     url: '/icon/gen',
     baseURL,

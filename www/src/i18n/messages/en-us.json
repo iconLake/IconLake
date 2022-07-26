@@ -78,5 +78,8 @@
   "createIcons": "Add Icons",
   "class": "CSS Class",
   "prefix": "Icon Class Prefix",
-  "code": "Code"
+  "code": "Code",
+  "useCode": "Use in Coding",
+  "regenerate": "Regenerate",
+  "upgradable": "Icons have been updated"
 }

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
-import { useI18n } from 'vue-i18n';
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { addIcon, BaseIcon, info } from '../../apis/project'
 import HeaderVue from '../../components/Header.vue'
-import { toast } from '../../utils';
+import { toast } from '../../utils'
 
 const { t } = useI18n()
 

@@ -61,6 +61,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/icons/Create.vue')
   },
   {
+    path: '/icons/:id/use',
+    name: 'iconsUse',
+    component: () => import('../views/icons/Use.vue')
+  },
+  {
     path: '/project/:id/invite',
     name: 'projectInvite',
     component: () => import('../views/project/Invite.vue')
