@@ -148,9 +148,8 @@ function copyContent (str: string) {
 @import "../../styles/var.scss";
 
 .tab {
-  border-radius: 1rem;
+  border-radius: 3rem;
   background: #fff;
-  overflow: hidden;
   width: 40%;
   min-width: 30rem;
   margin: 0 auto;
@@ -159,6 +158,7 @@ function copyContent (str: string) {
     text-align: center;
     padding: 1.5rem 0;
     cursor: pointer;
+    border-radius: 3rem;
     &.active {
       background: $color-main;
       color: #fff;
