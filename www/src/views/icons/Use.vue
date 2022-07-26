@@ -147,6 +147,9 @@ function copyContent (str: string) {
 <style lang="scss" scoped>
 @import "../../styles/var.scss";
 
+.name {
+  margin-left: 2.2rem;
+}
 .tab {
   border-radius: 3rem;
   background: #fff;

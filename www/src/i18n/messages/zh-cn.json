@@ -79,7 +79,7 @@
   "class": "CSS样式名",
   "prefix": "图标样式前缀",
   "code": "标识",
-  "useCode": "开发使用",
+  "useCode": "获取代码",
   "regenerate": "重新生成",
   "upgradable": "图标有更新"
 }
