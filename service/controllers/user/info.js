@@ -1,20 +1,12 @@
 import { nanoid } from 'nanoid'
-import { TOKEN_MAX_AGE } from '../../utils/const.js'
+import { User } from '../../models/user.js'
 
 /**
  * @api {get} /user/info 获取用户信息
  */
 export async function info (req, res) {
-  if (req.query.retoken) {
-    const token = nanoid()
-    req.user.token = token
-    await req.user.save()
-    res.cookie('token', token, {
-      maxAge: TOKEN_MAX_AGE,
-      httpOnly: true
-    })
-  }
-  res.json(req.user.toJSON())
+  const user = await User.findById(req.user._id, 'name avatar token tokenExpire')
+  res.json(user.toJSON())
 }
 
 /**

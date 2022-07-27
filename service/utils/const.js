@@ -40,5 +40,7 @@ export const RESOURCE_MAX_AGE = (NODE_ENV === ENV.PRODUCTION) ? 7 * 24 * 3600 * 
  */
 export const ERROR_CODE = {
   ARGS_ERROR: 'argsError',
-  FAIL: 'fail'
+  FAIL: 'fail',
+  USER_NOT_LOGIN: 'userNotLogin',
+  TOKEN_EXPIRED: 'tokenExpired'
 }
