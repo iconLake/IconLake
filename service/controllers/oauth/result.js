@@ -25,7 +25,7 @@ export async function success (userInfo, req, res) {
       })
     }
     await user.save()
-    res.cookie('token', token, {
+    res.cookie('token', `${user.id}.${token}`, {
       maxAge,
       httpOnly: true
     })

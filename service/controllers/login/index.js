@@ -1,7 +1,7 @@
-import { User } from '../../models/user.js'
 import { getLocale, setLocale } from '../../utils/index.js'
 import { ROOT, RESOURCE_MAX_AGE } from '../../utils/const.js'
 import { getConfig } from '../../config/index.js'
+import { checkLogin } from '../user/middleware.js'
 
 const config = getConfig()
 
@@ -11,13 +11,8 @@ const config = getConfig()
 export default async function index (req, res) {
   setLocale(req, res)
   if (req.cookies.token) {
-    const user = await User.findOne({
-      token: req.cookies.token,
-      tokenExpire: {
-        $gt: new Date()
-      }
-    })
-    if (user) {
+    const result = await checkLogin(req)
+    if (result.user) {
       res.redirect(req.query.redirect || '/manage')
       return
     }
