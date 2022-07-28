@@ -20,7 +20,8 @@ const data = reactive({
   iconUpdateTime: '',
   file: <Files>{},
   activeTab: <Tab>'css',
-  src: ''
+  src: '',
+  generating: new Set()
 })
 
 const cssLink = computed(() => `<link rel="stylesheet" href="${data.src}">`)
@@ -60,17 +61,21 @@ function setTabActive(type: Tab) {
 }
 
 async function generate() {
-  if (data.activeTab === 'vue') {
+  const tab = data.activeTab
+  if (tab === 'vue' || data.generating.has(tab)) {
     return
   }
-  if (!data.file[data.activeTab]) {
-    data.file[data.activeTab] = {
+  data.generating.add(tab)
+  if (!data.file[tab]) {
+    data.file[tab] = {
       updateTime: '',
       hash: ''
     }
   }
-  const res = await genIcon(data._id, data.activeTab)
-  Object.assign(<FileInfo>data.file[data.activeTab], res)
+  const res = await genIcon(data._id, tab)
+  Object.assign(<FileInfo>data.file[tab], res)
+  data.generating.delete(tab)
+  toast(t('generateDone'))
 }
 
 async function getVueContent() {
@@ -113,7 +118,7 @@ function copyContent (str: string) {
       <i class="iconfont icon-copy"></i>
     </div>
     <div class="t-center operate">
-      <button class="btn" @click="generate">{{t('regenerate')}}</button>
+      <button class="btn" @click="generate">{{t(data.generating.has('css') ? 'generating' : 'regenerate')}}</button>
     </div>
   </div>
   <!-- js -->
@@ -130,7 +135,7 @@ function copyContent (str: string) {
       <i class="iconfont icon-copy"></i>
     </div>
     <div class="t-center operate">
-      <button class="btn" @click="generate">{{t('regenerate')}}</button>
+      <button class="btn" @click="generate">{{t(data.generating.has('js') ? 'generating' : 'regenerate')}}</button>
     </div>
   </div>
   <!-- vue -->

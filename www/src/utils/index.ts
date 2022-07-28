@@ -1,23 +1,4 @@
-import * as resource from './resource'
 import { locale, messages } from '../i18n'
-
-export function parseResourceUrl (url: string, type: number) {
-  return {
-    [resource.TYPE.ICONFONT]: parseIconfontResourceUrl
-  }[type](url)
-}
-
-export function parseIconfontResourceUrl (url: string) {
-  let resourceUrl = /^\/\//.test(url) ? `https:${url}` : url
-  if (/\.css$/i.test(resourceUrl)) {
-    resourceUrl = resourceUrl.replace(/\.css$/i, '.js')
-  }
-  const syncUrl = resourceUrl.replace(/\.(cs|j)s/i, '.json')
-  return {
-    resourceUrl,
-    syncUrl
-  }
-}
 
 const toastContainer = document.createElement('div')
 toastContainer.className = 'toast-container'
