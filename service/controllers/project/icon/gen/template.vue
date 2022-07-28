@@ -27,7 +27,8 @@ const Props = Vue.extend({
   props: {
     name: String,
     width: String,
-    height: String
+    height: String,
+    pure: Boolean // 纯色化
   }
 })
 
@@ -42,7 +43,11 @@ export default class IconSvg extends Props {
   }
 
   get path () {
-    return this.name in iconMap ? iconMap[this.name].path : ''
+    let path = ''
+    if (this.name in iconMap) {
+      path = this.pure ? iconMap[this.name].path.replace(/fill=".*?"/ig, '') : iconMap[this.name].path
+    }
+    return path
   }
 }
 </script>

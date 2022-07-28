@@ -1,14 +1,8 @@
-import fs from 'fs'
-import crypto from 'crypto'
-import { writeFile, mkdir, readFile, rm, rename } from 'fs/promises'
-import { webfont } from 'webfont'
-import UglifyJS from 'uglify-js'
 import { Analyse } from '../../models/analyse.js'
 import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
 import { ERROR_CODE } from '../../utils/const.js'
-import { nanoid } from 'nanoid'
-import { minify } from 'csso'
+import { deleteOldFiles, genCSS, genJS, genVUE } from './icon/gen/index.js'
 
 /**
  * @api {get} /project/icon/info 获取图标信息
@@ -295,15 +289,6 @@ export async function batchGroup (req, res) {
 }
 
 /**
- * icon生成资源路径
- */
-export const srcPath = new URL('../../public/src/', import.meta.url)
-
-if (!fs.existsSync(srcPath)) {
-  fs.mkdirSync(srcPath)
-}
-
-/**
  * @api {post} /project/icon/gen 生成字体或者js
  */
 export async function gen (req, res) {
@@ -331,146 +316,5 @@ export async function gen (req, res) {
     vue: genVUE
   }
   fn[type](req, res, projectId, project)
-}
-
-/**
- * 生成css
- */
-async function genCSS (req, res, projectId, project) {
-  const dirRelativePath = `${projectId}/${nanoid()}/`
-  const dir = new URL(dirRelativePath, srcPath)
-  await mkdir(dir, {
-    recursive: true
-  })
-  const svgsRelativePath = 'svgs/'
-  const svgsPath = new URL(svgsRelativePath, dir)
-  await mkdir(svgsPath)
-  const metaMap = new Map()
-  await Promise.all(project.icons.map(async icon => {
-    const file = new URL(`${icon.code}.svg`, svgsPath)
-    await writeFile(file, `<svg viewBox="${icon.svg.viewBox}" version="1.1" xmlns="http://www.w3.org/2000/svg">${icon.svg.path}</svg>`)
-    metaMap.set(icon.code, {
-      unicode: [String.fromCodePoint(+`0x${icon.unicode}`)],
-      unicodeNum: icon.unicode
-    })
-  }))
-  webfont({
-    files: `public/src/${dirRelativePath}${svgsRelativePath}*.svg`,
-    template: './controllers/project/icon/gen/template.css.njk',
-    fontName: project.class,
-    classPrefix: project.prefix,
-    formats: ['ttf', 'woff', 'woff2'],
-    addHashInFontUrl: true,
-    glyphTransformFn (obj) {
-      const meta = metaMap.get(obj.name)
-      Object.assign(obj, meta)
-      return obj
-    },
-    svgicons2svgfont: {
-      normalize: true,
-      fontHeight: 1024,
-      log () {}
-    }
-  }).then(async (result) => {
-    const destPath = new URL(`${projectId}/${result.hash}/`, srcPath)
-    if (fs.existsSync(destPath)) {
-      await rm(destPath, {
-        force: true,
-        recursive: true
-      })
-    }
-    writeFile(new URL('iconlake.css', dir), minify(result.template).css)
-    writeFile(new URL('iconlake.ttf', dir), result.ttf)
-    writeFile(new URL('iconlake.woff', dir), result.woff)
-    writeFile(new URL('iconlake.woff2', dir), result.woff2)
-    const info = {
-      updateTime: new Date(),
-      hash: result.hash
-    }
-    await Project.updateOne({
-      _id: projectId,
-      members: {
-        $elemMatch: {
-          userId: req.user._id
-        }
-      }
-    }, {
-      $set: {
-        'file.css': info
-      }
-    })
-    res.json(info)
-    await rm(svgsPath, {
-      recursive: true,
-      force: true
-    })
-    await rename(dir, destPath)
-    return null
-  }).catch(err => {
-    console.error(err)
-    res.json({
-      error: ERROR_CODE.FAIL
-    })
-  })
-}
-
-/**
- * 生成js
- */
-async function genJS (req, res, projectId, project) {
-  const data = JSON.stringify(project.icons.map(e => [e.code, e.svg.viewBox, e.svg.path]))
-  const hash = crypto.createHash('md5').update(data).digest('hex')
-  const jsTemp = await readFile(new URL('./icon/gen/template.js', import.meta.url))
-  const ugResult = UglifyJS.minify(
-    jsTemp.toString().replace('[\'__DATA__\']', data).replace('__HASH__', hash)
-  )
-  if (ugResult.error) {
-    res.json({
-      error: ERROR_CODE.FAIL
-    })
-    return
-  }
-  const dir = new URL(`${projectId}/${hash}/`, srcPath)
-  if (fs.existsSync(dir)) {
-    await rm(dir, {
-      force: true,
-      recursive: true
-    })
-  }
-  await mkdir(dir, {
-    recursive: true
-  })
-  await writeFile(
-    new URL('iconlake.js', dir),
-    ugResult.code
-  )
-  const info = {
-    updateTime: new Date(),
-    hash
-  }
-  await Project.updateOne({
-    _id: projectId,
-    members: {
-      $elemMatch: {
-        userId: req.user._id
-      }
-    }
-  }, {
-    $set: {
-      'file.js': info
-    }
-  })
-  res.json(info)
-}
-
-/**
- * 生成vue
- */
-async function genVUE (req, res, projectId, project) {
-  const data = JSON.stringify(project.icons.map(e => [e.code, e.svg.viewBox, e.svg.path]))
-  const hash = crypto.createHash('md5').update(data).digest('hex')
-  const vueTemp = await readFile(new URL('./icon/gen/template.vue', import.meta.url))
-  res.json({
-    content: vueTemp.toString().replace('[\'__DATA__\']', data).replace('__HASH__', hash)
-  })
+  deleteOldFiles(projectId)
 }
