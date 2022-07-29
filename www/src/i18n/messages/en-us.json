@@ -81,5 +81,7 @@
   "code": "Code",
   "useCode": "Get Code",
   "regenerate": "Regenerate",
-  "upgradable": "Icons have been updated"
+  "upgradable": "Icons have been updated",
+  "generating": "Generating...",
+  "generateDone": "Generate Done"
 }

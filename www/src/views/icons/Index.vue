@@ -311,6 +311,7 @@ watch(() => data.keyword, () => {
 }
 .main {
   margin: 0 auto;
+  width: 90%;
 }
 .search {
   .input {

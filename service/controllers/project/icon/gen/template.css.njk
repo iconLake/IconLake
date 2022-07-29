@@ -4,7 +4,7 @@
   font-style: normal;
   font-weight: 400;
   {% if formats.indexOf('eot')>-1 -%}
-    src: url("{{ fontPath }}iconlake.eot?{{ cacheString }}{% if hash %}&v={{ hash }}{% endif %}");
+    src: url("{{ fontPath }}{{ hash }}/iconlake.eot?{{ cacheString }}");
   {%- endif %}
   {%- set eotIndex = formats.indexOf('eot') -%}
   {%- set woff2Index = formats.indexOf('woff2') -%}
@@ -12,27 +12,27 @@
   {%- set ttfIndex = formats.indexOf('ttf') -%}
   {%- set svgIndex = formats.indexOf('svg') %}
   src: {% if eotIndex != -1 -%}
-    url("{{ fontPath }}iconlake.eot?{% if hash %}v={{ hash }}{% endif %}#iefix") format("embedded-opentype")
+    url("{{ fontPath }}{{ hash }}/iconlake.eot?{{ cacheString }}#iefix") format("embedded-opentype")
     {%- set nothing = formats.splice(eotIndex, 1) -%}
     {%- if formats.length != 0 -%}, {% else -%}; {% endif -%}
   {%- endif -%}
   {%- if woff2Index != -1 -%}
-    url("{{ fontPath }}iconlake.woff2?{{ cacheString }}{% if hash %}&v={{ hash }}{% endif %}") format("woff2")
+    url("{{ fontPath }}{{ hash }}/iconlake.woff2?{{ cacheString }}") format("woff2")
     {%- set nothing = formats.splice(woff2Index, 1) -%}
     {%- if formats.length != 0 -%}, {% else -%}; {% endif -%}
   {%- endif -%}
   {%- if woffIndex != -1 -%}
-    url("{{ fontPath }}iconlake.woff?{{ cacheString }}{% if hash %}&v={{ hash }}{% endif %}") format("woff")
+    url("{{ fontPath }}{{ hash }}/iconlake.woff?{{ cacheString }}") format("woff")
     {%- set nothing = formats.splice(woffIndex, 1) -%}
     {%- if formats.length != 0 -%}, {% else -%}; {% endif -%}
   {%- endif -%}
   {%- if ttfIndex != -1 -%}
-    url("{{ fontPath }}iconlake.ttf?{{ cacheString }}{% if hash %}&v={{ hash }}{% endif %}") format("truetype")
+    url("{{ fontPath }}{{ hash }}/iconlake.ttf?{{ cacheString }}") format("truetype")
     {%- set nothing = formats.splice(ttfIndex, 1) -%}
     {%- if formats.length != 0 -%}, {% else -%}; {% endif -%}
   {%- endif -%}
   {%- if svgIndex != -1 -%}
-    url("{{ fontPath }}iconlake.svg?{{ cacheString }}{% if hash %}&v={{ hash }}{% endif %}#{{ fontName }}") format("svg");
+    url("{{ fontPath }}{{ hash }}/iconlake.svg?{{ cacheString }}#{{ fontName }}") format("svg");
   {%- endif %}
 }
 

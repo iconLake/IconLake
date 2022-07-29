@@ -81,5 +81,7 @@
   "code": "标识",
   "useCode": "获取代码",
   "regenerate": "重新生成",
-  "upgradable": "图标有更新"
+  "upgradable": "图标有更新",
+  "generating": "正在生成...",
+  "generateDone": "生成完成"
 }

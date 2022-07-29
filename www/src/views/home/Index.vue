@@ -31,7 +31,7 @@ getProjects().then(res => {
     </div>
     <img :src="'/imgs/project-empty.png'">
   </div>
-  <div class="container flex stretch" v-else-if="!data.isLoading">
+  <div class="container flex stretch">
     <a href="/" class="banner flex center">
       <img class="bg-c-t" :src="'/imgs/project-bg-circle-t.png'">
       <img class="bg-c-b" :src="'/imgs/project-bg-circle-b.png'">

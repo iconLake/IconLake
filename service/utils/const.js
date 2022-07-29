@@ -44,3 +44,8 @@ export const ERROR_CODE = {
   USER_NOT_LOGIN: 'userNotLogin',
   TOKEN_EXPIRED: 'tokenExpired'
 }
+
+/**
+ * 生成文件的最大留存数量
+ */
+export const FILES_MAX_LENGTH = 5
