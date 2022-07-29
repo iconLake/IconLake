@@ -49,12 +49,12 @@ async function create () {
         </div>
         <div class="item">
           <label>{{t('projectDescription')}}</label>
-          <div class="input flex">
+          <div class="input textarea-input flex">
             <i class="iconfont icon-source"></i>
-            <input class="grow" autocomplete="off" maxlength="100" type="text" name="description" v-model="fmData.description">
+            <textarea class="grow" autocomplete="off" maxlength="100" v-model="fmData.description" ame="description"></textarea>
           </div>
         </div>
-        <button class="bg-danger" type="submit" :disabled="!isChecked">{{t('createNow')}}</button>
+        <button class="bg-danger" type="submit" :disabled="!isChecked" >{{t('createNow')}}</button>
       </form>
     </div>
     <!-- illus -->
@@ -131,7 +131,7 @@ async function create () {
       i {
         padding: 0 0.938rem;
       }
-      input {
+      input, textarea {
         width: 100%;
         height: 100%;
         border: none;
@@ -139,6 +139,13 @@ async function create () {
         font-size: 1.5rem;
         padding-right: 0.938rem;
       }
+      textarea {
+        padding-top: 1.4rem;
+      }
+    }
+
+    .textarea-input {
+      height: 10.063rem;
     }
   }
 }
