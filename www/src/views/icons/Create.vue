@@ -184,29 +184,35 @@ async function save () {
     <div class="item" :class="getTabClass('svg')" @click="setTabActive('svg')">上传SVG</div>
     <div class="item" :class="getTabClass('iconfont')" @click="setTabActive('iconfont')">导入iconfont</div>
   </div>
-  <div v-if="data.activeTab === 'svg'" class="upload-svg">
-    <input type="file" @change="onSVGChange" accept="image/svg+xml" multiple >
-  </div>
-  <div v-if="data.activeTab === 'iconfont'">
-    <div>iconfont.js文件</div>
-    <div>
-      <input type="file" @change="onIconfontJSChange" accept="text/javascript">
+  <div class="wrap">
+      <!-- icons -->
+    <div class="icons flex start">
+      <div v-for="item in data.icons" :key="item.code" class="item">
+        <svg :viewBox="item.svg?.viewBox" v-html="item.svg?.path"></svg>
+        <div class="name">{{item.name}}</div>
+      </div>
     </div>
-    <div>iconfont.json文件</div>
-    <div>
-      <input type="file" @change="onIconfontJSONChange" accept="application/json">
+    <div v-if="data.activeTab === 'svg'" class="upload flex center">
+      <label for="svg">
+        选择svg文件
+        <input id="svg" type="file" @change="onSVGChange" accept="image/svg+xml" multiple/>
+      </label>
     </div>
-  </div>
-  <!-- icons -->
-  <div class="icons flex start">
-    <div v-for="item in data.icons" :key="item.code" class="item">
-      <svg :viewBox="item.svg?.viewBox" v-html="item.svg?.path"></svg>
-      <div class="name">{{item.name}}</div>
+    <div v-if="data.activeTab === 'iconfont'"  class="upload flex center">
+      <label for="javascript">
+        iconfont.js文件
+        <input id="javascript" type="file" @change="onIconfontJSChange" accept="text/javascript">
+      </label>
+      <br>
+      <label>
+        iconfont.json文件
+        <input type="file" @change="onIconfontJSONChange" accept="application/json">
+      </label>
     </div>
-  </div>
-  <!-- button -->
-  <div class="flex center">
-    <button class="btn" :disabled="data.icons.length === 0" @click="save">{{t('save')}}</button>
+    <!-- button -->
+    <div class="flex center">
+      <button class="btn" :disabled="data.icons.length === 0" @click="save">{{t('save')}}</button>
+    </div>
   </div>
 </template>
 
@@ -232,15 +238,47 @@ async function save () {
   }
 }
 
-.icons {
-  flex-wrap: wrap;
-  .item {
-    padding: 1rem;
-    min-width: 5rem;
+.wrap {
+  width: 89rem;
+  background-color: #ffffff;
+	border-radius: 1rem;
+  margin: 0 auto;
+  margin-top: 4rem;
+  padding: 5rem;
+  padding-bottom: 3rem;
+  .icons {
+    flex-wrap: wrap;
+    height: 34rem;
+
+    .item {
+      margin-left: 5rem;
+      margin-bottom: 5rem;
+      min-width: 3rem;
+    }
+
+    svg {
+      width: 2rem;
+      height: 2rem;
+      margin-bottom: 1rem;
+    }
   }
-  svg {
-    width: 2rem;
-    height: 2rem;
+
+  .upload {
+    font-size: 1rem;
+    letter-spacing: 0rem;
+    color: #476de8;
+    height: 4rem;
+    
+    input[type="file"] {  
+      display: none;
+    }
+  }
+
+  .btn {
+    width: 12rem;
+    height: 5rem;
+    background-color: #ff847b;
+    border-radius: 3rem;
   }
 }
 </style>
