@@ -189,7 +189,7 @@ async function save () {
     <div class="icons flex start">
       <div v-for="item in data.icons" :key="item.code" class="item">
         <svg :viewBox="item.svg?.viewBox" v-html="item.svg?.path"></svg>
-        <div class="name">{{item.name}}</div>
+        <div v-if="item.name" class="name" :title="item.name">{{item.name}}</div>
       </div>
     </div>
     <div v-if="data.activeTab === 'svg'" class="upload flex center">
@@ -203,7 +203,8 @@ async function save () {
         iconfont.js文件
         <input id="javascript" type="file" @change="onIconfontJSChange" accept="text/javascript">
       </label>
-      <br>
+    </div>
+    <div v-if="data.activeTab === 'iconfont'"  class="upload flex center margin-bottom">
       <label>
         iconfont.json文件
         <input type="file" @change="onIconfontJSONChange" accept="application/json">
@@ -248,18 +249,29 @@ async function save () {
   padding-bottom: 3rem;
   .icons {
     flex-wrap: wrap;
-    height: 34rem;
+    height: 29rem;
+    overflow: auto;
 
     .item {
       margin-left: 5rem;
       margin-bottom: 5rem;
-      min-width: 3rem;
+      width: 3rem;
     }
 
     svg {
       width: 2rem;
       height: 2rem;
-      margin-bottom: 1rem;
+    }
+
+    .name {
+      margin-top: 1rem;
+      font-size: 1rem;
+      letter-spacing: 0rem;
+      color: #808080;
+      cursor: pointer;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
     }
   }
 
@@ -267,7 +279,11 @@ async function save () {
     font-size: 1rem;
     letter-spacing: 0rem;
     color: #476de8;
-    height: 4rem;
+    height: 2rem;
+
+    +div:not(.upload) {
+      margin-top: 2rem;
+    }
     
     input[type="file"] {  
       display: none;
