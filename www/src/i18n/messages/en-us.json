@@ -83,5 +83,6 @@
   "regenerate": "Regenerate",
   "upgradable": "Icons have been updated",
   "generating": "Generating...",
-  "generateDone": "Generate Done"
+  "generateDone": "Generate Done",
+  "loading": "Loading..."
 }

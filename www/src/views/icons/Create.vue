@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { addIcon, BaseIcon, info } from '../../apis/project'
 import HeaderVue from '../../components/Header.vue'
+import UserVue from '../../components/User.vue'
 import { toast } from '../../utils'
 
 const { t } = useI18n()
@@ -181,6 +182,7 @@ async function save () {
   <HeaderVue :back="`/icons/${data._id}`">
     <div class="name">{{data.name}}</div>
   </HeaderVue>
+  <UserVue />
   <div class="tab flex">
     <div class="item" :class="getTabClass('svg')" @click="setTabActive('svg')">上传SVG</div>
     <div class="item" :class="getTabClass('iconfont')" @click="setTabActive('iconfont')">导入iconfont</div>

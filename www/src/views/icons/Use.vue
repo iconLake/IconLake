@@ -38,7 +38,7 @@ const jsUpgradable = computed(() => !data.file.js?.updateTime
 watchPostEffect(() => {
   const v = data.activeTab
   if (v === 'vue') {
-    data.src = '...'
+    data.src = t('loading')
     getVueContent()
     return
   }
@@ -191,6 +191,13 @@ function copyContent (str: string) {
   }
   p {
     margin: 1.7rem 0;
+  }
+  &.use-vue {
+    &::after {
+      content: "";
+      display: block;
+      height: 2rem;
+    }
   }
   .code {
     background: #fff;

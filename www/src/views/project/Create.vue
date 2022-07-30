@@ -49,8 +49,8 @@ async function create () {
         </div>
         <div class="item">
           <label>{{t('projectDescription')}}</label>
-          <div class="input textarea-input flex">
-            <i class="iconfont icon-source"></i>
+          <div class="input textarea-input flex start">
+            <i class="iconfont icon-desc"></i>
             <textarea class="grow" autocomplete="off" maxlength="100" v-model="fmData.description" ame="description"></textarea>
           </div>
         </div>
@@ -121,6 +121,9 @@ async function create () {
       border-radius: 2.25rem;
       width: 100%;
       margin-top: 2rem;
+    }
+    .icon-desc {
+      margin-top: 1.52rem;
     }
     .input {
       width: 100%;
