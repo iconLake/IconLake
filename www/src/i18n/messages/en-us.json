@@ -84,5 +84,12 @@
   "upgradable": "Icons have been updated",
   "generating": "Generating...",
   "generateDone": "Generate Done",
-  "loading": "Loading..."
+  "loading": "Loading...",
+  "useWithType": "Use Icons As {type}",
+  "includeType": "Include {type}",
+  "displayIcon": "Display Icon",
+  "component": "Component",
+  "componentFile": "Component File",
+  "vueComponent": "Vue Component",
+  "colon": " : "
 }

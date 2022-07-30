@@ -106,13 +106,13 @@ function copyContent (str: string) {
   </div>
   <!-- css -->
   <div v-if="data.activeTab === 'css'" class="content use-css">
-    <h2 class="t-center">以CSS的方式使用图标</h2>
-    <p>引入CSS：</p>
+    <h2 class="t-center">{{t('useWithType', {type: 'CSS'})}}</h2>
+    <p>{{t('includeType', {type: 'CSS'})}}{{t('colon')}}</p>
     <div class="code flex" @click="copyContent(cssLink)">
       <span>{{cssLink}}</span>
       <i class="iconfont icon-copy"></i>
     </div>
-    <p>显示图标：</p>
+    <p>{{t('displayIcon')}}{{t('colon')}}</p>
     <div class="code flex" @click="copyContent(cssExample)">
       <span>{{cssExample}}</span>
       <i class="iconfont icon-copy"></i>
@@ -123,13 +123,13 @@ function copyContent (str: string) {
   </div>
   <!-- js -->
   <div v-else-if="data.activeTab === 'js'" class="content use-js">
-    <h2 class="t-center">以Javascript的方式使用图标</h2>
-    <p>引入Javascript：</p>
+    <h2 class="t-center">{{t('useWithType', {type: 'Javascript'})}}</h2>
+    <p>{{t('includeType', {type: 'Javascript'})}}{{t('colon')}}</p>
     <div class="code flex" @click="copyContent(jsLink)">
       <span>{{jsLink}}</span>
       <i class="iconfont icon-copy"></i>
     </div>
-    <p>显示图标：</p>
+    <p>{{t('displayIcon')}}{{t('colon')}}</p>
     <div class="code flex" @click="copyContent(jsExample)">
       <span>{{jsExample}}</span>
       <i class="iconfont icon-copy"></i>
@@ -140,8 +140,8 @@ function copyContent (str: string) {
   </div>
   <!-- vue -->
   <div v-else-if="data.activeTab === 'vue'" class="content use-vue">
-    <h2 class="t-center">以Vue组件的方式使用图标</h2>
-    <p>组件文件：</p>
+    <h2 class="t-center">{{t('useWithType', {type: t('vueComponent')})}}</h2>
+    <p>{{t('componentFile')}}{{t('colon')}}</p>
     <div class="code vue flex" @click="copyContent(data.src)">
       <pre>{{data.src}}</pre>
       <i class="iconfont icon-copy"></i>

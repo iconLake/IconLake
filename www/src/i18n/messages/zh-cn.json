@@ -84,5 +84,12 @@
   "upgradable": "图标有更新",
   "generating": "正在生成...",
   "generateDone": "生成完成",
-  "loading": "加载中..."
+  "loading": "加载中...",
+  "useWithType": "以{type}的方式使用图标",
+  "includeType": "引入{type}",
+  "displayIcon": "显示图标",
+  "component": "组件",
+  "componentFile": "组件文件",
+  "vueComponent": "Vue组件",
+  "colon": " ："
 }
