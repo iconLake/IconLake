@@ -44,6 +44,7 @@ function getTabClass(type: Tab) {
 function setTabActive(type: Tab) {
   data.activeTab = type
   data.icons.length = 0
+  cachedIcons.clear()
 }
 
 let cachedIcons = new Map<string, Icon>()
@@ -189,7 +190,8 @@ async function save () {
     <div class="icons flex start">
       <div v-for="item in data.icons" :key="item.code" class="item">
         <svg :viewBox="item.svg?.viewBox" v-html="item.svg?.path"></svg>
-        <div v-if="item.name" class="name" :title="item.name">{{item.name}}</div>
+        <div v-if="item.code" class="name" :title="item.code">{{item.code}}</div>
+        <div v-if="item.name && item.code !== item.name" class="name" :title="item.name">{{item.name}}</div>
       </div>
     </div>
     <div v-if="data.activeTab === 'svg'" class="upload flex center">
@@ -200,28 +202,29 @@ async function save () {
     </div>
     <div v-if="data.activeTab === 'iconfont'"  class="upload flex center">
       <label for="javascript">
-        iconfont.js文件
+        选择iconfont.js文件
         <input id="javascript" type="file" @change="onIconfontJSChange" accept="text/javascript">
       </label>
     </div>
-    <div v-if="data.activeTab === 'iconfont'"  class="upload flex center margin-bottom">
+    <div v-if="data.activeTab === 'iconfont'"  class="upload flex center m-top">
       <label>
-        iconfont.json文件
+        选择iconfont.json文件
         <input type="file" @change="onIconfontJSONChange" accept="application/json">
       </label>
     </div>
     <!-- button -->
     <div class="flex center">
-      <button class="btn" :disabled="data.icons.length === 0" @click="save">{{t('save')}}</button>
+      <button class="btn danger" :disabled="data.icons.length === 0" @click="save">{{t('save')}}</button>
     </div>
   </div>
+  <div class="footer"></div>
 </template>
 
 <style lang="scss" scoped>
 @import "../../styles/var.scss";
 
 .tab {
-  border-radius: 1rem;
+  border-radius: 3rem;
   background: #fff;
   overflow: hidden;
   width: 40%;
@@ -232,6 +235,7 @@ async function save () {
     text-align: center;
     padding: 1.5rem 0;
     cursor: pointer;
+    border-radius: 3rem;
     &.active {
       background: $color-main;
       color: #fff;
@@ -240,35 +244,32 @@ async function save () {
 }
 
 .wrap {
-  width: 89rem;
+  width: 90rem;
   background-color: #ffffff;
 	border-radius: 1rem;
-  margin: 0 auto;
-  margin-top: 4rem;
+  margin: 4rem auto 0;
   padding: 5rem;
   padding-bottom: 3rem;
   .icons {
     flex-wrap: wrap;
-    height: 29rem;
-    overflow: auto;
+    min-height: 20rem;
 
     .item {
-      margin-left: 5rem;
+      width: 11.25rem;
+      text-align: center;
       margin-bottom: 5rem;
-      width: 3rem;
     }
 
     svg {
-      width: 2rem;
       height: 2rem;
     }
 
     .name {
-      margin-top: 1rem;
+      width: 80%;
+      margin: 1rem auto 0;
       font-size: 1rem;
       letter-spacing: 0rem;
       color: #808080;
-      cursor: pointer;
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
@@ -281,6 +282,10 @@ async function save () {
     color: #476de8;
     height: 2rem;
 
+    label {
+      cursor: pointer;
+    }
+
     +div:not(.upload) {
       margin-top: 2rem;
     }
@@ -289,12 +294,9 @@ async function save () {
       display: none;
     }
   }
+}
 
-  .btn {
-    width: 12rem;
-    height: 5rem;
-    background-color: #ff847b;
-    border-radius: 3rem;
-  }
+.footer {
+  height: 5rem;
 }
 </style>
