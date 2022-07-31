@@ -64,6 +64,7 @@ export interface FileInfo {
 }
 
 export interface Files {
+  domain: string
   css?: FileInfo
   js?: FileInfo
 }

@@ -23,6 +23,7 @@
     "axios": "^0.24.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
+    "cos-nodejs-sdk-v5": "^2.11.12",
     "cron": "^1.8.2",
     "csso": "^5.0.4",
     "deep-eql": "^4.0.1",

@@ -42,7 +42,7 @@ watchPostEffect(() => {
     getVueContent()
     return
   }
-  data.src = data.file[v]?.hash ? `${location.origin}/src/${data._id}/${data.file[v]?.hash}/iconlake.${v}` : ''
+  data.src = data.file[v]?.hash ? `${data.file.domain}/src/${data._id}/${data.file[v]?.hash}/iconlake.${v}` : ''
 })
 
 async function getInfo () {
@@ -72,9 +72,10 @@ async function generate() {
       hash: ''
     }
   }
-  const res = await genIcon(data._id, tab)
+  const res = await genIcon(data._id, tab).finally(() => {
+    data.generating.delete(tab)
+  })
   Object.assign(<FileInfo>data.file[tab], res)
-  data.generating.delete(tab)
   toast(t('generateDone'))
 }
 
