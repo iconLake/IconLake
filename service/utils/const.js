@@ -49,3 +49,10 @@ export const ERROR_CODE = {
  * 生成文件的最大留存数量
  */
 export const FILES_MAX_LENGTH = 5
+
+/**
+ * 云服务类型
+ */
+export const CLOUD_TYPE = {
+  TENCENT: 'tencent'
+}

@@ -8,8 +8,10 @@ import { minify } from 'csso'
 import { Project } from '../../../../models/project.js'
 import { ERROR_CODE, FILES_MAX_LENGTH } from '../../../../utils/const.js'
 import { getConfig } from '../../../../config/index.js'
+import { deleteObjects, getBucket, isActive as isCosActive, putObject } from '../../../../utils/cos.js'
 
 const config = getConfig()
+const domain = isCosActive ? config.cos.domain : config.domain
 
 /**
  * icon生成资源路径
@@ -44,7 +46,7 @@ export async function genCSS (req, res, projectId, project) {
   webfont({
     files: `public/src/${dirRelativePath}${svgsRelativePath}*.svg`,
     template: './controllers/project/icon/gen/template.css.njk',
-    templateFontPath: `${config.domain}/src/${projectId}/`,
+    templateFontPath: `${domain}/src/${projectId}/`,
     fontName: project.class,
     classPrefix: project.prefix,
     addHashInFontUrl: true,
@@ -60,17 +62,34 @@ export async function genCSS (req, res, projectId, project) {
       log () {}
     }
   }).then(async (result) => {
-    const destPath = new URL(`${projectId}/${result.hash}/`, srcPath)
-    if (fs.existsSync(destPath)) {
-      await rm(destPath, {
-        force: true,
-        recursive: true
+    if (isCosActive) {
+      const destPath = `src/${projectId}/${result.hash}/`
+      await putObject(`${destPath}iconlake.ttf`, result.ttf)
+      await putObject(`${destPath}iconlake.woff`, result.woff)
+      await putObject(`${destPath}iconlake.woff2`, Buffer.from(result.woff2))
+      await putObject(`${destPath}iconlake.css`, minify(result.template).css)
+      await rm(new URL(projectId, srcPath), {
+        recursive: true,
+        force: true
       })
+    } else {
+      const destPath = new URL(`${projectId}/${result.hash}/`, srcPath)
+      if (fs.existsSync(destPath)) {
+        await rm(destPath, {
+          force: true,
+          recursive: true
+        })
+      }
+      writeFile(new URL('iconlake.css', dir), minify(result.template).css)
+      writeFile(new URL('iconlake.ttf', dir), result.ttf)
+      writeFile(new URL('iconlake.woff', dir), result.woff)
+      writeFile(new URL('iconlake.woff2', dir), result.woff2)
+      await rm(svgsPath, {
+        recursive: true,
+        force: true
+      })
+      await rename(dir, destPath)
     }
-    writeFile(new URL('iconlake.css', dir), minify(result.template).css)
-    writeFile(new URL('iconlake.ttf', dir), result.ttf)
-    writeFile(new URL('iconlake.woff', dir), result.woff)
-    writeFile(new URL('iconlake.woff2', dir), result.woff2)
     const info = {
       updateTime: new Date(),
       hash: result.hash
@@ -88,11 +107,6 @@ export async function genCSS (req, res, projectId, project) {
       }
     })
     res.json(info)
-    await rm(svgsPath, {
-      recursive: true,
-      force: true
-    })
-    await rename(dir, destPath)
     return null
   }).catch(err => {
     console.error(err)
@@ -118,20 +132,24 @@ export async function genJS (req, res, projectId, project) {
     })
     return
   }
-  const dir = new URL(`${projectId}/${hash}/`, srcPath)
-  if (fs.existsSync(dir)) {
-    await rm(dir, {
-      force: true,
+  if (isCosActive) {
+    await putObject(`src/${projectId}/${hash}/iconlake.js`, ugResult.code)
+  } else {
+    const dir = new URL(`${projectId}/${hash}/`, srcPath)
+    if (fs.existsSync(dir)) {
+      await rm(dir, {
+        force: true,
+        recursive: true
+      })
+    }
+    await mkdir(dir, {
       recursive: true
     })
+    await writeFile(
+      new URL('iconlake.js', dir),
+      ugResult.code
+    )
   }
-  await mkdir(dir, {
-    recursive: true
-  })
-  await writeFile(
-    new URL('iconlake.js', dir),
-    ugResult.code
-  )
   const info = {
     updateTime: new Date(),
     hash
@@ -166,7 +184,13 @@ export async function genVUE (req, res, projectId, project) {
 /**
  * 清理历史文件
  */
-export async function deleteOldFiles (projectId) {
+export const deleteOldFiles = isCosActive ? deleteOldCloudFiles : deleteOldLocalFiles
+
+/**
+ * 清理本地历史文件
+ * @param {string} projectId
+ */
+async function deleteOldLocalFiles (projectId) {
   const projectPath = new URL(`${projectId}/`, srcPath)
   const files = await readdir(projectPath)
   if (files.length <= FILES_MAX_LENGTH) {
@@ -181,9 +205,44 @@ export async function deleteOldFiles (projectId) {
   }))
   list.sort((a, b) => a.time - b.time)
   for (let i = 0, n = files.length - FILES_MAX_LENGTH; i < n; ++i) {
-    rm(new URL(list[i].name, projectPath), {
+    await rm(new URL(list[i].name, projectPath), {
       force: true,
       recursive: true
     })
   }
+}
+
+/**
+ * 清理本地历史文件
+ * @param {string} projectId
+ */
+async function deleteOldCloudFiles (projectId) {
+  const data = await getBucket(`src/${projectId}/`)
+  const objs = {}
+  data.contents.forEach(e => {
+    const id = e.key.split(/\//g)[2]
+    if (!objs[id]) {
+      objs[id] = {
+        id,
+        time: +new Date(e.lastModified),
+        keys: [e.key]
+      }
+    } else {
+      const t = +new Date(e.lastModified)
+      if (t > objs[id].time) {
+        objs[id].time = t
+      }
+      objs[id].keys.push(e.key)
+    }
+  })
+  const list = Object.values(objs)
+  if (list.length <= FILES_MAX_LENGTH) {
+    return
+  }
+  list.sort((a, b) => a.time - b.time)
+  const keys = []
+  for (let i = 0, n = list.length - FILES_MAX_LENGTH; i < n; ++i) {
+    keys.push(...list[i].keys)
+  }
+  await deleteObjects(keys)
 }
