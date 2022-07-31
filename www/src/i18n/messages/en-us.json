@@ -91,5 +91,11 @@
   "component": "Component",
   "componentFile": "Component File",
   "vueComponent": "Vue Component",
-  "colon": " : "
+  "colon": " : ",
+  "uploadSVG":"Upload SVG",
+  "importIconfont": "Import Iconfont",
+  "selectIconFile": "Select {type} File",
+  "fileCouldNotBeParsed": "File Could Not Be Parsed",
+  "fileLoadFailed": "File Load Failed",
+  "pleaseSelectFile": "Please Select {type} File"
 }

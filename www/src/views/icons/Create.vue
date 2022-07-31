@@ -3,8 +3,6 @@ import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { addIcon, BaseIcon, info } from '../../apis/project'
-import HeaderVue from '../../components/Header.vue'
-import UserVue from '../../components/User.vue'
 import { toast } from '../../utils'
 
 const { t } = useI18n()
@@ -87,11 +85,11 @@ function onSVGChange(e: Event) {
           updateIcons()
         } catch (err) {
           console.error(err)
-          toast.error('文件无法解析')
+          toast.error(t('fileCouldNotBeParsed'))
         }
       }
       reader.onerror = () => {
-        toast.error('文件加载失败')
+        toast.error(t('fileLoadFailed'))
       }
     })
   }
@@ -101,7 +99,7 @@ function onIconfontJSChange(e: Event) {
   const files = (<HTMLInputElement>e.target).files
   if (files && files.length > 0) {
     if (files[0].type !== 'text/javascript') {
-      return toast.error('请选择.js文件')
+      return toast.error(t('pleaseSelectFile', {type: '.js'}))
     }
     const reader = new FileReader()
     reader.readAsText(files[0], 'utf-8')
@@ -130,7 +128,7 @@ function onIconfontJSChange(e: Event) {
       }
     }
     reader.onerror = () => {
-      toast.error('文件加载失败')
+      toast.error(t('fileLoadFailed'))
     }
   }
 }
@@ -139,7 +137,7 @@ function onIconfontJSONChange(e: Event) {
   const files = (<HTMLInputElement>e.target).files
   if (files && files.length > 0) {
     if (files[0].type !== 'application/json') {
-      return toast.error('请选择.json文件')
+      return toast.error(t('pleaseSelectFile', {type: '.json'}))
     }
     const reader = new FileReader()
     reader.readAsText(files[0], 'utf-8')
@@ -162,18 +160,18 @@ function onIconfontJSONChange(e: Event) {
           updateIcons()
         }
       } catch (err) {
-        toast.error('文件无法解析')
+        toast.error(t('fileCouldNotBeParsed'))
       }
     }
     reader.onerror = () => {
-      toast.error('文件加载失败')
+      toast.error(t('fileLoadFailed'))
     }
   }
 }
 
 async function save () {
   await addIcon(data._id, data.icons)
-  toast.success('保存成功')
+  toast.success(t('saveDone'))
   $router.replace(`/icons/${data._id}`)
 }
 </script>
@@ -184,8 +182,8 @@ async function save () {
   </HeaderVue>
   <UserVue />
   <div class="tab flex">
-    <div class="item" :class="getTabClass('svg')" @click="setTabActive('svg')">上传SVG</div>
-    <div class="item" :class="getTabClass('iconfont')" @click="setTabActive('iconfont')">导入iconfont</div>
+    <div class="item" :class="getTabClass('svg')" @click="setTabActive('svg')">{{t('uploadSVG')}}</div>
+    <div class="item" :class="getTabClass('iconfont')" @click="setTabActive('iconfont')">{{t('importIconfont')}}</div>
   </div>
   <div class="wrap">
       <!-- icons -->
@@ -198,19 +196,19 @@ async function save () {
     </div>
     <div v-if="data.activeTab === 'svg'" class="upload flex center">
       <label for="svg">
-        选择svg文件
+        {{t('selectIconFile', {type: 'SVG'})}}
         <input id="svg" type="file" @change="onSVGChange" accept="image/svg+xml" multiple/>
       </label>
     </div>
     <div v-if="data.activeTab === 'iconfont'"  class="upload flex center">
       <label for="javascript">
-        选择iconfont.js文件
-        <input id="javascript" type="file" @change="onIconfontJSChange" accept="text/javascript">
+         {{t('selectIconFile', {type: 'iconfont.js'})}}
+        <input id="javascript" type="file" @change="onIconfontJSChange" accept="text/javascript"/>
       </label>
     </div>
     <div v-if="data.activeTab === 'iconfont'"  class="upload flex center m-top">
       <label>
-        选择iconfont.json文件
+         {{t('selectIconFile', {type: 'iconfont.json'})}}
         <input type="file" @change="onIconfontJSONChange" accept="application/json">
       </label>
     </div>
