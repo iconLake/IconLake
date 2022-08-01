@@ -15,6 +15,13 @@
   position: relative;
   z-index: 2;
 
+  .logo {
+    position: absolute;
+    top: 2rem;
+    left: 13rem;
+    height: 5rem;
+  }
+
   .content {
     height: 100%;
     width: 66%;

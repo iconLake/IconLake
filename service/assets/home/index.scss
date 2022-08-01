@@ -9,9 +9,12 @@ body {
 
 header {
   position: relative;
+  .logo {
+    height: 12rem;
+  }
   .content {
     position: absolute;
-    top: 36%;
+    top: 19%;
     left: 0;
     right: 0;
     width: 50rem;
