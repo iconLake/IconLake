@@ -109,12 +109,12 @@ function copyContent (str: string) {
   <div v-if="data.activeTab === 'css'" class="content use-css">
     <h2 class="t-center">{{t('useWithType', {type: 'CSS'})}}</h2>
     <p>{{t('includeType', {type: 'CSS'})}}{{t('colon')}}</p>
-    <div class="code flex" @click="copyContent(cssLink)">
+    <div class="code flex" @click="copyContent(cssLink)" :title="t('copy')">
       <span>{{cssLink}}</span>
       <i class="iconfont icon-copy"></i>
     </div>
     <p>{{t('displayIcon')}}{{t('colon')}}</p>
-    <div class="code flex" @click="copyContent(cssExample)">
+    <div class="code flex" @click="copyContent(cssExample)" :title="t('copy')">
       <span>{{cssExample}}</span>
       <i class="iconfont icon-copy"></i>
     </div>
@@ -126,12 +126,12 @@ function copyContent (str: string) {
   <div v-else-if="data.activeTab === 'js'" class="content use-js">
     <h2 class="t-center">{{t('useWithType', {type: 'Javascript'})}}</h2>
     <p>{{t('includeType', {type: 'Javascript'})}}{{t('colon')}}</p>
-    <div class="code flex" @click="copyContent(jsLink)">
+    <div class="code flex" @click="copyContent(jsLink)" :title="t('copy')">
       <span>{{jsLink}}</span>
       <i class="iconfont icon-copy"></i>
     </div>
     <p>{{t('displayIcon')}}{{t('colon')}}</p>
-    <div class="code flex" @click="copyContent(jsExample)">
+    <div class="code flex" @click="copyContent(jsExample)" :title="t('copy')">
       <span>{{jsExample}}</span>
       <i class="iconfont icon-copy"></i>
     </div>
@@ -143,7 +143,7 @@ function copyContent (str: string) {
   <div v-else-if="data.activeTab === 'vue'" class="content use-vue">
     <h2 class="t-center">{{t('useWithType', {type: t('vueComponent')})}}</h2>
     <p>{{t('componentFile')}}{{t('colon')}}</p>
-    <div class="code vue flex" @click="copyContent(data.src)">
+    <div class="code vue flex" @click="copyContent(data.src)" :title="t('copy')">
       <pre>{{data.src}}</pre>
       <i class="iconfont icon-copy"></i>
     </div>

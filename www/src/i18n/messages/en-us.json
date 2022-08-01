@@ -54,6 +54,7 @@
   "creatingProjectDone": "Project creation is done",
   "addIconSource": "Add Icon Source",
   "delSourceConfirm": "Deleting the source will cause the icon to not be displayed. Do you want to delete it?",
+  "copy": "Copy",
   "copyDone": "Copy Done",
   "inviteLink": "Invitation Link",
   "removeConfirm": "Do you want to remove ",

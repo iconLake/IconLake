@@ -3,6 +3,8 @@ import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { addIcon, BaseIcon, info } from '../../apis/project'
+import HeaderVue from '../../components/Header.vue'
+import UserVue from '../../components/User.vue'
 import { toast } from '../../utils'
 
 const { t } = useI18n()

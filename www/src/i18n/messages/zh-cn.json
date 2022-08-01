@@ -54,6 +54,7 @@
   "creatingProjectDone": "项目创建完成",
   "addIconSource": "新增图标源",
   "delSourceConfirm": "删除源将删除关联的所有图标，是否删除？",
+  "copy": "复制",
   "copyDone": "复制成功",
   "inviteLink": "邀请链接",
   "removeConfirm": "确定移除",
