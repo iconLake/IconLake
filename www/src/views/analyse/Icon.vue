@@ -3,7 +3,7 @@ import UserVue from '../../components/User.vue'
 import IconVue from '../../components/Icon.vue'
 import HeaderVue from '../../components/Header.vue'
 import { useRoute } from 'vue-router'
-import { getIcon, getIconPages, Icon, Source } from '../../apis/project'
+import { getIcon, getIconPages, Icon } from '../../apis/project'
 import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { formatTime } from '../../utils'
@@ -20,8 +20,7 @@ interface Page {
 const projectId = <string>$route.params.projectId
 const _id = <string>$route.params.id
 const icon = reactive({
-  info: <Icon>{},
-  source: <Source>{}
+  info: <Icon>{}
 })
 const pageList = ref(<Page[]>[])
 const updateTime = ref('--')
@@ -46,7 +45,7 @@ getList()
   <UserVue />
   <div class="analyse">
     <div class="flex stretch">
-      <IconVue :info="icon.info" :source="icon.source" />
+      <IconVue :info="icon.info" />
       <div class="flex column info">
         <div>
           <span class="label">{{t('name')}}</span>

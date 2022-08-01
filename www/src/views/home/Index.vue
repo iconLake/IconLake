@@ -14,13 +14,6 @@ const data = reactive({
 
 const sourceMap = new Map()
 getProjects().then(res => {
-  res.list.forEach(e => {
-    const m: any = {}
-    e.sources.forEach(s => {
-      m[s._id] = s
-    })
-    sourceMap.set(e._id, m)
-  })
   data.projects = res.list
   data.isLoading = false
 })
@@ -38,7 +31,7 @@ getProjects().then(res => {
     </div>
     <img :src="'/imgs/project-empty.png'">
   </div>
-  <div class="container flex stretch" v-else-if="!data.isLoading">
+  <div class="container flex stretch">
     <a href="/" class="banner flex center">
       <img class="bg-c-t" :src="'/imgs/project-bg-circle-t.png'">
       <img class="bg-c-b" :src="'/imgs/project-bg-circle-b.png'">
@@ -57,7 +50,7 @@ getProjects().then(res => {
           <div class="item-title">{{item.name}}</div>
           <div class="icons flex wrap center">
             <div class="icon-item" v-for="icon in item.icons" :key="icon._id">
-              <IconVue :info="icon" :source="sourceMap.get(item._id)[icon.sourceId]" />
+              <IconVue :info="icon" />
             </div>
           </div>
         </router-link>

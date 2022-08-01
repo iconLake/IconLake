@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, nextTick, reactive, ref, watchEffect } from "vue";
-import { addTag, delTag, editIcon, Group, Icon, Source } from "../../apis/project";
+import { addTag, delTag, editIcon, Group, Icon } from "../../apis/project";
 import IconComponent from "../../components/Icon.vue";
 import { copy, toast } from '../../utils';
 import { useI18n } from 'vue-i18n'
@@ -10,7 +10,6 @@ const { t } = useI18n()
 const props = defineProps<{
   projectId: string
   info: Icon
-  source: Source
   top: string
   left: string
   isShow?: boolean
@@ -31,10 +30,11 @@ const computedTop = computed(() => isVisible.value ? props.top : '-50rem')
 const computedLeft = computed(() => isVisible.value ? props.left : '-50rem')
 const root = ref(<Element>{})
 const nameInputDom = ref<HTMLDivElement>()
+const codeInputDom = ref<HTMLDivElement>()
 const tagInputDom = ref<HTMLDivElement>()
-const isNameFocus = ref(false)
 const input = reactive({
   name: '',
+  code: '',
   groupId: '',
   tag: ''
 })
@@ -46,6 +46,7 @@ defineExpose({
 
 watchEffect(() => {
   input.name = props.info.name
+  input.code = props.info.code
   input.groupId = props.info.groupId || ''
 })
 
@@ -61,8 +62,11 @@ watchEffect(() => {
   }
 })
 
-function nameFocus() {
-  (<HTMLDivElement>nameInputDom.value).focus()
+function focus(name: 'name'|'code') {
+  ({
+    name: <HTMLDivElement>nameInputDom.value,
+    code: <HTMLDivElement>codeInputDom.value
+  }[name]).focus()
 }
 
 function copyClassName() {
@@ -93,9 +97,10 @@ async function deleteTag(i: number, tag: string) {
   props.info.tags.splice(i, 1)
 }
 
-async function saveInfo(key: 'name' | 'groupId') {
+async function saveInfo(key: 'name' | 'code' | 'groupId') {
   const data = <{
     name?: string
+    code?: string
     groupId?: string
   }>{}
   data[key] = input[key]
@@ -109,39 +114,35 @@ async function saveInfo(key: 'name' | 'groupId') {
   <div class="detail" ref="root">
     <div class="flex start">
       <div>
-        <IconComponent :info="info" :source="source" />
+        <IconComponent :info="info" />
         <router-link :to="`/analyse/icon/${projectId}/${info._id}`" class="count-use c-main">{{t('pageRefererCount')}} {{info.analyse?.pageCount}}</router-link>
       </div>
       <div class="info grow">
         <div class="item">
-          <div class="outline" v-if="isNameFocus"></div>
           <div class="label">{{t('name')}}</div>
           <div class="value">
             <input
               type="text"
               v-model="input.name"
               ref="nameInputDom"
-              @focus="isNameFocus=true"
-              @blur="isNameFocus=false"
               @change="saveInfo('name')"
             >
+            <i class="iconfont icon-edit pointer" @click="focus('name')"></i>
           </div>
-          <i class="iconfont icon-edit pointer" @click="nameFocus()"></i>
         </div>
         <div class="item">
-          <div class="label">{{t('oriName')}}</div>
-          <div class="value">{{info.originalData?.name}}</div>
+          <div class="label">{{t('code')}}</div>
+          <div class="value">
+            <input
+              type="text"
+              v-model="input.code"
+              ref="codeInputDom"
+              @change="saveInfo('code')"
+            >
+            <i class="iconfont icon-edit pointer" @click="focus('code')"></i>
+          </div>
         </div>
-        <div class="item">
-          <div class="label">Class</div>
-          <div class="value">{{info.code}}</div>
-          <i class="iconfont icon-copy pointer" @click="copyClassName"></i>
-        </div>
-        <div class="item">
-          <div class="label">{{t('source')}}</div>
-          <div class="value">{{source.name}}</div>
-        </div>
-        <div class="item">
+        <div class="item info-group">
           <div class="label">{{t('group')}}</div>
           <div class="value">
             <select @change="saveInfo('groupId')" v-model="input.groupId">
@@ -150,7 +151,7 @@ async function saveInfo(key: 'name' | 'groupId') {
             </select>
           </div>
         </div>
-        <div class="item">
+        <div class="item info-tag">
           <div class="label">{{t('tag')}}</div>
           <div class="value"></div>
           <i class="iconfont icon-add-circle pointer" @click="showAddTag"></i>
@@ -202,8 +203,15 @@ async function saveInfo(key: 'name' | 'groupId') {
     .item {
       display: flex;
       align-items: center;
-      margin-bottom: 1.6rem;
+      margin-bottom: 1rem;
       position: relative;
+      min-height: 2.5rem;
+      &.info-group {
+        padding-right: 0.4rem;
+      }
+      &.info-tag {
+        padding-right: 0.5rem;
+      }
       .label,
       .value,
       .iconfont {
@@ -216,29 +224,36 @@ async function saveInfo(key: 'name' | 'groupId') {
       }
       .value {
         color: #4d4b4b;
-        width: 11rem;
-        margin-right: 1rem;
+        width: 100%;
         line-height: 1.1;
         word-break: break-all;
+        position: relative;
         select,
         input {
-          padding: 0;
+          padding: 0 0.5rem;
           border: none;
+          box-sizing: border-box;
           width: 100%;
           font-size: inherit;
           color: inherit;
           border-radius: 0;
         }
-      }
-      .outline {
-        width: 14.438rem;
-        height: 2.5rem;
-        border-radius: 0.25rem;
-        border: solid 0.063rem #476de8;
-        position: absolute;
-        left: 6rem;
-        top: -0.7rem;
-        z-index: 0;
+        input {
+          height: 2.5rem;
+          line-height: 2.5rem;
+          border-radius: 0.25rem;
+          border: solid 0.063rem transparent;
+          &:focus {
+            border-color: #476de8;
+          }
+        }
+        i {
+          position: absolute;
+          top: 0;
+          right: 0.5rem;
+          height: 100%;
+          line-height: 2.5rem;
+        }
       }
     }
   }

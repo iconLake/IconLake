@@ -25,6 +25,14 @@ export const configs = {
     },
     center: {
       domain: 'http://127.0.0.1:9999'
+    },
+    cos: {
+      domain: 'https://cdn.iconlake.com',
+      type: 'tencent',
+      secretId: '',
+      secretKey: '',
+      bucket: '',
+      region: ''
     }
   },
   test: {
@@ -51,6 +59,14 @@ export const configs = {
     },
     center: {
       domain: 'http://127.0.0.1:9669'
+    },
+    cos: {
+      domain: 'https://cdn.iconlake.com',
+      type: 'tencent',
+      secretId: '',
+      secretKey: '',
+      bucket: '',
+      region: ''
     }
   },
   development: {
@@ -71,6 +87,14 @@ export const configs = {
     },
     center: {
       domain: 'http://127.0.0.1:9009'
+    },
+    cos: {
+      domain: 'https://cdn.iconlake.com',
+      type: 'tencent',
+      secretId: '',
+      secretKey: '',
+      bucket: '',
+      region: ''
     }
   }
 }
@@ -78,7 +102,7 @@ export const configs = {
 /**
  * 获取配置
  * @param {string} [env='production']
- * @returns {{domain: string, http: {port: number}, https: {port: number, ca: string, key: string, cert: string}, mongodb: {uri: string}, gitee: {clientId: string, clientSecret: string}, github: {clientId: string, clientSecret: string}, center: {domain: string}}}
+ * @returns {{domain: string, http: {port: number}, https: {port: number, ca: string, key: string, cert: string}, mongodb: {uri: string}, gitee: {clientId: string, clientSecret: string}, github: {clientId: string, clientSecret: string}, center: {domain: string}, cos: {type: 'tencent', secretId: string, secretKey: string, bucket: string, region: string}}}
  */
 export function getConfig (env) {
   const config = configs[env || NODE_ENV]

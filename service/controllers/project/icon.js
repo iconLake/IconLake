@@ -1,5 +1,8 @@
 import { Analyse } from '../../models/analyse.js'
+import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
+import { ERROR_CODE } from '../../utils/const.js'
+import { deleteOldFiles, genCSS, genJS, genVUE } from './icon/gen/index.js'
 
 /**
  * @api {get} /project/icon/info 获取图标信息
@@ -31,6 +34,41 @@ export async function info (req, res) {
 }
 
 /**
+ * @api {post} /project/icon/add 添加图标
+ */
+export async function add (req, res) {
+  const icons = req.body.icons
+  const _id = req.body.projectId
+  if (typeof _id !== 'string' || _id.length === 0 || !(icons instanceof Array) || icons.length === 0) {
+    res.json({
+      error: 'argsError'
+    })
+    return
+  }
+  const project = await Project.findById(_id, 'iconIndex')
+  const startIndex = (project.iconIndex || 0) + 1
+  icons.forEach((e, i) => {
+    e.unicode = (startIndex + i).toString(16)
+  })
+  await Project.updateOne({
+    _id
+  }, {
+    $push: {
+      icons: {
+        $each: icons
+      }
+    },
+    $inc: {
+      iconIndex: icons.length
+    },
+    $set: {
+      iconUpdateTime: new Date()
+    }
+  })
+  res.json({})
+}
+
+/**
  * @api {post} /project/icon/del 删除图标
  */
 export async function del (req, res) {
@@ -42,20 +80,39 @@ export async function del (req, res) {
     })
     return
   }
+  const project = await Project.findById(projectId, 'members icons')
+  const uid = req.user.id
+  if (!project || !project.members.some(e => e.isAdmin && e.userId.toString() === uid)) {
+    res.json({
+      error: 'noPermission'
+    })
+    return
+  }
   await Project.updateOne({
-    _id: projectId,
-    members: {
-      $elemMatch: {
-        userId: req.user._id,
-        isAdmin: true
-      }
-    }
+    _id: projectId
   }, {
     $pull: {
       icons: {
         _id: {
           $in: _ids
         }
+      }
+    },
+    $set: {
+      iconUpdateTime: new Date()
+    }
+  })
+  // 记录历史
+  const icons = []
+  _ids.forEach(e => {
+    icons.push(project.icons.id(e))
+  })
+  await History.updateOne({
+    _id: projectId
+  }, {
+    $push: {
+      icons: {
+        $each: icons
       }
     }
   })
@@ -76,6 +133,11 @@ export async function edit (req, res) {
   const $set = {}
   if (req.body.name) {
     $set['icons.$.name'] = req.body.name
+    isEmpty = false
+  }
+  if (req.body.code) {
+    $set['icons.$.code'] = req.body.code
+    $set.iconUpdateTime = new Date()
     isEmpty = false
   }
   if (typeof req.body.groupId === 'string') {
@@ -224,4 +286,35 @@ export async function batchGroup (req, res) {
     ]
   })
   res.json(result.matchedCount > 0 ? {} : { error: 'argsError' })
+}
+
+/**
+ * @api {post} /project/icon/gen 生成字体或者js
+ */
+export async function gen (req, res) {
+  const { projectId, type } = req.body
+  if (!projectId || !type || !/^(js|css|vue)$/.test(type)) {
+    res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+    return
+  }
+  const project = await Project.findById(projectId, 'class prefix icons')
+  if (!project) {
+    res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+    return
+  }
+  if (project.icons.length === 0) {
+    res.json({})
+    return
+  }
+  const fn = {
+    css: genCSS,
+    js: genJS,
+    vue: genVUE
+  }
+  fn[type](req, res, projectId, project)
+  deleteOldFiles(projectId)
 }

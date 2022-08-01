@@ -13,10 +13,12 @@ const projectId = <string>$route.params.id
 const project = ref(<{
   name: string
   desc: string
+  class: string
+  prefix: string
 }>{})
 
 async function getProject() {
-  project.value = await info(projectId, 'name desc')
+  project.value = await info(projectId, 'name desc class prefix')
 }
 
 async function save() {
@@ -36,6 +38,10 @@ getProject()
     <input type="text" class="input" maxlength="15" v-model="project.name">
     <p>{{t('desc')}}</p>
     <textarea rows="10" class="input" maxlength="300" v-model="project.desc"></textarea>
+    <p>{{t('class')}}</p>
+    <input type="text" class="input" maxlength="15" v-model="project.class">
+    <p>{{t('prefix')}}</p>
+    <input type="text" class="input" maxlength="15" v-model="project.prefix">
     <div class="flex center">
       <button type="submit" class="btn" :disabled="!project.name" @click="save">{{t('save')}}</button>
     </div>

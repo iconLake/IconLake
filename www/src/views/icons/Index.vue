@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { Group, Icon, Source, info as getProjectInfo, delIcon, batchGroupIcon } from "../../apis/project";
+import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon, genIcon } from "../../apis/project";
 import IconVue from "../../components/Icon.vue";
 import { confirm, toast } from '../../utils';
 import Detail from "./Detail.vue";
@@ -19,12 +19,9 @@ const data = reactive({
   icons: <Icon[]>[],
   groups: <Group[]>[],
   groupMap: <any>{},
-  sources: <Source[]>[],
-  sourceMap: <any>{},
   list: <Group[]>[],
   detail: {
     info: <Icon>{},
-    source: <Source>{},
     top: '-50rem',
     left: '-50rem',
     isShow: false
@@ -38,20 +35,13 @@ const data = reactive({
 const batchGroupFormDom = ref(<Element>{})
 
 async function getIcons () {
-  const res = await getProjectInfo(data._id, 'name icons sources groups')
+  const res = await getProjectInfo(data._id, 'name icons sources groups file')
   data.name = res.name
   if (res.groups instanceof Array) {
     data.groups = res.groups.sort((a, b) => b.num - a.num)
     res.groups.forEach(e => {
       data.groupMap[e._id] = e
     })
-  }
-  if (res.sources instanceof Array) {
-    data.sources = res.sources
-    const qSources = res.sources.map(async e => {
-      data.sourceMap[e._id] = e
-    })
-    await Promise.all(qSources)
   }
   if (res.icons instanceof Array) {
     data.icons = res.icons
@@ -106,6 +96,9 @@ function groupFilter (group: Group) {
 
 getIcons()
 
+// 生成文件
+// genIcon(data._id, 'css')
+
 const mainDom = ref(<HTMLElement>{})
 const iconListDom = ref(<Element>{})
 const detailDom = ref(<{ root: Element }>{})
@@ -123,7 +116,6 @@ function showDetail (icon: Icon, e: Event) {
   const left = iconPosition.left + (right > 0 ? -right : 0) - listPosition.left
   data.detail = {
     info: icon,
-    source: data.sourceMap[icon.sourceId],
     top: `${top}px`,
     left: `${left}px`,
     isShow: true
@@ -228,14 +220,18 @@ watch(() => data.keyword, () => {
       </div>
     </div>
     <div class="operate flex">
-      <router-link :to="`/project/${data._id}/setting/source`" class="operate-item flex">
-        <span>{{t('sync')}}</span>
-        <i class="iconfont icon-sync-cloud"></i>
+      <router-link :to="`/icons/${data._id}/create`" class="operate-item flex">
+        <span>{{t('createIcons')}}</span>
+        <i class="iconfont icon-plus"></i>
       </router-link>
       <div class="operate-item flex" @click="data.isBatching=!data.isBatching">
         <span>{{t(data.isBatching ? 'cancelBatchOperation' : 'batchOperation')}}</span>
         <i class="iconfont icon-batch"></i>
       </div>
+      <router-link :to="`/icons/${data._id}/use`" class="operate-item flex">
+        <span>{{t('useCode')}}</span>
+        <i class="iconfont icon-code"></i>
+      </router-link>
     </div>
     <div class="operate-batch" v-if="data.isBatching">
       <button class="btn" @click="batchDelete" :disabled="data.selectedIcons.size===0">
@@ -260,7 +256,7 @@ watch(() => data.keyword, () => {
             @mouseleave="hideDetail()"
             @click="selectIcon(icon)"
           >
-            <IconVue :info="icon" :source="data.sourceMap[icon.sourceId]"/>
+            <IconVue :info="icon"/>
             <div class="name">{{icon.name}}</div>
             <div class="code">{{icon.code}}</div>
           </div>
@@ -270,7 +266,6 @@ watch(() => data.keyword, () => {
         ref="detailDom"
         :project-id="data._id"
         :info="data.detail.info"
-        :source="data.detail.source"
         :top="data.detail.top"
         :left="data.detail.left"
         :is-show="data.detail.isShow"
@@ -316,6 +311,7 @@ watch(() => data.keyword, () => {
 }
 .main {
   margin: 0 auto;
+  width: 90%;
 }
 .search {
   .input {

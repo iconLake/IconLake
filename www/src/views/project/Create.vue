@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import HeaderVue from '../../components/Header.vue'
 import { computed, reactive } from "vue";
-import { isIconfontResource } from "../../utils/validate";
-import { create as createProject, editSource, sync } from "../../apis/project";
-import { parseIconfontResourceUrl, parseResourceUrl, toast } from "../../utils";
+import { create as createProject } from "../../apis/project";
+import { toast } from "../../utils";
 import router from "../../router";
 import { useI18n } from 'vue-i18n'
 
@@ -12,39 +11,21 @@ const { t } = useI18n()
 const fmData = reactive({
   _id: '',
   name: '',
-  type: 1,
-  resourceUrl: ''
+  description: ''
 })
 
 const isChecked = computed(() => {
-  return fmData.name && isIconfontResource(fmData.resourceUrl)
+  return fmData.name
 })
 
 async function create () {
   toast(t('creatingProject'))
   const data = await createProject({
     name: fmData.name,
-    sources: [parseIconfontResourceUrl(fmData.resourceUrl)]
+    description: fmData.description
   })
   fmData._id = data._id
-  await addSource()
   router.replace(`/icons/${data._id}`)
-}
-
-async function addSource () {
-  const url = parseResourceUrl(fmData.resourceUrl, fmData.type)
-  const source = {
-    projectId: fmData._id || '',
-    _id: '',
-    name: '初始源',
-    type: fmData.type,
-    resourceUrl: url.resourceUrl,
-    syncUrl: url.syncUrl,
-    prefix: '',
-    className: ''
-  }
-  const { _id } = await editSource(source)
-  await sync(fmData._id, _id)
   toast.success(t('creatingProjectDone'))
 }
 
@@ -58,7 +39,7 @@ async function addSource () {
       <div class="slogan-left">Make</div>
       <form @submit.prevent="create" class="fm">
         <h1>{{t('newProject')}}</h1>
-        <h2>{{t('fillProjectNameAndSource')}}</h2>
+        <h2>{{t('fillProjectNameAndDescription')}}</h2>
         <div class="item">
           <label>{{t('projectName')}}</label>
           <div class="input flex">
@@ -67,16 +48,13 @@ async function addSource () {
           </div>
         </div>
         <div class="item">
-          <label>{{t('iconSourceOfIconfont')}}</label>
-          <div class="input flex">
-            <i class="iconfont icon-source"></i>
-            <input class="grow" autocomplete="off" maxlength="100" type="text" name="resourceUrl" v-model="fmData.resourceUrl">
+          <label>{{t('projectDescription')}}</label>
+          <div class="input textarea-input flex start">
+            <i class="iconfont icon-desc"></i>
+            <textarea class="grow" autocomplete="off" maxlength="100" v-model="fmData.description" ame="description"></textarea>
           </div>
-          <p class="t-right">
-            <router-link to="/help" class="link">{{t('howToGetOnlineLink')}}</router-link>
-          </p>
         </div>
-        <button class="bg-danger" type="submit" :disabled="!isChecked">{{t('createNow')}}</button>
+        <button class="bg-danger" type="submit" :disabled="!isChecked" >{{t('createNow')}}</button>
       </form>
     </div>
     <!-- illus -->
@@ -144,6 +122,9 @@ async function addSource () {
       width: 100%;
       margin-top: 2rem;
     }
+    .icon-desc {
+      margin-top: 1.52rem;
+    }
     .input {
       width: 100%;
       height: 5.063rem;
@@ -153,7 +134,7 @@ async function addSource () {
       i {
         padding: 0 0.938rem;
       }
-      input {
+      input, textarea {
         width: 100%;
         height: 100%;
         border: none;
@@ -161,6 +142,13 @@ async function addSource () {
         font-size: 1.5rem;
         padding-right: 0.938rem;
       }
+      textarea {
+        padding-top: 1.4rem;
+      }
+    }
+
+    .textarea-input {
+      height: 10.063rem;
     }
   }
 }

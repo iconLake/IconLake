@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router';
-import { editMonitor, info, Monitor } from '../../../apis/project';
-import { copy, toast } from '../../../utils';
+import { editMonitor, info, Monitor } from '../../../apis/project'
+import { copy, toast } from '../../../utils'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()

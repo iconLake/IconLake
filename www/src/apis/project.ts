@@ -6,15 +6,19 @@ export interface OriginalIcon {
   name: string
 }
 
-export interface Icon {
-  _id: string
-  sourceId: string
-  groupId: string
+export interface BaseIcon {
   name: string
   code: string
+  svg: {
+    viewBox: string
+    path: string
+  }
+}
+
+export interface Icon extends BaseIcon {
+  _id: string
+  groupId: string
   tags: string[]
-  syncTime: string
-  originalData: OriginalIcon
   analyse?: {
     pageCount: number
   }
@@ -38,17 +42,6 @@ export interface Monitor {
   spider: string
 }
 
-export interface Source {
-  _id: string
-  name: string
-  type: number
-  resourceUrl: string
-  syncUrl: string
-  prefix: string
-  className: string
-  iconPath?: any
-}
-
 export interface Member {
   _id: string
   userId: string
@@ -64,20 +57,31 @@ export interface Invite {
   expired: string
 }
 
+export interface FileInfo {
+  updateTime: string
+  hash: string
+  content?: string
+}
+
+export interface Files {
+  domain: string
+  css?: FileInfo
+  js?: FileInfo
+}
+
 export interface Project {
   _id: string
   userId: string
   name: string
+  file: File
   desc: string
+  prefix: string
+  class: string
   icons: Icon[]
+  iconUpdateTime: string
   groups: Group[]
-  sources: Source[]
   monitor: Monitor
   invite?: Invite
-}
-
-export interface ProjectSource extends Source {
-  projectId: string
 }
 
 export interface Res {
@@ -132,17 +136,6 @@ export function clean(_id: string, name: string) {
   })
 }
 
-export function sync(projectId: string, _id: string) {
-  return <Promise<Res>>request({
-    method: 'POST',
-    url: `/sync/${projectId}`,
-    baseURL,
-    data: {
-      _id
-    }
-  })
-}
-
 export function info(id: string, fields: string) {
   return <Promise<Project>>request({
     url: `/info/${id}`,
@@ -165,27 +158,6 @@ export function editInfo(_id: string, info: {
       _id,
       ...info
     }
-  })
-}
-
-export function editSource(data: ProjectSource) {
-  return <Promise<IdRes>>request({
-    method: 'POST',
-    url: '/source/edit',
-    baseURL,
-    data,
-  })
-}
-
-export function delSource(projectId: string, _id: string) {
-  return <Promise<Res>>request({
-    method: 'POST',
-    url: '/source/del',
-    baseURL,
-    data: {
-      projectId,
-      _id
-    },
   })
 }
 
@@ -274,7 +246,6 @@ export function acceptInvite(_id: string, code: string) {
 export function getIcon(projectId: string, _id: string) {
   return <Promise<{
     info: Icon
-    source: Source
   }>>request({
     method: 'GET',
     url: '/icon/info',
@@ -282,6 +253,18 @@ export function getIcon(projectId: string, _id: string) {
     params: {
       projectId,
       _id
+    },
+  })
+}
+
+export function addIcon(projectId: string, icons: BaseIcon[]) {
+  return <Promise<Res>>request({
+    method: 'POST',
+    url: '/icon/add',
+    baseURL,
+    data: {
+      projectId,
+      icons
     },
   })
 }
@@ -364,6 +347,18 @@ export function batchGroupIcon(projectId: string, _ids: string[], groupId: strin
       projectId,
       _ids,
       groupId
+    },
+  })
+}
+
+export function genIcon(projectId: string, type: 'css'|'js'|'vue') {
+  return <Promise<FileInfo>>request({
+    method: 'POST',
+    url: '/icon/gen',
+    baseURL,
+    data: {
+      projectId,
+      type
     },
   })
 }

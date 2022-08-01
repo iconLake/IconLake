@@ -34,3 +34,25 @@ export const ROOT = process.cwd()
  * 资源缓存时长
  */
 export const RESOURCE_MAX_AGE = (NODE_ENV === ENV.PRODUCTION) ? 7 * 24 * 3600 * 1000 : 0
+
+/**
+ * 错误码
+ */
+export const ERROR_CODE = {
+  ARGS_ERROR: 'argsError',
+  FAIL: 'fail',
+  USER_NOT_LOGIN: 'userNotLogin',
+  TOKEN_EXPIRED: 'tokenExpired'
+}
+
+/**
+ * 生成文件的最大留存数量
+ */
+export const FILES_MAX_LENGTH = 5
+
+/**
+ * 云服务类型
+ */
+export const CLOUD_TYPE = {
+  TENCENT: 'tencent'
+}

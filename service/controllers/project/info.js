@@ -1,6 +1,10 @@
 import filterObject from 'filter-obj'
+import { getConfig } from '../../config/index.js'
 import { Analyse } from '../../models/analyse.js'
 import { Project } from '../../models/project.js'
+import { isActive as isCosActive } from '../../utils/cos.js'
+
+const config = getConfig()
 
 /**
  * @api {get} /project/info/:id 获取项目信息
@@ -36,6 +40,9 @@ export async function info (req, res) {
         })
       }
     }
+    if ('file' in result) {
+      result.file.domain = isCosActive ? config.cos.domain : config.domain
+    }
     res.json(result)
   } else {
     res.json({
@@ -49,7 +56,7 @@ export async function info (req, res) {
  */
 export async function edit (req, res) {
   let _id = req.body._id
-  const data = filterObject(req.body, ['name', 'desc'])
+  const data = filterObject(req.body, ['name', 'desc', 'class', 'prefix'])
   if (typeof _id === 'string' && _id.length > 0) {
     await Project.updateOne({
       _id,

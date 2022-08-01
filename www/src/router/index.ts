@@ -34,11 +34,6 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/project/setting/Group.vue')
       },
       {
-        path: 'source',
-        name: 'projectSourceSetting',
-        component: () => import('../views/project/setting/Source.vue')
-      },
-      {
         path: 'member',
         name: 'projectMemberSetting',
         component: () => import('../views/project/setting/Member.vue')
@@ -61,6 +56,16 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/icons/Index.vue')
   },
   {
+    path: '/icons/:id/create',
+    name: 'iconsCreate',
+    component: () => import('../views/icons/Create.vue')
+  },
+  {
+    path: '/icons/:id/use',
+    name: 'iconsUse',
+    component: () => import('../views/icons/Use.vue')
+  },
+  {
     path: '/project/:id/invite',
     name: 'projectInvite',
     component: () => import('../views/project/Invite.vue')
@@ -69,11 +74,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/analyse/icon/:projectId/:id',
     name: 'analyseIcon',
     component: () => import('../views/analyse/Icon.vue')
-  },
-  {
-    path: '/help',
-    name: 'help',
-    component: () => import('../views/help/Index.vue')
   }
 ]
 
