@@ -22,7 +22,7 @@
   "sync": "同步",
   "syncDone": "同步完成",
   "batchOperation": "批量操作",
-  "cancelBatchOperation": "取消批量操作",
+  "cancelBatchOperation": "退出批量操作",
   "batchDelete": "批量删除",
   "batchGroup": "批量分组",
   "batchSetGroup": "设置{n}个图标的分组为：",

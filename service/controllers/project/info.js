@@ -3,6 +3,7 @@ import { getConfig } from '../../config/index.js'
 import { Analyse } from '../../models/analyse.js'
 import { Project } from '../../models/project.js'
 import { isActive as isCosActive } from '../../utils/cos.js'
+import { deleteProjectDir } from './icon/gen/index.js'
 
 const config = getConfig()
 
@@ -107,6 +108,7 @@ export async function del (req, res) {
     }
   })
   res.json(result.deletedCount === 1 ? {} : { error: 'delFail' })
+  deleteProjectDir(req.body._id)
 }
 
 /**
@@ -138,4 +140,5 @@ export async function clean (req, res) {
     }
   })
   res.json(result.modifiedCount === 1 ? {} : { error: 'cleanFail' })
+  deleteProjectDir(req.body._id)
 }

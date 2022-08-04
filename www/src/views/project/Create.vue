@@ -11,7 +11,7 @@ const { t } = useI18n()
 const fmData = reactive({
   _id: '',
   name: '',
-  description: ''
+  desc: ''
 })
 
 const isChecked = computed(() => {
@@ -19,10 +19,9 @@ const isChecked = computed(() => {
 })
 
 async function create () {
-  toast(t('creatingProject'))
   const data = await createProject({
     name: fmData.name,
-    description: fmData.description
+    desc: fmData.desc
   })
   fmData._id = data._id
   router.replace(`/icons/${data._id}`)
@@ -51,7 +50,7 @@ async function create () {
           <label>{{t('projectDescription')}}</label>
           <div class="input textarea-input flex start">
             <i class="iconfont icon-desc"></i>
-            <textarea class="grow" autocomplete="off" maxlength="100" v-model="fmData.description" ame="description"></textarea>
+            <textarea class="grow" autocomplete="off" maxlength="100" v-model="fmData.desc" name="desc"></textarea>
           </div>
         </div>
         <button class="bg-danger" type="submit" :disabled="!isChecked" >{{t('createNow')}}</button>

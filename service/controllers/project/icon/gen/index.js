@@ -246,3 +246,34 @@ async function deleteOldCloudFiles (projectId) {
   }
   await deleteObjects(keys)
 }
+
+/**
+ * 删除项目
+ * @param {string} projectId
+ */
+export const deleteProjectDir = isCosActive ? deleteProjectCloudDir : deleteProjectLocalDir
+
+/**
+ * 删除云端项目目录
+ * @param {string} projectId
+ */
+async function deleteProjectCloudDir (projectId) {
+  const data = await getBucket(`src/${projectId}/`)
+  if (data.contents.length > 0) {
+    await deleteObjects(data.contents.map(e => e.key))
+  }
+}
+
+/**
+ * 删除本地项目目录
+ * @param {string} projectId
+ */
+async function deleteProjectLocalDir (projectId) {
+  const dir = new URL(projectId, srcPath)
+  if (fs.existsSync(dir)) {
+    await rm(dir, {
+      recursive: true,
+      force: true
+    })
+  }
+}

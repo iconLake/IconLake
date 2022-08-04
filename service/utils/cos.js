@@ -45,6 +45,7 @@ export const putObject = isActive
  * 列出对象
  * @param {string} prefix
  * @param {string} [delimiter]
+ * @return {Promise<{prefix: string, contents: [{key: string, lastModified: string, eTag: string, size: number}]}>}
  */
 function tencentGetBucket (prefix, delimiter) {
   return new Promise((resolve, reject) => {

@@ -22,7 +22,7 @@
   "sync": "Sync",
   "syncDone": "Sync Done",
   "batchOperation": "Batch Operation",
-  "cancelBatchOperation": "Cancel Batch Operation",
+  "cancelBatchOperation": "Exit Batch Operation",
   "batchDelete": "Batch Delete",
   "batchGroup": "Batch Group",
   "batchSetGroup": "Set the group of {n} icons as:",
