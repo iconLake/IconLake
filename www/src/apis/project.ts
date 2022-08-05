@@ -65,6 +65,7 @@ export interface FileInfo {
 
 export interface Files {
   domain: string
+  maxLength: number
   css?: FileInfo
   js?: FileInfo
 }

@@ -120,6 +120,7 @@ function copyContent (str: string) {
     </div>
     <div class="t-center operate">
       <button class="btn" @click="generate">{{t(data.generating.has('css') ? 'generating' : 'regenerate')}}</button>
+      <div class="help">{{t('generationNote', {n: data.file.maxLength})}}</div>
     </div>
   </div>
   <!-- js -->
@@ -137,6 +138,7 @@ function copyContent (str: string) {
     </div>
     <div class="t-center operate">
       <button class="btn" @click="generate">{{t(data.generating.has('js') ? 'generating' : 'regenerate')}}</button>
+      <div class="help">{{t('generationNote', {n: data.file.maxLength})}}</div>
     </div>
   </div>
   <!-- vue -->
@@ -220,6 +222,12 @@ function copyContent (str: string) {
   }
   .operate {
     padding: 2rem 0;
+    .help {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: #aaa;
+      text-align: left;
+    }
   }
 }
 </style>

@@ -98,5 +98,6 @@
   "selectIconFile": "选择{type}文件",
   "fileCouldNotBeParsed": "文件无法解析",
   "fileLoadFailed": "文件加载失败",
-  "pleaseSelectFile": "请选择{type}文件"
+  "pleaseSelectFile": "请选择{type}文件",
+  "generationNote": "注：只保留最近{n}次生成的文件。"
 }

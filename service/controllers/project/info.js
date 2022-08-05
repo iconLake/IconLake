@@ -2,6 +2,7 @@ import filterObject from 'filter-obj'
 import { getConfig } from '../../config/index.js'
 import { Analyse } from '../../models/analyse.js'
 import { Project } from '../../models/project.js'
+import { FILES_MAX_LENGTH } from '../../utils/const.js'
 import { isActive as isCosActive } from '../../utils/cos.js'
 import { deleteProjectDir } from './icon/gen/index.js'
 
@@ -43,6 +44,7 @@ export async function info (req, res) {
     }
     if ('file' in result) {
       result.file.domain = isCosActive ? config.cos.domain : config.domain
+      result.file.maxLength = FILES_MAX_LENGTH
     }
     res.json(result)
   } else {
