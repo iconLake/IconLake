@@ -13,7 +13,7 @@ const projectUserId = ref('')
 const inviteCode = ref('')
 const members = ref(<Member[]>[])
 
-const inviteLink = computed(() => `https://iconlake.com/manage/project/${projectId}/invite?code=${inviteCode.value}`)
+const inviteLink = computed(() => `${location.origin}/manage/project/${projectId}/invite?code=${inviteCode.value}`)
 
 async function getProject() {
   const data = await info(projectId, 'userId invite')
@@ -70,7 +70,7 @@ function del(i: number) {
     </div>
     <div class="list">
       <div class="item flex" v-for="item, i in members" :key="item._id">
-        <span>{{item.user.name}}</span>
+        <span>{{item.user.name || item.userId}}</span>
         <div>
           <i class="iconfont icon-admin c-danger" :title="t('admin')" v-if="item.isAdmin"></i>
           <i

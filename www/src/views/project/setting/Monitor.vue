@@ -15,7 +15,7 @@ const monitor = ref(<Monitor>{
   spider: ''
 })
 
-const jsSRC = computed(() => `https://iconlake.com/visit/monitor/${projectId}.js`)
+const jsSRC = computed(() => `${location.origin}/visit/monitor/${projectId}.js`)
 
 async function getProject() {
   const res = await info(projectId, 'monitor')

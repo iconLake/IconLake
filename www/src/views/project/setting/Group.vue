@@ -95,7 +95,7 @@ async function save (item: Group) {
     <i class="iconfont icon-plus m-left"></i>
   </div>
   <div class="list">
-    <div class="item flex stretch" v-for="item, i in list" :data-i="i" draggable="true">
+    <div class="item flex stretch" v-for="item, i in list" :data-i="i">
       <div class="drag iconfont icon-drag" @mousedown.prevent="dragStart" @mousemove="dragMove" @mouseup.prevent="dragEnd" @mouseleave="dragEnd"></div>
       <input class="grow" type="text" v-model="item.name" @change="save(item)">
       <div class="opt iconfont icon-delete c-danger" @click="del(i)"></div>

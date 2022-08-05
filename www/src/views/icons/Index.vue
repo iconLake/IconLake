@@ -35,7 +35,7 @@ const data = reactive({
 const batchGroupFormDom = ref(<Element>{})
 
 async function getIcons () {
-  const res = await getProjectInfo(data._id, 'name icons sources groups file')
+  const res = await getProjectInfo(data._id, 'name icons groups')
   data.name = res.name
   if (res.groups instanceof Array) {
     data.groups = res.groups.sort((a, b) => b.num - a.num)

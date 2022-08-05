@@ -50,7 +50,7 @@ async function create () {
           <label>{{t('projectDescription')}}</label>
           <div class="input textarea-input flex start">
             <i class="iconfont icon-desc"></i>
-            <textarea class="grow" autocomplete="off" maxlength="100" v-model="fmData.desc" name="desc"></textarea>
+            <textarea class="grow" autocomplete="off" maxlength="300" v-model="fmData.desc" name="desc"></textarea>
           </div>
         </div>
         <button class="bg-danger" type="submit" :disabled="!isChecked" >{{t('createNow')}}</button>
