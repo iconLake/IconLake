@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, reactive, ref, watch } from "vue";
+import { nextTick, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon, genIcon } from "../../apis/project";
 import IconVue from "../../components/Icon.vue";
@@ -44,7 +44,7 @@ async function getIcons () {
     })
   }
   if (res.icons instanceof Array) {
-    data.icons = res.icons
+    data.icons = res.icons.reverse()
     if (res.icons.length > 0) {
       getList()
       nextTick(updateMainWidth)
@@ -149,15 +149,42 @@ onMounted(() => {
   detailWidth = detailDom.value.root.getBoundingClientRect().width
 })
 
-function selectIcon(icon:Icon) {
+function selectIcon(icon:Icon, e:MouseEvent) {
   if (!data.isBatching) {
     return
   }
   if (data.selectedIcons.has(icon._id)) {
     data.selectedIcons.delete(icon._id)
+    return
   } else {
     data.selectedIcons.set(icon._id, icon)
   }
+  if (e.shiftKey && data.selectedIcons.size > 1) {
+    const list = Array.from(data.selectedIcons.values())
+    const startItem = list[list.length - 2]
+    const endItem = list[list.length - 1]
+    if (startItem.groupId === endItem.groupId) {
+      const icons = (data.groupMap[startItem.groupId] || data.list[0]).icons
+      const startI = icons.findIndex((e:Icon) => e._id === startItem._id)
+      const endI = icons.findIndex((e:Icon) => e._id === endItem._id)
+      if (Math.abs(startI - endI) > 1) {
+        for (let i = Math.min(startI, endI) + 1, n = Math.max(startI, endI); i < n; ++i) {
+          data.selectedIcons.set(icons[i]._id, icons[i])
+        }
+      }
+    }
+  }
+}
+
+function selectGroup (group: Group) {
+  if (!data.isBatching) {
+    return
+  }
+  const isAllSelected = group.icons.every((icon: Icon) => data.selectedIcons.has(icon._id))
+  const deal = isAllSelected ? 'delete' : 'set'
+  group.icons.forEach((icon: Icon) => {
+    data.selectedIcons[deal](icon._id, icon)
+  })
 }
 
 async function batchDelete() {
@@ -245,7 +272,14 @@ watch(() => data.keyword, () => {
     </div>
     <div class="list" ref="iconListDom">
       <div class="group" v-for="item in data.list" :key="item._id">
-        <div class="group-title">{{item.name}}</div>
+        <div
+          class="group-title flex"
+          :class="{pointer: data.isBatching}"
+          @click="selectGroup(item)"
+        >
+          <span>{{item.name}}</span>
+          <span v-if="data.isBatching" class="iconfont icon-select-all" :title="t('selectAll')"></span>
+        </div>
         <div class="icons">
           <div
             class="icon-item t-center"
@@ -254,7 +288,7 @@ watch(() => data.keyword, () => {
             :key="icon._id"
             @mouseenter="showDetail(icon, $event)"
             @mouseleave="hideDetail()"
-            @click="selectIcon(icon)"
+            @click="selectIcon(icon, $event)"
           >
             <IconVue :info="icon"/>
             <div class="name">{{icon.name}}</div>

@@ -99,5 +99,6 @@
   "fileCouldNotBeParsed": "File Could Not Be Parsed",
   "fileLoadFailed": "File Load Failed",
   "pleaseSelectFile": "Please Select {type} File",
-  "generationNote": "Note: only the last {n} generated files are retained."
+  "generationNote": "Note: only the last {n} generated files are retained.",
+  "selectAll": "Select All"
 }
