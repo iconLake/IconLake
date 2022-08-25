@@ -245,6 +245,7 @@ async function saveInfo(key: 'name' | 'code' | 'groupId') {
           line-height: 2.5rem;
           border-radius: 0.25rem;
           border: solid 0.063rem transparent;
+          padding-right: 2.5rem;
           &:focus {
             border-color: #476de8;
           }
