@@ -48,6 +48,8 @@ watchEffect(() => {
   input.name = props.info.name
   input.code = props.info.code
   input.groupId = props.info.groupId || ''
+  input.tag = ''
+  isTagAdding.value = false
 })
 
 watchEffect(() => {
