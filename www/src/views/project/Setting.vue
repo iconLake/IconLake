@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import UserVue from '../../components/User.vue'
 import HeaderVue from '../../components/Header.vue'
@@ -14,6 +14,7 @@ const project = ref(<{
   name: string
   desc: string
 }>{})
+const isInfoEditing = computed(() => /\/info$/i.test($route.path))
 
 async function getProject() {
   project.value = await info(projectId, 'name desc')
@@ -53,7 +54,7 @@ getProject()
         <div class="grow">
           <div class="flex">
             <div class="title">{{project.name}}</div>
-            <i class="iconfont icon-edit"></i>
+            <i v-if="!isInfoEditing" class="iconfont icon-edit"></i>
           </div>
           <div class="desc">{{project.desc}}</div>
         </div>
