@@ -1,1 +1,0 @@
-import{d as r,C as c,u as n}from"./vendor.75eb7f42.js";import{t as u,x as p}from"./project.7b4a0665.js";import"./index.a6db4ee7.js";const j=r({setup(i){const o=c(),t=n(),e=o.params.id,s=o.query.code;async function a(){await p(e,s),t.replace(`/icons/${e}`)}return e&&s?a():(u("\u53C2\u6570\u9519\u8BEF"),t.replace("/home")),()=>{}}});export{j as default};
