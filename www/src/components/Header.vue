@@ -12,7 +12,7 @@ const $props = defineProps<{
 const $route = useRoute()
 
 const backUrl = computed(() => {
-  const referer = $route.meta.referer || '/'
+  const referer = <string>$route.meta.referer || '/'
   return typeof $props.back === 'boolean' && $props.back ? referer : <string>$props.back
 })
 </script>

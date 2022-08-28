@@ -1,10 +1,11 @@
+import i18n from '@/i18n'
 import axios, { AxiosRequestConfig } from 'axios'
 import { toast } from './index'
 
 function showErrorMsg (res: any) {
   console.error(res)
-  if (res.error) {
-    toast.error(res.error)
+  if (typeof res.error === 'string') {
+    toast.error(i18n.global.t(res.error))
   }
   const redirectError = {
     tokenExpired: true,

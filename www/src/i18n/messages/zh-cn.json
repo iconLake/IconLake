@@ -100,5 +100,6 @@
   "fileLoadFailed": "文件加载失败",
   "pleaseSelectFile": "请选择{type}文件",
   "generationNote": "注：只保留最近{n}次生成的文件。",
-  "selectAll": "全选"
+  "selectAll": "全选",
+  "argsError": "信息填写错误"
 }

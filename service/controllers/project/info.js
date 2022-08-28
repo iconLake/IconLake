@@ -42,6 +42,9 @@ export async function info (req, res) {
         })
       }
     }
+    if (/file/.test(fields) && !result.file) {
+      result.file = {}
+    }
     if ('file' in result) {
       result.file.domain = isCosActive ? config.cos.domain : config.domain
       result.file.maxLength = FILES_MAX_LENGTH

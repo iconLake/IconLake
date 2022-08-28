@@ -86,6 +86,9 @@ function showAddTag() {
 }
 
 async function saveTag() {
+  if (!input.tag) {
+    return
+  }
   await addTag(props.projectId, props.info._id, input.tag)
   toast.success(t('saveDone'))
   props.info.tags.push(input.tag)
@@ -165,7 +168,11 @@ async function saveInfo(key: 'name' | 'code' | 'groupId') {
           </div>
           <div class="tag flex" v-if="isTagAdding">
             <input type="text" maxlength="8" v-model="input.tag" ref="tagInputDom">
-            <i class="iconfont icon-checked pointer tag-add" @click="saveTag"></i>
+            <i
+              class="iconfont icon-checked pointer tag-add"
+              :class="{active: input.tag}"
+              @click="saveTag"
+            ></i>
           </div>
         </div>
       </div>
@@ -280,7 +287,10 @@ async function saveInfo(key: 'name' | 'code' | 'groupId') {
       display: none;
     }
     &-add {
-      color: $color-main;
+      color: #808080;
+      &.active {
+        color: $color-main;
+      }
     }
     &:hover {
       .iconfont {

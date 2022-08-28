@@ -316,5 +316,7 @@ export async function gen (req, res) {
     vue: genVUE
   }
   fn[type](req, res, projectId, project)
-  deleteOldFiles(projectId)
+  if (/^(js|css)$/.test(type)) {
+    deleteOldFiles(projectId)
+  }
 }
