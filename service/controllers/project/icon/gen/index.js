@@ -35,8 +35,13 @@ export async function genCSS (req, res, projectId, project) {
   const svgsPath = new URL(svgsRelativePath, dir)
   await mkdir(svgsPath)
   const metaMap = new Map()
+  let unicode = 2000 // 预防unicode不存在
   await Promise.all(project.icons.map(async icon => {
     const file = new URL(`${icon.code}.svg`, svgsPath)
+    if (!icon.unicode) {
+      icon.unicode = ++unicode
+      console.error('UnicodeError:', projectId, icon.code)
+    }
     await writeFile(file, `<svg viewBox="${icon.svg.viewBox}" version="1.1" xmlns="http://www.w3.org/2000/svg">${icon.svg.path}</svg>`)
     metaMap.set(icon.code, {
       unicode: [String.fromCodePoint(+`0x${icon.unicode}`)],
