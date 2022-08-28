@@ -52,9 +52,13 @@ let cachedIcons = new Map<string, Icon>()
 
 function updateIcons() {
   const icons: Icon[] = []
-  cachedIcons.forEach(e => {
+  cachedIcons.forEach((e, k) => {
     if (e.prefix && e.id) {
       e.code = e.id?.substring(e.prefix.length)
+    }
+    if (oldIcons[e.code]) {
+      cachedIcons.delete(k)
+      return toast(t('codeExistsAndIconOut', { code: e.code }))
     }
     icons.push(e)
   })

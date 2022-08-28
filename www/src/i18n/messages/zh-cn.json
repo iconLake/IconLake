@@ -102,5 +102,6 @@
   "generationNote": "注：只保留最近{n}次生成的文件。",
   "selectAll": "全选",
   "argsError": "信息填写错误",
-  "codeExists": "标识已存在"
+  "codeExists": "标识已存在",
+  "codeExistsAndIconOut": "标识【{code}】已存在，图标已被过滤掉"
 }
