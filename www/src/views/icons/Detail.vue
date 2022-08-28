@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { computed, nextTick, reactive, ref, watchEffect } from "vue";
-import { addTag, delTag, editIcon, Group, Icon } from "../../apis/project";
-import IconComponent from "../../components/Icon.vue";
-import { copy, toast } from '../../utils';
+import { computed, nextTick, reactive, ref, watchEffect } from 'vue'
+import { addTag, delTag, editIcon, Group, Icon } from '../../apis/project'
+import IconComponent from '../../components/Icon.vue'
+import { copy, toast } from '../../utils'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -14,6 +14,7 @@ const props = defineProps<{
   left: string
   isShow?: boolean
   groups: Group[]
+  icons: Icon[]
 }>()
 
 const emit = defineEmits<{
@@ -108,6 +109,9 @@ async function saveInfo(key: 'name' | 'code' | 'groupId') {
     code?: string
     groupId?: string
   }>{}
+  if (key === 'code' && props.icons.some(e => e.code === input.code)) {
+    return toast(t('codeExists'))
+  }
   data[key] = input[key]
   await editIcon(props.projectId, props.info._id, data)
   toast(t('saveDone'))

@@ -101,5 +101,6 @@
   "pleaseSelectFile": "请选择{type}文件",
   "generationNote": "注：只保留最近{n}次生成的文件。",
   "selectAll": "全选",
-  "argsError": "信息填写错误"
+  "argsError": "信息填写错误",
+  "codeExists": "标识已存在"
 }

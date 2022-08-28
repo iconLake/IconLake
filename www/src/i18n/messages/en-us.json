@@ -40,7 +40,7 @@
   "desc": "Description",
   "onlineLink": "Online Link",
   "save": "Save",
-  "saveDone": "Save Done",
+  "saveDone": "Saved Successfully",
   "saveAndSync": "Save & Sync",
   "confirm": "Confirm",
   "cancel": "Cancel",
@@ -101,5 +101,6 @@
   "pleaseSelectFile": "Please Select {type} File",
   "generationNote": "Note: only the last {n} generated files are retained.",
   "selectAll": "Select All",
-  "argsError": "Information Filling Error"
+  "argsError": "Information Filling Error",
+  "codeExists": "Code already exists"
 }

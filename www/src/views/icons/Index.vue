@@ -304,6 +304,7 @@ watch(() => data.keyword, () => {
         :left="data.detail.left"
         :is-show="data.detail.isShow"
         :groups="data.groups"
+        :icons="data.icons"
         @update="updateIcon"
         @mouseenter="holdDetail"
         @mouseleave="hideDetail"
