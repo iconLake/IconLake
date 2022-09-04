@@ -31,6 +31,11 @@ export const NODE_ENV = Object.values(ENV).indexOf(process.env.NODE_ENV) > -1 ? 
 export const ROOT = process.cwd()
 
 /**
+ * 头像路径
+ */
+export const AVATAR_PATH = 'avatar/'
+
+/**
  * 资源缓存时长
  */
 export const RESOURCE_MAX_AGE = (NODE_ENV === ENV.PRODUCTION) ? 7 * 24 * 3600 * 1000 : 0

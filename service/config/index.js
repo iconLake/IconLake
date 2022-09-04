@@ -75,7 +75,7 @@ export const configs = {
       port: 8088
     },
     mongodb: {
-      uri: ''
+      uri: 'mongodb://GddyNA:QwZ38zISCDdT55IC@primarydb.viiip.cc:27017/dev-iconlake?retryWrites=true&replicaSet=cluster'
     },
     gitee: {
       clientId: '',
@@ -89,12 +89,12 @@ export const configs = {
       domain: 'http://127.0.0.1:9009'
     },
     cos: {
-      domain: 'https://cdn.iconlake.com',
-      type: 'tencent',
-      secretId: '',
-      secretKey: '',
-      bucket: '',
-      region: ''
+      // domain: 'https://cdn.iconlake.com',
+      // type: 'tencent',
+      // secretId: 'AKIDXtzpOghRu61e05sOdbIhqiIbdQSEjyvb',
+      // secretKey: 'TgcGdkZ7NN6YjeJgmb8NL2RbU5PSFlzw',
+      // bucket: 'iconlake-test-1304929357',
+      // region: 'ap-shanghai'
     }
   }
 }
