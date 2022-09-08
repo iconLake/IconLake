@@ -16,6 +16,7 @@ export default defineConfig({
       '/login': 'http://127.0.0.1:8088',
       '/common': 'http://127.0.0.1:8088',
       '/imgs': 'http://127.0.0.1:8088',
+      '/avatar': 'http://127.0.0.1:8088',
     }
   },
   build: {
