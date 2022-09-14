@@ -20,10 +20,10 @@ const $route = useRoute()
 const $router = useRouter()
 
 const data = reactive({
-  _id: <string>$route.params.id,
+  _id: $route.params.id as string,
   name: '',
-  activeTab: <Tab>'svg',
-  icons: <Icon[]>[]
+  activeTab: 'svg' as Tab,
+  icons: [] as Icon[]
 })
 
 const oldIcons: {[propName: string]: any} = {}
@@ -66,7 +66,7 @@ function updateIcons() {
 }
 
 function onSVGChange(e: Event) {
-  const files = (<HTMLInputElement>e.target).files
+  const files = (e.target as HTMLInputElement).files
   if (files && files.length > 0) {
     Array.from(files).forEach(file => {
       if (file.type !== 'image/svg+xml') {
@@ -77,7 +77,7 @@ function onSVGChange(e: Event) {
       reader.onload = () => {
         try {
           const parser = new DOMParser()
-          const doc = parser.parseFromString(<string>reader.result, 'image/svg+xml')
+          const doc = parser.parseFromString(reader.result as string, 'image/svg+xml')
           const code = file.name.substring(0, file.name.lastIndexOf('.'))
           const svg = {
             code,
@@ -102,7 +102,7 @@ function onSVGChange(e: Event) {
 }
 
 function onIconfontJSChange(e: Event) {
-  const files = (<HTMLInputElement>e.target).files
+  const files = (e.target as HTMLInputElement).files
   if (files && files.length > 0) {
     if (files[0].type !== 'text/javascript') {
       return toast.error(t('pleaseSelectFile', {type: '.js'}))
@@ -110,7 +110,7 @@ function onIconfontJSChange(e: Event) {
     const reader = new FileReader()
     reader.readAsText(files[0], 'utf-8')
     reader.onload = () => {
-      const text = <string>reader.result
+      const text = reader.result as string
       const symbols = text.match(/<symbol.*?>.*?<\/symbol>/ig)
       if (symbols) {
         symbols.forEach(symbol => {
@@ -125,9 +125,9 @@ function onIconfontJSChange(e: Event) {
               }
             }
             if (!cachedIcons.has(svg.id)) {
-              cachedIcons.set(svg.id, <Icon>{})
+              cachedIcons.set(svg.id, {} as Icon)
             }
-            Object.assign(<Icon>cachedIcons.get(svg.id), svg)
+            Object.assign(cachedIcons.get(svg.id) as Icon, svg)
           }
         })
         updateIcons()
@@ -140,7 +140,7 @@ function onIconfontJSChange(e: Event) {
 }
 
 function onIconfontJSONChange(e: Event) {
-  const files = (<HTMLInputElement>e.target).files
+  const files = (e.target as HTMLInputElement).files
   if (files && files.length > 0) {
     if (files[0].type !== 'application/json') {
       return toast.error(t('pleaseSelectFile', {type: '.json'}))
@@ -148,7 +148,7 @@ function onIconfontJSONChange(e: Event) {
     const reader = new FileReader()
     reader.readAsText(files[0], 'utf-8')
     reader.onload = () => {
-      const text = <string>reader.result
+      const text = reader.result as string
       try {
         const json = JSON.parse(text)
         const prefix = json.css_prefix_text
@@ -156,9 +156,9 @@ function onIconfontJSONChange(e: Event) {
           json.glyphs.forEach((icon: any) => {
             const id = `${prefix}${icon.font_class}`
             if (!cachedIcons.has(id)) {
-              cachedIcons.set(id, <Icon>{})
+              cachedIcons.set(id, {} as Icon)
             }
-            Object.assign(<Icon>cachedIcons.get(id), {
+            Object.assign(cachedIcons.get(id) as Icon, {
               name: icon.name,
               prefix
             })

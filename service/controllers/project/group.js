@@ -1,4 +1,4 @@
-import filterObject from 'filter-obj'
+import { includeKeys } from 'filter-obj'
 import mongoose from 'mongoose'
 import { Project } from '../../models/project.js'
 
@@ -14,7 +14,7 @@ export async function edit (req, res) {
     })
     return
   }
-  const data = filterObject(req.body, ['_id', 'name', 'num'])
+  const data = includeKeys(req.body, ['_id', 'name', 'num'])
   if (typeof _id === 'string' && _id.length > 0) {
     await Project.updateOne({
       _id: projectId,

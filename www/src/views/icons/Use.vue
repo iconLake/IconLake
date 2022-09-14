@@ -13,13 +13,13 @@ const $route = useRoute()
 type Tab = 'css'|'js'|'vue'
 
 const data = reactive({
-  _id: <string>$route.params.id,
+  _id: $route.params.id as string,
   name: '',
   class: '',
   prefix: '',
   iconUpdateTime: '',
-  file: <Files>{},
-  activeTab: <Tab>'css',
+  file: {} as Files,
+  activeTab: 'css' as Tab,
   src: '',
   generating: new Set()
 })
@@ -75,7 +75,7 @@ async function generate() {
   const res = await genIcon(data._id, tab).finally(() => {
     data.generating.delete(tab)
   })
-  Object.assign(<FileInfo>data.file[tab], res)
+  Object.assign(data.file[tab] as FileInfo, res)
   toast(t('generateDone'))
 }
 

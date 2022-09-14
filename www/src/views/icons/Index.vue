@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { nextTick, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
+import { nextTick, onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon, genIcon } from "../../apis/project";
+import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon } from "../../apis/project";
 import IconVue from "../../components/Icon.vue";
 import { confirm, toast } from '../../utils';
 import Detail from "./Detail.vue";
@@ -14,25 +14,25 @@ const { t } = useI18n()
 const $route = useRoute()
 
 const data = reactive({
-  _id: <string>$route.params.id,
+  _id: $route.params.id as string,
   name: '',
-  icons: <Icon[]>[],
-  groups: <Group[]>[],
-  groupMap: <any>{},
-  list: <Group[]>[],
+  icons: [] as Icon[],
+  groups: [] as Group[],
+  groupMap: {} as {[x: string]: any},
+  list: [] as Group[],
   detail: {
-    info: <Icon>{},
+    info: {} as Icon,
     top: '-50rem',
     left: '-50rem',
     isShow: false
   },
   isBatching: false,
-  selectedIcons: <Map<string, Icon>>new Map(),
+  selectedIcons: new Map<string, Icon>(),
   keyword: '',
   batchGroupId: ''
 })
 
-const batchGroupFormDom = ref(<Element>{})
+const batchGroupFormDom = ref<Element>()
 
 async function getIcons () {
   const res = await getProjectInfo(data._id, 'name icons groups')
@@ -99,17 +99,20 @@ getIcons()
 // 生成文件
 // genIcon(data._id, 'css')
 
-const mainDom = ref(<HTMLElement>{})
-const iconListDom = ref(<Element>{})
-const detailDom = ref(<{ root: Element }>{})
+const mainDom = ref<HTMLElement>()
+const iconListDom = ref<Element>()
+const detailDom = ref<{ root: Element }>()
 let detailWidth = 0
 let hideDetailTimer = 0
 
 function showDetail (icon: Icon, e: Event) {
+  if (!iconListDom.value) {
+    return
+  }
   if (hideDetailTimer) {
     clearTimeout(hideDetailTimer)
   }
-  const iconPosition = (<Element>e.target).getBoundingClientRect()
+  const iconPosition = (e.target as Element).getBoundingClientRect()
   const listPosition = iconListDom.value.getBoundingClientRect()
   const top = iconPosition.top - listPosition.top + iconPosition.height
   const right = (iconPosition.left + detailWidth) - listPosition.right
@@ -135,6 +138,9 @@ function hideDetail () {
 }
 
 function updateMainWidth () {
+  if (!iconListDom.value || !mainDom.value) {
+    return
+  }
   if (typeof iconListDom.value.querySelector === 'function') {
     const icon = iconListDom.value.querySelector('.icon-item')
     if (icon) {
@@ -146,7 +152,7 @@ function updateMainWidth () {
 }
 
 onMounted(() => {
-  detailWidth = detailDom.value.root.getBoundingClientRect().width
+  detailWidth = detailDom.value?.root.getBoundingClientRect().width || 200
 })
 
 function selectIcon(icon:Icon, e:MouseEvent) {
@@ -201,6 +207,9 @@ async function batchDelete() {
 }
 
 async function batchGroup() {
+  if (!batchGroupFormDom.value) {
+    return
+  }
   confirm(batchGroupFormDom.value, async () => {
     const ids: string[] = []
     data.selectedIcons.forEach(e => {

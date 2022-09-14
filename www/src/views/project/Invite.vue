@@ -5,8 +5,8 @@ import { toast } from '../../utils'
 
 const $route = useRoute()
 const router = useRouter()
-const projectId = <string>$route.params.id
-const code = <string>$route.query.code
+const projectId = $route.params.id as string
+const code = $route.query.code as string
 
 async function accept() {
   await acceptInvite(projectId, code)

@@ -53,7 +53,6 @@ export async function saveAvatar (uid, url, oldAvatar) {
 
 export async function success (userInfo, req, res) {
   if (userInfo.id && userInfo.from) {
-    userInfo.avatar = 'https://portrait.gitee.com/uploads/avatars/user/4/14345_huanxiang_1578914961.png'
     const { token, tokenExpire } = generateToken()
     let user = await User.findOne({
       [`${userInfo.from}.id`]: userInfo.id

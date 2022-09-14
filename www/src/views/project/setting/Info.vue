@@ -9,19 +9,22 @@ const { t } = useI18n()
 
 const $route = useRoute()
 
-const projectId = <string>$route.params.id
-const project = ref(<{
-  name: string
-  desc: string
-  class: string
-  prefix: string
-}>{})
+const projectId = $route.params.id as string
+const project = ref({
+  name: '',
+  desc: '',
+  class: '',
+  prefix: '',
+})
 
 async function getProject() {
   project.value = await info(projectId, 'name desc class prefix')
 }
 
 async function save() {
+  if (!project.value) {
+    return
+  }
   await editInfo(projectId, project.value)
   toast(t('saveDone'))
   setTimeout(() => {

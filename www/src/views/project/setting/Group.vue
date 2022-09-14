@@ -9,9 +9,9 @@ const { t } = useI18n()
 
 const route = useRoute()
 
-const projectId = <string>route.params.id
+const projectId = route.params.id as string
 
-const list = ref(<Group[]>[])
+const list = ref<Group[]>([])
 
 let movingItem: HTMLDivElement
 let startY = 0
@@ -44,7 +44,7 @@ function del (i: number) {
 }
 
 function dragStart (e: MouseEvent) {
-  const item = <HTMLDivElement>(<HTMLDivElement>e.target).parentNode
+  const item = (e.target as HTMLDivElement).parentNode as HTMLDivElement
   movingItem = item
   startY = e.y
   isMoving = true

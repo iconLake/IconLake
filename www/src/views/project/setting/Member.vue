@@ -8,10 +8,10 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const route = useRoute()
-const projectId = <string>route.params.id
+const projectId = route.params.id as string
 const projectUserId = ref('')
 const inviteCode = ref('')
-const members = ref(<Member[]>[])
+const members = ref<Member[]>([])
 
 const inviteLink = computed(() => `${location.origin}/manage/project/${projectId}/invite?code=${inviteCode.value}`)
 

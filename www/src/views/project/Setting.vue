@@ -9,11 +9,11 @@ import { info } from '../../apis/project';
 const { t } = useI18n()
 
 const $route = useRoute()
-const projectId = <string>$route.params.id
-const project = ref(<{
-  name: string
-  desc: string
-}>{})
+const projectId = $route.params.id as string
+const project = ref({
+  name: '',
+  desc: ''
+})
 const isInfoEditing = computed(() => /\/info$/i.test($route.path))
 
 async function getProject() {

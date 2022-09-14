@@ -19,6 +19,11 @@ const app = express()
 
 app.use(helmet({
   contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false,
+  crossOriginOpenerPolicy: false,
+  crossOriginResourcePolicy: {
+    policy: 'cross-origin'
+  },
   referrerPolicy: {
     policy: 'no-referrer-when-downgrade'
   }

@@ -1,4 +1,4 @@
-import filterObject from 'filter-obj'
+import { includeKeys } from 'filter-obj'
 import { getConfig } from '../../config/index.js'
 import { Analyse } from '../../models/analyse.js'
 import { Project } from '../../models/project.js'
@@ -62,7 +62,7 @@ export async function info (req, res) {
  */
 export async function edit (req, res) {
   let _id = req.body._id
-  const data = filterObject(req.body, ['name', 'desc', 'class', 'prefix'])
+  const data = includeKeys(req.body, ['name', 'desc', 'class', 'prefix'])
   if (typeof _id === 'string' && _id.length > 0) {
     await Project.updateOne({
       _id,

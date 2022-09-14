@@ -9,9 +9,9 @@ const { t } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
-const projectId = <string>route.params.id
+const projectId = route.params.id as string
 const name = ref('')
-const project = ref(<Project>{})
+const project = ref<Project>()
 
 async function getProject() {
   project.value = await info(projectId, 'name desc')
@@ -34,14 +34,14 @@ async function clean() {
   <div class="advance">
     <div class="warn">
       <p>{{t('delProjectWarning')}}</p>
-      <p>{{t('inputForSafe')}}&nbsp;[<span class="name">{{project.name}}</span>]&nbsp;。</p>
+      <p>{{t('inputForSafe')}}&nbsp;[<span class="name">{{project?.name}}</span>]&nbsp;。</p>
     </div>
     <p>
       <input type="text" v-model="name" :placeholder="t('fillProjectName')">
     </p>
     <div class="flex center">
-      <button class="btn" :disabled="name !== project.name" @click="clean">{{t('cleanProject')}}</button>
-      <button class="btn" :disabled="name !== project.name" @click="del">{{t('deleteProject')}}</button>
+      <button class="btn" :disabled="name !== project?.name" @click="clean">{{t('cleanProject')}}</button>
+      <button class="btn" :disabled="name !== project?.name" @click="del">{{t('deleteProject')}}</button>
     </div>
   </div>
 </template>

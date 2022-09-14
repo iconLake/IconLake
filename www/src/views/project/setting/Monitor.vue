@@ -8,9 +8,9 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const route = useRoute()
-const projectId = <string>route.params.id
+const projectId = route.params.id as string
 
-const monitor = ref(<Monitor>{
+const monitor = ref<Monitor>({
   isOn: false,
   spider: ''
 })
@@ -26,9 +26,9 @@ getProject()
 
 function switchStatus() {
   monitor.value.isOn = !monitor.value.isOn
-  editMonitor(projectId, <Monitor>{
+  editMonitor(projectId, {
     isOn: monitor.value.isOn
-  })
+  } as Monitor)
 }
 
 function copyJS() {
@@ -37,9 +37,9 @@ function copyJS() {
 }
 
 async function saveSpider() {
-  await editMonitor(projectId, <Monitor>{
+  await editMonitor(projectId, {
     spider: monitor.value.spider
-  })
+  } as Monitor)
   toast(t('saveDone'))
 }
 </script>

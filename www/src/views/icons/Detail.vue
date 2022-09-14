@@ -29,10 +29,10 @@ const opacity = computed(() => props.isShow ? 1 : 0)
 const isVisible = ref(false)
 const computedTop = computed(() => isVisible.value ? props.top : '-50rem')
 const computedLeft = computed(() => isVisible.value ? props.left : '-50rem')
-const root = ref(<Element>{})
-const nameInputDom = ref<HTMLDivElement>()
-const codeInputDom = ref<HTMLDivElement>()
-const tagInputDom = ref<HTMLDivElement>()
+const root = ref<Element>(document.body)
+const nameInputDom = ref<HTMLInputElement>(document.createElement('input'))
+const codeInputDom = ref<HTMLInputElement>(document.createElement('input'))
+const tagInputDom = ref<HTMLInputElement>(document.createElement('input'))
 const input = reactive({
   name: '',
   code: '',
@@ -67,8 +67,8 @@ watchEffect(() => {
 
 function focus(name: 'name'|'code') {
   ({
-    name: <HTMLDivElement>nameInputDom.value,
-    code: <HTMLDivElement>codeInputDom.value
+    name: nameInputDom.value,
+    code: codeInputDom.value
   }[name]).focus()
 }
 
@@ -81,7 +81,7 @@ function showAddTag() {
   isTagAdding.value = !isTagAdding.value
   if (isTagAdding.value) {
     nextTick(() => {
-      (<HTMLDivElement>tagInputDom.value).focus()
+      (tagInputDom.value).focus()
     })
   }
 }
@@ -104,11 +104,11 @@ async function deleteTag(i: number, tag: string) {
 }
 
 async function saveInfo(key: 'name' | 'code' | 'groupId') {
-  const data = <{
+  const data: {
     name?: string
     code?: string
     groupId?: string
-  }>{}
+  } = {}
   if (key === 'code' && props.icons.some(e => e.code === input.code)) {
     return toast(t('codeExists'))
   }

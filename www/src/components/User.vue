@@ -6,10 +6,7 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 let locale = ref(Cookies.get('locale') || 'zh-cn')
-const language = <{
-  label: string
-  value: string
-}>{
+const language = {
   'en-us': {
     label: '语言',
     value: '中文'
@@ -71,8 +68,8 @@ async function userLogout() {
     </div>
     <div class="pop" :class="{active: isPopShow}">
       <div class="item flex" @click="toggleLocale">
-        <span>{{language.label}}</span>
-        <span>{{language.value}}</span>
+        <span>{{language?.label}}</span>
+        <span>{{language?.value}}</span>
       </div>
       <a href="https://support.qq.com/product/370032" target="_blank" class="item flex">{{t('feedback')}}</a>
       <div class="item flex" @click="userLogout">

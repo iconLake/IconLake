@@ -17,12 +17,12 @@ interface Page {
   count: number
 }
 
-const projectId = <string>$route.params.projectId
-const _id = <string>$route.params.id
+const projectId = $route.params.projectId as string
+const _id = $route.params.id as string
 const icon = reactive({
-  info: <Icon>{}
+  info: {} as Icon
 })
-const pageList = ref(<Page[]>[])
+const pageList = ref<Page[]>([])
 const updateTime = ref('--')
 
 async function getInfo() {
