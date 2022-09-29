@@ -1,0 +1,9 @@
+node_modules
+Dockerfile
+.git
+.vscode
+.editorconfig
+.eslintrc
+.gitignore
+public/src
+public/tmp

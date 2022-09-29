@@ -31,6 +31,7 @@ export async function params (req, res) {
     clientId: {
       gitee: config.gitee.clientId,
       github: config.github.clientId
-    }
+    },
+    login: config.login
   })
 }

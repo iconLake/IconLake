@@ -1,0 +1,39 @@
+{
+  "domain": "https://iconlake.com",
+  "http": {
+    "port": 8080
+  },
+  "https": {
+    "port": 8443,
+    "ca": "./security/certs/root_bundle.crt",
+    "key": "./security/certs/iconlake.com.key",
+    "cert": "./security/certs/iconlake.com.crt"
+  },
+  "mongodb": {
+    "uri": "mongodb://user-iconlake:ABCDEFGH12345678_1@mongo:27017/iconlake?retryWrites=true"
+  },
+  "gitee": {
+    "clientId": "",
+    "clientSecret": ""
+  },
+  "github": {
+    "clientId": "",
+    "clientSecret": ""
+  },
+  "center": {
+    "domain": "http://center:9669"
+  },
+  "cos": {
+    "domain": "https://cdn.iconlake.com",
+    "type": "tencent",
+    "secretId": "",
+    "secretKey": "",
+    "bucket": "",
+    "region": ""
+  },
+  "login": {
+    "code": true,
+    "gitee": true,
+    "github": true
+  }
+}

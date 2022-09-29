@@ -12,6 +12,12 @@ import { getConfig } from '../../config/index.js'
 const config = getConfig()
 
 export async function login (req, res) {
+  if (!config.login.gitee) {
+    res.json({
+      error: 'giteeLoginNotAvailable'
+    })
+    return
+  }
   if (req.query.code) {
     const query = (new URLSearchParams({
       grant_type: 'authorization_code',

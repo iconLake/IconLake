@@ -1,36 +1,29 @@
+import { createRequire } from 'node:module'
 import { NODE_ENV } from '../utils/const.js'
 
+const require = createRequire(import.meta.url)
+
+const production = require('./production.json')
+const test = require('./test.json')
+const development = require('./development.json')
+
 export const configs = {
-  production: {
-    http: {
-      port: 9999
-    },
-    mongodb: {
-      uri: ''
-    }
-  },
-  test: {
-    http: {
-      port: 9669
-    },
-    mongodb: {
-      uri: ''
-    }
-  },
-  development: {
-    http: {
-      port: 9009
-    },
-    mongodb: {
-      uri: ''
-    }
-  }
+  production,
+  test,
+  development
 }
 
 /**
  * 获取配置
- * @param {string} [env='production']
- * @returns {{http: {port: number}, mongodb: {uri: string}}}
+ * @param {string} [env] 默认当前环境
+ * @returns {{\
+ *    http: {\
+ *      port: number\
+ *    }\
+ *    mongodb: {\
+ *      uri: string\
+ *    }\
+ * }}
  */
 export function getConfig (env) {
   const config = configs[env || NODE_ENV]

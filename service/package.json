@@ -7,16 +7,16 @@
   "scripts": {
     "dev:server": "pnpm exec pm2 reload ecosystem.config.cjs && pnpm exec pm2 logs service-dev",
     "dev:front": "pnpm exec gulp",
-    "dev": "pnpm exec npm-run-all -p dev:*",
+    "dev": "pnpm i && pnpm exec npm-run-all -p dev:*",
     "dev-clean": "pnpm exec pm2 delete service-dev",
-    "pro": "pm2 reload ecosystem.config.cjs --env production",
-    "test": "pm2 reload ecosystem.config.cjs --env test"
+    "pro": "pnpm i -P && pm2 reload ecosystem.config.cjs --env production",
+    "test": "pnpm i -P && pm2 reload ecosystem.config.cjs --env test"
   },
   "engines": {
     "node": ">=16",
     "pnpm": ">=7"
   },
-  "packageManager": "pnpm",
+  "packageManager": "pnpm@7.12.1",
   "author": "iconLake",
   "license": "AGPLv3",
   "dependencies": {

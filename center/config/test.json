@@ -1,0 +1,8 @@
+{
+  "http": {
+    "port": 9669
+  },
+  "mongodb": {
+    "uri": "mongodb://user-iconlake:ABCDEFGH12345678_1@mongo:27017/iconlake?retryWrites=true"
+  }
+}

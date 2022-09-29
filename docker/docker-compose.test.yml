@@ -1,0 +1,38 @@
+version: '3'
+services:
+  center:
+    container_name: center-test
+    image: iconlake/center-test
+    build: ../center
+    ports:
+      - "9669:9669"
+    environment:
+      - NODE_ENV=test
+    restart: on-failure
+    depends_on:
+      - mongo
+  service:
+    container_name: service-test
+    image: iconlake/service-test
+    build: ../service
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    environment:
+      - NODE_ENV=test
+    restart: on-failure
+    depends_on:
+      - mongo
+  mongo:
+    container_name: mongo-test
+    image: mongo:6
+    ports:
+      - "27067:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=ABCDEFGH12345678_0
+      - MONGO_INITDB_DATABASE=iconlake
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./data/mongo-test:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js

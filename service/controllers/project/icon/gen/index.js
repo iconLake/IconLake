@@ -197,6 +197,9 @@ export const deleteOldFiles = isCosActive ? deleteOldCloudFiles : deleteOldLocal
  */
 async function deleteOldLocalFiles (projectId) {
   const projectPath = new URL(`${projectId}/`, srcPath)
+  if (!fs.existsSync(projectPath)) {
+    return
+  }
   const files = await readdir(projectPath)
   if (files.length <= FILES_MAX_LENGTH) {
     return

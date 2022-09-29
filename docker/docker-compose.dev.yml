@@ -1,0 +1,44 @@
+version: '3'
+services:
+  center:
+    container_name: center-dev
+    image: iconlake/center-dev
+    build: ../center
+    ports:
+      - "9009:9009"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ../center:/app:rw
+    entrypoint: pnpm run dev
+    restart: on-failure
+    depends_on:
+      - mongo
+  service:
+    container_name: service-dev
+    image: iconlake/service-dev
+    build: ../service
+    ports:
+      - "8088:8088"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ../service:/app:rw
+      - ../www:/www:rw
+    entrypoint: pnpm run dev
+    restart: on-failure
+    depends_on:
+      - mongo
+  mongo:
+    container_name: mongo-dev
+    image: mongo:6
+    ports:
+      - "27087:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=ABCDEFGH12345678_0
+      - MONGO_INITDB_DATABASE=iconlake
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./data/mongo-dev:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js

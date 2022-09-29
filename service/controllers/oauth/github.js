@@ -12,6 +12,12 @@ import { getConfig } from '../../config/index.js'
 const config = getConfig()
 
 export async function login (req, res) {
+  if (!config.login.github) {
+    res.json({
+      error: 'githubLoginNotAvailable'
+    })
+    return
+  }
   if (req.query.code) {
     const query = (new URLSearchParams({
       client_id: config.github.clientId,

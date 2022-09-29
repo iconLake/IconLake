@@ -15,7 +15,7 @@ iconLake中心服务，用于承载任务队列、调度、监控等。
 ## 开发
 
 ### 配置
-修改`config/index.js`文件里的配置项。
+修改`config/development.json`文件里的配置项。
 ### 安装
 ```
 pnpm i
@@ -28,7 +28,7 @@ pnpm run dev
 ## 部署
 
 ### 配置
-修改`config/index.js`文件里的配置项。
+修改`config/production.json`文件里的配置项。
 ### 安装
 ```
 pnpm i -P

@@ -4,3 +4,4 @@ node_modules
 public/src
 public/avatar
 public/tmp
+.pnpm-store

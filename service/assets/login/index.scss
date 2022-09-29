@@ -45,6 +45,7 @@
       }
     }
     .item {
+      visibility: hidden;
       width: 25.188rem;
       height: 3.875rem;
       background-color: #f2f2f2;
@@ -54,6 +55,8 @@
       border: solid 0.063rem #f2f2f2;
       cursor: pointer;
       margin-top: 1.125rem;
+      transition: all 0.3s ease-out;
+      transform: translateY(10px);
       &:first-child {
         margin-top: 0;
       }
@@ -66,9 +69,10 @@
       span {
         font-size: 0.875rem;
       }
-    }
-    .code {
-      display: none;
+      &.active {
+        visibility: visible;
+        transform: translateY(0);
+      }
     }
   }
 
