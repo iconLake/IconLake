@@ -1,5 +1,5 @@
 {
-  "domain": "https://iconlake.com",
+  "domain": "https://iconlake.com:8443",
   "http": {
     "port": 8080
   },
