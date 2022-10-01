@@ -23,7 +23,7 @@ const env = getArgv('env') || ENV.DEVELOPMENT
 
 // pro环境配置，默认
 let name = 'service'
-let instances = -1
+let instances = 0
 let watch = false
 
 if (env === ENV.DEVELOPMENT) { // dev环境
