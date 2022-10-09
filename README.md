@@ -8,6 +8,10 @@ iconLake, make icon in control.
 构建web3.0时代的图标全生命周期管理工具。（[查看详情](https://support.qq.com/products/370032/post/165190297819061376/)）
 
 
+## 代码仓库
+
+我们的主仓库位于[Gitee](https://gitee.com/iconLake/IconLake)，GitHub仓库也会定期更新，但是请大家优先关注我们在Gitee上的动向。
+
 ## 贡献
 
 ### 方式
