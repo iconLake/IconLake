@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function Icon({ name, width = '18px', height = '18px', pure, ...args }) {
+function IconSvg({ name, width = '18px', height = '18px', pure, ...args }) {
   const data = ['__DATA__'];
   const iconMap = {};
   data.forEach(e => {
@@ -29,11 +29,11 @@ function Icon({ name, width = '18px', height = '18px', pure, ...args }) {
   );
 }
 
-Icon.propTypes = {
+IconSvg.propTypes = {
   name: PropTypes.string.isRequired,
   width: PropTypes.string,
   height: PropTypes.string,
   pure: PropTypes.bool,
 };
 
-export default Icon;
+export default IconSvg;
