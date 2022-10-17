@@ -352,7 +352,7 @@ export function batchGroupIcon(projectId: string, _ids: string[], groupId: strin
   })
 }
 
-export function genIcon(projectId: string, type: 'css'|'js'|'vue') {
+export function genIcon(projectId: string, type: 'css'|'js'|'vue'|'react') {
   return <Promise<FileInfo>>request({
     method: 'POST',
     url: '/icon/gen',

@@ -92,6 +92,7 @@
   "component": "组件",
   "componentFile": "组件文件",
   "vueComponent": "Vue组件",
+  "reactComponent": "React组件",
   "colon": " ：",
   "uploadSVG":"上传svg",
   "importIconfont": "导入iconfont",

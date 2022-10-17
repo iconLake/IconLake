@@ -10,7 +10,7 @@ import { copy, toast } from '../../utils'
 const { t } = useI18n()
 const $route = useRoute()
 
-type Tab = 'css'|'js'|'vue'
+type Tab = 'css'|'js'|'vue'|'react'
 
 const data = reactive({
   _id: $route.params.id as string,
@@ -37,9 +37,10 @@ const jsUpgradable = computed(() => !data.file.js?.updateTime
 
 watchPostEffect(() => {
   const v = data.activeTab
-  if (v === 'vue') {
+  if (v === 'vue' || v === 'react') {
     data.src = t('loading')
-    getVueContent()
+    v === 'vue' && getVueContent()
+    v === 'react' && getReactContent()
     return
   }
   data.src = data.file[v]?.hash ? `${data.file.domain}/src/${data._id}/${data.file[v]?.hash}/iconlake.${v}` : ''
@@ -62,7 +63,7 @@ function setTabActive(type: Tab) {
 
 async function generate() {
   const tab = data.activeTab
-  if (tab === 'vue' || data.generating.has(tab)) {
+  if (tab === 'vue' || tab === 'react' || data.generating.has(tab)) {
     return
   }
   data.generating.add(tab)
@@ -81,6 +82,10 @@ async function generate() {
 
 async function getVueContent() {
   data.src = (await genIcon(data._id, 'vue')).content || ''
+}
+
+async function getReactContent() {
+  data.src = (await genIcon(data._id, 'react')).content || ''
 }
 
 function copyContent (str: string) {
@@ -104,6 +109,7 @@ function copyContent (str: string) {
       <span v-if="jsUpgradable" class="alert" :title="t('upgradable')"></span>
     </div>
     <div class="item" :class="getTabClass('vue')" @click="setTabActive('vue')">Vue</div>
+    <div class="item" :class="getTabClass('react')" @click="setTabActive('react')">React</div>
   </div>
   <!-- css -->
   <div v-if="data.activeTab === 'css'" class="content use-css">
@@ -144,6 +150,15 @@ function copyContent (str: string) {
   <!-- vue -->
   <div v-else-if="data.activeTab === 'vue'" class="content use-vue">
     <h2 class="t-center">{{t('useWithType', {type: t('vueComponent')})}}</h2>
+    <p>{{t('componentFile')}}{{t('colon')}}</p>
+    <div class="code vue flex" @click="copyContent(data.src)" :title="t('copy')">
+      <pre>{{data.src}}</pre>
+      <i class="iconfont icon-copy"></i>
+    </div>
+  </div>
+  <!-- react -->
+  <div v-else-if="data.activeTab === 'react'" class="content use-vue">
+    <h2 class="t-center">{{t('useWithType', {type: t('reactComponent')})}}</h2>
     <p>{{t('componentFile')}}{{t('colon')}}</p>
     <div class="code vue flex" @click="copyContent(data.src)" :title="t('copy')">
       <pre>{{data.src}}</pre>

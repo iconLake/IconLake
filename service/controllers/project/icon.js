@@ -2,7 +2,7 @@ import { Analyse } from '../../models/analyse.js'
 import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
 import { ERROR_CODE } from '../../utils/const.js'
-import { deleteOldFiles, genCSS, genJS, genVUE } from './icon/gen/index.js'
+import { deleteOldFiles, genCSS, genJS, genReact, genVUE } from './icon/gen/index.js'
 
 /**
  * @api {get} /project/icon/info 获取图标信息
@@ -293,7 +293,7 @@ export async function batchGroup (req, res) {
  */
 export async function gen (req, res) {
   const { projectId, type } = req.body
-  if (!projectId || !type || !/^(js|css|vue)$/.test(type)) {
+  if (!projectId || !type || !/^(js|css|vue|react)$/.test(type)) {
     res.json({
       error: ERROR_CODE.ARGS_ERROR
     })
@@ -313,7 +313,8 @@ export async function gen (req, res) {
   const fn = {
     css: genCSS,
     js: genJS,
-    vue: genVUE
+    vue: genVUE,
+    react: genReact
   }
   fn[type](req, res, projectId, project)
   if (/^(js|css)$/.test(type)) {

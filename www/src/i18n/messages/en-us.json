@@ -92,6 +92,7 @@
   "component": "Component",
   "componentFile": "Component File",
   "vueComponent": "Vue Component",
+  "reactComponent": "React Component",
   "colon": " : ",
   "uploadSVG":"Upload SVG",
   "importIconfont": "Import Iconfont",

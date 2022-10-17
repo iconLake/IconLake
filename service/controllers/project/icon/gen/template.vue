@@ -45,7 +45,7 @@ export default class IconSvg extends Props {
   get path () {
     let path = ''
     if (this.name in iconMap) {
-      path = this.pure ? iconMap[this.name].path.replace(/fill=".*?"/ig, '') : iconMap[this.name].path
+      path = this.pure ? iconMap[this.name].path.replace(/fill=".*?"/ig, '').replace(/stroke=".*?"/ig, '') : iconMap[this.name].path
     }
     return path
   }

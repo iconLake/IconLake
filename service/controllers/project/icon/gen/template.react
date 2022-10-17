@@ -1,0 +1,39 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
+function Icon({ name, width = '18px', height = '18px', pure, ...args }) {
+  const data = ['__DATA__'];
+  const iconMap = {};
+  data.forEach(e => {
+    iconMap[e[0]] = {
+      viewBox: e[1],
+      path: e[2],
+    };
+  });
+
+  const getPath = (name, pure) => ({
+    __html: pure ? iconMap[name].path.replace(/fill=".*?"/ig, '').replace(/stroke=".*?"/ig, '') : iconMap[name].path
+  });
+
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      version="1.1"
+      data-icon-version="__HASH__"
+      width={width}
+      height={height}
+      viewBox={iconMap[name].viewBox}
+      dangerouslySetInnerHTML={getPath(name, pure)}
+      {...args}
+    />
+  );
+}
+
+Icon.propTypes = {
+  name: PropTypes.string.isRequired,
+  width: PropTypes.string,
+  height: PropTypes.string,
+  pure: PropTypes.bool,
+};
+
+export default Icon;

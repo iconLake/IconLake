@@ -187,6 +187,18 @@ export async function genVUE (req, res, projectId, project) {
 }
 
 /**
+ * 生成react
+ */
+export async function genReact (req, res, projectId, project) {
+  const data = JSON.stringify(project.icons.map(e => [e.code, e.svg.viewBox, e.svg.path]))
+  const hash = crypto.createHash('md5').update(data).digest('hex')
+  const reactTemp = await readFile(new URL('./template.react', import.meta.url))
+  res.json({
+    content: reactTemp.toString().replace('[\'__DATA__\']', data).replace('__HASH__', hash)
+  })
+}
+
+/**
  * 清理历史文件
  */
 export const deleteOldFiles = isCosActive ? deleteOldCloudFiles : deleteOldLocalFiles
