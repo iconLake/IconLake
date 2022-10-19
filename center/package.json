@@ -14,25 +14,25 @@
     "node": ">=16",
     "pnpm": ">=7"
   },
-  "packageManager": "pnpm@7.12.1",
+  "packageManager": "pnpm@7.13.5",
   "author": "iconLake",
   "license": "AGPLv3",
   "dependencies": {
-    "express": "^4.18.1",
-    "mongoose": "^6.3.6"
+    "express": "^4.18.2",
+    "mongoose": "^6.6.5"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
-    "@typescript-eslint/eslint-plugin": "^5.8.1",
-    "@typescript-eslint/parser": "^5.8.1",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
-    "pm2": "^5.2.0",
+    "pm2": "^5.2.2",
     "react": "^17.0.2",
-    "sass": "^1.45.2",
-    "typescript": "^4.5.4"
+    "sass": "^1.55.0",
+    "typescript": "^4.8.4"
   }
 }
