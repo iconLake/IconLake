@@ -4,6 +4,7 @@ import { addTag, delTag, editIcon, Group, Icon } from '../../apis/project'
 import IconComponent from '../../components/Icon.vue'
 import { copy, toast } from '../../utils'
 import { useI18n } from 'vue-i18n'
+import Select from '@/components/Select.vue'
 
 const { t } = useI18n()
 
@@ -25,10 +26,7 @@ const emit = defineEmits<{
   }): void
 }>()
 
-const opacity = computed(() => props.isShow ? 1 : 0)
 const isVisible = ref(false)
-const computedTop = computed(() => isVisible.value ? props.top : '-50rem')
-const computedLeft = computed(() => isVisible.value ? props.left : '-50rem')
 const root = ref<Element>(document.body)
 const nameInputDom = ref<HTMLInputElement>(document.createElement('input'))
 const codeInputDom = ref<HTMLInputElement>(document.createElement('input'))
@@ -40,6 +38,11 @@ const input = reactive({
   tag: ''
 })
 const isTagAdding = ref(false)
+
+const opacity = computed(() => props.isShow ? 1 : 0)
+const computedTop = computed(() => isVisible.value ? props.top : '-50rem')
+const computedLeft = computed(() => isVisible.value ? props.left : '-50rem')
+const groupOptions = computed(() => props.groups.map(e => ({ label: e.name, value: e._id })))
 
 defineExpose({
   root
@@ -154,6 +157,10 @@ async function saveInfo(key: 'name' | 'code' | 'groupId') {
         <div class="item info-group">
           <div class="label">{{t('group')}}</div>
           <div class="value">
+            <Select
+              :options="groupOptions"
+              v-model="input.groupId"
+            />
             <select @change="saveInfo('groupId')" v-model="input.groupId">
               <option value="">{{t('ungrouped')}}</option>
               <option v-for="g in groups" :key="g._id" :value="g._id">{{g.name}}</option>
