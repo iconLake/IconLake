@@ -79,11 +79,21 @@ function onSVGChange(e: Event) {
           const parser = new DOMParser()
           const doc = parser.parseFromString(reader.result as string, 'image/svg+xml')
           const code = file.name.substring(0, file.name.lastIndexOf('.'))
+          let viewBox = doc.documentElement.getAttribute('viewBox')
+          if (!viewBox) {
+            const w = doc.documentElement.getAttribute('width')
+            const h = doc.documentElement.getAttribute('height')
+            if (w && h) {
+              viewBox = `0 0 ${w} ${h}`
+            } else {
+              viewBox = ''
+            }
+          }
           const svg = {
             code,
             name: code,
             svg: {
-              viewBox: doc.documentElement.getAttribute('viewBox') || '',
+              viewBox,
               path: Array.from(doc.documentElement.children).map(node => node.outerHTML).join('')
             }
           }

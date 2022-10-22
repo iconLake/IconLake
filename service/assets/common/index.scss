@@ -53,10 +53,14 @@ textarea {
   padding: 0;
   background-color: transparent;
   box-sizing: border-box;
-  border: #f1f1f1 1px solid;
+  border: #ccc 1px solid;
   border-radius: 0.625rem;
   outline: none;
   font-size: 1.4rem;
+  transition: $transition;
+  &:focus {
+    border-color: $color-main;
+  }
 }
 
 button {

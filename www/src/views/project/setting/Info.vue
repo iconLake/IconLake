@@ -59,7 +59,6 @@ getProject()
   .input {
     height: 4rem;
     width: 100%;
-    border: solid 0.1rem #ccc;
     padding: 0 1.4rem;
     font-size: 1.4rem;
     margin: 0.8rem 0 2.4rem;
