@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, nextTick, reactive, ref, watchEffect } from 'vue'
-import { addTag, delTag, editIcon, Group, Icon } from '../../apis/project'
+import { addTag, delTag, editGroup, editIcon, Group, Icon } from '../../apis/project'
 import IconComponent from '../../components/Icon.vue'
 import { copy, toast } from '../../utils'
 import { useI18n } from 'vue-i18n'
@@ -24,6 +24,7 @@ const emit = defineEmits<{
     groupId?: string
     tags?: string[]
   }): void
+  (e: 'addGroup', data: Group): void
 }>()
 
 const isVisible = ref(false)
@@ -42,7 +43,10 @@ const isTagAdding = ref(false)
 const opacity = computed(() => props.isShow ? 1 : 0)
 const computedTop = computed(() => isVisible.value ? props.top : '-50rem')
 const computedLeft = computed(() => isVisible.value ? props.left : '-50rem')
-const groupOptions = computed(() => props.groups.map(e => ({ label: e.name, value: e._id })))
+const groupOptions = computed(() => [
+  { label: t('ungrouped'), value: '' },
+  ...props.groups.map(e => ({ label: e.name, value: e._id }))
+])
 
 defineExpose({
   root
@@ -120,6 +124,19 @@ async function saveInfo(key: 'name' | 'code' | 'groupId') {
   toast(t('saveDone'))
   emit('update', data)
 }
+
+async function addGroup(name:string) {
+  const g:Group = {
+    _id: '',
+    name,
+    num: 0,
+    icons: []
+  }
+  const res = await editGroup(props.projectId, g)
+  g._id = res._id
+  toast(t('saveDone'))
+  emit('addGroup', g)
+}
 </script>
 
 <template>
@@ -159,18 +176,18 @@ async function saveInfo(key: 'name' | 'code' | 'groupId') {
           <div class="value">
             <Select
               :options="groupOptions"
+              :addable="true"
+              :placeholder="t('ungrouped')"
               v-model="input.groupId"
-            />
-            <select @change="saveInfo('groupId')" v-model="input.groupId">
-              <option value="">{{t('ungrouped')}}</option>
-              <option v-for="g in groups" :key="g._id" :value="g._id">{{g.name}}</option>
-            </select>
+              @change="saveInfo('groupId')"
+              @add="addGroup"
+            ></Select>
           </div>
         </div>
         <div class="item info-tag">
           <div class="label">{{t('tag')}}</div>
           <div class="value"></div>
-          <i class="iconfont icon-add-circle pointer" @click="showAddTag"></i>
+          <i class="iconfont icon-add-circle pointer" :class="{'icon-add-circle': !isTagAdding, 'icon-remove-circle': isTagAdding}" @click="showAddTag"></i>
         </div>
         <div class="tags flex start">
           <div class="tag flex" v-for="tag, i in info.tags" :key="tag">
@@ -226,11 +243,13 @@ async function saveInfo(key: 'name' | 'code' | 'groupId') {
       margin-bottom: 1rem;
       position: relative;
       min-height: 2.5rem;
-      &.info-group {
-        padding-right: 0.4rem;
-      }
       &.info-tag {
         padding-right: 0.5rem;
+      }
+      &.info-group {
+        .value {
+          z-index: 2;
+        }
       }
       .label,
       .value,
@@ -248,17 +267,12 @@ async function saveInfo(key: 'name' | 'code' | 'groupId') {
         line-height: 1.1;
         word-break: break-all;
         position: relative;
-        select,
-        input {
+        :deep(input:not(.add-form input)) {
           padding: 0 0.5rem;
-          border: none;
           box-sizing: border-box;
           width: 100%;
           font-size: inherit;
           color: inherit;
-          border-radius: 0;
-        }
-        input {
           height: 2.5rem;
           line-height: 2.5rem;
           border-radius: 0.25rem;
