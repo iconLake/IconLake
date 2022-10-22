@@ -127,7 +127,6 @@ p {
   textarea {
     width: 100%;
     height: 30rem;
-    border: solid 0.1rem #cccccc;
     border-radius: 0;
     padding: 1rem;
     background: #fff;

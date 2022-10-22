@@ -233,6 +233,12 @@ function updateIcon(eData: {
   }
 }
 
+function addGroup(group: Group) {
+  data.groups.push(group)
+  data.groupMap[group._id] = group
+  getList()
+}
+
 // search
 watch(() => data.keyword, () => {
   getList()
@@ -315,6 +321,7 @@ watch(() => data.keyword, () => {
         :groups="data.groups"
         :icons="data.icons"
         @update="updateIcon"
+        @add-group="addGroup"
         @mouseenter="holdDetail"
         @mouseleave="hideDetail"
       />
