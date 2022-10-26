@@ -1,12 +1,12 @@
 import crypto from 'crypto'
 import fs from 'fs'
-import { writeFile, mkdir, readFile, rm, rename, readdir, stat } from 'fs/promises'
+import { writeFile, mkdir, readFile, rm, rename } from 'fs/promises'
 import { webfont } from 'webfont'
 import UglifyJS from 'uglify-js'
 import { nanoid } from 'nanoid'
 import { minify } from 'csso'
 import { Project } from '../../../../models/project.js'
-import { ERROR_CODE, FILES_MAX_LENGTH } from '../../../../utils/const.js'
+import { ERROR_CODE } from '../../../../utils/const.js'
 import { getConfig } from '../../../../config/index.js'
 import { deleteObjects, getBucket, isActive as isCosActive, putObject } from '../../../../utils/cos.js'
 
@@ -96,7 +96,7 @@ export async function genCSS (req, res, projectId, project) {
       await rename(dir, destPath)
     }
     const info = {
-      updateTime: new Date(),
+      createTime: new Date(),
       hash: result.hash
     }
     await Project.updateOne({
@@ -107,8 +107,8 @@ export async function genCSS (req, res, projectId, project) {
         }
       }
     }, {
-      $set: {
-        'file.css': info
+      $push: {
+        'files.css': info
       }
     })
     res.json(info)
@@ -156,7 +156,7 @@ export async function genJS (req, res, projectId, project) {
     )
   }
   const info = {
-    updateTime: new Date(),
+    createTime: new Date(),
     hash
   }
   await Project.updateOne({
@@ -167,8 +167,8 @@ export async function genJS (req, res, projectId, project) {
       }
     }
   }, {
-    $set: {
-      'file.js': info
+    $push: {
+      'files.js': info
     }
   })
   res.json(info)
@@ -206,65 +206,55 @@ export const deleteOldFiles = isCosActive ? deleteOldCloudFiles : deleteOldLocal
 /**
  * 清理本地历史文件
  * @param {string} projectId
+ * @param {{\
+ *  createTime: date\
+ *  hash: string\
+ *  expire: number\
+ * }[]} files
  */
-async function deleteOldLocalFiles (projectId) {
+async function deleteOldLocalFiles (projectId, files) {
   const projectPath = new URL(`${projectId}/`, srcPath)
   if (!fs.existsSync(projectPath)) {
     return
   }
-  const files = await readdir(projectPath)
-  if (files.length <= FILES_MAX_LENGTH) {
-    return
-  }
-  const list = await Promise.all(files.map(async (name) => {
-    const statInfo = await stat(new URL(name, projectPath))
-    return {
-      name,
-      time: statInfo.mtimeMs
+  const d = 24 * 3600 * 1000
+  for (let i = 0; i < files.length; i++) {
+    const e = files[i]
+    if ((Date.now() - e.createTime) / d > e.expire) {
+      await rm(new URL(e.hash, projectPath), {
+        force: true,
+        recursive: true
+      })
     }
-  }))
-  list.sort((a, b) => a.time - b.time)
-  for (let i = 0, n = files.length - FILES_MAX_LENGTH; i < n; ++i) {
-    await rm(new URL(list[i].name, projectPath), {
-      force: true,
-      recursive: true
-    })
   }
 }
 
 /**
  * 清理本地历史文件
  * @param {string} projectId
+ * @param {{\
+ *  createTime: date\
+ *  hash: string\
+ *  expire: number\
+ * }[]} files
  */
-async function deleteOldCloudFiles (projectId) {
-  const data = await getBucket(`src/${projectId}/`)
-  const objs = {}
-  data.contents.forEach(e => {
-    const id = e.key.split(/\//g)[2]
-    if (!objs[id]) {
-      objs[id] = {
-        id,
-        time: +new Date(e.lastModified),
-        keys: [e.key]
-      }
-    } else {
-      const t = +new Date(e.lastModified)
-      if (t > objs[id].time) {
-        objs[id].time = t
-      }
-      objs[id].keys.push(e.key)
+async function deleteOldCloudFiles (projectId, files) {
+  const basePath = `src/${projectId}/`
+  const d = 24 * 3600 * 1000
+  const list = []
+  for (let i = 0; i < files.length; i++) {
+    const e = files[i]
+    if ((Date.now() - e.createTime) / d > e.expire) {
+      const data = await getBucket(`${basePath}${e.hash}/`)
+      data.contents.forEach(obj => {
+        list.push(obj.key)
+      })
     }
-  })
-  const list = Object.values(objs)
-  if (list.length <= FILES_MAX_LENGTH) {
+  }
+  if (list.length === 0) {
     return
   }
-  list.sort((a, b) => a.time - b.time)
-  const keys = []
-  for (let i = 0, n = list.length - FILES_MAX_LENGTH; i < n; ++i) {
-    keys.push(...list[i].keys)
-  }
-  await deleteObjects(keys)
+  await deleteObjects(list)
 }
 
 /**

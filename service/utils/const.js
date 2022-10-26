@@ -51,9 +51,9 @@ export const ERROR_CODE = {
 }
 
 /**
- * 生成文件的最大留存数量
+ * 永久文件的最大数量
  */
-export const FILES_MAX_LENGTH = 10
+export const PERMAMENT_FILES_MAX_NUM = 5
 
 /**
  * 云服务类型

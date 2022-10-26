@@ -58,16 +58,18 @@ export interface Invite {
 }
 
 export interface FileInfo {
-  updateTime: string
+  _id: string
+  createTime: string
   hash: string
+  expire: number
   content?: string
 }
 
 export interface Files {
   domain: string
-  maxLength: number
-  css?: FileInfo
-  js?: FileInfo
+  permamentMaxNum: number
+  css?: FileInfo[]
+  js?: FileInfo[]
 }
 
 export interface Project {

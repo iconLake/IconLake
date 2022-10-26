@@ -105,9 +105,13 @@
   "fileCouldNotBeParsed": "File Could Not Be Parsed",
   "fileLoadFailed": "File Load Failed",
   "pleaseSelectFile": "Please Select {type} File",
-  "generationNote": "Note: only the last {n} generated files are retained.",
+  "generationNote": "Note: You can set up to {n} permalinks.",
   "selectAll": "Select All",
   "argsError": "Information Filling Error",
   "codeExists": "Code already exists",
-  "codeExistsAndIconOut": "Code[{code}] already exists, the icon has been filtered out"
+  "codeExistsAndIconOut": "Code[{code}] already exists, the icon has been filtered out",
+  "temporary": "Temporary",
+  "permanent": "Permanent",
+  "generatedFileLinks": "Generated File Links:",
+  "nDaysExpire": "Expires after {n} days"
 }

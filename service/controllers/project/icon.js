@@ -299,7 +299,7 @@ export async function gen (req, res) {
     })
     return
   }
-  const project = await Project.findById(projectId, 'class prefix icons')
+  const project = await Project.findById(projectId, 'class prefix icons files')
   if (!project) {
     res.json({
       error: ERROR_CODE.ARGS_ERROR
@@ -318,6 +318,6 @@ export async function gen (req, res) {
   }
   fn[type](req, res, projectId, project)
   if (/^(js|css)$/.test(type)) {
-    deleteOldFiles(projectId)
+    deleteOldFiles(projectId, project.files[type])
   }
 }

@@ -105,9 +105,13 @@
   "fileCouldNotBeParsed": "文件无法解析",
   "fileLoadFailed": "文件加载失败",
   "pleaseSelectFile": "请选择{type}文件",
-  "generationNote": "注：只保留最近{n}次生成的文件。",
+  "generationNote": "注：最多可设置{n}个永久链接。",
   "selectAll": "全选",
   "argsError": "信息填写错误",
   "codeExists": "标识已存在",
-  "codeExistsAndIconOut": "标识【{code}】已存在，图标已被过滤掉"
+  "codeExistsAndIconOut": "标识【{code}】已存在，图标已被过滤掉",
+  "temporary": "临时",
+  "permanent": "永久",
+  "generatedFileLinks": "已生成的文件链接：",
+  "nDaysExpire": "{n}天后失效"
 }
