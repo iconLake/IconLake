@@ -113,5 +113,6 @@
   "temporary": "临时",
   "permanent": "永久",
   "generatedFileLinks": "已生成的文件链接：",
-  "nDaysExpire": "{n}天后失效"
+  "nDaysExpire": "{n}天后失效",
+  "validity": "有效期"
 }

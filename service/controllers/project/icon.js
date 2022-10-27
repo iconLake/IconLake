@@ -1,7 +1,7 @@
 import { Analyse } from '../../models/analyse.js'
 import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
-import { ERROR_CODE } from '../../utils/const.js'
+import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM, PERMANENT_FILE_EXPIRE } from '../../utils/const.js'
 import { deleteOldFiles, genCSS, genJS, genReact, genVUE } from './icon/gen/index.js'
 
 /**
@@ -11,7 +11,7 @@ export async function info (req, res) {
   if (typeof req.query.projectId !== 'string' || !req.query.projectId ||
   typeof req.query._id !== 'string' || !req.query._id) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -21,7 +21,7 @@ export async function info (req, res) {
   }, 'icons sources')
   if (!project) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -41,7 +41,7 @@ export async function add (req, res) {
   const _id = req.body.projectId
   if (typeof _id !== 'string' || _id.length === 0 || !(icons instanceof Array) || icons.length === 0) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -76,7 +76,7 @@ export async function del (req, res) {
   const projectId = req.body.projectId
   if (!projectId || !(_ids instanceof Array) || _ids.length === 0) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -125,7 +125,7 @@ export async function del (req, res) {
 export async function edit (req, res) {
   if (typeof req.body.projectId !== 'string' || !req.body.projectId || typeof req.body._id !== 'string' || !req.body._id) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -160,7 +160,7 @@ export async function edit (req, res) {
   }, {
     $set
   })
-  res.json(result.matchedCount > 0 ? {} : { error: 'argsError' })
+  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.ARGS_ERROR })
 }
 
 /**
@@ -171,7 +171,7 @@ export async function addTag (req, res) {
   typeof req.body._id !== 'string' || !req.body._id ||
   typeof req.body.tag !== 'string' || !req.body.tag) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -189,7 +189,7 @@ export async function addTag (req, res) {
       'icons.$.tags': req.body.tag
     }
   })
-  res.json(result.matchedCount > 0 ? {} : { error: 'argsError' })
+  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.ARGS_ERROR })
 }
 
 /**
@@ -200,7 +200,7 @@ export async function delTag (req, res) {
   typeof req.body._id !== 'string' || !req.body._id ||
   typeof req.body.tag !== 'string' || !req.body.tag) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -218,7 +218,7 @@ export async function delTag (req, res) {
       'icons.$.tags': req.body.tag
     }
   })
-  res.json(result.matchedCount > 0 ? {} : { error: 'argsError' })
+  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.ARGS_ERROR })
 }
 
 /**
@@ -228,7 +228,7 @@ export async function pages (req, res) {
   if (typeof req.query.projectId !== 'string' || !req.query.projectId ||
   typeof req.query._id !== 'string' || !req.query._id) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -238,7 +238,7 @@ export async function pages (req, res) {
   }, '_id')
   if (!project) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -261,7 +261,7 @@ export async function batchGroup (req, res) {
   if (typeof req.body.projectId !== 'string' || !req.body.projectId ||
   !(req.body._ids instanceof Array) || req.body._ids.length === 0 || req.body._ids.some(e => typeof e !== 'string')) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -285,7 +285,7 @@ export async function batchGroup (req, res) {
       }
     ]
   })
-  res.json(result.matchedCount > 0 ? {} : { error: 'argsError' })
+  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.ARGS_ERROR })
 }
 
 /**
@@ -320,4 +320,40 @@ export async function gen (req, res) {
   if (/^(js|css)$/.test(type)) {
     deleteOldFiles(projectId, project.files[type])
   }
+}
+
+/**
+ * @api {post} /project/icon/setExpire 设置有效期
+ */
+export async function setExpire (req, res) {
+  const { projectId, fileId, fileType, expire } = req.body
+  if (!projectId || !fileId || !expire || (fileType !== 'js' && fileType !== 'css')) {
+    return res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+  }
+  const project = await Project.findById(projectId, 'files')
+  if (project.files && project.files[fileType]) {
+    const n = project.files[fileType].reduce((pre, cur) => {
+      return pre + (cur.expire >= PERMANENT_FILE_EXPIRE ? 1 : 0)
+    }, 0)
+    if (n >= PERMAMENT_FILES_MAX_NUM) {
+      return res.json({ error: ERROR_CODE.FAIL })
+    }
+  }
+  const result = await Project.updateOne({
+    _id: projectId,
+    members: {
+      $elemMatch: {
+        userId: req.user._id,
+        isAdmin: true
+      }
+    },
+    [`files.${fileType}._id`]: fileId
+  }, {
+    $set: {
+      [`files.${fileType}.$.expire`]: expire
+    }
+  })
+  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.FAIL })
 }

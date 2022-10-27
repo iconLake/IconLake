@@ -6,9 +6,10 @@ import UglifyJS from 'uglify-js'
 import { nanoid } from 'nanoid'
 import { minify } from 'csso'
 import { Project } from '../../../../models/project.js'
-import { ERROR_CODE } from '../../../../utils/const.js'
+import { ERROR_CODE, TEMPORARY_FILE_EXPIRE } from '../../../../utils/const.js'
 import { getConfig } from '../../../../config/index.js'
 import { deleteObjects, getBucket, isActive as isCosActive, putObject } from '../../../../utils/cos.js'
+import mongoose from 'mongoose'
 
 const config = getConfig()
 const domain = isCosActive ? config.cos.domain : config.domain
@@ -20,6 +21,34 @@ export const srcPath = new URL('../../../../public/src/', import.meta.url)
 
 if (!fs.existsSync(srcPath)) {
   fs.mkdirSync(srcPath)
+}
+
+/**
+ * 记录生成的文件
+ * @param {*} req
+ * @param {string} projectId
+ * @param {'css'|'js'} fileType
+ * @param {{createTime: date, hash: string}} file
+ */
+export async function recordGenFile (req, projectId, fileType, file) {
+  const project = await Project.findById(projectId, 'files')
+  if (project.files && project.files[fileType] && file.hash === project.files[fileType][project.files[fileType].length - 1].hash) {
+    return
+  }
+  file._id = new mongoose.Types.ObjectId()
+  file.expire = TEMPORARY_FILE_EXPIRE
+  return await Project.updateOne({
+    _id: projectId,
+    members: {
+      $elemMatch: {
+        userId: req.user._id
+      }
+    }
+  }, {
+    $push: {
+      [`files.${fileType}`]: file
+    }
+  })
 }
 
 /**
@@ -99,18 +128,7 @@ export async function genCSS (req, res, projectId, project) {
       createTime: new Date(),
       hash: result.hash
     }
-    await Project.updateOne({
-      _id: projectId,
-      members: {
-        $elemMatch: {
-          userId: req.user._id
-        }
-      }
-    }, {
-      $push: {
-        'files.css': info
-      }
-    })
+    await recordGenFile(req, projectId, 'css', info)
     res.json(info)
     return null
   }).catch(err => {
@@ -159,18 +177,7 @@ export async function genJS (req, res, projectId, project) {
     createTime: new Date(),
     hash
   }
-  await Project.updateOne({
-    _id: projectId,
-    members: {
-      $elemMatch: {
-        userId: req.user._id
-      }
-    }
-  }, {
-    $push: {
-      'files.js': info
-    }
-  })
+  await recordGenFile(req, projectId, 'js', info)
   res.json(info)
 }
 

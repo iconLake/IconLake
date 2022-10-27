@@ -113,5 +113,6 @@
   "temporary": "Temporary",
   "permanent": "Permanent",
   "generatedFileLinks": "Generated File Links:",
-  "nDaysExpire": "Expires after {n} days"
+  "nDaysExpire": "Expires after {n} days",
+  "validity": "Validity"
 }

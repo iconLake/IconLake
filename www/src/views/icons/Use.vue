@@ -2,11 +2,11 @@
 import { computed, reactive, watchPostEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import { info, Files, genIcon, FileInfo } from '@/apis/project'
+import { info, Files, genIcon, FileInfo, setExpire } from '@/apis/project'
 import HeaderVue from '@/components/Header.vue'
 import UserVue from '@/components/User.vue'
 import { copy, toast } from '@/utils'
-import { PERMANENT_EXPIRE, TEMPORARY_EXPIRE, ONE_DAY_SECONDS } from '@/utils/const'
+import { PERMANENT_FILE_EXPIRE, TEMPORARY_FILE_EXPIRE, ONE_DAY_SECONDS } from '@/utils/const'
 import { ElSwitch } from 'element-plus'
 
 const { t } = useI18n()
@@ -26,11 +26,19 @@ const data = reactive({
   generating: new Set()
 })
 
-const lastItem = <T>(arr: T[] | undefined): T | undefined => (arr instanceof Array ? arr[arr.length - 1] : undefined)
+const getLatestFile = (arr: FileInfo[] | undefined): FileInfo | undefined => {
+  if (arr instanceof Array) {
+    if (arr[0].createTime >= arr[arr.length - 1].createTime) {
+      return arr[0]
+    }
+    return arr[arr.length - 1]
+  }
+  return undefined
+}
 
 const genFileLink = (hash: string, ext: 'js'|'css') => `${data.files.domain}/src/${data._id}/${hash}/iconlake.${ext}`
 
-const isPermanent = (days: number) => days >= PERMANENT_EXPIRE
+const isPermanent = (days: number) => days >= PERMANENT_FILE_EXPIRE
 
 const getExpireTime = (file: FileInfo) => Math.ceil(
   file.expire - (Date.now() - (+new Date(file.createTime))) / ONE_DAY_SECONDS
@@ -43,11 +51,11 @@ const jsLink = computed(() => `\<script src="${data.src}"\>\<\/script\>`)
 const jsExample = '<icon-svg name="home"></icon-svg>'
 
 const cssUpgradable = computed(() => {
-  const file = lastItem(data.files.css)
+  const file = getLatestFile(data.files.css)
   return !file || +new Date(file.createTime) < +new Date(data.iconUpdateTime)
 })
 const jsUpgradable = computed(() => {
-  const file = lastItem(data.files.js)
+  const file = getLatestFile(data.files.js)
   return !file || +new Date(file.createTime) < +new Date(data.iconUpdateTime)
 })
 
@@ -59,12 +67,18 @@ watchPostEffect(() => {
     v === 'react' && getReactContent()
     return
   }
-  const file = lastItem(data.files[v])
+  const file = getLatestFile(data.files[v])
   data.src = file?.hash ? genFileLink(file.hash, v) : ''
 })
 
 async function getInfo () {
   const res = await info(data._id, 'name files iconUpdateTime class prefix')
+  if (res.files.css) {
+    res.files.css.reverse()
+  }
+  if (res.files.js) {
+    res.files.js.reverse()
+  }
   Object.assign(data, res)
 }
 
@@ -87,7 +101,10 @@ async function generate() {
   const res = await genIcon(data._id, tab).finally(() => {
     data.generating.delete(tab)
   })
-  data.files[tab]?.push(res)
+  const latestFile = getLatestFile(data.files[tab])
+  if (!latestFile || latestFile.hash !== res.hash) {
+    data.files[tab]?.unshift(res)
+  }
   toast(t('generateDone'))
 }
 
@@ -104,8 +121,29 @@ function copyContent (str: string) {
   toast(t('copyDone'))
 }
 
-function setExpire(id: string, value: number) {
-  console.log(id, value)
+function onBeforeSetExpire(file: FileInfo) {
+  if (isPermanent(file.expire)) {
+    return true
+  }
+  if (data.activeTab !== 'css' && data.activeTab !== 'js') {
+    return
+  }
+  const n = data.files[data.activeTab]?.reduce((pre, cur) => {
+    return pre + (isPermanent(cur.expire) ? 1 : 0)
+  }, 0) || 0
+  if (n >= data.files.permamentMaxNum) {
+    toast(t('generationNote', {n: data.files.permamentMaxNum}))
+    return false
+  }
+  return true
+}
+
+async function onSetExpire(id: string, value: number) {
+  if (data.activeTab !== 'css' && data.activeTab !== 'js') {
+    return
+  }
+  await setExpire(data._id, id, data.activeTab, value)
+  toast(t('saveDone'))
 }
 </script>
 
@@ -186,7 +224,8 @@ function setExpire(id: string, value: number) {
     </div>
     <div
       v-for="file in data.files[data.activeTab]"
-      :key="file.hash" class="code flex"
+      :key="file._id"
+      class="code flex"
       :title="t('copy')"
       @click="copyContent(genFileLink(file.hash, data.activeTab as 'css'|'js'))"
     >
@@ -197,13 +236,15 @@ function setExpire(id: string, value: number) {
       <div class="expire">
         <ElSwitch
           v-model="file.expire"
-          :active-value="PERMANENT_EXPIRE"
+          :title="t('validity')"
+          :active-value="PERMANENT_FILE_EXPIRE"
           :active-text="t('permanent')"
-          :inactive-value="TEMPORARY_EXPIRE"
+          :inactive-value="TEMPORARY_FILE_EXPIRE"
           :inactive-text="t('temporary')"
           :inline-prompt="true"
+          :before-change="() => onBeforeSetExpire(file)"
           @click.stop="() => false"
-          @change="setExpire(file._id, $event as number)"
+          @change="onSetExpire(file._id, $event as number)"
         ></ElSwitch>
         <div v-if="!isPermanent(file.expire)" class="days">{{t('nDaysExpire', {n: getExpireTime(file)})}}</div>
       </div>

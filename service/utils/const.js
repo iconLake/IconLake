@@ -56,6 +56,16 @@ export const ERROR_CODE = {
 export const PERMAMENT_FILES_MAX_NUM = 5
 
 /**
+ * 永久文件的过期时间
+ */
+export const PERMANENT_FILE_EXPIRE = 9999
+
+/**
+ * 临时文件的过期时间
+ */
+export const TEMPORARY_FILE_EXPIRE = 30
+
+/**
  * 云服务类型
  */
 export const CLOUD_TYPE = {
