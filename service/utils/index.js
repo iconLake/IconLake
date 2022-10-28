@@ -42,19 +42,3 @@ export function setLocale (req, res) {
     })
   }
 }
-
-/**
- * 比较两个源是否相同
- * @param {object} source1 源
- * @param {object} source2 源
- * @returns {boolean}
- */
-export function sourceEqual (source1, source2) {
-  const props = ['name', 'type', 'resourceUrl', 'syncUrl', 'prefix', 'className']
-  for (let i = 0; i < props.length; i++) {
-    if (source1[props[i]] !== source2[props[i]]) {
-      return false
-    }
-  }
-  return true
-}

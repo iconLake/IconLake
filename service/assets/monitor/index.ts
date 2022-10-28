@@ -3,20 +3,21 @@
     elem: Element
     code: string
     prefix: string
-    className: string
+    class: string
   }
 
   interface Visit {
     code: string
     prefix: string
-    className: string
+    class: string
     url?: string
     count: string
     time: number
   }
 
-  const diySpider = '{{SPIDER}}'
-  const host = '{{HOST}}' || 'https://iconlake.com'
+  // 之所以使用window是为了编译压缩时保留特定字符串
+  const diySpider = window['{{SPIDER}}']
+  const host = window['{{HOST}}']
   const _id = encodeURIComponent('{{_ID}}')
   const localRecordKey = 'iconlakeRecord'
 
@@ -25,7 +26,7 @@
     ? diySpider
     : () => {
         const list:SpiderItem[] = []
-        const className = 'iconfont'
+        const className = 'iconlake'
         const prefix = 'icon-'
         const iconReg = new RegExp(`${prefix}(\\S+)`, 'i')
         document.body.querySelectorAll(`.${className}`).forEach(elem => {
@@ -36,7 +37,7 @@
               elem,
               code,
               prefix,
-              className
+              class: className
             })
           }
         })
@@ -56,7 +57,7 @@
     }
     const list = spider()
     list.forEach(e => {
-      const key = `${e.className}${e.prefix}${e.code}`
+      const key = `${e.class}${e.prefix}${e.code}`
       if (!(key in pages[url])) {
         pages[url][key] = {
           ...e,
@@ -95,7 +96,7 @@
       records.push({
         code: icon.code,
         prefix: icon.prefix,
-        className: icon.className,
+        class: icon.class,
         count: icon.elems.size,
         time: icon.time
       })

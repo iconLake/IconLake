@@ -9,7 +9,7 @@ import apiRouter from './routes/api.js'
 import indexRouter from './routes/index.js'
 import visitRouter from './routes/visit.js'
 import { init as initDB } from './models/index.js'
-import { init as initCron } from './controllers/analyse/cron.js'
+import { init as initCron } from './crons/index.js'
 import { getConfig } from './config/index.js'
 import { NODE_ENV as env } from './utils/const.js'
 
