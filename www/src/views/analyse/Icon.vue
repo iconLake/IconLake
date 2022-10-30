@@ -116,6 +116,7 @@ getList()
         overflow: hidden;
         text-overflow: ellipsis;
         color: $color-main;
+        line-height: 1.2em;
       }
       .num {
         display: inline-block;

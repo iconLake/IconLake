@@ -18,7 +18,7 @@ export async function info (req, res) {
   const project = await Project.findOne({
     _id: req.query.projectId,
     'members.userId': req.user._id
-  }, 'icons sources')
+  }, 'icons')
   if (!project) {
     res.json({
       error: ERROR_CODE.ARGS_ERROR
@@ -26,10 +26,8 @@ export async function info (req, res) {
     return
   }
   const info = project.icons.id(req.query._id)
-  const source = info.sourceId ? project.sources.id(info.sourceId) : {}
   res.json({
-    info,
-    source
+    info
   })
 }
 
@@ -306,8 +304,10 @@ export async function gen (req, res) {
     })
     return
   }
-  if (project.icons.length === 0) {
-    res.json({})
+  if (project.icons.length === 0 && /^(js|css)$/.test(type)) {
+    res.json({
+      error: ERROR_CODE.FAIL
+    })
     return
   }
   const fn = {

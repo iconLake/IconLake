@@ -21,13 +21,14 @@ const data = reactive({
   prefix: '',
   iconUpdateTime: '',
   files: {} as Files,
+  icons: [],
   activeTab: 'css' as Tab,
   src: '',
   generating: new Set()
 })
 
 const getLatestFile = (arr: FileInfo[] | undefined): FileInfo | undefined => {
-  if (arr instanceof Array) {
+  if (arr instanceof Array && arr.length > 0) {
     if (arr[0].createTime >= arr[arr.length - 1].createTime) {
       return arr[0]
     }
@@ -49,6 +50,8 @@ const cssExample = computed(() => `<i class="${data.class} ${data.prefix}home"><
 
 const jsLink = computed(() => `\<script src="${data.src}"\>\<\/script\>`)
 const jsExample = '<icon-svg name="home"></icon-svg>'
+
+const isFileListShow = computed(() => (data.activeTab === 'css' || data.activeTab === 'js') && data.files[data.activeTab] instanceof Array && (data.files[data.activeTab] as []).length > 0)
 
 const cssUpgradable = computed(() => {
   const file = getLatestFile(data.files.css)
@@ -72,7 +75,7 @@ watchPostEffect(() => {
 })
 
 async function getInfo () {
-  const res = await info(data._id, 'name files iconUpdateTime class prefix')
+  const res = await info(data._id, 'name files iconUpdateTime class prefix icons.length')
   if (res.files.css) {
     res.files.css.reverse()
   }
@@ -101,11 +104,13 @@ async function generate() {
   const res = await genIcon(data._id, tab).finally(() => {
     data.generating.delete(tab)
   })
-  const latestFile = getLatestFile(data.files[tab])
-  if (!latestFile || latestFile.hash !== res.hash) {
-    data.files[tab]?.unshift(res)
+  if (res.hash) {
+    const latestFile = getLatestFile(data.files[tab])
+    if (!latestFile || latestFile.hash !== res.hash) {
+      data.files[tab]?.unshift(res)
+    }
+    toast(t('generateDone'))
   }
-  toast(t('generateDone'))
 }
 
 async function getVueContent() {
@@ -178,7 +183,7 @@ async function onSetExpire(id: string, value: number) {
       <i class="iconfont icon-copy"></i>
     </div>
     <div class="t-center operate">
-      <button class="btn" @click="generate">{{t(data.generating.has('css') ? 'generating' : 'regenerate')}}</button>
+      <button class="btn" @click="generate" :disabled="data.icons.length === 0">{{t(data.generating.has('css') ? 'generating' : 'regenerate')}}</button>
     </div>
   </div>
   <!-- js -->
@@ -195,7 +200,7 @@ async function onSetExpire(id: string, value: number) {
       <i class="iconfont icon-copy"></i>
     </div>
     <div class="t-center operate">
-      <button class="btn" @click="generate">{{t(data.generating.has('js') ? 'generating' : 'regenerate')}}</button>
+      <button class="btn" @click="generate" :disabled="data.icons.length === 0">{{t(data.generating.has('js') ? 'generating' : 'regenerate')}}</button>
     </div>
   </div>
   <!-- vue -->
@@ -217,20 +222,20 @@ async function onSetExpire(id: string, value: number) {
     </div>
   </div>
   <!-- files -->
-  <div v-if="data.activeTab === 'css' || data.activeTab === 'js'" class="content files">
+  <div v-if="isFileListShow" class="content files">
     <div class="flex">
       <p>{{t('generatedFileLinks')}}</p>
       <div class="help">{{t('generationNote', {n: data.files.permamentMaxNum})}}</div>
     </div>
     <div
-      v-for="file in data.files[data.activeTab]"
+      v-for="file in data.files[data.activeTab as 'js'|'css']"
       :key="file._id"
       class="code flex"
       :title="t('copy')"
       @click="copyContent(genFileLink(file.hash, data.activeTab as 'css'|'js'))"
     >
       <div>
-        <span>{{genFileLink(file.hash, data.activeTab)}}</span>
+        <span>{{genFileLink(file.hash, data.activeTab as 'js'|'css')}}</span>
         <i class="iconfont icon-copy"></i>
       </div>
       <div class="expire">

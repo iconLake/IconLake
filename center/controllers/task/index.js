@@ -17,6 +17,7 @@ export async function pull (req, res) {
   const task = {
     time: new Date(),
     type: 'project',
+    isEnd: false,
     ids: []
   }
   let i = 10
@@ -28,6 +29,7 @@ export async function pull (req, res) {
     if (project) {
       task.ids.push(project.id)
     } else {
+      task.isEnd = true
       projectTask.cursor = null
       projectTask.endTime = Date.now()
     }

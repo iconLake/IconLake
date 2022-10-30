@@ -15,7 +15,6 @@
   "auth": "Auth",
   "newProject": "New Project",
   "welcomeAndGuide": "Welcome to iconLake, let's make your first project.",
-  "iconSource": "Icon Sources",
   "iconGroup": "Icon Groups",
   "projectInfo": "Information",
   "projectMember": "Members",
@@ -35,7 +34,6 @@
   "name": "Name",
   "type": "Type",
   "oriName": "Origin",
-  "source": "Source",
   "group": "Group",
   "addGroup": "Add Group",
   "newGroup": "New Group",
@@ -57,8 +55,6 @@
   "createNow": "CREATE",
   "creatingProject": "Project is creating",
   "creatingProjectDone": "Project creation is done",
-  "addIconSource": "Add Icon Source",
-  "delSourceConfirm": "Deleting the source will cause the icon to not be displayed. Do you want to delete it?",
   "copy": "Copy",
   "copyDone": "Copy Done",
   "inviteLink": "Invitation Link",
@@ -114,5 +110,8 @@
   "permanent": "Permanent",
   "generatedFileLinks": "Generated File Links:",
   "nDaysExpire": "Expires after {n} days",
-  "validity": "Validity"
+  "validity": "Validity",
+  "fail": "Operation Failed",
+  "userNotLogin": "You haven't logged in, please log in first",
+  "tokenExpired": "Your login information has expired, please login again"
 }

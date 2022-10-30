@@ -9,8 +9,6 @@ const job = new CronJob('0 0 3 * * *', () => {
 
 export function init () {
   job.start()
-  // debug
-  // start()
 }
 
 let startTime = Date.now()
@@ -37,7 +35,7 @@ async function getList (doneCB) {
     const project = await Project.findById(list[i])
     await analyseProject(project)
   }
-  if (list.length === 0) {
+  if (task.isEnd) {
     doneCB()
   } else {
     setTimeout(() => {

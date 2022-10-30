@@ -34,6 +34,9 @@ export async function info (req, res) {
       const analyse = await Analyse.findById(req.params.id)
       if (analyse && analyse.icons && analyse.icons.length > 0) {
         result.icons.forEach(e => {
+          if (!e._id) {
+            return
+          }
           if (!e.analyse) {
             e.analyse = {}
           }

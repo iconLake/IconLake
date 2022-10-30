@@ -11,6 +11,7 @@ const props = defineProps<{
   modelValue: string
   addable?: boolean
   placeholder?: string
+  size?: 'default'
 }>()
 
 const emits = defineEmits(['update:modelValue', 'change', 'add'])
@@ -84,7 +85,7 @@ const onArrowClick = () => {
 </script>
 
 <template>
-  <div class="select" :class="{active: isActive}">
+  <div class="select" :class="{active: isActive, 'size-default': size === 'default'}">
     <div class="value">
       <input ref="valueInputDom" class="text pointer flex start" :value="text" type="text" readonly @focus="onFocus" @blur="onBlur">
       <i class="iconfont icon-back flex pointer" @click="onArrowClick"></i>
@@ -109,10 +110,19 @@ const onArrowClick = () => {
   position: relative;
   line-height: 1;
   z-index: 100;
+  &.size-default {
+    height: 4rem;
+    .value {
+      .text {
+        padding: 0 1.4rem;
+      }
+    }
+  }
 
   .value {
     position: relative;
     z-index: 101;
+    height: 100%;
     .text {
       padding: 0 0.5rem;
       height: 100%;
@@ -147,6 +157,7 @@ const onArrowClick = () => {
     padding: 0.8rem 0;
     .option {
       padding: 0.8rem;
+      text-align: left;
       &:hover {
         background: #f8f8f8;
       }

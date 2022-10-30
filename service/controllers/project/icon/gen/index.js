@@ -32,7 +32,12 @@ if (!fs.existsSync(srcPath)) {
  */
 export async function recordGenFile (req, projectId, fileType, file) {
   const project = await Project.findById(projectId, 'files')
-  if (project.files && project.files[fileType] && file.hash === project.files[fileType][project.files[fileType].length - 1].hash) {
+  if (
+    project.files &&
+    project.files[fileType] &&
+    project.files[fileType].length > 0 &&
+    file.hash === project.files[fileType][project.files[fileType].length - 1].hash
+  ) {
     return
   }
   file._id = new mongoose.Types.ObjectId()
