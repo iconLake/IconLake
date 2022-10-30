@@ -29,7 +29,7 @@ let watch = false
 if (env === ENV.DEVELOPMENT) { // dev环境
   name += '-dev'
   instances = 1
-  watch = ['./app.js', './routes', './controllers', './models', './utils', './config', './public/monitor/index.js']
+  watch = ['./app.js', './routes', './controllers', './crons', './models', './utils', './config', './public/monitor/index.js']
 } else if (env === ENV.TEST) { // test环境
   name += '-test'
   instances = 2

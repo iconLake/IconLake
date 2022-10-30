@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { nextTick, onMounted, reactive, ref, watch } from "vue";
+import { computed, nextTick, onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon } from "../../apis/project";
+import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon, editGroup } from "../../apis/project";
 import IconVue from "../../components/Icon.vue";
 import { confirm, toast } from '../../utils';
 import Detail from "./Detail.vue";
 import HeaderVue from '../../components/Header.vue'
 import UserVue from '../../components/User.vue'
 import { useI18n } from 'vue-i18n'
+import Select from '@/components/Select.vue';
 
 const { t } = useI18n()
 
@@ -34,6 +35,11 @@ const data = reactive({
 
 const batchGroupFormDom = ref<Element>()
 
+const groupOptions = computed(() => [
+  { label: t('ungrouped'), value: '' },
+  ...data.groups.map(e => ({ label: e.name, value: e._id }))
+])
+
 async function getIcons () {
   const res = await getProjectInfo(data._id, 'name icons groups')
   data.name = res.name
@@ -45,10 +51,8 @@ async function getIcons () {
   }
   if (res.icons instanceof Array) {
     data.icons = res.icons.reverse()
-    if (res.icons.length > 0) {
-      getList()
-      nextTick(updateMainWidth)
-    }
+    getList()
+    nextTick(updateMainWidth)
   }
 }
 
@@ -239,6 +243,19 @@ function addGroup(group: Group) {
   getList()
 }
 
+async function saveNewGroup(name:string) {
+  const g:Group = {
+    _id: '',
+    name,
+    num: 0,
+    icons: []
+  }
+  const res = await editGroup(data._id, g)
+  g._id = res._id
+  toast(t('saveDone'))
+  addGroup(g)
+}
+
 // search
 watch(() => data.keyword, () => {
   getList()
@@ -330,10 +347,14 @@ watch(() => data.keyword, () => {
   <!-- 批量分组 -->
   <div class="group-select" ref="batchGroupFormDom">
     <div class="label">{{t('batchSetGroup', { n: data.selectedIcons.size })}}</div>
-    <select v-model="data.batchGroupId">
-      <option value="">{{t('ungrouped')}}</option>
-      <option v-for="g in data.groups" :key="g._id" :value="g._id">{{g.name}}</option>
-    </select>
+    <Select
+      :options="groupOptions"
+      :addable="true"
+      :placeholder="t('ungrouped')"
+      size="default"
+      v-model="data.batchGroupId"
+      @add="addGroup"
+    ></Select>
   </div>
 </template>
 
@@ -476,9 +497,9 @@ watch(() => data.keyword, () => {
   .label {
     margin-bottom: 1rem;
   }
-  select {
+  .select {
     width: 15rem;
-    padding: 1rem;
+    margin: 0 auto;
   }
 }
 :global(.confirm .group-select) {

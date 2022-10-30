@@ -1,9 +1,20 @@
 @import "./var.scss";
 
+:root,
+body {
+  --color-main: #{$color-main};
+  --color-danger: #{$color-danger};
+  --font-family: #{$font-family};
+  --padding: #{$padding};
+  --transition: #{$transition};
+
+  --el-color-primary: #{$color-main};
+}
+
 html,
 body {
   margin: 0;
-  font-family: $font-family;
+  font-family: var(--font-family);
   line-height: 1;
   background: #eff3ff;
 }
@@ -49,7 +60,7 @@ input[type="number"],
 input[type="password"],
 select,
 textarea {
-  font-family: $font-family;
+  font-family: var(--font-family);
   padding: 0;
   background-color: transparent;
   box-sizing: border-box;
@@ -57,14 +68,14 @@ textarea {
   border-radius: 0.625rem;
   outline: none;
   font-size: 1.4rem;
-  transition: $transition;
+  transition: var(--transition);
   &:focus {
-    border-color: $color-main;
+    border-color: var(--color-main);
   }
 }
 
 button {
-  font-family: $font-family;
+  font-family: var(--font-family);
   border: none;
   background: transparent;
   outline: none;
@@ -82,18 +93,18 @@ img {
 
 // color
 .bg-main {
-  background-color: $color-main;
+  background-color: var(--color-main);
   color: #fff;
 }
 .bg-danger {
-  background-color: $color-danger;
+  background-color: var(--color-danger);
   color: #fff;
 }
 .c-main {
-  color: $color-main;
+  color: var(--color-main);
 }
 .c-danger {
-  color: $color-danger;
+  color: var(--color-danger);
 }
 
 // flex
@@ -143,17 +154,17 @@ $align: left, center, right;
 
 // padding、margin
 .p-all {
-  padding: $padding;
+  padding: var(--padding);
 }
 .m-all {
-  margin: $padding;
+  margin: var(--padding);
 }
 @each $p in top, right, bottom, left {
   .p-#{$p} {
-    padding-#{$p}: $padding;
+    padding-#{$p}: var(--padding);
   }
   .m-#{$p} {
-    margin-#{$p}: $padding;
+    margin-#{$p}: var(--padding);
   }
 }
 
@@ -164,7 +175,7 @@ $align: left, center, right;
   justify-content: center;
   height: 3.75rem;
   line-height: 1;
-  background-color: $color-main;
+  background-color: var(--color-main);
 	border-radius: 1.875rem;
   font-size: 1.125rem;
   color: #fff;
@@ -187,9 +198,22 @@ $align: left, center, right;
   position: relative;
   width: 4.8rem;
 	height: 2.4rem;
-	background-color: $color-main;
+	background-color: var(--color-main);
   border-radius: 1.2rem;
   cursor: pointer;
+  .label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 0;
+    left: 2rem;
+    top: 0;
+    height: 100%;
+    color: #fff;
+    font-size: 1rem;
+    transform: scale(0.8);
+  }
   &::before {
     position: absolute;
     top: 0.2rem;
@@ -204,6 +228,10 @@ $align: left, center, right;
     background: #cfd5e6;
     &::before {
       left: 2.6rem;
+    }
+    .label {
+      left: 0;
+      right: 2rem;
     }
   }
 }
@@ -290,7 +318,7 @@ $align: left, center, right;
     font-size: 1.4rem;
     cursor: pointer;
     border-radius: 1.5rem;
-    background: $color-main;
+    background: var(--color-main);
     color: #fff;
     margin: 0 1rem;
   }

@@ -46,6 +46,7 @@ router.post('/project/icon/delTag', userMiddleware, projectIcon.delTag)
 router.get('/project/icon/pages', userMiddleware, projectIcon.pages)
 router.post('/project/icon/batchGroup', userMiddleware, projectIcon.batchGroup)
 router.post('/project/icon/gen', userMiddleware, projectIcon.gen)
+router.post('/project/icon/setExpire', userMiddleware, projectIcon.setExpire)
 
 router.post('/icon/info/edit', userMiddleware, iconInfo.edit)
 

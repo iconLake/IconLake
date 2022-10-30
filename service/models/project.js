@@ -32,15 +32,23 @@ export const ProjectSchema = new Schema({
     type: String,
     default: 'iconlake'
   },
-  file: {
-    css: {
-      updateTime: Date,
-      hash: String
-    },
-    js: {
-      updateTime: Date,
-      hash: String
-    }
+  files: {
+    css: [{
+      createTime: Date,
+      hash: String,
+      expire: {
+        type: Number,
+        default: 30
+      }
+    }],
+    js: [{
+      createTime: Date,
+      hash: String,
+      expire: {
+        type: Number,
+        default: 30
+      }
+    }]
   },
   userId: Schema.Types.ObjectId,
   createTime: Date,

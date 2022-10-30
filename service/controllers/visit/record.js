@@ -13,7 +13,7 @@ export default function record (req, res) {
     if (req.body.records instanceof Array && req.body.records.length > 0) {
       const records = []
       req.body.records.forEach(e => {
-        if (e.code && e.count && e.time && e.prefix && e.className) {
+        if (e.code && e.count && e.time && e.prefix && e.class) {
           e.projectId = projectId
           if (req.body.url && !e.url) {
             e.url = req.body.url
