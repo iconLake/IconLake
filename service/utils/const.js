@@ -1,7 +1,9 @@
+export const ONE_DAY_SECONDS = 24 * 3600 * 1000
+
 /**
  * token有效期
  */
-export const TOKEN_MAX_AGE = 7 * 24 * 3600 * 1000
+export const TOKEN_MAX_AGE = 7 * ONE_DAY_SECONDS
 
 /**
  * 源类型

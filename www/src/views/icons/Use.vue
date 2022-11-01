@@ -41,9 +41,12 @@ const genFileLink = (hash: string, ext: 'js'|'css') => `${data.files.domain}/src
 
 const isPermanent = (days: number) => days >= PERMANENT_FILE_EXPIRE
 
-const getExpireTime = (file: FileInfo) => Math.ceil(
-  file.expire - (Date.now() - (+new Date(file.createTime))) / ONE_DAY_SECONDS
-)
+const getExpireTime = (file: FileInfo) => {
+  const n = Math.ceil(
+    file.expire - (Date.now() - (+new Date(file.createTime))) / ONE_DAY_SECONDS
+  )
+  return n < 0 ? 0 : n
+}
 
 const cssLink = computed(() => `<link rel="stylesheet" href="${data.src}">`)
 const cssExample = computed(() => `<i class="${data.class} ${data.prefix}home"></i>`)
