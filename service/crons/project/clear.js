@@ -22,8 +22,8 @@ export async function clearExpiredFiles (project) {
         await deleteOldFiles(project._id, cssFiles, 'css')
       }
     }
-    if (project.files.css instanceof Array && project.files.css.length > 0) {
-      const jsFiles = project.files.css.filter(e => isExpired(e.createTime, e.expire))
+    if (project.files.js instanceof Array && project.files.js.length > 0) {
+      const jsFiles = project.files.js.filter(e => isExpired(e.createTime, e.expire))
       if (jsFiles.length > 0) {
         await deleteOldFiles(project._id, jsFiles, 'js')
       }

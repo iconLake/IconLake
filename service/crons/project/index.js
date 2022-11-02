@@ -2,6 +2,7 @@ import { CronJob } from 'cron'
 import { Project } from '../../models/project.js'
 import { center as fetchCenter } from '../../utils/fetch.js'
 import { analyseProject } from './analyse.js'
+import { clearExpiredFiles } from './clear.js'
 
 const job = new CronJob('0 0 3 * * *', () => {
   start()
@@ -34,6 +35,7 @@ async function getList (doneCB) {
   for (let i = 0, len = list.length; i < len; ++i) {
     const project = await Project.findById(list[i])
     await analyseProject(project)
+    await clearExpiredFiles(project)
   }
   if (task.isEnd) {
     doneCB()

@@ -223,12 +223,14 @@ export async function genReact (req, res, projectId, project) {
  */
 export async function deleteOldFiles (projectId, files, type) {
   (isCosActive ? deleteOldCloudFiles : deleteOldLocalFiles)(projectId, files)
-  Project.updateOne({
+  await Project.updateOne({
     _id: projectId
   }, {
     $pull: {
-      [`files.${type}._id`]: {
-        $in: files.map(f => f._id)
+      [`files.${type}`]: {
+        _id: {
+          $in: files.map(f => f._id)
+        }
       }
     }
   })
