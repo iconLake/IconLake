@@ -6,7 +6,7 @@ import UglifyJS from 'uglify-js'
 import { nanoid } from 'nanoid'
 import { minify } from 'csso'
 import { Project } from '../../../../models/project.js'
-import { ERROR_CODE, TEMPORARY_FILE_EXPIRE } from '../../../../utils/const.js'
+import { ERROR_CODE, ONE_DAY_SECONDS, TEMPORARY_FILE_EXPIRE } from '../../../../utils/const.js'
 import { getConfig } from '../../../../config/index.js'
 import { deleteObjects, getBucket, isActive as isCosActive, putObject } from '../../../../utils/cos.js'
 import mongoose from 'mongoose'
@@ -212,8 +212,29 @@ export async function genReact (req, res, projectId, project) {
 
 /**
  * 清理历史文件
+ * @param {string} projectId
+ * @param {{\
+ *  _id: ObjectId\
+ *  createTime: date\
+ *  hash: string\
+ *  expire: number\
+ * }[]} files
+ * @param {'css'|'js'} type
  */
-export const deleteOldFiles = isCosActive ? deleteOldCloudFiles : deleteOldLocalFiles
+export async function deleteOldFiles (projectId, files, type) {
+  (isCosActive ? deleteOldCloudFiles : deleteOldLocalFiles)(projectId, files)
+  await Project.updateOne({
+    _id: projectId
+  }, {
+    $pull: {
+      [`files.${type}`]: {
+        _id: {
+          $in: files.map(f => f._id)
+        }
+      }
+    }
+  })
+}
 
 /**
  * 清理本地历史文件
@@ -229,10 +250,9 @@ async function deleteOldLocalFiles (projectId, files) {
   if (!fs.existsSync(projectPath)) {
     return
   }
-  const d = 24 * 3600 * 1000
   for (let i = 0; i < files.length; i++) {
     const e = files[i]
-    if ((Date.now() - e.createTime) / d > e.expire) {
+    if ((Date.now() - e.createTime) / ONE_DAY_SECONDS > e.expire) {
       await rm(new URL(e.hash, projectPath), {
         force: true,
         recursive: true
@@ -252,11 +272,10 @@ async function deleteOldLocalFiles (projectId, files) {
  */
 async function deleteOldCloudFiles (projectId, files) {
   const basePath = `src/${projectId}/`
-  const d = 24 * 3600 * 1000
   const list = []
   for (let i = 0; i < files.length; i++) {
     const e = files[i]
-    if ((Date.now() - e.createTime) / d > e.expire) {
+    if ((Date.now() - e.createTime) / ONE_DAY_SECONDS > e.expire) {
       const data = await getBucket(`${basePath}${e.hash}/`)
       data.contents.forEach(obj => {
         list.push(obj.key)

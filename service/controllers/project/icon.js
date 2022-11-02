@@ -2,7 +2,7 @@ import { Analyse } from '../../models/analyse.js'
 import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
 import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM, PERMANENT_FILE_EXPIRE } from '../../utils/const.js'
-import { deleteOldFiles, genCSS, genJS, genReact, genVUE } from './icon/gen/index.js'
+import { genCSS, genJS, genReact, genVUE } from './icon/gen/index.js'
 
 /**
  * @api {get} /project/icon/info 获取图标信息
@@ -317,9 +317,6 @@ export async function gen (req, res) {
     react: genReact
   }
   fn[type](req, res, projectId, project)
-  if (/^(js|css)$/.test(type)) {
-    deleteOldFiles(projectId, project.files[type])
-  }
 }
 
 /**
