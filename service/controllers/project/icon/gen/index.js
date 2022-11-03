@@ -1,14 +1,15 @@
 import crypto from 'crypto'
 import fs from 'fs'
-import { writeFile, mkdir, readFile, rm, rename, readdir, stat } from 'fs/promises'
+import { writeFile, mkdir, readFile, rm, rename } from 'fs/promises'
 import { webfont } from 'webfont'
 import UglifyJS from 'uglify-js'
 import { nanoid } from 'nanoid'
 import { minify } from 'csso'
 import { Project } from '../../../../models/project.js'
-import { ERROR_CODE, FILES_MAX_LENGTH } from '../../../../utils/const.js'
+import { ERROR_CODE, ONE_DAY_SECONDS, TEMPORARY_FILE_EXPIRE } from '../../../../utils/const.js'
 import { getConfig } from '../../../../config/index.js'
 import { deleteObjects, getBucket, isActive as isCosActive, putObject } from '../../../../utils/cos.js'
+import mongoose from 'mongoose'
 
 const config = getConfig()
 const domain = isCosActive ? config.cos.domain : config.domain
@@ -20,6 +21,39 @@ export const srcPath = new URL('../../../../public/src/', import.meta.url)
 
 if (!fs.existsSync(srcPath)) {
   fs.mkdirSync(srcPath)
+}
+
+/**
+ * 记录生成的文件
+ * @param {*} req
+ * @param {string} projectId
+ * @param {'css'|'js'} fileType
+ * @param {{createTime: date, hash: string}} file
+ */
+export async function recordGenFile (req, projectId, fileType, file) {
+  const project = await Project.findById(projectId, 'files')
+  if (
+    project.files &&
+    project.files[fileType] &&
+    project.files[fileType].length > 0 &&
+    file.hash === project.files[fileType][project.files[fileType].length - 1].hash
+  ) {
+    return
+  }
+  file._id = new mongoose.Types.ObjectId()
+  file.expire = TEMPORARY_FILE_EXPIRE
+  return await Project.updateOne({
+    _id: projectId,
+    members: {
+      $elemMatch: {
+        userId: req.user._id
+      }
+    }
+  }, {
+    $push: {
+      [`files.${fileType}`]: file
+    }
+  })
 }
 
 /**
@@ -96,21 +130,10 @@ export async function genCSS (req, res, projectId, project) {
       await rename(dir, destPath)
     }
     const info = {
-      updateTime: new Date(),
+      createTime: new Date(),
       hash: result.hash
     }
-    await Project.updateOne({
-      _id: projectId,
-      members: {
-        $elemMatch: {
-          userId: req.user._id
-        }
-      }
-    }, {
-      $set: {
-        'file.css': info
-      }
-    })
+    await recordGenFile(req, projectId, 'css', info)
     res.json(info)
     return null
   }).catch(err => {
@@ -156,21 +179,10 @@ export async function genJS (req, res, projectId, project) {
     )
   }
   const info = {
-    updateTime: new Date(),
+    createTime: new Date(),
     hash
   }
-  await Project.updateOne({
-    _id: projectId,
-    members: {
-      $elemMatch: {
-        userId: req.user._id
-      }
-    }
-  }, {
-    $set: {
-      'file.js': info
-    }
-  })
+  await recordGenFile(req, projectId, 'js', info)
   res.json(info)
 }
 
@@ -200,71 +212,80 @@ export async function genReact (req, res, projectId, project) {
 
 /**
  * 清理历史文件
+ * @param {string} projectId
+ * @param {{\
+ *  _id: ObjectId\
+ *  createTime: date\
+ *  hash: string\
+ *  expire: number\
+ * }[]} files
+ * @param {'css'|'js'} type
  */
-export const deleteOldFiles = isCosActive ? deleteOldCloudFiles : deleteOldLocalFiles
+export async function deleteOldFiles (projectId, files, type) {
+  (isCosActive ? deleteOldCloudFiles : deleteOldLocalFiles)(projectId, files)
+  await Project.updateOne({
+    _id: projectId
+  }, {
+    $pull: {
+      [`files.${type}`]: {
+        _id: {
+          $in: files.map(f => f._id)
+        }
+      }
+    }
+  })
+}
 
 /**
  * 清理本地历史文件
  * @param {string} projectId
+ * @param {{\
+ *  createTime: date\
+ *  hash: string\
+ *  expire: number\
+ * }[]} files
  */
-async function deleteOldLocalFiles (projectId) {
+async function deleteOldLocalFiles (projectId, files) {
   const projectPath = new URL(`${projectId}/`, srcPath)
   if (!fs.existsSync(projectPath)) {
     return
   }
-  const files = await readdir(projectPath)
-  if (files.length <= FILES_MAX_LENGTH) {
-    return
-  }
-  const list = await Promise.all(files.map(async (name) => {
-    const statInfo = await stat(new URL(name, projectPath))
-    return {
-      name,
-      time: statInfo.mtimeMs
+  for (let i = 0; i < files.length; i++) {
+    const e = files[i]
+    if ((Date.now() - e.createTime) / ONE_DAY_SECONDS > e.expire) {
+      await rm(new URL(e.hash, projectPath), {
+        force: true,
+        recursive: true
+      })
     }
-  }))
-  list.sort((a, b) => a.time - b.time)
-  for (let i = 0, n = files.length - FILES_MAX_LENGTH; i < n; ++i) {
-    await rm(new URL(list[i].name, projectPath), {
-      force: true,
-      recursive: true
-    })
   }
 }
 
 /**
  * 清理本地历史文件
  * @param {string} projectId
+ * @param {{\
+ *  createTime: date\
+ *  hash: string\
+ *  expire: number\
+ * }[]} files
  */
-async function deleteOldCloudFiles (projectId) {
-  const data = await getBucket(`src/${projectId}/`)
-  const objs = {}
-  data.contents.forEach(e => {
-    const id = e.key.split(/\//g)[2]
-    if (!objs[id]) {
-      objs[id] = {
-        id,
-        time: +new Date(e.lastModified),
-        keys: [e.key]
-      }
-    } else {
-      const t = +new Date(e.lastModified)
-      if (t > objs[id].time) {
-        objs[id].time = t
-      }
-      objs[id].keys.push(e.key)
+async function deleteOldCloudFiles (projectId, files) {
+  const basePath = `src/${projectId}/`
+  const list = []
+  for (let i = 0; i < files.length; i++) {
+    const e = files[i]
+    if ((Date.now() - e.createTime) / ONE_DAY_SECONDS > e.expire) {
+      const data = await getBucket(`${basePath}${e.hash}/`)
+      data.contents.forEach(obj => {
+        list.push(obj.key)
+      })
     }
-  })
-  const list = Object.values(objs)
-  if (list.length <= FILES_MAX_LENGTH) {
+  }
+  if (list.length === 0) {
     return
   }
-  list.sort((a, b) => a.time - b.time)
-  const keys = []
-  for (let i = 0, n = list.length - FILES_MAX_LENGTH; i < n; ++i) {
-    keys.push(...list[i].keys)
-  }
-  await deleteObjects(keys)
+  await deleteObjects(list)
 }
 
 /**

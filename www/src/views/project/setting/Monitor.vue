@@ -69,9 +69,9 @@ async function saveSpider() {
  *   elem: Element
  *   code: String
  *   prefix: String
- *   className: String
+ *   class: String
  */
-const className = 'iconfont'
+const className = 'iconlake'
 const prefix = 'icon-'
 const iconReg = new RegExp(`${prefix}(\\S+)`, 'i')
 document.body.querySelectorAll(`.${className}`).forEach(elem => {
@@ -82,7 +82,7 @@ document.body.querySelectorAll(`.${className}`).forEach(elem => {
       elem,
       code,
       prefix,
-      className
+      class: className
     })
   }
 })</textarea>

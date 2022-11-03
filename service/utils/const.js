@@ -1,7 +1,9 @@
+export const ONE_DAY_SECONDS = 24 * 3600 * 1000
+
 /**
  * token有效期
  */
-export const TOKEN_MAX_AGE = 7 * 24 * 3600 * 1000
+export const TOKEN_MAX_AGE = 7 * ONE_DAY_SECONDS
 
 /**
  * 源类型
@@ -51,9 +53,19 @@ export const ERROR_CODE = {
 }
 
 /**
- * 生成文件的最大留存数量
+ * 永久文件的最大数量
  */
-export const FILES_MAX_LENGTH = 10
+export const PERMAMENT_FILES_MAX_NUM = 5
+
+/**
+ * 永久文件的过期时间
+ */
+export const PERMANENT_FILE_EXPIRE = 9999
+
+/**
+ * 临时文件的过期时间
+ */
+export const TEMPORARY_FILE_EXPIRE = 30
 
 /**
  * 云服务类型

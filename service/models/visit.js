@@ -5,7 +5,7 @@ export const VisitSchema = new Schema({
   projectId: mongoose.Types.ObjectId,
   code: String,
   prefix: String,
-  className: String,
+  class: String,
   url: String,
   count: Number,
   time: Date

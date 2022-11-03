@@ -58,23 +58,25 @@ export interface Invite {
 }
 
 export interface FileInfo {
-  updateTime: string
+  _id: string
+  createTime: string
   hash: string
+  expire: number
   content?: string
 }
 
 export interface Files {
   domain: string
-  maxLength: number
-  css?: FileInfo
-  js?: FileInfo
+  permamentMaxNum: number
+  css?: FileInfo[]
+  js?: FileInfo[]
 }
 
 export interface Project {
   _id: string
   userId: string
   name: string
-  file: File
+  files: Files
   desc: string
   prefix: string
   class: string
@@ -360,6 +362,20 @@ export function genIcon(projectId: string, type: 'css'|'js'|'vue'|'react') {
     data: {
       projectId,
       type
+    },
+  })
+}
+
+export function setExpire(projectId: string, fileId: string, fileType: 'css'|'js', expire: number) {
+  return <Promise<FileInfo>>request({
+    method: 'POST',
+    url: '/icon/setExpire',
+    baseURL,
+    data: {
+      projectId,
+      fileId,
+      fileType,
+      expire
     },
   })
 }

@@ -10,13 +10,14 @@ const projectTask = {
  * 拉取任务
  */
 export async function pull (req, res) {
-  if (!projectTask.cursor && Date.now() - projectTask.startTime > 20 * 3600 * 1000) {
+  if (!projectTask.cursor || Date.now() - projectTask.startTime > 20 * 3600 * 1000) {
     projectTask.cursor = Project.find({}, '_id').cursor()
     projectTask.startTime = Date.now()
   }
   const task = {
     time: new Date(),
-    type: 'projectAnalyse',
+    type: 'project',
+    isEnd: false,
     ids: []
   }
   let i = 10
@@ -28,6 +29,7 @@ export async function pull (req, res) {
     if (project) {
       task.ids.push(project.id)
     } else {
+      task.isEnd = true
       projectTask.cursor = null
       projectTask.endTime = Date.now()
     }

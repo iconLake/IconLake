@@ -268,7 +268,7 @@ async function save () {
   padding-bottom: 3rem;
   .icons {
     flex-wrap: wrap;
-    min-height: 20rem;
+    min-height: calc(100vh - 40rem);
 
     .item {
       width: 11.25rem;

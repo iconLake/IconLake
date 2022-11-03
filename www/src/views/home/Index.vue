@@ -12,7 +12,6 @@ const data = reactive({
   isLoading: true
 })
 
-const sourceMap = new Map()
 getProjects().then(res => {
   data.projects = res.list
   data.isLoading = false

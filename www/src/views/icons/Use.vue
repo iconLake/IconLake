@@ -2,10 +2,12 @@
 import { computed, reactive, watchPostEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import { info, Files, genIcon, FileInfo } from '../../apis/project'
-import HeaderVue from '../../components/Header.vue'
-import UserVue from '../../components/User.vue'
-import { copy, toast } from '../../utils'
+import { info, Files, genIcon, FileInfo, setExpire } from '@/apis/project'
+import HeaderVue from '@/components/Header.vue'
+import UserVue from '@/components/User.vue'
+import { copy, toast } from '@/utils'
+import { PERMANENT_FILE_EXPIRE, TEMPORARY_FILE_EXPIRE, ONE_DAY_SECONDS } from '@/utils/const'
+import { ElSwitch } from 'element-plus'
 
 const { t } = useI18n()
 const $route = useRoute()
@@ -18,11 +20,33 @@ const data = reactive({
   class: '',
   prefix: '',
   iconUpdateTime: '',
-  file: {} as Files,
+  files: {} as Files,
+  icons: [],
   activeTab: 'css' as Tab,
   src: '',
   generating: new Set()
 })
+
+const getLatestFile = (arr: FileInfo[] | undefined): FileInfo | undefined => {
+  if (arr instanceof Array && arr.length > 0) {
+    if (arr[0].createTime >= arr[arr.length - 1].createTime) {
+      return arr[0]
+    }
+    return arr[arr.length - 1]
+  }
+  return undefined
+}
+
+const genFileLink = (hash: string, ext: 'js'|'css') => `${data.files.domain}/src/${data._id}/${hash}/iconlake.${ext}`
+
+const isPermanent = (days: number) => days >= PERMANENT_FILE_EXPIRE
+
+const getExpireTime = (file: FileInfo) => {
+  const n = Math.ceil(
+    file.expire - (Date.now() - (+new Date(file.createTime))) / ONE_DAY_SECONDS
+  )
+  return n < 0 ? 0 : n
+}
 
 const cssLink = computed(() => `<link rel="stylesheet" href="${data.src}">`)
 const cssExample = computed(() => `<i class="${data.class} ${data.prefix}home"></i>`)
@@ -30,10 +54,16 @@ const cssExample = computed(() => `<i class="${data.class} ${data.prefix}home"><
 const jsLink = computed(() => `\<script src="${data.src}"\>\<\/script\>`)
 const jsExample = '<icon-svg name="home"></icon-svg>'
 
-const cssUpgradable = computed(() => !data.file.css?.updateTime
-  || +new Date(data.file.css?.updateTime) < +new Date(data.iconUpdateTime))
-const jsUpgradable = computed(() => !data.file.js?.updateTime
-  || +new Date(data.file.js?.updateTime) < +new Date(data.iconUpdateTime))
+const isFileListShow = computed(() => (data.activeTab === 'css' || data.activeTab === 'js') && data.files[data.activeTab] instanceof Array && (data.files[data.activeTab] as []).length > 0)
+
+const cssUpgradable = computed(() => {
+  const file = getLatestFile(data.files.css)
+  return !file || +new Date(file.createTime) < +new Date(data.iconUpdateTime)
+})
+const jsUpgradable = computed(() => {
+  const file = getLatestFile(data.files.js)
+  return !file || +new Date(file.createTime) < +new Date(data.iconUpdateTime)
+})
 
 watchPostEffect(() => {
   const v = data.activeTab
@@ -43,11 +73,18 @@ watchPostEffect(() => {
     v === 'react' && getReactContent()
     return
   }
-  data.src = data.file[v]?.hash ? `${data.file.domain}/src/${data._id}/${data.file[v]?.hash}/iconlake.${v}` : ''
+  const file = getLatestFile(data.files[v])
+  data.src = file?.hash ? genFileLink(file.hash, v) : ''
 })
 
 async function getInfo () {
-  const res = await info(data._id, 'name file iconUpdateTime class prefix')
+  const res = await info(data._id, 'name files iconUpdateTime class prefix icons.length')
+  if (res.files.css) {
+    res.files.css.reverse()
+  }
+  if (res.files.js) {
+    res.files.js.reverse()
+  }
   Object.assign(data, res)
 }
 
@@ -67,17 +104,16 @@ async function generate() {
     return
   }
   data.generating.add(tab)
-  if (!data.file[tab]) {
-    data.file[tab] = {
-      updateTime: '',
-      hash: ''
-    }
-  }
   const res = await genIcon(data._id, tab).finally(() => {
     data.generating.delete(tab)
   })
-  Object.assign(data.file[tab] as FileInfo, res)
-  toast(t('generateDone'))
+  if (res.hash) {
+    const latestFile = getLatestFile(data.files[tab])
+    if (!latestFile || latestFile.hash !== res.hash) {
+      data.files[tab]?.unshift(res)
+    }
+    toast(t('generateDone'))
+  }
 }
 
 async function getVueContent() {
@@ -91,6 +127,31 @@ async function getReactContent() {
 function copyContent (str: string) {
   copy(str)
   toast(t('copyDone'))
+}
+
+function onBeforeSetExpire(file: FileInfo) {
+  if (isPermanent(file.expire)) {
+    return true
+  }
+  if (data.activeTab !== 'css' && data.activeTab !== 'js') {
+    return
+  }
+  const n = data.files[data.activeTab]?.reduce((pre, cur) => {
+    return pre + (isPermanent(cur.expire) ? 1 : 0)
+  }, 0) || 0
+  if (n >= data.files.permamentMaxNum) {
+    toast(t('generationNote', {n: data.files.permamentMaxNum}))
+    return false
+  }
+  return true
+}
+
+async function onSetExpire(id: string, value: number) {
+  if (data.activeTab !== 'css' && data.activeTab !== 'js') {
+    return
+  }
+  await setExpire(data._id, id, data.activeTab, value)
+  toast(t('saveDone'))
 }
 </script>
 
@@ -125,8 +186,7 @@ function copyContent (str: string) {
       <i class="iconfont icon-copy"></i>
     </div>
     <div class="t-center operate">
-      <button class="btn" @click="generate">{{t(data.generating.has('css') ? 'generating' : 'regenerate')}}</button>
-      <div class="help">{{t('generationNote', {n: data.file.maxLength})}}</div>
+      <button class="btn" @click="generate" :disabled="data.icons.length === 0">{{t(data.generating.has('css') ? 'generating' : 'regenerate')}}</button>
     </div>
   </div>
   <!-- js -->
@@ -143,8 +203,7 @@ function copyContent (str: string) {
       <i class="iconfont icon-copy"></i>
     </div>
     <div class="t-center operate">
-      <button class="btn" @click="generate">{{t(data.generating.has('js') ? 'generating' : 'regenerate')}}</button>
-      <div class="help">{{t('generationNote', {n: data.file.maxLength})}}</div>
+      <button class="btn" @click="generate" :disabled="data.icons.length === 0">{{t(data.generating.has('js') ? 'generating' : 'regenerate')}}</button>
     </div>
   </div>
   <!-- vue -->
@@ -163,6 +222,40 @@ function copyContent (str: string) {
     <div class="code vue flex" @click="copyContent(data.src)" :title="t('copy')">
       <pre>{{data.src}}</pre>
       <i class="iconfont icon-copy"></i>
+    </div>
+  </div>
+  <!-- files -->
+  <div v-if="isFileListShow" class="content files">
+    <div class="flex">
+      <p>{{t('generatedFileLinks')}}</p>
+      <div class="help">{{t('generationNote', {n: data.files.permamentMaxNum})}}</div>
+    </div>
+    <div
+      v-for="file in data.files[data.activeTab as 'js'|'css']"
+      :key="file._id"
+      class="code flex"
+      :title="t('copy')"
+      @click="copyContent(genFileLink(file.hash, data.activeTab as 'css'|'js'))"
+    >
+      <div>
+        <span>{{genFileLink(file.hash, data.activeTab as 'js'|'css')}}</span>
+        <i class="iconfont icon-copy"></i>
+      </div>
+      <div class="expire">
+        <ElSwitch
+          v-model="file.expire"
+          :title="t('validity')"
+          :active-value="PERMANENT_FILE_EXPIRE"
+          :active-text="t('permanent')"
+          :inactive-value="TEMPORARY_FILE_EXPIRE"
+          :inactive-text="t('temporary')"
+          :inline-prompt="true"
+          :before-change="() => onBeforeSetExpire(file)"
+          @click.stop="() => false"
+          @change="onSetExpire(file._id, $event as number)"
+        ></ElSwitch>
+        <div v-if="!isPermanent(file.expire)" class="days">{{t('nDaysExpire', {n: getExpireTime(file)})}}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -237,11 +330,36 @@ function copyContent (str: string) {
   }
   .operate {
     padding: 2rem 0;
-    .help {
-      margin-top: 1rem;
+  }
+}
+.files {
+  .help {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #aaa;
+    text-align: left;
+  }
+  .code {
+    margin-bottom: 1.7rem;
+    .icon-copy {
+      margin-left: 1rem;
+    }
+  }
+  .expire {
+    position: relative;
+    .el-switch {
+      height: 20px;
+    }
+    .days {
+      position: absolute;
       font-size: 1rem;
+      bottom: -1.35rem;
+      left: -50%;
+      right: -50%;
+      text-align: center;
+      transform: scale(0.6);
+      white-space: nowrap;
       color: #aaa;
-      text-align: left;
     }
   }
 }
