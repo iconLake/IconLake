@@ -257,6 +257,17 @@ $align: left, center, right;
   text-decoration: none;
 }
 
+@keyframes fade-down {
+  0% {
+    transform: translateY(-2rem);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 // toast
 .toast {
   background: #fff;
@@ -267,6 +278,7 @@ $align: left, center, right;
   border-radius: 3rem;
   min-width: 20rem;
   text-align: center;
+  animation: fade-down 0.3s ease 0s 1;
   &-container {
     position: fixed;
     z-index: 99;
