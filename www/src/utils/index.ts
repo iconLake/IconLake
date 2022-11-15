@@ -9,12 +9,20 @@ document.body.appendChild(toastContainer)
  */
 export function toast (msg: string, type?: 'success'|'warn'|'error') {
   const dom = document.createElement('div')
-  dom.className = `toast ${type}`
+  dom.className = `toast ${type || ''}`
   dom.innerText = msg
   toastContainer.appendChild(dom)
-  setTimeout(() => {
+  let timer = setTimeout(() => {
     toastContainer.removeChild(dom)
   }, 3000)
+  dom.addEventListener('mouseenter', () => {
+    clearTimeout(timer)
+  })
+  dom.addEventListener('mouseleave', () => {
+    timer = setTimeout(() => {
+      toastContainer.removeChild(dom)
+    }, 500)
+  })
 }
 
 toast.success = (msg: string) => {

@@ -24,11 +24,12 @@ async function getProject() {
 
 getProject()
 
-function switchStatus() {
+async function switchStatus() {
   monitor.value.isOn = !monitor.value.isOn
-  editMonitor(projectId, {
+  await editMonitor(projectId, {
     isOn: monitor.value.isOn
   } as Monitor)
+  toast(t('saveDone'))
 }
 
 function copyJS() {
