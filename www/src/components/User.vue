@@ -18,7 +18,7 @@ const language = {
 }[locale.value]
 
 let isPopShow = ref(false)
-let popTimer = 0
+let popTimer: NodeJS.Timeout
 const userInfo = reactive({} as UserInfo)
 
 async function getUserInfo () {
