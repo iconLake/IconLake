@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, watch } from "vue";
-import { useRoute } from "vue-router";
-import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon, editGroup } from "../../apis/project";
-import IconVue from "../../components/Icon.vue";
-import { confirm, toast } from '../../utils';
-import Detail from "./Detail.vue";
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import JSZip from 'jszip'
+import { saveAs } from 'file-saver'
+import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon, editGroup } from '../../apis/project'
+import IconVue from '../../components/Icon.vue'
+import { confirm, toast } from '../../utils'
+import Detail from './Detail.vue'
 import HeaderVue from '../../components/Header.vue'
 import UserVue from '../../components/User.vue'
 import { useI18n } from 'vue-i18n'
-import Select from '@/components/Select.vue';
+import Select from '@/components/Select.vue'
 
 const { t } = useI18n()
 
@@ -100,14 +102,11 @@ function groupFilter (group: Group) {
 
 getIcons()
 
-// 生成文件
-// genIcon(data._id, 'css')
-
 const mainDom = ref<HTMLElement>()
 const iconListDom = ref<Element>()
 const detailDom = ref<{ root: Element }>()
 let detailWidth = 0
-let hideDetailTimer = 0
+let hideDetailTimer: NodeJS.Timeout
 
 function showDetail (icon: Icon, e: Event) {
   if (!iconListDom.value) {
@@ -243,17 +242,15 @@ function addGroup(group: Group) {
   getList()
 }
 
-async function saveNewGroup(name:string) {
-  const g:Group = {
-    _id: '',
-    name,
-    num: 0,
-    icons: []
-  }
-  const res = await editGroup(data._id, g)
-  g._id = res._id
-  toast(t('saveDone'))
-  addGroup(g)
+async function batchDownload() {
+  const zip = new JSZip()
+  data.selectedIcons.forEach(e => {
+    zip.file(`${e.code}.svg`, `<svg class="icon-svg" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="${e.svg.viewBox}">${e.svg.path}</svg>`)
+  })
+  const content = await zip.generateAsync({
+    type: 'blob'
+  })
+  saveAs(content, `${data.name}_${Date.now()}.zip`)
 }
 
 // search
@@ -300,6 +297,10 @@ watch(() => data.keyword, () => {
       <button class="btn" @click="batchGroup" :disabled="data.selectedIcons.size===0">
         <span>{{t('batchGroup')}}</span>
         <i class="iconfont icon-group-open"></i>
+      </button>
+      <button class="btn" @click="batchDownload" :disabled="data.selectedIcons.size===0">
+        <span>{{t('batchDownload')}}</span>
+        <i class="iconfont icon-download"></i>
       </button>
     </div>
     <div class="list" ref="iconListDom">
