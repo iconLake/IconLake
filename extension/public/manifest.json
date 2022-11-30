@@ -1,0 +1,41 @@
+{
+  "name": "iconLake",
+  "description": "iconLake Extension",
+  "version": "0.1.0",
+  "manifest_version": 3,
+  "icons": {
+    "16": "images/logo-16.png",
+    "32": "images/logo-32.png",
+    "48": "images/logo-48.png",
+    "64": "images/logo-64.png",
+    "128": "images/logo-128.png"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.iconlake.com/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/logo-16.png",
+      "32": "images/logo-32.png",
+      "48": "images/logo-48.png",
+      "64": "images/logo-64.png",
+      "128": "images/logo-128.png"
+    }
+  },
+  "options_page": "options.html",
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://*.iconlake.com/*"
+  ]
+}

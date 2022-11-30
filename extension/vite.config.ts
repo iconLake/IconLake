@@ -1,22 +1,28 @@
-import { resolve } from 'path'
+import { fileURLToPath } from 'url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { chromeExtension } from 'vite-plugin-chrome-extension'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   build: {
     rollupOptions: {
-      input: './src/manifest.json'
+      input: [
+        fileURLToPath(new URL('./popup.html', import.meta.url)),
+        fileURLToPath(new URL('./options.html', import.meta.url)),
+        fileURLToPath(new URL('./src/content.ts', import.meta.url)),
+        fileURLToPath(new URL('./src/background.ts', import.meta.url)),
+      ],
+      output: {
+        entryFileNames: '[name].js'
+      }
     }
   },
   plugins: [
     vue(),
-    chromeExtension() as any
   ],
 })
