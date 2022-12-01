@@ -1,3 +1,3 @@
-console.log(123)
+import Browser from 'webextension-polyfill'
 
-export {}
+console.log('Browser: ', Browser)
