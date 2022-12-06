@@ -1,19 +1,24 @@
+import { Msg, MsgType } from './types'
+
 const handler = {
-  getIcons: async () => {
+  [MsgType.GetIcons]: async () => {
     const svgDoms = document.querySelectorAll('svg')
     const icons = Array.from(svgDoms).map(e => ({
       svg: e.outerHTML,
-      name: e.getAttribute('title') || e.parentElement?.getAttribute('title') || ''
+      name: (e.getAttribute('title') ?? e.parentElement?.getAttribute('title')) ?? ''
     }))
-    return icons
+    return {
+      icons,
+      url: location.href
+    }
   }
 }
 
-browser.runtime.onMessage.addListener((msg, sender) => {
-  console.log(msg, sender)
-  return handler.getIcons()
+browser.runtime.onMessage.addListener(async (msg: Msg) => {
+  if (typeof msg.type !== 'string' || !(msg.type in handler)) {
+    throw new Error('Message Type is unknown.')
+  }
+  return await handler[msg.type]()
 })
-
-console.log('browser.runtime.onMessage.addListener')
 
 export {}

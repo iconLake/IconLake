@@ -7,12 +7,12 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 export default defineConfig({
   server: {
     host: true,
-    port: 8089,
+    port: 8089
   },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
   },
   build: {
     rollupOptions: {
@@ -20,7 +20,7 @@ export default defineConfig({
         fileURLToPath(new URL('./popup.html', import.meta.url)),
         fileURLToPath(new URL('./options.html', import.meta.url)),
         fileURLToPath(new URL('./src/content.ts', import.meta.url)),
-        fileURLToPath(new URL('./src/background.ts', import.meta.url)),
+        fileURLToPath(new URL('./src/background.ts', import.meta.url))
       ],
       output: {
         entryFileNames: '[name].js',
@@ -38,5 +38,5 @@ export default defineConfig({
         }
       ]
     })
-  ],
+  ]
 })
