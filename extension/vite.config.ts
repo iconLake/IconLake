@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -22,11 +23,20 @@ export default defineConfig({
         fileURLToPath(new URL('./src/background.ts', import.meta.url)),
       ],
       output: {
-        entryFileNames: '[name].js'
+        entryFileNames: '[name].js',
+        sourcemap: true
       }
     }
   },
   plugins: [
     vue(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'node_modules/webextension-polyfill/dist/browser-polyfill.min.js',
+          dest: 'assets'
+        }
+      ]
+    })
   ],
 })
