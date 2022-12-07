@@ -20,6 +20,6 @@ if (import.meta.env.DEV) {
     timer && clearTimeout(timer)
     timer = setTimeout(() => {
       void reload()
-    }, 200)
+    }, 1000)
   }
 }

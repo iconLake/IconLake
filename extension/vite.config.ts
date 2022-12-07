@@ -2,6 +2,7 @@ import { fileURLToPath } from 'url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
+import ElementPlus from 'unplugin-element-plus/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -31,6 +32,7 @@ export default defineConfig(({ command, mode }) => {
       }
     },
     plugins: [
+      ElementPlus(),
       vue(),
       viteStaticCopy({
         targets: [
