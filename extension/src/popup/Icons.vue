@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import Browser from 'webextension-polyfill'
 import { Icon } from '../types'
 
-const icons = ref([] as Icon[])
+const icons = ref<Icon[]>([])
 
 async function test() {
   const [tab] = await Browser.tabs.query({
