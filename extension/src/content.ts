@@ -3,10 +3,12 @@ import { Msg, MsgType } from './types'
 const handler = {
   [MsgType.GetIcons]: async () => {
     const svgDoms = document.querySelectorAll('svg')
-    const icons = Array.from(svgDoms).map(e => ({
-      svg: e.outerHTML,
-      name: (e.getAttribute('title') ?? e.parentElement?.getAttribute('title')) ?? ''
-    }))
+    const icons = Array.from(svgDoms).map(e => {
+      return {
+        svg: `<svg viewBox="${e.getAttribute('viewBox')}">${e.innerHTML}</svg>`,
+        name: (e.getAttribute('title') ?? e.parentElement?.getAttribute('title')) ?? ''
+      }
+    })
     return {
       icons,
       url: location.href

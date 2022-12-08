@@ -11,3 +11,8 @@ export interface Icon {
   svg: string
   name: string
 }
+
+export interface Project {
+  _id: string
+  name: string
+}
