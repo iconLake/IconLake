@@ -5,6 +5,7 @@ import { ButtonTooltipType, Icon, Project, SVG, MsgType } from '../types'
 import { ElSelect, ElOption } from 'element-plus'
 import { list, addIcon } from '../apis/project'
 import ButtonVue from '../components/Button.vue'
+import { domain } from '../apis/request'
 
 interface Item extends Icon {
   isSelected?: boolean
@@ -55,6 +56,22 @@ function showTip (content: string, type?: ButtonTooltipType) {
   tooltipType.value = type ?? ButtonTooltipType.Default
 }
 
+async function gotoProject () {
+  const tabs = await Browser.tabs.query({})
+  const url = `${domain}/manage/icons/${projectId.value}`
+  const tab = tabs.find(e => e.url === url)
+  if (tab && tab.id) {
+    await Browser.tabs.reload(tab.id)
+    await Browser.tabs.update(tab.id, {
+      highlighted: true
+    })
+  } else {
+    await Browser.tabs.create({
+      url
+    })
+  }
+}
+
 async function save () {
   if (!projectId.value) {
     showTip('请选择项目')
@@ -75,6 +92,7 @@ async function save () {
   })
   isSaving.value = false
   showTip('保存成功', ButtonTooltipType.Success)
+  setTimeout(gotoProject, 1000)
 }
 
 const genSVG = (svg: SVG) => `<svg viewBox="${svg.viewBox}">${svg.path}</svg>`
