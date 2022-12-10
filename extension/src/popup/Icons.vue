@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import Browser from 'webextension-polyfill'
-import { Icon, Project } from '../types'
-import { ElButton, ElSelect, ElOption } from 'element-plus'
+import { ButtonTooltipType, Icon, Project, SVG, MsgType } from '../types'
+import { ElSelect, ElOption } from 'element-plus'
+import { list, addIcon } from '../apis/project'
+import ButtonVue from '../components/Button.vue'
 
 interface Item extends Icon {
   isSelected?: boolean
@@ -11,6 +13,12 @@ interface Item extends Icon {
 const icons = ref<Item[]>([])
 const projectId = ref('')
 const projectList = ref<Project[]>([])
+const isSaving = ref(false)
+const tooltip = reactive({
+  visible: false,
+  content: ''
+})
+const tooltipType = ref(ButtonTooltipType.Default)
 
 async function getIcons () {
   const [tab] = await Browser.tabs.query({
@@ -18,7 +26,7 @@ async function getIcons () {
     lastFocusedWindow: true
   })
   const res = await Browser.tabs.sendMessage(tab.id as number, {
-    type: 'getIcons'
+    type: MsgType.GetIcons
   }) as {
     icons: Icon[]
   }
@@ -31,12 +39,7 @@ async function getIcons () {
 getIcons()
 
 async function getProjects () {
-  const data: { list?: Project[], error?: string } = await fetch('https://iconlake.com/api/project/list').then(e => e.json())
-  if (data.error === 'userNotLogin') {
-    Browser.tabs.create({
-      url: 'https://iconlake.com/login'
-    })
-  }
+  const data = await list()
   projectList.value = data.list || []
 }
 
@@ -45,17 +48,47 @@ getProjects()
 function setSelected (item: Item) {
   item.isSelected = !item.isSelected
 }
+
+function showTip (content: string, type?: ButtonTooltipType) {
+  tooltip.visible = true
+  tooltip.content = content
+  tooltipType.value = type ?? ButtonTooltipType.Default
+}
+
+async function save () {
+  if (!projectId.value) {
+    showTip('请选择项目')
+    return
+  }
+  if (!icons.value.some(e => e.isSelected)) {
+    showTip('请选择图标')
+    return
+  }
+  isSaving.value = true
+  const t = Date.now()
+  await addIcon(projectId.value, icons.value.filter(e => e.isSelected).map((e, i) => ({
+    code: `${t}-${i}`,
+    name: '',
+    svg: e.svg
+  }))).catch(() => {
+    showTip('保存失败', ButtonTooltipType.Danger)
+  })
+  isSaving.value = false
+  showTip('保存成功', ButtonTooltipType.Success)
+}
+
+const genSVG = (svg: SVG) => `<svg viewBox="${svg.viewBox}">${svg.path}</svg>`
 </script>
 
 <template>
   <div class="list">
-    <div class="item" :class="{selected: item.isSelected}" v-for="(item, i) in icons" :key="i" v-html="item.svg" @click="setSelected(item)"></div>
+    <div class="item" :class="{selected: item.isSelected}" v-for="(item, i) in icons" :key="i" @click="setSelected(item)" v-html="genSVG(item.svg)"></div>
   </div>
   <div class="operate">
     <ElSelect v-model="projectId">
       <ElOption v-for="item in projectList" :label="item.name" :value="item._id" :key="item._id" />
     </ElSelect>
-    <ElButton class="btn" type="primary" round>添加</ElButton>
+    <ButtonVue v-model:tooltipVisible="tooltip.visible" class="btn" type="primary" round @click="save" :loading="isSaving" :tooltip="tooltip" :tooltip-type="tooltipType">添加</ButtonVue>
   </div>
 </template>
 
@@ -75,32 +108,42 @@ function setSelected (item: Item) {
   text-align: center;
   line-height: 1;
   cursor: pointer;
-  ::v-deep(svg) {
+  position: relative;
+  :deep(svg) {
     width: 100%;
     aspect-ratio: 1;
   }
-  &.selected {
-    position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 5px;
+    right: 5px;
+    bottom: 5px;
+    left: 5px;
+    border-radius: 10px;
+  }
+  &:hover {
     &::after {
-      content: "";
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      bottom: 5px;
-      left: 5px;
+      border: none;
+      background-color: var(--el-color-info-light-9);
+    }
+  }
+  &.selected {
+    &::after {
       border: 1px solid var(--el-color-primary);
-      border-radius: 10px;
     }
   }
 }
 .operate {
   padding: 16px;
   text-align: center;
-  ::v-deep(.el-input__wrapper) {
+  :deep(.el-input__wrapper) {
     border-radius: 50px;
   }
-  .btn {
+  :deep(.btn) {
     margin-left: 16px;
+    width: 100px;
   }
 }
 </style>

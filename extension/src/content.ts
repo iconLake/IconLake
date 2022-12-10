@@ -1,11 +1,21 @@
-import { Msg, MsgType } from './types'
+enum MsgType {
+  GetIcons = 'getIcons'
+}
+
+interface Msg {
+  type: MsgType
+  data: any
+}
 
 const handler = {
   [MsgType.GetIcons]: async () => {
     const svgDoms = document.querySelectorAll('svg')
     const icons = Array.from(svgDoms).map(e => {
       return {
-        svg: `<svg viewBox="${e.getAttribute('viewBox')}">${e.innerHTML}</svg>`,
+        svg: {
+          viewBox: e.getAttribute('viewBox'),
+          path: e.innerHTML
+        },
         name: (e.getAttribute('title') ?? e.parentElement?.getAttribute('title')) ?? ''
       }
     })
