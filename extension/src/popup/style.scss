@@ -1,20 +1,6 @@
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
+@import '../../../service/assets/common/index.scss';
 
 body {
-  margin: 0;
-
-  --el-color-primary: #476de8;
   --el-color-primary-light-3: #6985e0;
 }
 

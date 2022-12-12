@@ -18,6 +18,7 @@ export default defineConfig(({ command, mode }) => {
       }
     },
     build: {
+      emptyOutDir: !isDev,
       rollupOptions: {
         input: [
           fileURLToPath(new URL('./popup.html', import.meta.url)),

@@ -63,7 +63,8 @@ async function gotoProject () {
   if (tab && tab.id) {
     await Browser.tabs.reload(tab.id)
     await Browser.tabs.update(tab.id, {
-      highlighted: true
+      highlighted: true,
+      active: true
     })
   } else {
     await Browser.tabs.create({
@@ -100,7 +101,9 @@ const genSVG = (svg: SVG) => `<svg viewBox="${svg.viewBox}">${svg.path}</svg>`
 
 <template>
   <div class="list">
-    <div class="item" :class="{selected: item.isSelected}" v-for="(item, i) in icons" :key="i" @click="setSelected(item)" v-html="genSVG(item.svg)"></div>
+    <div class="item" :class="{selected: item.isSelected}" v-for="(item, i) in icons" :key="i" @click="setSelected(item)">
+      <div class="wrapper" v-html="genSVG(item.svg)"></div>
+    </div>
   </div>
   <div class="operate">
     <ElSelect v-model="projectId">
@@ -121,7 +124,7 @@ const genSVG = (svg: SVG) => `<svg viewBox="${svg.viewBox}">${svg.path}</svg>`
 }
 .item {
   width: 20%;
-  padding: 16px;
+  padding: 6px;
   box-sizing: border-box;
   text-align: center;
   line-height: 1;
@@ -130,26 +133,22 @@ const genSVG = (svg: SVG) => `<svg viewBox="${svg.viewBox}">${svg.path}</svg>`
   :deep(svg) {
     width: 100%;
     aspect-ratio: 1;
+    fill: currentColor;
   }
-  &::after {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    top: 5px;
-    right: 5px;
-    bottom: 5px;
-    left: 5px;
+  .wrapper {
+    border: 1px solid transparent;
     border-radius: 10px;
+    padding: 10px;
   }
   &:hover {
-    &::after {
-      border: none;
-      background-color: var(--el-color-info-light-9);
+    .wrapper {
+      background-color: #e5ecff;
     }
   }
   &.selected {
-    &::after {
-      border: 1px solid var(--el-color-primary);
+    .wrapper {
+      border-color: var(--el-color-primary);
+      background-color: #fff;
     }
   }
 }
