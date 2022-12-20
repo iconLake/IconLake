@@ -106,7 +106,7 @@ const genSVG = (svg: SVG) => `<svg viewBox="${svg.viewBox}">${svg.path}</svg>`
     </div>
   </div>
   <div class="operate">
-    <ElSelect v-model="projectId">
+    <ElSelect v-model="projectId" placeholder="选择项目">
       <ElOption v-for="item in projectList" :label="item.name" :value="item._id" :key="item._id" />
     </ElSelect>
     <ButtonVue v-model:tooltipVisible="tooltip.visible" class="btn" type="primary" round @click="save" :loading="isSaving" :tooltip="tooltip" :tooltip-type="tooltipType">添加</ButtonVue>

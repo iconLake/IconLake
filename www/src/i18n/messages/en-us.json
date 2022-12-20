@@ -114,5 +114,6 @@
   "fail": "Operation Failed",
   "userNotLogin": "You haven't logged in, please log in first",
   "tokenExpired": "Your login information has expired, please login again",
-  "batchDownload": "Batch Download"
+  "batchDownload": "Batch Download",
+  "collectSVG": "Collect SVG"
 }

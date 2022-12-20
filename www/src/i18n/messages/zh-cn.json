@@ -114,5 +114,6 @@
   "fail": "操作失败",
   "userNotLogin": "你还没有登录，请先登录",
   "tokenExpired": "你的登录信息已失效，请重新登录",
-  "batchDownload": "批量下载"
+  "batchDownload": "批量下载",
+  "collectSVG": "采集svg"
 }

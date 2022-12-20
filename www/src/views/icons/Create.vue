@@ -14,7 +14,7 @@ interface Icon extends BaseIcon {
   prefix?: string
 }
 
-type Tab = 'svg'|'iconfont'
+type Tab = 'svg'|'iconfont'|'extension'
 
 const $route = useRoute()
 const $router = useRouter()
@@ -200,10 +200,11 @@ async function save () {
   <div class="tab flex">
     <div class="item" :class="getTabClass('svg')" @click="setTabActive('svg')">{{t('uploadSVG')}}</div>
     <div class="item" :class="getTabClass('iconfont')" @click="setTabActive('iconfont')">{{t('importIconfont')}}</div>
+    <div class="item" :class="getTabClass('extension')" @click="setTabActive('extension')">{{t('collectSVG')}}</div>
   </div>
   <div class="wrap">
       <!-- icons -->
-    <div class="icons flex start">
+    <div v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'" class="icons flex start">
       <div v-for="item in data.icons" :key="item.code" class="item">
         <svg :viewBox="item.svg?.viewBox" v-html="item.svg?.path"></svg>
         <div v-if="item.code" class="name" :title="item.code">{{item.code}}</div>
@@ -228,8 +229,26 @@ async function save () {
         <input type="file" @change="onIconfontJSONChange" accept="application/json">
       </label>
     </div>
+    <div v-if="data.activeTab === 'extension'" class="t-center">
+      <h1>iconLake浏览器扩展</h1>
+      <h2 class="m-bottom">帮你采集任意网站的SVG</h2>
+      <div class="flex center">
+        <div class="m-right">
+          <h1>Chrome扩展</h1>
+          <p>下载</p>
+        </div>
+        <div class="m-right">
+          <h1>Firefox扩展</h1>
+          <p>下载</p>
+        </div>
+        <div>
+          <h1>Edge扩展</h1>
+          <p>下载</p>
+        </div>
+      </div>
+    </div>
     <!-- button -->
-    <div class="flex center">
+    <div v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'" class="flex center">
       <button class="btn danger" :disabled="data.icons.length === 0" @click="save">{{t('save')}}</button>
     </div>
   </div>
