@@ -134,7 +134,7 @@ function onBeforeSetExpire(file: FileInfo) {
     return true
   }
   if (data.activeTab !== 'css' && data.activeTab !== 'js') {
-    return
+    return false
   }
   const n = data.files[data.activeTab]?.reduce((pre, cur) => {
     return pre + (isPermanent(cur.expire) ? 1 : 0)
