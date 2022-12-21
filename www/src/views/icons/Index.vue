@@ -236,6 +236,19 @@ function updateIcon(eData: {
   }
 }
 
+async function saveGroup(name:string) {
+  const g:Group = {
+    _id: '',
+    name,
+    num: 0,
+    icons: []
+  }
+  const res = await editGroup(data._id, g)
+  g._id = res._id
+  toast(t('saveDone'))
+  addGroup(g)
+}
+
 function addGroup(group: Group) {
   data.groups.push(group)
   data.groupMap[group._id] = group
@@ -354,7 +367,7 @@ watch(() => data.keyword, () => {
       :placeholder="t('ungrouped')"
       size="default"
       v-model="data.batchGroupId"
-      @add="addGroup"
+      @add="saveGroup"
     ></Select>
   </div>
 </template>
