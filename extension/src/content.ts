@@ -10,6 +10,7 @@ interface Msg {
 const handler = {
   [MsgType.GetIcons]: async () => {
     const svgDoms = document.querySelectorAll('svg')
+    const iconsSet = new Set()
     const icons = Array.from(svgDoms).map(e => {
       return {
         svg: {
@@ -18,6 +19,12 @@ const handler = {
         },
         name: (e.getAttribute('title') ?? e.parentElement?.getAttribute('title')) ?? ''
       }
+    }).filter(e => {
+      if (iconsSet.has(e.svg.path)) {
+        return false
+      }
+      iconsSet.add(e.svg.path)
+      return true
     })
     return {
       icons,

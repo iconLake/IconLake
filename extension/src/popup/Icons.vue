@@ -46,8 +46,15 @@ async function getProjects () {
 
 getProjects()
 
-function setSelected (item: Item) {
+let lastSelectedIndex = -1
+function setSelected (item: Item, i: number, e: MouseEvent) {
   item.isSelected = !item.isSelected
+  if (e.shiftKey && lastSelectedIndex > -1 && Math.abs(i - lastSelectedIndex) > 1) {
+    for (let start = Math.min(lastSelectedIndex, i), end = Math.max(lastSelectedIndex, i); start <= end; ++start) {
+      icons.value[start].isSelected = item.isSelected
+    }
+  }
+  lastSelectedIndex = i
 }
 
 function showTip (content: string, type?: ButtonTooltipType) {
@@ -101,7 +108,7 @@ const genSVG = (svg: SVG) => `<svg viewBox="${svg.viewBox}">${svg.path}</svg>`
 
 <template>
   <div class="list">
-    <div class="item" :class="{selected: item.isSelected}" v-for="(item, i) in icons" :key="i" @click="setSelected(item)">
+    <div class="item" :class="{selected: item.isSelected}" v-for="(item, i) in icons" :key="i" @click="setSelected(item, i, $event)">
       <div class="wrapper" v-html="genSVG(item.svg)"></div>
     </div>
   </div>
