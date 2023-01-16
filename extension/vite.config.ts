@@ -18,6 +18,7 @@ export default defineConfig(({ command, mode }) => {
       }
     },
     build: {
+      outDir: isDev ? 'dist' : 'build',
       emptyOutDir: !isDev,
       rollupOptions: {
         input: [
