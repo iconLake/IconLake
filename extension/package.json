@@ -14,7 +14,7 @@
     "node": ">=16",
     "pnpm": ">=7"
   },
-  "packageManager": "pnpm@7.18.2",
+  "packageManager": "pnpm@7.24.3",
   "author": "iconlake",
   "license": "AGPLv3",
   "dependencies": {

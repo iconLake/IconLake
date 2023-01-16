@@ -111,9 +111,10 @@ const genSVG = (svg: SVG) => `<svg viewBox="${svg.viewBox}">${svg.path}</svg>`
     <div class="item" :class="{selected: item.isSelected}" v-for="(item, i) in icons" :key="i" @click="setSelected(item, i, $event)">
       <div class="wrapper" v-html="genSVG(item.svg)"></div>
     </div>
+    <div v-if="icons.length === 0" class="empty">野渡无人舟自横</div>
   </div>
   <div class="operate">
-    <ElSelect v-model="projectId" placeholder="选择项目">
+    <ElSelect v-model="projectId" placeholder="选择项目" no-data-text="你还没有创建项目">
       <ElOption v-for="item in projectList" :label="item.name" :value="item._id" :key="item._id" />
     </ElSelect>
     <ButtonVue v-model:tooltipVisible="tooltip.visible" class="btn" type="primary" round @click="save" :loading="isSaving" :tooltip="tooltip" :tooltip-type="tooltipType">添加</ButtonVue>
@@ -128,6 +129,15 @@ const genSVG = (svg: SVG) => `<svg viewBox="${svg.viewBox}">${svg.path}</svg>`
   padding: 16px;
   overflow: auto;
   flex: 1;
+  .empty {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #bbb;
+    font-size: 1.5rem;
+  }
 }
 .item {
   width: 20%;
@@ -162,9 +172,6 @@ const genSVG = (svg: SVG) => `<svg viewBox="${svg.viewBox}">${svg.path}</svg>`
 .operate {
   padding: 16px;
   text-align: center;
-  :deep(.el-input__wrapper) {
-    border-radius: 50px;
-  }
   :deep(.btn) {
     margin-left: 16px;
     width: 100px;
