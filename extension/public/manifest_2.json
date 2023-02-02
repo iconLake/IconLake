@@ -32,9 +32,7 @@
   },
   "options_page": "options.html",
   "permissions": [
-    "tabs"
-  ],
-  "host_permissions": [
+    "tabs",
     "*://*/*"
   ]
 }

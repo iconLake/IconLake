@@ -170,8 +170,10 @@ const genSVG = (svg: SVG) => `<svg viewBox="${svg.viewBox}">${svg.path}</svg>`
   }
 }
 .operate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 16px;
-  text-align: center;
   :deep(.btn) {
     margin-left: 16px;
     width: 100px;

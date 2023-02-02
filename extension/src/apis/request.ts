@@ -11,7 +11,7 @@ export function request (input: URL | RequestInfo, init?: RequestInit | undefine
   }
   return fetch(input, _init).then(e => e.json()).then(e => {
     if (e.error) {
-      if (e.error === 'userNotLogin') {
+      if (e.error === 'userNotLogin' || e.error === 'tokenExpired') {
         Browser.tabs.create({
           url: `${domain}/login`
         })
