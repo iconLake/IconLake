@@ -28,12 +28,8 @@ pnpm run build
 
 ## Vue 3 + Typescript + Vite
 
-Vue 3 `<script setup>` SFC [使用文档](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup)。
+Vue 3 `<script setup>` SFC [使用文档](https://vuejs.org/api/sfc-script-setup.html#basic-syntax)。
 
 ## IDE
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=vue.volar)
-
-## 支持 `.vue` Imports in TS
-
-禁用Vetur，使用Volar
