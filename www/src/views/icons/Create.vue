@@ -14,7 +14,7 @@ interface Icon extends BaseIcon {
   prefix?: string
 }
 
-type Tab = 'svg'|'iconfont'
+type Tab = 'svg'|'iconfont'|'extension'
 
 const $route = useRoute()
 const $router = useRouter()
@@ -200,10 +200,11 @@ async function save () {
   <div class="tab flex">
     <div class="item" :class="getTabClass('svg')" @click="setTabActive('svg')">{{t('uploadSVG')}}</div>
     <div class="item" :class="getTabClass('iconfont')" @click="setTabActive('iconfont')">{{t('importIconfont')}}</div>
+    <div class="item" :class="getTabClass('extension')" @click="setTabActive('extension')">{{t('collectSVG')}}</div>
   </div>
   <div class="wrap">
       <!-- icons -->
-    <div class="icons flex start">
+    <div v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'" class="icons flex start">
       <div v-for="item in data.icons" :key="item.code" class="item">
         <svg :viewBox="item.svg?.viewBox" v-html="item.svg?.path"></svg>
         <div v-if="item.code" class="name" :title="item.code">{{item.code}}</div>
@@ -228,8 +229,41 @@ async function save () {
         <input type="file" @change="onIconfontJSONChange" accept="application/json">
       </label>
     </div>
+    <div v-if="data.activeTab === 'extension'" class="extension t-center">
+      <h1>{{t('iconlakeExtension')}}</h1>
+      <h2>{{t('collectAnySVG')}}</h2>
+      <div class="flex center download">
+        <div class="item">
+          <h3>
+            <img class="browser" :src="'/imgs/chrome.svg'" />
+          </h3>
+          <p>
+            <a class="store" href="https://chrome.google.com/webstore/detail/iconlake/lfjdnkcfpebmhjbeihnebpdalolhcmmb" target="_blank">{{t('webStore')}}</a>
+          </p>
+          <p>
+            <a class="file" :href="'/exts/chrome.crx'" target="_blank">{{t('downloadFile')}}</a>
+          </p>
+        </div>
+        <div class="item">
+          <h3>
+            <img class="browser" :src="'/imgs/firefox.svg'" />
+          </h3>
+          <p>
+            <a class="store" href="https://addons.mozilla.org/zh-CN/firefox/addon/iconlake/" target="_blank">{{t('webStore')}}</a>
+          </p>
+        </div>
+        <div class="item">
+          <h3>
+            <img class="browser" :src="'/imgs/edge.svg'" />
+          </h3>
+          <p>
+            <a class="store" href="https://microsoftedge.microsoft.com/addons/detail/iconlake/ilkiempcnikelnciijanjlgmchleamjh" target="_blank">{{t('webStore')}}</a>
+          </p>
+        </div>
+      </div>
+    </div>
     <!-- button -->
-    <div class="flex center">
+    <div v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'" class="flex center">
       <button class="btn danger" :disabled="data.icons.length === 0" @click="save">{{t('save')}}</button>
     </div>
   </div>
@@ -309,6 +343,48 @@ async function save () {
     input[type="file"] {  
       display: none;
     }
+  }
+}
+
+.extension {
+  h1 {
+    font-size: 3.6rem;
+    line-height: 3;
+  }
+  h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 5rem;
+  }
+  .download {
+    align-items: flex-start;
+    .item {
+      margin: 5rem;
+      &:hover {
+        .file {
+          opacity: 1;
+        }
+      }
+    }
+    .store {
+      display: inline-block;
+      padding: 0.6rem 2rem;
+      background: var(--color-main);
+      color: #fff;
+      border-radius: 3rem;
+      margin: 2rem 0 1rem;
+      font-size: 1.2rem;
+    }
+    .file {
+      font-size: 1rem;
+      color: #666;
+      opacity: 0;
+      transition: var(--transition);
+    }
+  }
+  .browser {
+    width: 8rem;
+    height: 8rem;
   }
 }
 
