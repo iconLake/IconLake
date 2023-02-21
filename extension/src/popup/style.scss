@@ -1,0 +1,14 @@
+@import '../../../service/assets/common/index.scss';
+
+body {
+  --el-color-primary-light-3: #6985e0;
+}
+
+#app {
+  width: 360px;
+  height: 582px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}

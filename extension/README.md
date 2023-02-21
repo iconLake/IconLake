@@ -1,4 +1,4 @@
-# iconLake WWW
+# iconLake Extension
 
 ## 开发
 
@@ -19,12 +19,6 @@ pnpm run dev
 ```
 pnpm run build
 ```
-## 注意事项
-
-1. 一律使用rem作为单位，很细的border例外可以使用px；
-2. 设计稿使用PxCook查看时，单位选rem，基数设为16；
-3. 布局尽量使用flex；
-
 
 ## Vue 3 + Typescript + Vite
 

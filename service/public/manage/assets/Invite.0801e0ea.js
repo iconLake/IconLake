@@ -1,0 +1,1 @@
+import{d as c,B as n,E as r}from"./index.eab661c0.js";import{t as u,z as p}from"./project.d12e593c.js";const f=c({__name:"Invite",setup(i){const t=n(),o=r(),e=t.params.id,s=t.query.code;async function a(){await p(e,s),o.replace(`/icons/${e}`)}return e&&s?a():(u("\u53C2\u6570\u9519\u8BEF"),o.replace("/home")),()=>{}}});export{f as default};

@@ -55,9 +55,9 @@ a {
   color: inherit;
 }
 
-input[type="text"],
-input[type="number"],
-input[type="password"],
+input[type="text"]:not(.el-input__inner),
+input[type="number"]:not(.el-input__inner),
+input[type="password"]:not(.el-input__inner),
 select,
 textarea {
   font-family: var(--font-family);
