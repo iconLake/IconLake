@@ -1,0 +1,7 @@
+syntax = "proto3";
+package iconlake.iconlake;
+
+option go_package = "iconlake/x/iconlake/types";
+
+// Msg defines the Msg service.
+service Msg {}
