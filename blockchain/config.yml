@@ -35,6 +35,12 @@ client:
     path: docs/static/openapi.yml
 genesis:
   app_state:
+    bank:
+      params:
+        send_enabled:
+          - denom: drop
+            enabled: false
+        default_send_enabled: true
     crisis:
       constant_fee:
         amount: "1000"
