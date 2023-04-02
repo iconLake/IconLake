@@ -7,11 +7,22 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
+import { MsgMintDrop } from "./types/iconlake/iconlake/tx";
 
 import { Params as typeParams} from "./types"
 
-export {  };
+export { MsgMintDrop };
 
+type sendMsgMintDropParams = {
+  value: MsgMintDrop,
+  fee?: StdFee,
+  memo?: string
+};
+
+
+type msgMintDropParams = {
+  value: MsgMintDrop,
+};
 
 
 export const registry = new Registry(msgTypes);
@@ -43,6 +54,28 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
+		async sendMsgMintDrop({ value, fee, memo }: sendMsgMintDropParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgMintDrop: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgMintDrop({ value: MsgMintDrop.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgMintDrop: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		
+		msgMintDrop({ value }: msgMintDropParams): EncodeObject {
+			try {
+				return { typeUrl: "/iconlake.iconlake.MsgMintDrop", value: MsgMintDrop.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgMintDrop: Could not create message: ' + e.message)
+			}
+		},
 		
 	}
 };

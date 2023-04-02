@@ -501,6 +501,8 @@ func New(
 		keys[iconlakemoduletypes.StoreKey],
 		keys[iconlakemoduletypes.MemStoreKey],
 		app.GetSubspace(iconlakemoduletypes.ModuleName),
+		app.MintKeeper,
+		app.BankKeeper,
 	)
 	iconlakeModule := iconlakemodule.NewAppModule(appCodec, app.IconlakeKeeper, app.AccountKeeper, app.BankKeeper)
 
