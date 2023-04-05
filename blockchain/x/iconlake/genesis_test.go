@@ -3,17 +3,26 @@ package iconlake_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	keepertest "iconlake/testutil/keeper"
 	"iconlake/testutil/nullify"
 	"iconlake/x/iconlake"
 	"iconlake/x/iconlake/types"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 
+		AccountList: []types.Account{
+			{
+				AccAddress: []byte("0"),
+			},
+			{
+				AccAddress: []byte("1"),
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -25,5 +34,6 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
 
+	require.ElementsMatch(t, genesisState.AccountList, got.AccountList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }
