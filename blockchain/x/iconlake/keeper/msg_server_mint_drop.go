@@ -29,7 +29,7 @@ func (k msgServer) MintDrop(goCtx context.Context, msg *types.MsgMintDrop) (*typ
 	amounts := sdk.NewCoins(msg.Amount)
 
 	account, isAccountCreated := k.GetAccount(ctx, accAddress)
-	timestamp := time.Now().Unix()
+	timestamp := time.Now().UnixMilli()
 	if !isAccountCreated {
 		account = types.Account{
 			AccAddress:       accAddress,
