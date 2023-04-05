@@ -3,8 +3,9 @@ package types_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"iconlake/x/iconlake/types"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
@@ -19,12 +20,34 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid:    true,
 		},
 		{
-			desc:     "valid genesis state",
+			desc: "valid genesis state",
 			genState: &types.GenesisState{
 
+				AccountList: []types.Account{
+					{
+						AccAddress: []byte("0"),
+					},
+					{
+						AccAddress: []byte("1"),
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
+		},
+		{
+			desc: "duplicated account",
+			genState: &types.GenesisState{
+				AccountList: []types.Account{
+					{
+						AccAddress: []byte("0"),
+					},
+					{
+						AccAddress: []byte("0"),
+					},
+				},
+			},
+			valid: false,
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {

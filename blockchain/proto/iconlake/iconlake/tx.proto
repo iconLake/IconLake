@@ -16,4 +16,8 @@ message MsgMintDrop {
   cosmos.base.v1beta1.Coin amount  = 2 [(gogoproto.nullable) = false];
 }
 
-message MsgMintDropResponse {}
+message MsgMintDropResponse {
+  string                   creator = 1;
+  cosmos.base.v1beta1.Coin amount  = 2;
+  int64                    lastMintDropTime = 3;
+}
