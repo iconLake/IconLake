@@ -34,6 +34,10 @@ client:
   openapi:
     path: docs/static/openapi.yml
 genesis:
+  consensus_params:
+    validator:
+      pub_key_types:
+      - ed25519
   app_state:
     bank:
       params:
