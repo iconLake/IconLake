@@ -64,7 +64,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	nft "github.com/cosmos/cosmos-sdk/x/nft"
+	"github.com/cosmos/cosmos-sdk/x/nft"
 	nftkeeper "github.com/cosmos/cosmos-sdk/x/nft/keeper"
 	nftModule "github.com/cosmos/cosmos-sdk/x/nft/module"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -113,6 +113,7 @@ import (
 	iconmodule "iconlake/x/icon"
 	iconmodulekeeper "iconlake/x/icon/keeper"
 	iconmoduletypes "iconlake/x/icon/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	appparams "iconlake/app/params"
@@ -183,11 +184,12 @@ var (
 		distrtypes.ModuleName:          nil,
 		icatypes.ModuleName:            nil,
 		minttypes.ModuleName:           {authtypes.Minter},
+		nft.ModuleName:                 {authtypes.Minter, authtypes.Burner},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		iconmoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		iconmoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -297,7 +299,6 @@ func New(
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey, group.StoreKey,
 		icacontrollertypes.StoreKey,
 		iconlakemoduletypes.StoreKey,
-		iconmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -682,6 +683,7 @@ func New(
 		slashingtypes.ModuleName,
 		govtypes.ModuleName,
 		minttypes.ModuleName,
+		nft.ModuleName,
 		crisistypes.ModuleName,
 		genutiltypes.ModuleName,
 		ibctransfertypes.ModuleName,
