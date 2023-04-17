@@ -17,7 +17,7 @@ export interface QueryParamsResponse {
 }
 
 export interface QueryGetAccountRequest {
-  accAddress: string;
+  address: string;
 }
 
 export interface QueryGetAccountResponse {
@@ -122,13 +122,13 @@ export const QueryParamsResponse = {
 };
 
 function createBaseQueryGetAccountRequest(): QueryGetAccountRequest {
-  return { accAddress: "" };
+  return { address: "" };
 }
 
 export const QueryGetAccountRequest = {
   encode(message: QueryGetAccountRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.accAddress !== "") {
-      writer.uint32(10).string(message.accAddress);
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
     }
     return writer;
   },
@@ -141,7 +141,7 @@ export const QueryGetAccountRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.accAddress = reader.string();
+          message.address = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -152,18 +152,18 @@ export const QueryGetAccountRequest = {
   },
 
   fromJSON(object: any): QueryGetAccountRequest {
-    return { accAddress: isSet(object.accAddress) ? String(object.accAddress) : "" };
+    return { address: isSet(object.address) ? String(object.address) : "" };
   },
 
   toJSON(message: QueryGetAccountRequest): unknown {
     const obj: any = {};
-    message.accAddress !== undefined && (obj.accAddress = message.accAddress);
+    message.address !== undefined && (obj.address = message.address);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryGetAccountRequest>, I>>(object: I): QueryGetAccountRequest {
     const message = createBaseQueryGetAccountRequest();
-    message.accAddress = object.accAddress ?? "";
+    message.address = object.address ?? "";
     return message;
   },
 };
