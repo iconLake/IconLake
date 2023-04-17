@@ -10,11 +10,27 @@
  */
 
 export interface IconlakeAccount {
+  /** @format byte */
   accAddress?: string;
+
+  /** @format int64 */
   lastMintDropTime?: string;
 }
 
-export type IconlakeMsgMintDropResponse = object;
+export interface IconlakeMsgMintDropResponse {
+  creator?: string;
+
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  amount?: V1Beta1Coin;
+
+  /** @format int64 */
+  lastMintDropTime?: string;
+}
 
 /**
  * Params defines the parameters for the module.
@@ -298,11 +314,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryAccount
    * @summary Queries a list of Account items.
-   * @request GET:/iconlake/iconlake/account/{accAddress}
+   * @request GET:/iconlake/iconlake/account/{address}
    */
-  queryAccount = (accAddress: string, params: RequestParams = {}) =>
+  queryAccount = (address: string, params: RequestParams = {}) =>
     this.request<IconlakeQueryGetAccountResponse, RpcStatus>({
-      path: `/iconlake/iconlake/account/${accAddress}`,
+      path: `/iconlake/iconlake/account/${address}`,
       method: "GET",
       format: "json",
       ...params,
