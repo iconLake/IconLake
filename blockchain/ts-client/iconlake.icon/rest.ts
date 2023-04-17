@@ -9,6 +9,10 @@
  * ---------------------------------------------------------------
  */
 
+export interface IconMsgMintResponse {
+  id?: string;
+}
+
 /**
  * Params defines the parameters for the module.
  */
