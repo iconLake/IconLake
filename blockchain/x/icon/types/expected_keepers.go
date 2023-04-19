@@ -3,10 +3,15 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/x/nft"
 )
 
 type NftKeeper interface {
 	// Methods imported from nft should be defined here
+	HasClass(ctx sdk.Context, classID string) bool
+	SaveClass(ctx sdk.Context, class nft.Class) error
+	HasNFT(ctx sdk.Context, classID string, nftID string) bool
+	Mint(ctx sdk.Context, token nft.NFT, receiver sdk.AccAddress) error
 }
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)
