@@ -71639,11 +71639,19 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
-  iconlake.icon.MsgMintResponse:
+  iconlake.icon.IconData:
     type: object
     properties:
-      id:
+      author:
         type: string
+      name:
+        type: string
+      description:
+        type: string
+      createTime:
+        type: string
+  iconlake.icon.MsgMintResponse:
+    type: object
   iconlake.icon.Params:
     type: object
     description: Params defines the parameters for the module.
