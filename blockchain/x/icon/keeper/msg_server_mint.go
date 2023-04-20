@@ -29,10 +29,14 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 			k.Logger(ctx).Error(err.Error())
 			return nil, err
 		}
-		k.nftKeeper.SaveClass(ctx, nft.Class{
+		err = k.nftKeeper.SaveClass(ctx, nft.Class{
 			Id:   msg.ClassId,
 			Data: dataAny,
 		})
+		if err != nil {
+			k.Logger(ctx).Error(err.Error())
+			return nil, err
+		}
 	}
 
 	dataAny, err := codec.NewAnyWithValue(msg.Data)
