@@ -1,13 +1,16 @@
 package types
 
 import (
-	"crypto/sha256"
+	"crypto/sha1"
 	"encoding/hex"
 	"image"
-	"io/ioutil"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
+	"io"
 	"net/http"
 	"net/url"
-	"strconv"
+	"strings"
 	"time"
 
 	"cosmossdk.io/errors"
@@ -20,10 +23,11 @@ const TypeMsgMint = "mint"
 
 var _ sdk.Msg = &MsgMint{}
 
-func NewMsgMint(creator string, classId string, uri string, uriHash string, data *IconData, supply uint64) *MsgMint {
+func NewMsgMint(creator string, classId string, id string, uri string, uriHash string, data *IconData, supply uint64) *MsgMint {
 	return &MsgMint{
 		Creator: creator,
 		ClassId: classId,
+		Id:      id,
 		Uri:     uri,
 		UriHash: uriHash,
 		Data:    data,
@@ -52,44 +56,42 @@ func (msg *MsgMint) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func checkImgHash(uri string, uriHash string, id string) bool {
+func checkImgHash(uri string, uriHash string, id string) (bool, error) {
 	_, err := url.ParseRequestURI(uri)
 	if err != nil {
-		return false
+		return false, err
 	}
 	resp, err := http.Get(uri)
 	if err != nil {
-		return false
+		return false, err
 	}
 	defer resp.Body.Close()
 	img, _, err := image.Decode(resp.Body)
 	if err != nil {
-		return false
+		return false, errors.Wrapf(err, "invalid param (Uri)")
 	}
-	hashType, err := strconv.Atoi(uriHash[0:2])
-	if err != nil {
-		return false
-	}
+	lowerUriHash := strings.ToLower(uriHash)
+	hashType := lowerUriHash[0:1]
 	switch hashType {
-	case 1:
+	case "p":
 		phash, err := imageHash.PerceptionHash(img)
-		if err != nil || phash.ToString() != uriHash[2:] {
-			return false
+		if err != nil || phash.ToString() != lowerUriHash {
+			return false, errors.Wrapf(ErrInvalidParam, "invalid param (UriHash), expect (%s)", phash.ToString())
 		}
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return false
+			return false, err
 		}
-		hash := sha256.New()
+		hash := sha1.New()
 		hash.Write(bodyBytes)
 		hashStr := hex.EncodeToString(hash.Sum(nil))
 		if hashStr != id {
-			return false
+			return false, errors.Wrapf(ErrInvalidParam, "invalid param (id), expect (%s)", hashStr)
 		}
 	default:
-		return false
+		return false, errors.Wrapf(ErrInvalidParam, "invalid param (UriHash), invalid hash type, expect (p)")
 	}
-	return true
+	return true, nil
 }
 
 func (msg *MsgMint) ValidateBasic() error {
@@ -97,8 +99,9 @@ func (msg *MsgMint) ValidateBasic() error {
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
-	if len(msg.ClassId) == 0 {
-		return errors.Wrapf(ErrInvalidParam, "invalid param (ClassId)")
+	classIdLen := len(msg.ClassId)
+	if classIdLen < 6 || classIdLen > 64 {
+		return errors.Wrapf(ErrInvalidParam, "invalid param (ClassId), length should between 6 and 64")
 	}
 	if len(msg.Id) == 0 {
 		return errors.Wrapf(ErrInvalidParam, "invalid param (Id)")
@@ -113,8 +116,9 @@ func (msg *MsgMint) ValidateBasic() error {
 	if err != nil || createTime.After(time.Now()) || createTime.Before(time.Now().Add(-24*time.Hour)) {
 		return errors.Wrapf(ErrInvalidParam, "invalid param (Data.CreateTime)")
 	}
-	if !checkImgHash(msg.Uri, msg.UriHash, msg.Id) {
-		return errors.Wrapf(ErrInvalidParam, "invalid params (Uri, UriHash, Id)")
+	isImgHashOk, err := checkImgHash(msg.Uri, msg.UriHash, msg.Id)
+	if !isImgHashOk {
+		return err
 	}
 	return nil
 }
