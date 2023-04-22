@@ -13,6 +13,9 @@ import (
 	"strings"
 	"time"
 
+	_ "golang.org/x/image/webp"
+	"gopkg.in/gographics/imagick.v3/imagick"
+
 	"cosmossdk.io/errors"
 	imageHash "github.com/corona10/goimagehash"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -66,9 +69,33 @@ func checkImgHash(uri string, uriHash string, id string) (bool, error) {
 		return false, err
 	}
 	defer resp.Body.Close()
-	img, _, err := image.Decode(resp.Body)
-	if err != nil {
-		return false, errors.Wrapf(err, "invalid param (Uri)")
+	var img image.Image
+	if strings.HasPrefix(resp.Header.Get("Content-Type"), "image/svg+xml") {
+		xml, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return false, errors.Wrapf(err, "invalid param (Uri)")
+		}
+		imagick.Initialize()
+		defer imagick.Terminate()
+		mw := imagick.NewMagickWand()
+		defer mw.Destroy()
+		err = mw.ReadImageBlob(xml)
+		if err != nil {
+			return false, errors.Wrapf(err, "invalid param (Uri)")
+		}
+		mw.SetImageFormat("png")
+		pixels, err := mw.ExportImagePixels(0, 0, mw.GetImageWidth(), mw.GetImageHeight(), "RGBA", imagick.PIXEL_CHAR)
+		if err != nil {
+			return false, errors.Wrapf(err, "invalid param (Uri)")
+		}
+		imgTmp := image.NewRGBA(image.Rect(0, 0, int(mw.GetImageWidth()), int(mw.GetImageHeight())))
+		copy(imgTmp.Pix, pixels.([]uint8))
+		img = imgTmp
+	} else {
+		img, _, err = image.Decode(resp.Body)
+		if err != nil {
+			return false, errors.Wrapf(err, "invalid param (Uri)")
+		}
 	}
 	lowerUriHash := strings.ToLower(uriHash)
 	hashType := lowerUriHash[0:1]
@@ -113,8 +140,18 @@ func (msg *MsgMint) ValidateBasic() error {
 		return errors.Wrapf(ErrInvalidParam, "invalid param (UriHash)")
 	}
 	createTime, err := time.Parse(time.RFC3339, msg.Data.CreateTime)
-	if err != nil || createTime.After(time.Now()) || createTime.Before(time.Now().Add(-24*time.Hour)) {
-		return errors.Wrapf(ErrInvalidParam, "invalid param (Data.CreateTime)")
+	if err != nil {
+		return errors.Wrapf(ErrInvalidParam, "invalid param (Data.CreateTime)", err)
+	}
+	now := time.Now()
+	if createTime.After(now) || createTime.Before(now.Add(-24*time.Hour)) {
+		return errors.Wrapf(
+			ErrInvalidParam,
+			"invalid param (Data.CreateTime: %s), expect within 24 hours (%s to %s)",
+			createTime,
+			now.Add(-24*time.Hour),
+			now,
+		)
 	}
 	isImgHashOk, err := checkImgHash(msg.Uri, msg.UriHash, msg.Id)
 	if !isImgHashOk {
