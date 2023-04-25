@@ -10,7 +10,8 @@ service Msg {
 }
 
 message ClassData {
-  string createTime = 1;
+  string author      = 1;
+  string createTime  = 2;
 }
 
 message IconData {

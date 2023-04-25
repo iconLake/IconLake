@@ -4,21 +4,167 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "iconlake.icon";
 
+export interface ClassData {
+  author: string;
+  createTime: string;
+}
+
+export interface IconData {
+  author: string;
+  name: string;
+  description: string;
+  createTime: string;
+}
+
 export interface MsgMint {
   creator: string;
   classId: string;
+  id: string;
   uri: string;
   uriHash: string;
-  data: string;
+  data: IconData | undefined;
   supply: number;
 }
 
 export interface MsgMintResponse {
-  id: string;
 }
 
+function createBaseClassData(): ClassData {
+  return { author: "", createTime: "" };
+}
+
+export const ClassData = {
+  encode(message: ClassData, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.author !== "") {
+      writer.uint32(10).string(message.author);
+    }
+    if (message.createTime !== "") {
+      writer.uint32(18).string(message.createTime);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ClassData {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseClassData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.author = reader.string();
+          break;
+        case 2:
+          message.createTime = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ClassData {
+    return {
+      author: isSet(object.author) ? String(object.author) : "",
+      createTime: isSet(object.createTime) ? String(object.createTime) : "",
+    };
+  },
+
+  toJSON(message: ClassData): unknown {
+    const obj: any = {};
+    message.author !== undefined && (obj.author = message.author);
+    message.createTime !== undefined && (obj.createTime = message.createTime);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ClassData>, I>>(object: I): ClassData {
+    const message = createBaseClassData();
+    message.author = object.author ?? "";
+    message.createTime = object.createTime ?? "";
+    return message;
+  },
+};
+
+function createBaseIconData(): IconData {
+  return { author: "", name: "", description: "", createTime: "" };
+}
+
+export const IconData = {
+  encode(message: IconData, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.author !== "") {
+      writer.uint32(10).string(message.author);
+    }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    if (message.description !== "") {
+      writer.uint32(26).string(message.description);
+    }
+    if (message.createTime !== "") {
+      writer.uint32(34).string(message.createTime);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): IconData {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseIconData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.author = reader.string();
+          break;
+        case 2:
+          message.name = reader.string();
+          break;
+        case 3:
+          message.description = reader.string();
+          break;
+        case 4:
+          message.createTime = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): IconData {
+    return {
+      author: isSet(object.author) ? String(object.author) : "",
+      name: isSet(object.name) ? String(object.name) : "",
+      description: isSet(object.description) ? String(object.description) : "",
+      createTime: isSet(object.createTime) ? String(object.createTime) : "",
+    };
+  },
+
+  toJSON(message: IconData): unknown {
+    const obj: any = {};
+    message.author !== undefined && (obj.author = message.author);
+    message.name !== undefined && (obj.name = message.name);
+    message.description !== undefined && (obj.description = message.description);
+    message.createTime !== undefined && (obj.createTime = message.createTime);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<IconData>, I>>(object: I): IconData {
+    const message = createBaseIconData();
+    message.author = object.author ?? "";
+    message.name = object.name ?? "";
+    message.description = object.description ?? "";
+    message.createTime = object.createTime ?? "";
+    return message;
+  },
+};
+
 function createBaseMsgMint(): MsgMint {
-  return { creator: "", classId: "", uri: "", uriHash: "", data: "", supply: 0 };
+  return { creator: "", classId: "", id: "", uri: "", uriHash: "", data: undefined, supply: 0 };
 }
 
 export const MsgMint = {
@@ -29,17 +175,20 @@ export const MsgMint = {
     if (message.classId !== "") {
       writer.uint32(18).string(message.classId);
     }
+    if (message.id !== "") {
+      writer.uint32(26).string(message.id);
+    }
     if (message.uri !== "") {
-      writer.uint32(26).string(message.uri);
+      writer.uint32(34).string(message.uri);
     }
     if (message.uriHash !== "") {
-      writer.uint32(34).string(message.uriHash);
+      writer.uint32(42).string(message.uriHash);
     }
-    if (message.data !== "") {
-      writer.uint32(42).string(message.data);
+    if (message.data !== undefined) {
+      IconData.encode(message.data, writer.uint32(50).fork()).ldelim();
     }
     if (message.supply !== 0) {
-      writer.uint32(48).uint64(message.supply);
+      writer.uint32(56).uint64(message.supply);
     }
     return writer;
   },
@@ -58,15 +207,18 @@ export const MsgMint = {
           message.classId = reader.string();
           break;
         case 3:
-          message.uri = reader.string();
+          message.id = reader.string();
           break;
         case 4:
-          message.uriHash = reader.string();
+          message.uri = reader.string();
           break;
         case 5:
-          message.data = reader.string();
+          message.uriHash = reader.string();
           break;
         case 6:
+          message.data = IconData.decode(reader, reader.uint32());
+          break;
+        case 7:
           message.supply = longToNumber(reader.uint64() as Long);
           break;
         default:
@@ -81,9 +233,10 @@ export const MsgMint = {
     return {
       creator: isSet(object.creator) ? String(object.creator) : "",
       classId: isSet(object.classId) ? String(object.classId) : "",
+      id: isSet(object.id) ? String(object.id) : "",
       uri: isSet(object.uri) ? String(object.uri) : "",
       uriHash: isSet(object.uriHash) ? String(object.uriHash) : "",
-      data: isSet(object.data) ? String(object.data) : "",
+      data: isSet(object.data) ? IconData.fromJSON(object.data) : undefined,
       supply: isSet(object.supply) ? Number(object.supply) : 0,
     };
   },
@@ -92,9 +245,10 @@ export const MsgMint = {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     message.classId !== undefined && (obj.classId = message.classId);
+    message.id !== undefined && (obj.id = message.id);
     message.uri !== undefined && (obj.uri = message.uri);
     message.uriHash !== undefined && (obj.uriHash = message.uriHash);
-    message.data !== undefined && (obj.data = message.data);
+    message.data !== undefined && (obj.data = message.data ? IconData.toJSON(message.data) : undefined);
     message.supply !== undefined && (obj.supply = Math.round(message.supply));
     return obj;
   },
@@ -103,23 +257,21 @@ export const MsgMint = {
     const message = createBaseMsgMint();
     message.creator = object.creator ?? "";
     message.classId = object.classId ?? "";
+    message.id = object.id ?? "";
     message.uri = object.uri ?? "";
     message.uriHash = object.uriHash ?? "";
-    message.data = object.data ?? "";
+    message.data = (object.data !== undefined && object.data !== null) ? IconData.fromPartial(object.data) : undefined;
     message.supply = object.supply ?? 0;
     return message;
   },
 };
 
 function createBaseMsgMintResponse(): MsgMintResponse {
-  return { id: "" };
+  return {};
 }
 
 export const MsgMintResponse = {
-  encode(message: MsgMintResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
-    }
+  encode(_: MsgMintResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
@@ -130,9 +282,6 @@ export const MsgMintResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.id = reader.string();
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -141,19 +290,17 @@ export const MsgMintResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgMintResponse {
-    return { id: isSet(object.id) ? String(object.id) : "" };
+  fromJSON(_: any): MsgMintResponse {
+    return {};
   },
 
-  toJSON(message: MsgMintResponse): unknown {
+  toJSON(_: MsgMintResponse): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgMintResponse>, I>>(object: I): MsgMintResponse {
+  fromPartial<I extends Exact<DeepPartial<MsgMintResponse>, I>>(_: I): MsgMintResponse {
     const message = createBaseMsgMintResponse();
-    message.id = object.id ?? "";
     return message;
   },
 };

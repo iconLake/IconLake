@@ -9,9 +9,14 @@
  * ---------------------------------------------------------------
  */
 
-export interface IconMsgMintResponse {
-  id?: string;
+export interface IconIconData {
+  author?: string;
+  name?: string;
+  description?: string;
+  createTime?: string;
 }
+
+export type IconMsgMintResponse = object;
 
 /**
  * Params defines the parameters for the module.

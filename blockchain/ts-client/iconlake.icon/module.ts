@@ -10,6 +10,8 @@ import { Api } from "./rest";
 import { MsgMint } from "./types/iconlake/icon/tx";
 
 import { Params as typeParams} from "./types"
+import { ClassData as typeClassData} from "./types"
+import { IconData as typeIconData} from "./types"
 
 export { MsgMint };
 
@@ -100,6 +102,8 @@ class SDKModule {
 		this.updateTX(client);
 		this.structure =  {
 						Params: getStructure(typeParams.fromPartial({})),
+						ClassData: getStructure(typeClassData.fromPartial({})),
+						IconData: getStructure(typeIconData.fromPartial({})),
 						
 		};
 		client.on('signer-changed',(signer) => {			
