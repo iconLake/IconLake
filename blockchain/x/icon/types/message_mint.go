@@ -1,6 +1,7 @@
 package types
 
 import (
+	"bytes"
 	"crypto/sha1"
 	"encoding/hex"
 	"image"
@@ -19,7 +20,6 @@ import (
 	"cosmossdk.io/errors"
 	imageHash "github.com/corona10/goimagehash"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const TypeMsgMint = "mint"
@@ -69,17 +69,17 @@ func checkImgHash(uri string, uriHash string, id string) (bool, error) {
 		return false, err
 	}
 	defer resp.Body.Close()
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return false, errors.Wrapf(err, "invalid param (Uri)")
+	}
 	var img image.Image
 	if strings.HasPrefix(resp.Header.Get("Content-Type"), "image/svg+xml") {
-		xml, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return false, errors.Wrapf(err, "invalid param (Uri)")
-		}
 		imagick.Initialize()
 		defer imagick.Terminate()
 		mw := imagick.NewMagickWand()
 		defer mw.Destroy()
-		err = mw.ReadImageBlob(xml)
+		err = mw.ReadImageBlob(bodyBytes)
 		if err != nil {
 			return false, errors.Wrapf(err, "invalid param (Uri)")
 		}
@@ -92,7 +92,7 @@ func checkImgHash(uri string, uriHash string, id string) (bool, error) {
 		copy(imgTmp.Pix, pixels.([]uint8))
 		img = imgTmp
 	} else {
-		img, _, err = image.Decode(resp.Body)
+		img, _, err = image.Decode(bytes.NewReader(bodyBytes))
 		if err != nil {
 			return false, errors.Wrapf(err, "invalid param (Uri)")
 		}
@@ -104,10 +104,6 @@ func checkImgHash(uri string, uriHash string, id string) (bool, error) {
 		phash, err := imageHash.PerceptionHash(img)
 		if err != nil || phash.ToString() != lowerUriHash {
 			return false, errors.Wrapf(ErrInvalidParam, "invalid param (UriHash), expect (%s)", phash.ToString())
-		}
-		bodyBytes, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return false, err
 		}
 		hash := sha1.New()
 		hash.Write(bodyBytes)
@@ -122,10 +118,6 @@ func checkImgHash(uri string, uriHash string, id string) (bool, error) {
 }
 
 func (msg *MsgMint) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Creator)
-	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
-	}
 	classIdLen := len(msg.ClassId)
 	if classIdLen < 6 || classIdLen > 64 {
 		return errors.Wrapf(ErrInvalidParam, "invalid param (ClassId), length should between 6 and 64")
@@ -139,21 +131,33 @@ func (msg *MsgMint) ValidateBasic() error {
 	if len(msg.UriHash) < 3 {
 		return errors.Wrapf(ErrInvalidParam, "invalid param (UriHash)")
 	}
+	if len(msg.Data.Author) == 0 || msg.Creator != msg.Data.Author {
+		return errors.Wrapf(ErrInvalidParam, "invalid param (Data.Author), expect (%s)", msg.Creator)
+	}
+	if len(msg.Data.Name) > 64 {
+		return errors.Wrapf(ErrInvalidParam, "invalid param (Data.Name), expect within 64 chars")
+	}
+	if len(msg.Data.Description) > 1024 {
+		return errors.Wrapf(ErrInvalidParam, "invalid param (Data.Description), expect within 1024 chars")
+	}
 	createTime, err := time.Parse(time.RFC3339, msg.Data.CreateTime)
 	if err != nil {
 		return errors.Wrapf(ErrInvalidParam, "invalid param (Data.CreateTime)", err)
 	}
 	now := time.Now()
-	if createTime.After(now) || createTime.Before(now.Add(-24*time.Hour)) {
+	if createTime.After(now) || createTime.Before(now.Add(-10*time.Hour)) {
 		return errors.Wrapf(
 			ErrInvalidParam,
-			"invalid param (Data.CreateTime: %s), expect within 24 hours (%s to %s)",
+			"invalid param (Data.CreateTime: %s), expect within 10 hours (%s to %s)",
 			createTime,
-			now.Add(-24*time.Hour),
+			now.Add(-10*time.Hour),
 			now,
 		)
 	}
-	isImgHashOk, err := checkImgHash(msg.Uri, msg.UriHash, msg.Id)
+	if msg.Supply == 0 {
+		return errors.Wrapf(ErrInvalidParam, "invalid param (Supply)")
+	}
+	isImgHashOk, err := checkImgHash(msg.Uri, msg.UriHash, strings.Split(msg.Id, ":")[0])
 	if !isImgHashOk {
 		return err
 	}
