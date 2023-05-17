@@ -43864,6 +43864,49 @@ paths:
                         }
       tags:
         - Query
+  /iconlake/icon/hash/{hashType}/{uri}:
+    get:
+      summary: Queries a list of Hash items.
+      operationId: IconlakeIconHash
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              graphHash:
+                type: string
+              fileHash:
+                type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: hashType
+          in: path
+          required: true
+          type: string
+        - name: uri
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /iconlake/icon/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -71655,6 +71698,13 @@ definitions:
   iconlake.icon.Params:
     type: object
     description: Params defines the parameters for the module.
+  iconlake.icon.QueryHashResponse:
+    type: object
+    properties:
+      graphHash:
+        type: string
+      fileHash:
+        type: string
   iconlake.icon.QueryParamsResponse:
     type: object
     properties:
