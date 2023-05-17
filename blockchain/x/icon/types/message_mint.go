@@ -1,24 +1,15 @@
 package types
 
 import (
-	"bytes"
-	"crypto/sha1"
-	"encoding/hex"
-	"image"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
-	"io"
-	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
 	_ "golang.org/x/image/webp"
-	"gopkg.in/gographics/imagick.v3/imagick"
 
 	"cosmossdk.io/errors"
-	imageHash "github.com/corona10/goimagehash"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -59,57 +50,20 @@ func (msg *MsgMint) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func checkImgHash(uri string, uriHash string, id string) (bool, error) {
-	_, err := url.ParseRequestURI(uri)
-	if err != nil {
-		return false, err
-	}
-	resp, err := http.Get(uri)
-	if err != nil {
-		return false, err
-	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return false, errors.Wrapf(err, "invalid param (Uri)")
-	}
-	var img image.Image
-	if strings.HasPrefix(resp.Header.Get("Content-Type"), "image/svg+xml") {
-		imagick.Initialize()
-		defer imagick.Terminate()
-		mw := imagick.NewMagickWand()
-		defer mw.Destroy()
-		err = mw.ReadImageBlob(bodyBytes)
-		if err != nil {
-			return false, errors.Wrapf(err, "invalid param (Uri)")
-		}
-		mw.SetImageFormat("png")
-		pixels, err := mw.ExportImagePixels(0, 0, mw.GetImageWidth(), mw.GetImageHeight(), "RGBA", imagick.PIXEL_CHAR)
-		if err != nil {
-			return false, errors.Wrapf(err, "invalid param (Uri)")
-		}
-		imgTmp := image.NewRGBA(image.Rect(0, 0, int(mw.GetImageWidth()), int(mw.GetImageHeight())))
-		copy(imgTmp.Pix, pixels.([]uint8))
-		img = imgTmp
-	} else {
-		img, _, err = image.Decode(bytes.NewReader(bodyBytes))
-		if err != nil {
-			return false, errors.Wrapf(err, "invalid param (Uri)")
-		}
-	}
+func CheckImgHash(uri string, uriHash string, id string) (bool, error) {
 	lowerUriHash := strings.ToLower(uriHash)
 	hashType := lowerUriHash[0:1]
 	switch hashType {
 	case "p":
-		phash, err := imageHash.PerceptionHash(img)
-		if err != nil || phash.ToString() != lowerUriHash {
-			return false, errors.Wrapf(ErrInvalidParam, "invalid param (UriHash), expect (%s)", phash.ToString())
+		graphHash, fileHash, err := GetImgHash(uri, hashType)
+		if err != nil {
+			return false, err
 		}
-		hash := sha1.New()
-		hash.Write(bodyBytes)
-		hashStr := hex.EncodeToString(hash.Sum(nil))
-		if hashStr != id {
-			return false, errors.Wrapf(ErrInvalidParam, "invalid param (id), expect (%s)", hashStr)
+		if graphHash != lowerUriHash {
+			return false, errors.Wrapf(ErrInvalidParam, "invalid param (UriHash), expect (%s)", &graphHash)
+		}
+		if fileHash != id {
+			return false, errors.Wrapf(ErrInvalidParam, "invalid param (id), expect (%s)", &fileHash)
 		}
 	default:
 		return false, errors.Wrapf(ErrInvalidParam, "invalid param (UriHash), invalid hash type, expect (p)")
@@ -157,7 +111,7 @@ func (msg *MsgMint) ValidateBasic() error {
 	if msg.Supply == 0 {
 		return errors.Wrapf(ErrInvalidParam, "invalid param (Supply)")
 	}
-	isImgHashOk, err := checkImgHash(msg.Uri, msg.UriHash, strings.Split(msg.Id, ":")[0])
+	isImgHashOk, err := CheckImgHash(msg.Uri, msg.UriHash, strings.Split(msg.Id, ":")[0])
 	if !isImgHashOk {
 		return err
 	}
