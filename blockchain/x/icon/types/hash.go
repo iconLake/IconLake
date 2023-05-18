@@ -2,7 +2,7 @@ package types
 
 import (
 	"bytes"
-	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/hex"
 	"image"
 	"io"
@@ -59,7 +59,7 @@ func GetImgHash(uri string, hashType string) (graphHash string, fileHash string,
 		if err != nil {
 			return "", "", err
 		}
-		hash := sha1.New()
+		hash := sha256.New()
 		hash.Write(bodyBytes)
 		hashStr := hex.EncodeToString(hash.Sum(nil))
 		return phash.ToString(), hashStr, nil

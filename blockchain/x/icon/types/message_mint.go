@@ -52,18 +52,19 @@ func (msg *MsgMint) GetSignBytes() []byte {
 
 func CheckImgHash(uri string, uriHash string, id string) (bool, error) {
 	lowerUriHash := strings.ToLower(uriHash)
-	hashType := lowerUriHash[0:1]
+	lowerId := strings.ToLower(id)
+	hashType := lowerId[0:1]
 	switch hashType {
 	case "p":
 		graphHash, fileHash, err := GetImgHash(uri, hashType)
 		if err != nil {
 			return false, err
 		}
-		if graphHash != lowerUriHash {
-			return false, errors.Wrapf(ErrInvalidParam, "invalid param (UriHash), expect (%s)", &graphHash)
+		if fileHash != lowerUriHash {
+			return false, errors.Wrapf(ErrInvalidParam, "invalid param (UriHash), expect (%s)", fileHash)
 		}
-		if fileHash != id {
-			return false, errors.Wrapf(ErrInvalidParam, "invalid param (id), expect (%s)", &fileHash)
+		if graphHash != lowerId {
+			return false, errors.Wrapf(ErrInvalidParam, "invalid param (id), expect (%s)", graphHash)
 		}
 	default:
 		return false, errors.Wrapf(ErrInvalidParam, "invalid param (UriHash), invalid hash type, expect (p)")
@@ -111,7 +112,7 @@ func (msg *MsgMint) ValidateBasic() error {
 	if msg.Supply == 0 {
 		return errors.Wrapf(ErrInvalidParam, "invalid param (Supply)")
 	}
-	isImgHashOk, err := CheckImgHash(msg.Uri, msg.UriHash, strings.Split(msg.Id, ":")[0])
+	isImgHashOk, err := CheckImgHash(msg.Uri, msg.UriHash, msg.Id)
 	if !isImgHashOk {
 		return err
 	}
