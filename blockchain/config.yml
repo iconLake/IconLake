@@ -3,28 +3,28 @@ accounts:
 - name: alice
   coins:
   - 200000000000000ulake
-  - 20000drop
+  - 2000000udrop
   mnemonic: maple cage treat zoo jaguar check lawn party boil orchard earn arrow immense
     win puppy mandate lion sport large total quit price found drip
 - name: bob
   coins:
   - 100000000000000ulake
-  - 10000drop
+  - 1000000udrop
   mnemonic: toddler strategy valid clown sure fame jelly rescue jewel empower among
     error merit uncle hour luggage only exotic coyote hedgehog mountain armed desert
     meat
 - name: faucet
   coins:
   - 100000000000000ulake
-  - 50000000000drop
+  - 5000000000000udrop
 faucet:
   name: faucet
   coins:
   - 1000000ulake
-  - 500drop
+  - 50000udrop
   coins_max:
   - 10000000ulake
-  - 500drop
+  - 50000udrop
   rate_limit_window: 86400s
 client:
   typescript:
@@ -42,7 +42,7 @@ genesis:
     bank:
       params:
         send_enabled:
-          - denom: drop
+          - denom: udrop
             enabled: false
         default_send_enabled: true
     crisis:
