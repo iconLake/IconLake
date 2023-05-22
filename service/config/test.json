@@ -34,6 +34,7 @@
   "login": {
     "code": true,
     "gitee": true,
-    "github": true
+    "github": true,
+    "keplr": true
   }
 }
