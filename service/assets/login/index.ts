@@ -16,11 +16,14 @@
     login: {
       code: boolean,
       gitee: boolean,
-      github: boolean
+      github: boolean,
+      keplr: boolean
     }
   } = await fetch('/api/login/params').then(res => res.json())
-  // listen
+
   const domain = encodeURIComponent(location.origin)
+
+  // login with gitee
   const giteeDom = document.querySelector('.auth .gitee') as HTMLDivElement
   if (params.login.gitee) {
     giteeDom.classList.add('active')
@@ -30,6 +33,8 @@
   } else {
     giteeDom.style.display = 'none'
   }
+
+  // login with github
   const githubDom = document.querySelector('.auth .github') as HTMLDivElement
   if (params.login.github) {
     githubDom.classList.add('active')
@@ -39,6 +44,8 @@
   } else {
     githubDom.style.display = 'none'
   }
+
+  // login with code
   const codeDom = document.querySelector('.auth .code') as HTMLDivElement
   if (params.login.code) {
     codeDom.classList.add('active')
@@ -46,6 +53,28 @@
       const id = prompt('请填写Code：')
       if (id) {
         location.href = `/api/oauth/code?id=${id}`
+      }
+    })
+  } else {
+    codeDom.style.display = 'none'
+  }
+
+  // login with Keplr
+  const keplrDom = document.querySelector('.auth .keplr') as HTMLDivElement
+  if (params.login.keplr) {
+    keplrDom.classList.add('active')
+    keplrDom.addEventListener('click', async () => {
+      if ('keplr' in window) {
+        const keplr = window.keplr as any
+        const chainId = 'iconlake'
+        await keplr.enable(chainId)
+        const offlineSigner = keplr.getOfflineSigner(chainId)
+        const accounts = await offlineSigner.getAccounts()
+        const msg = `Login iconLake\n${new Date().toLocaleString()}`
+        const sig = await keplr.signArbitrary(chainId, accounts[0].address, msg)
+        location.href = `/api/oauth/keplr?msg=${encodeURIComponent(msg)}&sig=${encodeURIComponent(sig.signature)}`
+      } else {
+        alert('请安装Keplr浏览器插件')
       }
     })
   } else {
