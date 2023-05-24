@@ -20,6 +20,10 @@
   "author": "iconLake",
   "license": "AGPLv3",
   "dependencies": {
+    "@cosmjs/amino": "^0.30.1",
+    "@cosmjs/crypto": "^0.30.1",
+    "@cosmjs/encoding": "^0.30.1",
+    "@keplr-wallet/cosmos": "^0.11.63",
     "axios": "^0.27.2",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
@@ -37,8 +41,8 @@
     "webfont": "^11.2.26"
   },
   "devDependencies": {
-    "@types/node": "^20.2.3",
     "@types/cookie-parser": "^1.4.3",
+    "@types/node": "^20.2.3",
     "@typescript-eslint/eslint-plugin": "^5.59.6",
     "@typescript-eslint/parser": "^5.59.6",
     "eslint": "^8.41.0",

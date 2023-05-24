@@ -53,6 +53,7 @@ export const configs = {
  *      code: boolean\
  *      gitee: boolean\
  *      github: boolean\
+ *      keplr: boolean\
  *    }\
  *  }}
  */

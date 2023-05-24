@@ -81,7 +81,13 @@ export async function success (userInfo, req, res) {
       referer = req.cookies.referer
       res.clearCookie('referer')
     }
-    res.redirect(referer)
+    if (userInfo.responseType === 'json') {
+      res.json({
+        redirect: referer
+      })
+    } else {
+      res.redirect(referer)
+    }
   } else {
     fail({
       error: 'userAuthError'

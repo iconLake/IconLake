@@ -247,7 +247,7 @@ export async function pages (req, res) {
     pages = iconAnalyse ? iconAnalyse.pages : []
   }
   res.json({
-    updateTime: analyse.updateTime,
+    updateTime: analyse?.updateTime,
     pages
   })
 }
