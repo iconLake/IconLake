@@ -33,7 +33,9 @@ async function getInfo() {
 async function getList() {
   const data = await getIconPages(projectId, _id)
   pageList.value = data.pages
-  updateTime.value = formatTime(data.updateTime)
+  if (data.updateTime) {
+    updateTime.value = formatTime(data.updateTime)
+  }
 }
 
 getInfo()

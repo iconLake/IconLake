@@ -10,13 +10,13 @@
   // 获取参数
   const params: {
     clientId: {
-      gitee: string,
+      gitee: string
       github: string
-    },
+    }
     login: {
-      code: boolean,
-      gitee: boolean,
-      github: boolean,
+      code: boolean
+      gitee: boolean
+      github: boolean
       keplr: boolean
     }
   } = await fetch('/api/login/params').then(res => res.json())
@@ -70,9 +70,25 @@
         await keplr.enable(chainId)
         const offlineSigner = keplr.getOfflineSigner(chainId)
         const accounts = await offlineSigner.getAccounts()
-        const msg = `Login iconLake\n${new Date().toLocaleString()}`
+        const msg = `Login iconLake\n${new Date().toISOString()}`
         const sig = await keplr.signArbitrary(chainId, accounts[0].address, msg)
-        location.href = `/api/oauth/keplr?msg=${encodeURIComponent(msg)}&sig=${encodeURIComponent(sig.signature)}`
+        fetch('/api/oauth/blockchain', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=UTF-8'
+          },
+          body: JSON.stringify({
+            msg,
+            sig: sig.signature,
+            pubkey: sig.pub_key
+          })
+        }).then(res => res.json()).then(res => {
+          if (res.error) {
+            alert(res.error)
+          } else {
+            window.location.href = res.redirect
+          }
+        })
       } else {
         alert('请安装Keplr浏览器插件')
       }
