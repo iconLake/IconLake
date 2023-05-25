@@ -3,6 +3,8 @@ import { reactive, ref } from 'vue'
 import Cookies from 'js-cookie'
 import { logout, info, UserInfo } from '../apis/user'
 import { useI18n } from 'vue-i18n'
+import { updateEncryptKey } from '@/utils/storage';
+import { mintDrop } from '@/utils/global';
 const { t } = useI18n()
 
 let locale = ref(Cookies.get('locale') || 'zh-cn')
@@ -23,6 +25,8 @@ const userInfo = reactive({} as UserInfo)
 
 async function getUserInfo () {
   Object.assign(userInfo, await info())
+  updateEncryptKey(userInfo._id)
+  mintDrop()
 }
 
 getUserInfo()
