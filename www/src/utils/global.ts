@@ -12,7 +12,7 @@ export async function mintDrop() {
   }
   try {
     const mintDropStorage = JSON.parse(await getLocalStorageSafely(STORAGE_KEY.mintDrop))
-    Object.assign(mintDrop, mintDropStorage)
+    Object.assign(mintDropData, mintDropStorage)
   } catch (e) {}
   const timeSpace = 10 * 1000
   if (Date.now() - mintDropData.LastMintDropTime > timeSpace) {
@@ -22,6 +22,6 @@ export async function mintDrop() {
     const timeNow = Date.now()
     mintDropData.amount += Math.floor((timeNow - mintDropData.LastMintDropTime) / 1000)
     mintDropData.LastMintDropTime = timeNow
-    setLocalStorageSafely(STORAGE_KEY.mintDrop, JSON.stringify(mintDrop))
+    setLocalStorageSafely(STORAGE_KEY.mintDrop, JSON.stringify(mintDropData))
   }, timeSpace)
 }

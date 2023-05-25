@@ -8,7 +8,6 @@ export function updateEncryptKey(key: string) {
 }
 
 export async function setLocalStorageSafely(key: string, value: string) {
-  console.log(encryptKey, key, value)
   await waitFor(() => encryptKey !== '')
   localStorage.setItem(key, CryptoJS.AES.encrypt(value, encryptKey).toString())
 }
