@@ -90,3 +90,18 @@ export function formatTime(time: string) {
   const t = new Date(time)
   return `${t.getFullYear()}-${t.getMonth() + 1}-${t.getDate()}`
 }
+
+export function waitFor(until: Function) {
+  return new Promise(resolve => {
+    if (until()) {
+      resolve(null)
+      return
+    }
+    const timer = setInterval(() => {
+      if (until()) {
+        clearInterval(timer)
+        resolve(null)
+      }
+    }, 100)
+  })
+}
