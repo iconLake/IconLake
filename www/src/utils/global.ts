@@ -1,3 +1,4 @@
+import { waitFor } from '.'
 import { STORAGE_KEY } from './const'
 import { getLocalStorageSafely, setLocalStorageSafely } from './storage'
 
@@ -24,4 +25,9 @@ export async function mintDrop() {
     mintDropData.LastMintDropTime = timeNow
     setLocalStorageSafely(STORAGE_KEY.mintDrop, JSON.stringify(mintDropData))
   }, timeSpace)
+}
+
+export async function getLocalDrop() {
+  await waitFor(() => mintDropData.amount !== 0)
+  return mintDropData.amount
 }

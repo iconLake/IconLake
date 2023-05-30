@@ -63,22 +63,54 @@ async function userLogout() {
 </script>
 
 <template>
-  <div class="user" @mouseenter="showPop(true)" @mouseleave="showPop(false)">
-    <div v-if="userInfo.avatar" class="avatar img">
-      <img :src="userInfo.avatar" :alt="userInfo.name">
+  <div
+    class="user"
+    @mouseenter="showPop(true)"
+    @mouseleave="showPop(false)"
+  >
+    <div
+      v-if="userInfo.avatar"
+      class="avatar img"
+    >
+      <img
+        :src="userInfo.avatar"
+        :alt="userInfo.name"
+      >
     </div>
-    <div v-else class="avatar bg-main text flex center">
-      <span>{{userInfo.name ? userInfo.name[0] : 'U'}}</span>
+    <div
+      v-else
+      class="avatar bg-main text flex center"
+    >
+      <span>{{ userInfo.name ? userInfo.name[0] : 'U' }}</span>
     </div>
-    <div class="pop" :class="{active: isPopShow}">
-      <div class="item flex" @click="toggleLocale">
-        <span>{{language?.label}}</span>
-        <span>{{language?.value}}</span>
+    <div
+      class="pop"
+      :class="{active: isPopShow}"
+    >
+      <RouterLink
+        class="item flex"
+        to="/user/assets"
+      >
+        我的资产
+      </RouterLink>
+      <div
+        class="item flex"
+        @click="toggleLocale"
+      >
+        <span>{{ language?.label }}</span>
+        <span>{{ language?.value }}</span>
       </div>
-      <a href="https://support.qq.com/product/370032" target="_blank" class="item flex">{{t('feedback')}}</a>
-      <div class="item flex" @click="userLogout">
-        <span>{{t('logout')}}</span>
-        <i class="iconfont icon-out"></i>
+      <a
+        href="https://support.qq.com/product/370032"
+        target="_blank"
+        class="item flex"
+      >{{ t('feedback') }}</a>
+      <div
+        class="item flex"
+        @click="userLogout"
+      >
+        <span>{{ t('logout') }}</span>
+        <i class="iconfont icon-out" />
       </div>
     </div>
   </div>
