@@ -1,9 +1,12 @@
 export interface UserInfo {
-  _id: string,
-  name: string,
-  avatar: string,
-  token: string,
-  tokenExpire: Date,
+  _id: string
+  name: string
+  avatar: string
+  token: string
+  tokenExpire: Date
+  blockchain?: {
+    id: string
+  }
 }
 
 import request from '../utils/request'

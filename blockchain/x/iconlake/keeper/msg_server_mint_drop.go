@@ -12,6 +12,7 @@ import (
 	mintTypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 )
 
+// 1 second mint 1 udrop, when create account mint 1drop, 1drop = 10000udrop
 func (k msgServer) MintDrop(goCtx context.Context, msg *types.MsgMintDrop) (*types.MsgMintDropResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -23,7 +24,7 @@ func (k msgServer) MintDrop(goCtx context.Context, msg *types.MsgMintDrop) (*typ
 
 	denom := strings.ToLower(msg.Amount.GetDenom())
 	if denom != types.DropDenom {
-		return nil, sdkerrors.ErrPanic.Wrapf("denom %s is invalid", denom)
+		return nil, sdkerrors.ErrPanic.Wrapf("denom (%s) is invalid, expect (%s)", denom, types.DropDenom)
 	}
 
 	amounts := sdk.NewCoins(msg.Amount)
@@ -35,11 +36,11 @@ func (k msgServer) MintDrop(goCtx context.Context, msg *types.MsgMintDrop) (*typ
 			AccAddress:       accAddress,
 			LastMintDropTime: timestamp,
 		}
-		amounts = sdk.NewCoins(sdk.NewCoin(types.DropDenom, sdk.NewInt(10)))
+		amounts = sdk.NewCoins(sdk.NewCoin(types.DropDenom, sdk.NewInt(10000)))
 	} else {
-		hours := sdk.NewInt((timestamp - account.LastMintDropTime) / 3600000)
-		if msg.Amount.Amount.GT(hours) {
-			return nil, sdkerrors.ErrPanic.Wrapf("amount %s is invalid", msg.Amount)
+		seconds := sdk.NewInt((timestamp - account.LastMintDropTime) / 1000)
+		if msg.Amount.Amount.GT(seconds) {
+			return nil, sdkerrors.ErrPanic.Wrapf("amount (%s) is invalid", msg.Amount)
 		}
 	}
 

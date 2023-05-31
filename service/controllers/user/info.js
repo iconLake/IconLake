@@ -9,7 +9,7 @@ const config = getConfig()
  * @api {get} /user/info 获取用户信息
  */
 export async function info (req, res) {
-  const user = (await User.findById(req.user._id, 'name avatar token tokenExpire')).toJSON()
+  const user = (await User.findById(req.user._id, 'name avatar token tokenExpire blockchain.id')).toJSON()
   if (user.avatar) {
     user.avatar = `${isActive ? config.cos.domain : ''}/${user.avatar}`
   }

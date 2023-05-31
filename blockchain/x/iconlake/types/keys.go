@@ -13,7 +13,7 @@ const (
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_iconlake"
 
-	DropDenom = "drop"
+	DropDenom = "udrop"
 )
 
 func KeyPrefix(p string) []byte {
