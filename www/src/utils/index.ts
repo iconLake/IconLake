@@ -1,4 +1,5 @@
 import { locale, messages } from '../i18n'
+import { DROP_DENOM, DROP_DENOM_MINI } from './const'
 
 const toastContainer = document.createElement('div')
 toastContainer.className = 'toast-container'
@@ -89,6 +90,21 @@ export function copy (str: string) {
 export function formatTime(time: string) {
   const t = new Date(time)
   return `${t.getFullYear()}-${t.getMonth() + 1}-${t.getDate()}`
+}
+
+export function formatDropAmount(dropAmount: number) {
+  return `${(dropAmount / 10000).toFixed(4)}${DROP_DENOM}`
+}
+
+export function parseDropAmount(dropAmount: string) {
+  const matches = dropAmount.match(new RegExp(`^(\d+)(${DROP_DENOM}|${DROP_DENOM_MINI})$`, 'i'))
+  if (!matches) {
+    return null
+  }
+  return {
+    denom: DROP_DENOM_MINI,
+    amount: matches[1].toUpperCase() === DROP_DENOM ? +matches[0] * 10000 : +matches[0]
+  }
 }
 
 export function waitFor(until: Function) {

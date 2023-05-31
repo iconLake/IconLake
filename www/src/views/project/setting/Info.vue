@@ -36,17 +36,47 @@ getProject()
 </script>
 
 <template>
-  <form class="info" @submit.prevent="">
-    <p>{{t('name')}}</p>
-    <input type="text" class="input" maxlength="15" v-model="project.name">
-    <p>{{t('desc')}}</p>
-    <textarea rows="10" class="input" maxlength="300" v-model="project.desc"></textarea>
-    <p>{{t('class')}}</p>
-    <input type="text" class="input" maxlength="15" v-model="project.class">
-    <p>{{t('prefix')}}</p>
-    <input type="text" class="input" maxlength="15" v-model="project.prefix">
+  <form
+    class="info"
+    @submit.prevent=""
+  >
+    <p>{{ t('name') }}</p>
+    <input
+      v-model="project.name"
+      type="text"
+      class="input"
+      maxlength="15"
+    >
+    <p>{{ t('desc') }}</p>
+    <textarea
+      v-model="project.desc"
+      rows="10"
+      class="input"
+      maxlength="300"
+    />
+    <p>{{ t('class') }}</p>
+    <input
+      v-model="project.class"
+      type="text"
+      class="input"
+      maxlength="15"
+    >
+    <p>{{ t('prefix') }}</p>
+    <input
+      v-model="project.prefix"
+      type="text"
+      class="input"
+      maxlength="15"
+    >
     <div class="flex center">
-      <button type="submit" class="btn" :disabled="!project.name" @click="save">{{t('save')}}</button>
+      <button
+        type="submit"
+        class="btn"
+        :disabled="!project.name"
+        @click="save"
+      >
+        {{ t('save') }}
+      </button>
     </div>
   </form>
 </template>
