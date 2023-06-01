@@ -26,7 +26,9 @@ const userInfo = reactive({} as UserInfo)
 async function getUserInfo () {
   Object.assign(userInfo, await info())
   updateEncryptKey(userInfo._id)
-  mintDrop()
+  if (userInfo.blockchain) {
+    mintDrop(userInfo.blockchain.id)
+  }
 }
 
 getUserInfo()

@@ -41,17 +41,20 @@ export async function mintDrop(address: string, amount: number) {
   const res = await client.IconlakeIconlake.tx.sendMsgMintDrop({
     value: MsgMintDrop.fromJSON({
       creator: address,
-      amount: `${amount}${DROP_DENOM_MINI}`
+      amount: {
+        amount,
+        denom: DROP_DENOM_MINI
+      }
     }),
-    fee: {
-      gas: '0',
-      amount: [
-        {
-          amount: '0',
-          denom: DROP_DENOM_MINI
-        }
-      ]
-    }
+    // fee: {
+    //   gas: '2000',
+    //   amount: [
+    //     {
+    //       amount: '2000',
+    //       denom: DROP_DENOM_MINI
+    //     }
+    //   ]
+    // }
   })
-  return res.data
+  return res
 }
