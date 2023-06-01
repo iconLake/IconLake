@@ -42,6 +42,7 @@ func (k msgServer) MintDrop(goCtx context.Context, msg *types.MsgMintDrop) (*typ
 		if msg.Amount.Amount.GT(seconds) {
 			return nil, sdkerrors.ErrPanic.Wrapf("amount (%s) is invalid", msg.Amount)
 		}
+		account.LastMintDropTime = timestamp
 	}
 
 	err = k.mint.MintCoins(ctx, amounts)

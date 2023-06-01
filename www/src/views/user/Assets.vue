@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getBalance, mintDrop } from '@/apis/blockchain';
 import { info } from '@/apis/user';
-import { getLocalDrop } from '@/utils/global';
+import { confirmDrop, getLocalDrop } from '@/utils/global';
 import { ref, onBeforeUnmount } from 'vue';
 import UserVue from '../../components/User.vue'
 import { formatDropAmount } from '@/utils'
@@ -12,6 +12,7 @@ const comfirmedDropAmount = ref(0)
 let timer: string | number | NodeJS.Timeout | undefined
 
 async function getDrop() {
+  clearInterval(timer)
   localDropAmount.value = await getLocalDrop()
   timer = setInterval(() => {
     localDropAmount.value++
@@ -35,8 +36,12 @@ onBeforeUnmount(() => {
 async function confirmAssets() {
   const userInfo = await info()
   if (!userInfo.blockchain) return
-  const data = await mintDrop(userInfo.blockchain?.id, localDropAmount.value)
+  const data = await confirmDrop(localDropAmount.value)
   console.log(data)
+  if (data.code === 0) {
+    getAssets()
+    getDrop()
+  }
 }
 
 getDrop()
