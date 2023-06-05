@@ -36,7 +36,7 @@ onBeforeUnmount(() => {
 async function confirmAssets() {
   const userInfo = await info()
   if (!userInfo.blockchain) return
-  const data = await confirmDrop(localDropAmount.value)
+  const data = await confirmDrop(localDropAmount.value - 10)
   console.log(data)
   if (data.code === 0) {
     getAssets()

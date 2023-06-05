@@ -123,6 +123,7 @@ import (
 const (
 	AccountAddressPrefix = "iconlake"
 	Name                 = "iconlake"
+	CoinType             = 1009
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
