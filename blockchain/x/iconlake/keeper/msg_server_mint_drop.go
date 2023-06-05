@@ -32,11 +32,13 @@ func (k msgServer) MintDrop(goCtx context.Context, msg *types.MsgMintDrop) (*typ
 	account, isAccountCreated := k.GetAccount(ctx, accAddress)
 	timestamp := time.Now().UnixMilli()
 	if !isAccountCreated {
+		gasMeter := ctx.GasMeter()
+		gasMeter.RefundGas(gasMeter.GasConsumed(), "create account")
 		account = types.Account{
 			AccAddress:       accAddress,
 			LastMintDropTime: timestamp,
 		}
-		amounts = sdk.NewCoins(sdk.NewCoin(types.DropDenom, sdk.NewInt(10000)))
+		amounts = sdk.NewCoins(sdk.NewCoin(types.DropDenom, sdk.NewInt(100000)))
 	} else {
 		seconds := sdk.NewInt((timestamp - account.LastMintDropTime) / 1000)
 		if msg.Amount.Amount.GT(seconds) {

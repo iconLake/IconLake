@@ -3,16 +3,13 @@ accounts:
 - name: alice
   coins:
   - 200000000000000ulake
-  - 2000000udrop
-  mnemonic: maple cage treat zoo jaguar check lawn party boil orchard earn arrow immense
-    win puppy mandate lion sport large total quit price found drip
+  - 10udrop
+  mnemonic: maple cage treat zoo jaguar check lawn party boil orchard earn arrow immense win puppy mandate lion sport large total quit price found drip
 - name: bob
   coins:
   - 100000000000000ulake
   - 1000000udrop
-  mnemonic: toddler strategy valid clown sure fame jelly rescue jewel empower among
-    error merit uncle hour luggage only exotic coyote hedgehog mountain armed desert
-    meat
+  mnemonic: toddler strategy valid clown sure fame jelly rescue jewel empower among error merit uncle hour luggage only exotic coyote hedgehog mountain armed desert meat
 - name: faucet
   coins:
   - 100000000000000ulake
