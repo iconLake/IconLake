@@ -57,6 +57,7 @@ const onBlur = () => {
 }
 
 const onAdd = () => {
+  isActive.value = true
   isAdding.value = true
   isHold = true
   nextTick(() => {
