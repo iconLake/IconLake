@@ -3,7 +3,7 @@ accounts:
 - name: alice
   coins:
   - 200000000000000ulake
-  - 10udrop
+  - 0udrop
   mnemonic: maple cage treat zoo jaguar check lawn party boil orchard earn arrow immense win puppy mandate lion sport large total quit price found drip
 - name: bob
   coins:

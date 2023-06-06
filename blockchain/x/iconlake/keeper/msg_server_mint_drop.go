@@ -32,8 +32,6 @@ func (k msgServer) MintDrop(goCtx context.Context, msg *types.MsgMintDrop) (*typ
 	account, isAccountCreated := k.GetAccount(ctx, accAddress)
 	timestamp := time.Now().UnixMilli()
 	if !isAccountCreated {
-		gasMeter := ctx.GasMeter()
-		gasMeter.RefundGas(gasMeter.GasConsumed(), "create account")
 		account = types.Account{
 			AccAddress:       accAddress,
 			LastMintDropTime: timestamp,

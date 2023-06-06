@@ -46,15 +46,15 @@ export async function mintDrop(address: string, amount: number) {
         denom: DROP_DENOM_MINI
       }
     }),
-    // fee: {
-    //   gas: '2000',
-    //   amount: [
-    //     {
-    //       amount: '2000',
-    //       denom: DROP_DENOM_MINI
-    //     }
-    //   ]
-    // }
+    fee: {
+      gas: '100000',
+      amount: [
+        {
+          amount: '5000',
+          denom: DROP_DENOM_MINI
+        }
+      ]
+    }
   })
   return res
 }
