@@ -13,7 +13,8 @@ const props = defineProps<{
       version="1.1"
       xmlns="http://www.w3.org/2000/svg"
       :viewBox="props.info.svg?.viewBox"
-      v-html="props.info.svg?.path"></svg>
+      v-html="props.info.svg?.path"
+    />
   </div>
 </template>
 

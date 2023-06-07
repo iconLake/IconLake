@@ -90,15 +90,37 @@ async function save (item: Group) {
 </script>
 
 <template>
-  <div class="item flex center c-main pointer" @click="add">
-    <span>{{t('addGroup')}}</span>
-    <i class="iconfont icon-plus m-left"></i>
+  <div
+    class="item flex center c-main pointer"
+    @click="add"
+  >
+    <span>{{ t('addGroup') }}</span>
+    <i class="iconfont icon-plus m-left" />
   </div>
   <div class="list">
-    <div class="item flex stretch" v-for="item, i in list" :data-i="i">
-      <div class="drag iconfont icon-drag" @mousedown.prevent="dragStart" @mousemove="dragMove" @mouseup.prevent="dragEnd" @mouseleave="dragEnd"></div>
-      <input class="grow" type="text" v-model="item.name" @change="save(item)">
-      <div class="opt iconfont icon-delete c-danger" @click="del(i)"></div>
+    <div
+      v-for="item, i in list"
+      :key="item._id"
+      class="item flex stretch"
+      :data-i="i"
+    >
+      <div
+        class="drag iconfont icon-drag"
+        @mousedown.prevent="dragStart"
+        @mousemove="dragMove"
+        @mouseup.prevent="dragEnd"
+        @mouseleave="dragEnd"
+      />
+      <input
+        v-model="item.name"
+        class="grow"
+        type="text"
+        @change="save(item)"
+      >
+      <div
+        class="opt iconfont icon-delete c-danger"
+        @click="del(i)"
+      />
     </div>
   </div>
 </template>
