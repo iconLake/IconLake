@@ -194,80 +194,183 @@ async function save () {
 
 <template>
   <HeaderVue :back="`/icons/${data._id}`">
-    <div class="name">{{data.name}}</div>
+    <div class="name">
+      {{ data.name }}
+    </div>
   </HeaderVue>
   <UserVue />
   <div class="tab flex">
-    <div class="item" :class="getTabClass('svg')" @click="setTabActive('svg')">{{t('uploadSVG')}}</div>
-    <div class="item" :class="getTabClass('iconfont')" @click="setTabActive('iconfont')">{{t('importIconfont')}}</div>
-    <div class="item" :class="getTabClass('extension')" @click="setTabActive('extension')">{{t('collectSVG')}}</div>
+    <div
+      class="item"
+      :class="getTabClass('svg')"
+      @click="setTabActive('svg')"
+    >
+      {{ t('uploadSVG') }}
+    </div>
+    <div
+      class="item"
+      :class="getTabClass('iconfont')"
+      @click="setTabActive('iconfont')"
+    >
+      {{ t('importIconfont') }}
+    </div>
+    <div
+      class="item"
+      :class="getTabClass('extension')"
+      @click="setTabActive('extension')"
+    >
+      {{ t('collectSVG') }}
+    </div>
   </div>
   <div class="wrap">
-      <!-- icons -->
-    <div v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'" class="icons flex start">
-      <div v-for="item in data.icons" :key="item.code" class="item">
-        <svg :viewBox="item.svg?.viewBox" v-html="item.svg?.path"></svg>
-        <div v-if="item.code" class="name" :title="item.code">{{item.code}}</div>
-        <div v-if="item.name && item.code !== item.name" class="name" :title="item.name">{{item.name}}</div>
+    <!-- icons -->
+    <div
+      v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'"
+      class="icons flex start"
+    >
+      <div
+        v-for="item in data.icons"
+        :key="item.code"
+        class="item"
+      >
+        <svg
+          :viewBox="item.svg?.viewBox"
+          v-html="item.svg?.path"
+        />
+        <div
+          v-if="item.code"
+          class="name"
+          :title="item.code"
+        >
+          {{ item.code }}
+        </div>
+        <div
+          v-if="item.name && item.code !== item.name"
+          class="name"
+          :title="item.name"
+        >
+          {{ item.name }}
+        </div>
       </div>
     </div>
-    <div v-if="data.activeTab === 'svg'" class="upload flex center">
+    <div
+      v-if="data.activeTab === 'svg'"
+      class="upload flex center"
+    >
       <label for="svg">
-        {{t('selectIconFile', {type: 'SVG'})}}
-        <input id="svg" type="file" @change="onSVGChange" accept="image/svg+xml" multiple/>
+        {{ t('selectIconFile', {type: 'SVG'}) }}
+        <input
+          id="svg"
+          type="file"
+          accept="image/svg+xml"
+          multiple
+          @change="onSVGChange"
+        >
       </label>
     </div>
-    <div v-if="data.activeTab === 'iconfont'"  class="upload flex center">
+    <div
+      v-if="data.activeTab === 'iconfont'"
+      class="upload flex center"
+    >
       <label for="javascript">
-         {{t('selectIconFile', {type: 'iconfont.js'})}}
-        <input id="javascript" type="file" @change="onIconfontJSChange" accept="text/javascript"/>
+        {{ t('selectIconFile', {type: 'iconfont.js'}) }}
+        <input
+          id="javascript"
+          type="file"
+          accept="text/javascript"
+          @change="onIconfontJSChange"
+        >
       </label>
     </div>
-    <div v-if="data.activeTab === 'iconfont'"  class="upload flex center m-top">
+    <div
+      v-if="data.activeTab === 'iconfont'"
+      class="upload flex center m-top"
+    >
       <label>
-         {{t('selectIconFile', {type: 'iconfont.json'})}}
-        <input type="file" @change="onIconfontJSONChange" accept="application/json">
+        {{ t('selectIconFile', {type: 'iconfont.json'}) }}
+        <input
+          type="file"
+          accept="application/json"
+          @change="onIconfontJSONChange"
+        >
       </label>
     </div>
-    <div v-if="data.activeTab === 'extension'" class="extension t-center">
-      <h1>{{t('iconlakeExtension')}}</h1>
-      <h2>{{t('collectAnySVG')}}</h2>
+    <div
+      v-if="data.activeTab === 'extension'"
+      class="extension t-center"
+    >
+      <h1>{{ t('iconlakeExtension') }}</h1>
+      <h2>{{ t('collectAnySVG') }}</h2>
       <div class="flex center download">
         <div class="item">
           <h3>
-            <img class="browser" :src="'/imgs/chrome.svg'" />
+            <img
+              class="browser"
+              :src="'/imgs/chrome.svg'"
+            >
           </h3>
           <p>
-            <a class="store" href="https://chrome.google.com/webstore/detail/iconlake/lfjdnkcfpebmhjbeihnebpdalolhcmmb" target="_blank">{{t('webStore')}}</a>
+            <a
+              class="store"
+              href="https://chrome.google.com/webstore/detail/iconlake/lfjdnkcfpebmhjbeihnebpdalolhcmmb"
+              target="_blank"
+            >{{ t('webStore') }}</a>
           </p>
           <p>
-            <a class="file" :href="'/exts/chrome.crx'" target="_blank">{{t('downloadFile')}}</a>
+            <a
+              class="file"
+              :href="'/exts/chrome.crx'"
+              target="_blank"
+            >{{ t('downloadFile') }}</a>
           </p>
         </div>
         <div class="item">
           <h3>
-            <img class="browser" :src="'/imgs/firefox.svg'" />
+            <img
+              class="browser"
+              :src="'/imgs/firefox.svg'"
+            >
           </h3>
           <p>
-            <a class="store" href="https://addons.mozilla.org/zh-CN/firefox/addon/iconlake/" target="_blank">{{t('webStore')}}</a>
+            <a
+              class="store"
+              href="https://addons.mozilla.org/zh-CN/firefox/addon/iconlake/"
+              target="_blank"
+            >{{ t('webStore') }}</a>
           </p>
         </div>
         <div class="item">
           <h3>
-            <img class="browser" :src="'/imgs/edge.svg'" />
+            <img
+              class="browser"
+              :src="'/imgs/edge.svg'"
+            >
           </h3>
           <p>
-            <a class="store" href="https://microsoftedge.microsoft.com/addons/detail/iconlake/ilkiempcnikelnciijanjlgmchleamjh" target="_blank">{{t('webStore')}}</a>
+            <a
+              class="store"
+              href="https://microsoftedge.microsoft.com/addons/detail/iconlake/ilkiempcnikelnciijanjlgmchleamjh"
+              target="_blank"
+            >{{ t('webStore') }}</a>
           </p>
         </div>
       </div>
     </div>
     <!-- button -->
-    <div v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'" class="flex center">
-      <button class="btn danger" :disabled="data.icons.length === 0" @click="save">{{t('save')}}</button>
+    <div
+      v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'"
+      class="flex center"
+    >
+      <button
+        class="btn danger"
+        :disabled="data.icons.length === 0"
+        @click="save"
+      >
+        {{ t('save') }}
+      </button>
     </div>
   </div>
-  <div class="footer"></div>
+  <div class="footer" />
 </template>
 
 <style lang="scss" scoped>

@@ -28,42 +28,72 @@ getProject()
   <UserVue />
   <div class="flex start main">
     <div class="menu">
-      <router-link class="item" active-class="active" to="./info">
-        <i class="iconfont icon-info"></i>
-        <span>{{t('projectInfo')}}</span>
+      <router-link
+        class="item"
+        active-class="active"
+        to="./info"
+      >
+        <i class="iconfont icon-info" />
+        <span>{{ t('projectInfo') }}</span>
       </router-link>
-      <router-link class="item" active-class="active" to="./group">
-        <i class="iconfont icon-group"></i>
-        <span>{{t('iconGroup')}}</span>
+      <router-link
+        class="item"
+        active-class="active"
+        to="./group"
+      >
+        <i class="iconfont icon-group" />
+        <span>{{ t('iconGroup') }}</span>
       </router-link>
-      <router-link class="item" active-class="active" to="./member">
-        <i class="iconfont icon-member"></i>
-        <span>{{t('projectMember')}}</span>
+      <router-link
+        class="item"
+        active-class="active"
+        to="./member"
+      >
+        <i class="iconfont icon-member" />
+        <span>{{ t('projectMember') }}</span>
       </router-link>
-      <router-link class="item" active-class="active" to="./monitor">
-        <i class="iconfont icon-monitor"></i>
-        <span>{{t('monitor')}}</span>
+      <router-link
+        class="item"
+        active-class="active"
+        to="./monitor"
+      >
+        <i class="iconfont icon-monitor" />
+        <span>{{ t('monitor') }}</span>
       </router-link>
-      <router-link class="item" active-class="active" to="./advance">
-        <i class="iconfont icon-setting"></i>
-        <span>{{t('advance')}}</span>
+      <router-link
+        class="item"
+        active-class="active"
+        to="./advance"
+      >
+        <i class="iconfont icon-setting" />
+        <span>{{ t('advance') }}</span>
       </router-link>
     </div>
     <div class="content grow">
-      <router-link to="./info" class="flex info">
+      <router-link
+        to="./info"
+        class="flex info"
+      >
         <div class="grow">
           <div class="flex">
-            <div class="title">{{project.name}}</div>
-            <i v-if="!isInfoEditing" class="iconfont icon-edit"></i>
+            <div class="title">
+              {{ project.name }}
+            </div>
+            <i
+              v-if="!isInfoEditing"
+              class="iconfont icon-edit"
+            />
           </div>
-          <div class="desc">{{project.desc}}</div>
+          <div class="desc">
+            {{ project.desc }}
+          </div>
         </div>
-        <div class="icon"></div>
+        <div class="icon" />
       </router-link>
-      <router-view></router-view>
+      <router-view />
     </div>
   </div>
-  <div class="footer"></div>
+  <div class="footer" />
 </template>
 
 <style lang="scss" scoped>

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <script lang="ts" setup>
 import { computed, nextTick, reactive, ref, watchEffect } from 'vue'
 import { addTag, delTag, editGroup, editIcon, Group, Icon } from '../../apis/project'
@@ -140,67 +141,108 @@ async function addGroup(name:string) {
 </script>
 
 <template>
-  <div class="detail" ref="root">
+  <div
+    ref="root"
+    class="detail"
+  >
     <div class="flex start">
       <div>
         <IconComponent :info="info" />
-        <router-link :to="`/analyse/icon/${projectId}/${info._id}`" class="count-use c-main">{{t('pageRefererCount')}} {{info.analyse?.pageCount}}</router-link>
+        <router-link
+          :to="`/analyse/icon/${projectId}/${info._id}`"
+          class="count-use c-main"
+        >
+          {{ t('pageRefererCount') }} {{ info.analyse?.pageCount }}
+        </router-link>
       </div>
       <div class="info grow">
         <div class="item">
-          <div class="label">{{t('name')}}</div>
+          <div class="label">
+            {{ t('name') }}
+          </div>
           <div class="value">
             <input
-              type="text"
-              v-model="input.name"
               ref="nameInputDom"
+              v-model="input.name"
+              type="text"
               @change="saveInfo('name')"
             >
-            <i class="iconfont icon-edit pointer" @click="focus('name')"></i>
+            <i
+              class="iconfont icon-edit pointer"
+              @click="focus('name')"
+            />
           </div>
         </div>
         <div class="item">
-          <div class="label">{{t('code')}}</div>
+          <div class="label">
+            {{ t('code') }}
+          </div>
           <div class="value">
             <input
-              type="text"
-              v-model="input.code"
               ref="codeInputDom"
+              v-model="input.code"
+              type="text"
               @change="saveInfo('code')"
             >
-            <i class="iconfont icon-edit pointer" @click="focus('code')"></i>
+            <i
+              class="iconfont icon-edit pointer"
+              @click="focus('code')"
+            />
           </div>
         </div>
         <div class="item info-group">
-          <div class="label">{{t('group')}}</div>
+          <div class="label">
+            {{ t('group') }}
+          </div>
           <div class="value">
             <Select
+              v-model="input.groupId"
               :options="groupOptions"
               :addable="true"
               :placeholder="t('ungrouped')"
-              v-model="input.groupId"
               @change="saveInfo('groupId')"
               @add="addGroup"
-            ></Select>
+            />
           </div>
         </div>
         <div class="item info-tag">
-          <div class="label">{{t('tag')}}</div>
-          <div class="value"></div>
-          <i class="iconfont icon-add-circle pointer" :class="{'icon-add-circle': !isTagAdding, 'icon-remove-circle': isTagAdding}" @click="showAddTag"></i>
+          <div class="label">
+            {{ t('tag') }}
+          </div>
+          <div class="value" />
+          <i
+            class="iconfont icon-add-circle pointer"
+            :class="{'icon-add-circle': !isTagAdding, 'icon-remove-circle': isTagAdding}"
+            @click="showAddTag"
+          />
         </div>
         <div class="tags flex start">
-          <div class="tag flex" v-for="tag, i in info.tags" :key="tag">
-            <span>{{tag}}</span>
-            <i class="iconfont icon-delete-fill pointer tag-del" @click="deleteTag(i, tag)"></i>
+          <div
+            v-for="tag, i in info.tags"
+            :key="tag"
+            class="tag flex"
+          >
+            <span>{{ tag }}</span>
+            <i
+              class="iconfont icon-delete-fill pointer tag-del"
+              @click="deleteTag(i, tag)"
+            />
           </div>
-          <div class="tag flex" v-if="isTagAdding">
-            <input type="text" maxlength="8" v-model="input.tag" ref="tagInputDom">
+          <div
+            v-if="isTagAdding"
+            class="tag flex"
+          >
+            <input
+              ref="tagInputDom"
+              v-model="input.tag"
+              type="text"
+              maxlength="8"
+            >
             <i
               class="iconfont icon-checked pointer tag-add"
               :class="{active: input.tag}"
               @click="saveTag"
-            ></i>
+            />
           </div>
         </div>
       </div>

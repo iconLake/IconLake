@@ -274,71 +274,122 @@ watch(() => data.keyword, () => {
 
 <template>
   <HeaderVue back="/home">
-    <div class="name">{{data.name}}</div>
-    <router-link :to="`/project/${data._id}/setting`" class="setting flex">
-      <span>{{t('setting')}}</span>
-      <i class="iconfont icon-setting-plain"></i>
+    <div class="name">
+      {{ data.name }}
+    </div>
+    <router-link
+      :to="`/project/${data._id}/setting`"
+      class="setting flex"
+    >
+      <span>{{ t('setting') }}</span>
+      <i class="iconfont icon-setting-plain" />
     </router-link>
   </HeaderVue>
   <UserVue />
-  <div class="main" ref="mainDom">
+  <div
+    ref="mainDom"
+    class="main"
+  >
     <div class="search flex center">
       <div class="input">
-        <i class="iconfont icon-search"></i>
-        <input type="text" :placeholder="t('search')" v-model="data.keyword">
+        <i class="iconfont icon-search" />
+        <input
+          v-model="data.keyword"
+          type="text"
+          :placeholder="t('search')"
+        >
       </div>
     </div>
     <div class="operate flex">
-      <router-link :to="`/icons/${data._id}/create`" class="operate-item flex">
-        <span>{{t('createIcons')}}</span>
-        <i class="iconfont icon-plus"></i>
+      <router-link
+        :to="`/icons/${data._id}/create`"
+        class="operate-item flex"
+      >
+        <span>{{ t('createIcons') }}</span>
+        <i class="iconfont icon-plus" />
       </router-link>
-      <div class="operate-item flex" @click="data.isBatching=!data.isBatching">
-        <span>{{t(data.isBatching ? 'cancelBatchOperation' : 'batchOperation')}}</span>
-        <i class="iconfont icon-batch"></i>
+      <div
+        class="operate-item flex"
+        @click="data.isBatching=!data.isBatching"
+      >
+        <span>{{ t(data.isBatching ? 'cancelBatchOperation' : 'batchOperation') }}</span>
+        <i class="iconfont icon-batch" />
       </div>
-      <router-link :to="`/icons/${data._id}/use`" class="operate-item flex">
-        <span>{{t('useCode')}}</span>
-        <i class="iconfont icon-code"></i>
+      <router-link
+        :to="`/icons/${data._id}/use`"
+        class="operate-item flex"
+      >
+        <span>{{ t('useCode') }}</span>
+        <i class="iconfont icon-code" />
       </router-link>
     </div>
-    <div class="operate-batch" v-if="data.isBatching">
-      <button class="btn" @click="batchDelete" :disabled="data.selectedIcons.size===0">
-        <span>{{t('batchDelete')}}</span>
-        <i class="iconfont icon-delete"></i>
+    <div
+      v-if="data.isBatching"
+      class="operate-batch"
+    >
+      <button
+        class="btn"
+        :disabled="data.selectedIcons.size===0"
+        @click="batchDelete"
+      >
+        <span>{{ t('batchDelete') }}</span>
+        <i class="iconfont icon-delete" />
       </button>
-      <button class="btn" @click="batchGroup" :disabled="data.selectedIcons.size===0">
-        <span>{{t('batchGroup')}}</span>
-        <i class="iconfont icon-group-open"></i>
+      <button
+        class="btn"
+        :disabled="data.selectedIcons.size===0"
+        @click="batchGroup"
+      >
+        <span>{{ t('batchGroup') }}</span>
+        <i class="iconfont icon-group-open" />
       </button>
-      <button class="btn" @click="batchDownload" :disabled="data.selectedIcons.size===0">
-        <span>{{t('batchDownload')}}</span>
-        <i class="iconfont icon-download"></i>
+      <button
+        class="btn"
+        :disabled="data.selectedIcons.size===0"
+        @click="batchDownload"
+      >
+        <span>{{ t('batchDownload') }}</span>
+        <i class="iconfont icon-download" />
       </button>
     </div>
-    <div class="list" ref="iconListDom">
-      <div class="group" v-for="item in data.list" :key="item._id">
+    <div
+      ref="iconListDom"
+      class="list"
+    >
+      <div
+        v-for="item in data.list"
+        :key="item._id"
+        class="group"
+      >
         <div
           class="group-title flex"
           :class="{pointer: data.isBatching}"
           @click="selectGroup(item)"
         >
-          <span>{{item.name}}</span>
-          <span v-if="data.isBatching" class="iconfont icon-select-all" :title="t('selectAll')"></span>
+          <span>{{ item.name }}</span>
+          <span
+            v-if="data.isBatching"
+            class="iconfont icon-select-all"
+            :title="t('selectAll')"
+          />
         </div>
         <div class="icons">
           <div
-            class="icon-item t-center"
-            :class="{selectable:data.isBatching, selected:data.selectedIcons.has(icon._id)}"
             v-for="icon in item.icons"
             :key="icon._id"
+            class="icon-item t-center"
+            :class="{selectable:data.isBatching, selected:data.selectedIcons.has(icon._id)}"
             @mouseenter="showDetail(icon, $event)"
             @mouseleave="hideDetail()"
             @click="selectIcon(icon, $event)"
           >
-            <IconVue :info="icon"/>
-            <div class="name">{{icon.name}}</div>
-            <div class="code">{{icon.code}}</div>
+            <IconVue :info="icon" />
+            <div class="name">
+              {{ icon.name }}
+            </div>
+            <div class="code">
+              {{ icon.code }}
+            </div>
           </div>
         </div>
       </div>
@@ -359,16 +410,21 @@ watch(() => data.keyword, () => {
     </div>
   </div>
   <!-- 批量分组 -->
-  <div class="group-select" ref="batchGroupFormDom">
-    <div class="label">{{t('batchSetGroup', { n: data.selectedIcons.size })}}</div>
+  <div
+    ref="batchGroupFormDom"
+    class="group-select"
+  >
+    <div class="label">
+      {{ t('batchSetGroup', { n: data.selectedIcons.size }) }}
+    </div>
     <Select
+      v-model="data.batchGroupId"
       :options="groupOptions"
       :addable="true"
       :placeholder="t('ungrouped')"
       size="default"
-      v-model="data.batchGroupId"
       @add="saveGroup"
-    ></Select>
+    />
   </div>
 </template>
 

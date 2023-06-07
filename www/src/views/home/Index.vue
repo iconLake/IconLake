@@ -20,35 +20,69 @@ getProjects().then(res => {
 
 <template>
   <UserVue />
-  <div class="empty flex center column" v-if="!data.isLoading && data.projects.length === 0">
-    <div class="title">{{t('welcomeAndGuide')}}</div>
+  <div
+    v-if="!data.isLoading && data.projects.length === 0"
+    class="empty flex center column"
+  >
+    <div class="title">
+      {{ t('welcomeAndGuide') }}
+    </div>
     <div>
-      <router-link to="/project/create" class="btn">
-        <span class="btn-text">{{t('newProject')}}</span>
-        <span class="btn-icon iconfont icon-plus"></span>
+      <router-link
+        to="/project/create"
+        class="btn"
+      >
+        <span class="btn-text">{{ t('newProject') }}</span>
+        <span class="btn-icon iconfont icon-plus" />
       </router-link>
     </div>
     <img :src="'/imgs/project-empty.png'">
   </div>
-  <div class="container flex stretch" v-if="!data.isLoading && data.projects.length > 0">
-    <a href="/" class="banner flex center">
-      <img class="bg-c-t" :src="'/imgs/project-bg-circle-t.png'">
-      <img class="bg-c-b" :src="'/imgs/project-bg-circle-b.png'">
+  <div
+    v-if="!data.isLoading && data.projects.length > 0"
+    class="container flex stretch"
+  >
+    <a
+      href="/"
+      class="banner flex center"
+    >
+      <img
+        class="bg-c-t"
+        :src="'/imgs/project-bg-circle-t.png'"
+      >
+      <img
+        class="bg-c-b"
+        :src="'/imgs/project-bg-circle-b.png'"
+      >
       <div class="title">iconLake</div>
       <div class="slogan">Make icon in control</div>
     </a>
     <div class="flex column start grow">
       <div class="operate">
-        <router-link to="/project/create" class="btn">
-          <span class="btn-text">{{t('newProject')}}</span>
-          <span class="btn-icon iconfont icon-plus"></span>
+        <router-link
+          to="/project/create"
+          class="btn"
+        >
+          <span class="btn-text">{{ t('newProject') }}</span>
+          <span class="btn-icon iconfont icon-plus" />
         </router-link>
       </div>
       <div class="list flex wrap start">
-        <router-link class="item" v-for="item in data.projects" :key="item._id" :to="`/icons/${item._id}`">
-          <div class="item-title">{{item.name}}</div>
+        <router-link
+          v-for="item in data.projects"
+          :key="item._id"
+          class="item"
+          :to="`/icons/${item._id}`"
+        >
+          <div class="item-title">
+            {{ item.name }}
+          </div>
           <div class="icons flex wrap center">
-            <div class="icon-item" v-for="icon in item.icons" :key="icon._id">
+            <div
+              v-for="icon in item.icons"
+              :key="icon._id"
+              class="icon-item"
+            >
               <IconVue :info="icon" />
             </div>
           </div>

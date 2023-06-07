@@ -12,7 +12,7 @@ $router.beforeEach((to, from) => {
 </script>
 
 <template>
-  <router-view></router-view>
+  <router-view />
 </template>
 
 <style lang="scss" scoped>
