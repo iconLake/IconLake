@@ -17,8 +17,6 @@ let userInfo: UserInfo
 
 /**
  * 获取用户信息
- * @param isRefresh 是否刷新
- * @returns {UserInfo}
  */
 export async function info(isRefresh?: boolean) {
   if (userInfo && !isRefresh) {
@@ -34,9 +32,35 @@ export async function info(isRefresh?: boolean) {
   return userInfo
 }
 
+/**
+ * 登出
+ */
 export function logout() {
   return request({
     url: '/logout',
     baseURL
   })
+}
+
+/**
+ * 登录或者绑定区块链账户
+ */
+export function loginByBlockchain(data: {
+  msg: string
+  sig: string
+  pubkey: {
+    type: string
+    value: string
+  }
+}) {
+  return request({
+    url: '/api/oauth/blockchain',
+    method: 'POST',
+    data
+  }) as Promise<loginByBlockchainRes>
+}
+
+export interface loginByBlockchainRes {
+  error?: string
+  userId?: string
 }

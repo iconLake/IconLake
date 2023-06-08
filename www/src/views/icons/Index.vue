@@ -454,6 +454,7 @@ watch(() => data.keyword, () => {
 .main {
   margin: 0 auto;
   width: 90%;
+  padding-bottom: 25rem;
 }
 .search {
   .input {
