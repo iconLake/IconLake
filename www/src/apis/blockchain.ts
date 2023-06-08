@@ -38,6 +38,7 @@ export async function getBalance(address: string) {
 
 export async function mintDrop(address: string, amount: number) {
   await detectKeplr()
+  if (!isKeplrDetected) return
   const res = await client.IconlakeIconlake.tx.sendMsgMintDrop({
     value: MsgMintDrop.fromJSON({
       creator: address,
@@ -56,5 +57,15 @@ export async function mintDrop(address: string, amount: number) {
       ]
     }
   })
+  return res
+}
+
+export async function signMsg(msg: string) {
+  await detectKeplr()
+  if (!window.keplr) return
+  await window.keplr.enable(CHAIN_ID)
+  const offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID)
+  const accounts = await offlineSigner.getAccounts()
+  const res = await window.keplr.signArbitrary(CHAIN_ID, accounts[0].address, msg)
   return res
 }

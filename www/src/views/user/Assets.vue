@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { getBalance, mintDrop } from '@/apis/blockchain';
-import { info } from '@/apis/user';
+import { getBalance, signMsg } from '@/apis/blockchain';
+import { info, loginByBlockchain } from '@/apis/user';
 import { confirmDrop, getLocalDrop } from '@/utils/global';
 import { ref, onBeforeUnmount } from 'vue';
 import UserVue from '../../components/User.vue'
 import { formatDropAmount } from '@/utils'
 import HeaderVue from '@/components/Header.vue';
+import { getSignMsg } from '@/utils/blockchain';
 
 const localDropAmount = ref(0)
 const comfirmedDropAmount = ref(0)
@@ -39,14 +40,29 @@ async function confirmAssets() {
   if (!userInfo.blockchain) return
   const data = await confirmDrop(+(prompt('Mint Drop', '10') ?? 0))
   console.log(data)
-  if (data.code === 0) {
+  if (data && data.code === 0) {
     getAssets()
     getDrop()
   }
 }
 
 async function bindBlockchain() {
-  
+  const msg = getSignMsg()
+  const signRes = await signMsg(msg)
+  if (!signRes) {
+    return
+  }
+  const res = await loginByBlockchain({
+    msg,
+    sig: signRes.signature,
+    pubkey: signRes.pub_key
+  })
+  if (res.userId && res.userId !== (await info())._id) {
+    alert('已为你切换账号')
+    location.reload()
+  } else {
+    alert('绑定成功')
+  }
 }
 
 getDrop()

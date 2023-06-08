@@ -145,6 +145,12 @@ async function addGroup(name:string) {
     ref="root"
     class="detail"
   >
+    <RouterLink
+      :to="`/icons/${projectId}/protect/${info._id}`"
+      class="copyright"
+    >
+      <i class="iconfont icon-copyright" />
+    </RouterLink>
     <div class="flex start">
       <div>
         <IconComponent :info="info" />
@@ -371,6 +377,17 @@ async function addGroup(name:string) {
       color: inherit;
       width: 10rem;
     }
+  }
+}
+
+.copyright {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  color: var(--color-main);
+  cursor: pointer;
+  .iconfont {
+    font-size: 3rem;
   }
 }
 </style>

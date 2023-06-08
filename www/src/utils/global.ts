@@ -44,7 +44,7 @@ export async function getLocalDrop() {
 export async function confirmDrop(amount: number) {
   saveLocalDrop()
   const res = await chainAPI.mintDrop(mintDropData.address, amount)
-  if (res.code === 0) {
+  if (res && res.code === 0) {
     saveLocalDrop(-amount)
   }
   return res
