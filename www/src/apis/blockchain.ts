@@ -1,6 +1,6 @@
 import { CHAIN_ID, DROP_DENOM_MINI } from '@/utils/const';
-import { Client } from 'iconlake-client-ts'
-import { MsgMintDrop } from 'iconlake-client-ts/iconlake.iconlake/module';
+import { Client } from '@iconlake/client'
+import { MsgMintDrop } from '@iconlake/client/iconlake.iconlake/module';
 
 const apiURL = "http://127.0.0.1:1317";
 const rpcURL = "http://127.0.0.1:26657";
