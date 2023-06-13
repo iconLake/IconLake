@@ -69,3 +69,8 @@ export async function signMsg(msg: string) {
   const res = await window.keplr.signArbitrary(CHAIN_ID, accounts[0].address, msg)
   return res
 }
+
+export async function getHash(uri: string) {
+  const hash = await client.IconlakeIcon.query.queryHash('p', encodeURIComponent(uri))
+  return hash
+}

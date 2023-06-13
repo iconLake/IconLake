@@ -4,6 +4,9 @@ import { writeFile } from 'fs/promises'
 import fetch from 'node-fetch'
 import { pipeline } from 'stream/promises'
 import { isActive, putObject } from './cos.js'
+import { getConfig } from '../config/index.js'
+
+const config = getConfig()
 
 /**
  * 保存文件
@@ -50,4 +53,16 @@ export async function download (url, path = 'tmp/', fetchOptions) {
   }
   await pipeline(res.body, createWriteStream(file))
   return file
+}
+
+/**
+ * 补全URL
+ * @param {string} url
+ * @returns {string}
+ */
+export function completeURL (url) {
+  if (/^https?:\/\//.test(url)) {
+    return url
+  }
+  return `${isActive ? config.cos.domain : ''}${/^\//.test(url) ? '' : '/'}${url}`
 }

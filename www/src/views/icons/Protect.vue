@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { getIcon, Icon as IconType } from '@/apis/project';
+import { getIcon, Icon as IconType, uploadFile } from '@/apis/project';
+import { getHash } from '@/apis/blockchain';
 import Header from '@/components/Header.vue';
 import Icon from '@/components/Icon.vue';
 import User from '@/components/User.vue';
@@ -21,6 +22,13 @@ async function getIconInfo() {
   Object.assign(iconInfo, icon.info)
 }
 
+async function publish() {
+  const file = await uploadFile(projectId.value, id.value + '.svg', `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="${iconInfo.svg.viewBox}">${iconInfo.svg.path}</svg>`)
+  const url = /^http/.test(file.url) ? file.url : `${location.origin}${file.url}`
+  const hash = await getHash(url)
+  console.log(hash)
+}
+
 getIconInfo()
 </script>
 
@@ -29,7 +37,10 @@ getIconInfo()
   <User />
   <div class="main">
     <p>上链确权，保护版权</p>
-    <div class="info">
+    <div
+      v-if="iconInfo.svg.path"
+      class="info"
+    >
       <Icon :info="iconInfo" />
       <p>{{ iconInfo.name }}</p>
     </div>
@@ -41,6 +52,7 @@ getIconInfo()
       <button
         type="submit"
         class="btn"
+        @click="publish"
       >
         发布到区块链
       </button>
