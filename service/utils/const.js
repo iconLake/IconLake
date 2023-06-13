@@ -38,6 +38,11 @@ export const ROOT = process.cwd()
 export const AVATAR_PATH = 'avatar/'
 
 /**
+ * 图标路径
+ */
+export const ICON_PATH = 'icon/'
+
+/**
  * 资源缓存时长
  */
 export const RESOURCE_MAX_AGE = (NODE_ENV === ENV.PRODUCTION) ? 7 * 24 * 3600 * 1000 : 0

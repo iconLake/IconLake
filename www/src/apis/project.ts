@@ -379,3 +379,19 @@ export function setExpire(projectId: string, fileId: string, fileType: 'css'|'js
     },
   })
 }
+
+export function uploadFile(projectId: string, _id: string, data: string | Buffer) {
+  return <Promise<{key: string, url: string}>>request({
+    method: 'POST',
+    url: '/file/upload',
+    baseURL,
+    headers: {
+      'Content-Type': typeof data === 'string' ? 'text/plain; charset=utf-8' : 'application/octet-stream'
+    },
+    params: {
+      projectId,
+      _id
+    },
+    data
+  })
+}

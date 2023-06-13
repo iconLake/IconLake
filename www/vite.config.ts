@@ -22,6 +22,7 @@ export default defineConfig({
       '/imgs': proxyDomain,
       '/exts': proxyDomain,
       '/avatar': proxyDomain,
+      '/icon': proxyDomain,
     }
   },
   build: {
