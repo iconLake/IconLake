@@ -2,8 +2,8 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@iconlake/client':
-    specifier: ^0.0.2
-    version: 0.0.2(@cosmjs/launchpad@0.27.0)(@cosmjs/proto-signing@0.27.0)(@cosmjs/stargate@0.27.0)
+    specifier: ^0.0.3
+    version: 0.0.3(@cosmjs/launchpad@0.27.0)(@cosmjs/proto-signing@0.27.0)(@cosmjs/stargate@0.27.0)
   axios:
     specifier: ^0.27.2
     version: 0.27.2
@@ -331,8 +331,8 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@iconlake/client@0.0.2(@cosmjs/launchpad@0.27.0)(@cosmjs/proto-signing@0.27.0)(@cosmjs/stargate@0.27.0):
-    resolution: {integrity: sha512-b650JQT/rOeBZYpjQDLj2UM33K8AoU4NM2sQ8puQVJr1H2gh9TJLPzEVnzBpIdAKer3gGpbBf9z2WLpjPkLwMg==}
+  /@iconlake/client@0.0.3(@cosmjs/launchpad@0.27.0)(@cosmjs/proto-signing@0.27.0)(@cosmjs/stargate@0.27.0):
+    resolution: {integrity: sha512-gZM9/d3/GUGPNIHq1jBEZX5kYT1NN13AgyH9mZjG/DHksSsPeI806uL9Ny9g92NaFNb9RcCfo4EWrh97Mzz9hw==}
     peerDependencies:
       '@cosmjs/launchpad': 0.27.0
       '@cosmjs/proto-signing': 0.27.0

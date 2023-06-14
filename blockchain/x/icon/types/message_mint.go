@@ -86,8 +86,12 @@ func (msg *MsgMint) ValidateBasic() error {
 	if len(msg.UriHash) < 3 {
 		return errors.Wrapf(ErrInvalidParam, "invalid param (UriHash)")
 	}
-	if len(msg.Data.Author) == 0 || msg.Creator != msg.Data.Author {
-		return errors.Wrapf(ErrInvalidParam, "invalid param (Data.Author), expect (%s)", msg.Creator)
+	if len(msg.Data.Author) == 0 {
+		return errors.Wrapf(ErrInvalidParam, "invalid param (Data.Author)")
+	}
+	_, err := sdk.AccAddressFromBech32(msg.Data.Author)
+	if err != nil {
+		return errors.Wrapf(ErrInvalidParam, "invalid param (Data.Author)")
 	}
 	if len(msg.Data.Name) > 64 {
 		return errors.Wrapf(ErrInvalidParam, "invalid param (Data.Name), expect within 64 chars")

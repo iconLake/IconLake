@@ -1,5 +1,5 @@
 import i18n from '@/i18n'
-import axios, { AxiosRequestConfig } from 'axios'
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { toast } from './index'
 
 function showErrorMsg (res: any) {
@@ -19,18 +19,22 @@ function showErrorMsg (res: any) {
 export default function q(options: AxiosRequestConfig) {
   return new Promise((resolve, reject) => {
     axios(options).then(res => {
-      if (res.status === 200 && !res.data.error) {
-        resolve(res.data)
-      } else if (res.data.error) {
-        showErrorMsg(res.data)
-        reject(res.data)
-      } else {
-        showErrorMsg(res)
-        reject(res)
-      }
+      handleResponse(res, resolve, reject)
     }).catch(err => {
       showErrorMsg(err)
       reject(err)
     })
   })
+}
+
+export function handleResponse<T>(res: AxiosResponse, resolve: (value: T) => void, reject: (reason?: any) => void) {
+  if (res.status === 200 && !res.data.error) {
+    resolve(res.data)
+  } else if (res.data.error) {
+    showErrorMsg(res.data)
+    reject(res.data)
+  } else {
+    showErrorMsg(res)
+    reject(res)
+  }
 }

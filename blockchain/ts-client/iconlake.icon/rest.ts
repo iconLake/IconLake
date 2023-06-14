@@ -178,12 +178,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryHash
    * @summary Queries a list of Hash items.
-   * @request GET:/iconlake/icon/hash/{hashType}/{uri}
+   * @request POST:/iconlake/icon/hash
    */
-  queryHash = (hashType: string, uri: string, params: RequestParams = {}) =>
+  queryHash = (query?: { hashType?: string; uri?: string }, params: RequestParams = {}) =>
     this.request<IconQueryHashResponse, RpcStatus>({
-      path: `/iconlake/icon/hash/${hashType}/${uri}`,
-      method: "GET",
+      path: `/iconlake/icon/hash`,
+      method: "POST",
+      query: query,
       format: "json",
       ...params,
     });

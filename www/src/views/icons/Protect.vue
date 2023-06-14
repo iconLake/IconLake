@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { getIcon, Icon as IconType, uploadFile } from '@/apis/project';
-import { getHash } from '@/apis/blockchain';
+import { getHash, mintIcon, getAccount } from '@/apis/blockchain';
 import Header from '@/components/Header.vue';
 import Icon from '@/components/Icon.vue';
 import User from '@/components/User.vue';
@@ -26,7 +26,23 @@ async function publish() {
   const file = await uploadFile(projectId.value, id.value + '.svg', `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="${iconInfo.svg.viewBox}">${iconInfo.svg.path}</svg>`)
   const url = /^http/.test(file.url) ? file.url : `${location.origin}${file.url}`
   const hash = await getHash(url)
-  console.log(hash)
+  const account = await getAccount()
+  if (!account) return
+  const res = await mintIcon({
+    creator: account.address,
+    classId: projectId.value,
+    id: hash.graphHash,
+    uri: url,
+    uriHash: hash.fileHash,
+    data: {
+      author: account.address,
+      name: iconInfo.name,
+      description: '',
+      createTime: new Date().toISOString()
+    },
+    supply: 1
+  })
+  console.log(res)
 }
 
 getIconInfo()
