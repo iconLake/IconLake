@@ -20,7 +20,7 @@ service Query {
   
   // Queries a list of Hash items.
   rpc Hash (QueryHashRequest) returns (QueryHashResponse) {
-    option (google.api.http).get = "/iconlake/icon/hash/{hashType}/{uri}";
+    option (google.api.http).post = "/iconlake/icon/hash";
   
   }
 }
