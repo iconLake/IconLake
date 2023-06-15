@@ -18,7 +18,8 @@ export const IconSchema = new Schema({
   svg: {
     viewBox: String,
     path: String
-  }
+  },
+  txHash: String
 })
 
 export const ProjectSchema = new Schema({
