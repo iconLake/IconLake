@@ -148,6 +148,8 @@ async function addGroup(name:string) {
     <RouterLink
       :to="`/icons/${projectId}/protect/${info._id}`"
       class="copyright"
+      :class="info.txHash ? 'protected' : ''"
+      title="版权保护"
     >
       <i class="iconfont icon-copyright" />
     </RouterLink>
@@ -385,7 +387,11 @@ async function addGroup(name:string) {
   top: 2rem;
   left: 2rem;
   color: var(--color-main);
+  opacity: 0.2;
   cursor: pointer;
+  &.protected {
+    opacity: 1;
+  }
   .iconfont {
     font-size: 3rem;
   }

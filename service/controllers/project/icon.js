@@ -142,6 +142,10 @@ export async function edit (req, res) {
     $set['icons.$.groupId'] = req.body.groupId ? req.body.groupId : null
     isEmpty = false
   }
+  if (req.body.txHash) {
+    $set['icons.$.txHash'] = req.body.txHash
+    isEmpty = false
+  }
   if (isEmpty) {
     res.json({})
     return

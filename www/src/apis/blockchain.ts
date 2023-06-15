@@ -1,6 +1,7 @@
 import { CHAIN_ID, DROP_DENOM_MINI } from '@/utils/const';
 import { handleResponse } from '@/utils/request';
 import { Client } from '@iconlake/client'
+import { V1Beta1GetTxResponse } from '@iconlake/client/cosmos.tx.v1beta1/rest';
 import { MsgMint as MsgMintIcon } from '@iconlake/client/iconlake.icon/module';
 import { MsgMintDrop } from '@iconlake/client/iconlake.iconlake/module';
 
@@ -106,4 +107,11 @@ export async function mintIcon(msg: MsgMintIcon) {
     fee
   })
   return res
+}
+
+export async function getTx(txHash: string) {
+  const res = await client.CosmosTxV1Beta1.query.serviceGetTx(txHash)
+  return await new Promise((resolve: (v: V1Beta1GetTxResponse) => void, reject) => {
+    handleResponse<V1Beta1GetTxResponse>(res as any, resolve, reject);
+  })
 }

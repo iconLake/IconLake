@@ -21,7 +21,8 @@ export interface Icon extends BaseIcon {
   tags: string[]
   analyse?: {
     pageCount: number
-  }
+  },
+  txHash?: string
 }
 
 export interface IconPage {
@@ -287,6 +288,7 @@ export function delIcon(projectId: string, _ids: string[]) {
 export function editIcon(projectId: string, _id: string, info: {
   name?: string
   groupId?: string
+  txHash?: string
 }) {
   return <Promise<Res>>request({
     method: 'POST',
