@@ -22,7 +22,7 @@ require (
 	golang.org/x/image v0.7.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20230530153820-e85fd2cbaebc
 	google.golang.org/grpc v1.55.0
-	gopkg.in/gographics/imagick.v3 v3.4.2
+	gopkg.in/gographics/imagick.v2 v2.6.2
 	gopkg.in/yaml.v2 v2.4.0
 )
 
