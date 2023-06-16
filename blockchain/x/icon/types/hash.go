@@ -12,7 +12,7 @@ import (
 
 	"cosmossdk.io/errors"
 	imageHash "github.com/corona10/goimagehash"
-	"gopkg.in/gographics/imagick.v3/imagick"
+	"gopkg.in/gographics/imagick.v2/imagick"
 )
 
 func GetImgHash(uri string, hashType string) (graphHash string, fileHash string, e error) {
