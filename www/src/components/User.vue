@@ -152,6 +152,7 @@ async function userLogout() {
     font-size: 1.4rem;
     box-shadow: 0rem 0.4rem 1.02rem 0.08rem rgba(0, 0, 0, 0.08);
     padding: 1.8rem 0;
+    z-index: 999;
     &.active {
       display: block;
     }
