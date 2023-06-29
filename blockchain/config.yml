@@ -63,6 +63,9 @@ genesis:
     staking:
       params:
         bond_denom: ulake
+    distribution:
+      params:
+        withdraw_addr_enabled: false
 validators:
 - name: alice
   bonded: 100000000000000ulake
