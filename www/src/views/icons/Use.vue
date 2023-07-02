@@ -1,18 +1,25 @@
 <script setup lang="ts">
-import { computed, reactive, watchPostEffect } from 'vue'
+import { computed, reactive, ref, watchPostEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import { info, Files, genIcon, FileInfo, setExpire } from '@/apis/project'
+import { info, Files, genIcon, FileInfo, setExpire, Member } from '@/apis/project'
 import HeaderVue from '@/components/Header.vue'
 import UserVue from '@/components/User.vue'
 import { copy, toast } from '@/utils'
 import { PERMANENT_FILE_EXPIRE, TEMPORARY_FILE_EXPIRE, ONE_DAY_SECONDS } from '@/utils/const'
 import { ElSwitch } from 'element-plus'
+import * as user from '@/apis/user'
 
 const { t } = useI18n()
 const $route = useRoute()
 
 type Tab = 'css'|'js'|'vue'|'react'
+
+const userInfo = ref({} as user.UserInfo)
+
+user.info().then(u => {
+  userInfo.value = u
+})
 
 const data = reactive({
   _id: $route.params.id as string,
@@ -24,7 +31,15 @@ const data = reactive({
   icons: [],
   activeTab: 'css' as Tab,
   src: '',
-  generating: new Set()
+  generating: new Set(),
+  members: [] as Member[]
+})
+
+const editable = computed(() => {
+  if (data.members.length === 0) {
+    return false
+  }
+  return data.members.some(e => e.userId === userInfo.value._id)
 })
 
 const getLatestFile = (arr: FileInfo[] | undefined): FileInfo | undefined => {
@@ -230,6 +245,7 @@ async function onSetExpire(id: string, value: number) {
     </div>
     <div class="t-center operate">
       <button
+        v-if="editable"
         class="btn"
         :disabled="data.icons.length === 0"
         @click="generate"

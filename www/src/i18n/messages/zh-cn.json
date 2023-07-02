@@ -119,5 +119,6 @@
   "iconlakeExtension": "iconLake浏览器扩展",
   "collectAnySVG": "帮你采集任意网站的SVG",
   "webStore": "应用商店",
-  "downloadFile": "下载文件"
+  "downloadFile": "下载文件",
+  "isPublic": "是否公开"
 }

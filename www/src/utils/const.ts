@@ -11,3 +11,7 @@ export const STORAGE_KEY = {
 
 export const DROP_DENOM = 'DROP'
 export const DROP_DENOM_MINI = 'udrop'
+
+export const PUBLIC_PAGES = [
+  /^\/manage\/icons\/[^\/]+(\/use)?/i
+]

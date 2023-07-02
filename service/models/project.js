@@ -77,6 +77,10 @@ export const ProjectSchema = new Schema({
   invite: {
     code: String,
     expired: Date
+  },
+  isPublic: {
+    type: Boolean,
+    default: true
   }
 })
 

@@ -1,18 +1,20 @@
 import i18n from '@/i18n'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
-import { toast } from './index'
+import { isPagePublic, toast } from './index'
 
 function showErrorMsg (res: any) {
-  console.error(res)
-  if (typeof res.error === 'string') {
-    toast.error(i18n.global.t(res.error))
-  }
   const redirectError = {
     tokenExpired: true,
     userNotLogin: true
   }
   if (res.error in redirectError) {
-    location.href = `/login?referer=${encodeURIComponent(location.href.replace(location.origin, ''))}`
+    if (!isPagePublic()) {
+      location.href = `/login?referer=${encodeURIComponent(location.href.replace(location.origin, ''))}`
+    }
+    return
+  }
+  if (typeof res.error === 'string') {
+    toast.error(i18n.global.t(res.error))
   }
 }
 
