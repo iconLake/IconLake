@@ -29,7 +29,7 @@ router.get('/user/info', userMiddleware, userInfo.info)
 router.get('/user/logout', userMiddleware, userInfo.logout)
 
 router.get('/project/list', userMiddleware, projectList.list)
-router.get('/project/info/:id', userMiddleware, projectInfo.info)
+router.get('/project/info/:id', projectInfo.info)
 router.post('/project/info/edit', userMiddleware, projectInfo.edit)
 router.post('/project/del', userMiddleware, projectInfo.del)
 router.post('/project/clean', userMiddleware, projectInfo.clean)

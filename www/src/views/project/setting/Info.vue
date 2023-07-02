@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { editInfo, info } from '../../../apis/project';
 import { toast } from '../../../utils';
+import { ElSwitch } from 'element-plus';
 
 const { t } = useI18n()
 
@@ -15,6 +16,7 @@ const project = ref({
   desc: '',
   class: '',
   prefix: '',
+  isPublic: false,
 })
 
 async function getProject() {
@@ -68,6 +70,8 @@ getProject()
       class="input"
       maxlength="15"
     >
+    <p>{{ t('isPublic') }}</p>
+    <ElSwitch v-model="project.isPublic" />
     <div class="flex center">
       <button
         type="submit"

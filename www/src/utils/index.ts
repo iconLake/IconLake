@@ -1,5 +1,5 @@
 import { locale, messages } from '../i18n'
-import { DROP_DENOM, DROP_DENOM_MINI } from './const'
+import { DROP_DENOM, DROP_DENOM_MINI, PUBLIC_PAGES } from './const'
 
 const toastContainer = document.createElement('div')
 toastContainer.className = 'toast-container'
@@ -120,4 +120,8 @@ export function waitFor(until: Function) {
       }
     }, 100)
   })
+}
+
+export function isPagePublic(path = location.pathname) {
+  return PUBLIC_PAGES.some(p => p.test(path))
 }

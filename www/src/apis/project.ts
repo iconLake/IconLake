@@ -73,6 +73,11 @@ export interface Files {
   js?: FileInfo[]
 }
 
+export interface Member {
+  isAdmin: boolean
+  userId: string
+}
+
 export interface Project {
   _id: string
   userId: string
@@ -86,6 +91,8 @@ export interface Project {
   groups: Group[]
   monitor: Monitor
   invite?: Invite
+  isPublic: boolean
+  members: [Member]
 }
 
 export interface Res {

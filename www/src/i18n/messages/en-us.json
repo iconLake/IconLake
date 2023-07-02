@@ -119,5 +119,6 @@
   "iconlakeExtension": "iconLake Extension",
   "collectAnySVG": "Help you to collect any SVG on any website.",
   "webStore": "Web Store",
-  "downloadFile": "Download File"
+  "downloadFile": "Download File",
+  "isPublic": "Is Public"
 }

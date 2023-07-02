@@ -7,7 +7,7 @@ import { updateEncryptKey } from '@/utils/storage';
 import { mintDrop } from '@/utils/global';
 const { t } = useI18n()
 
-let locale = ref(Cookies.get('locale') || 'zh-cn')
+const locale = ref(Cookies.get('locale') || 'zh-cn')
 const language = {
   'en-us': {
     label: '语言',
@@ -19,19 +19,25 @@ const language = {
   },
 }[locale.value]
 
-let isPopShow = ref(false)
+const isPopShow = ref(false)
 let popTimer: NodeJS.Timeout
 const userInfo = reactive({} as UserInfo)
+const isLoggedIn = ref(false)
 
 async function getUserInfo () {
   Object.assign(userInfo, await info())
+  isLoggedIn.value = true
   updateEncryptKey(userInfo._id)
   if (userInfo.blockchain) {
     mintDrop(userInfo.blockchain.id)
   }
 }
 
-getUserInfo()
+getUserInfo().catch(e => {
+  if (e.error === 'userNotLogin') {
+    isLoggedIn.value = false
+  }
+})
 
 function setLocale (v:string) {
   locale.value = v
@@ -60,6 +66,10 @@ function showPop (isShow: boolean) {
 
 async function userLogout() {
   await logout()
+  gotoLogin()
+}
+
+async function gotoLogin() {
   location.href = '/login'
 }
 </script>
@@ -83,7 +93,11 @@ async function userLogout() {
       v-else
       class="avatar bg-main text flex center"
     >
-      <span>{{ userInfo.name ? userInfo.name[0] : 'U' }}</span>
+      <span v-if="userInfo.name">{{ userInfo.name[0] }}</span>
+      <i
+        v-else
+        class="iconfont icon-user"
+      />
     </div>
     <div
       class="pop"
@@ -108,11 +122,20 @@ async function userLogout() {
         class="item flex"
       >{{ t('feedback') }}</a>
       <div
+        v-if="isLoggedIn"
         class="item flex"
         @click="userLogout"
       >
         <span>{{ t('logout') }}</span>
         <i class="iconfont icon-out" />
+      </div>
+      <div
+        v-else
+        class="item flex"
+        @click="gotoLogin"
+      >
+        <span>{{ t('login') }}</span>
+        <i class="iconfont icon-in" />
       </div>
     </div>
   </div>
@@ -140,6 +163,9 @@ async function userLogout() {
       width: 100%;
       height: 100%;
     }
+  }
+  .iconfont {
+    font-size: 2.5rem;
   }
   .pop {
     position: absolute;

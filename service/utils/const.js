@@ -54,7 +54,9 @@ export const ERROR_CODE = {
   ARGS_ERROR: 'argsError',
   FAIL: 'fail',
   USER_NOT_LOGIN: 'userNotLogin',
-  TOKEN_EXPIRED: 'tokenExpired'
+  TOKEN_EXPIRED: 'tokenExpired',
+  PERMISSION_DENIED: 'permissionDenied',
+  NOT_EXIST: 'notExist'
 }
 
 /**

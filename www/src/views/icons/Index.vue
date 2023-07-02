@@ -3,7 +3,7 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
-import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon, editGroup } from '../../apis/project'
+import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon, editGroup, Member } from '../../apis/project'
 import IconVue from '../../components/Icon.vue'
 import { confirm, toast } from '../../utils'
 import Detail from './Detail.vue'
@@ -11,10 +11,17 @@ import HeaderVue from '../../components/Header.vue'
 import UserVue from '../../components/User.vue'
 import { useI18n } from 'vue-i18n'
 import Select from '@/components/Select.vue'
+import * as user from '@/apis/user'
 
 const { t } = useI18n()
 
 const $route = useRoute()
+
+const userInfo = ref({} as user.UserInfo)
+
+user.info().then(u => {
+  userInfo.value = u
+})
 
 const data = reactive({
   _id: $route.params.id as string,
@@ -32,7 +39,9 @@ const data = reactive({
   isBatching: false,
   selectedIcons: new Map<string, Icon>(),
   keyword: '',
-  batchGroupId: ''
+  batchGroupId: '',
+  members: [] as Member[],
+  isPublic: false
 })
 
 const batchGroupFormDom = ref<Element>()
@@ -42,9 +51,18 @@ const groupOptions = computed(() => [
   ...data.groups.map(e => ({ label: e.name, value: e._id }))
 ])
 
+const editable = computed(() => {
+  if (data.members.length === 0) {
+    return false
+  }
+  return data.members.some(e => e.userId === userInfo.value._id)
+})
+
 async function getIcons () {
   const res = await getProjectInfo(data._id, 'name icons groups')
   data.name = res.name
+  data.members = res.members
+  data.isPublic = res.isPublic
   if (res.groups instanceof Array) {
     data.groups = res.groups.sort((a, b) => b.num - a.num)
     res.groups.forEach(e => {
@@ -277,7 +295,12 @@ watch(() => data.keyword, () => {
     <div class="name">
       {{ data.name }}
     </div>
+    <span
+      v-if="data.isPublic"
+      class="tag"
+    >【公开】</span>
     <router-link
+      v-if="editable"
       :to="`/project/${data._id}/setting`"
       class="setting flex"
     >
@@ -302,6 +325,7 @@ watch(() => data.keyword, () => {
     </div>
     <div class="operate flex">
       <router-link
+        v-if="editable"
         :to="`/icons/${data._id}/create`"
         class="operate-item flex"
       >
@@ -328,6 +352,7 @@ watch(() => data.keyword, () => {
       class="operate-batch"
     >
       <button
+        v-if="editable"
         class="btn"
         :disabled="data.selectedIcons.size===0"
         @click="batchDelete"
@@ -336,6 +361,7 @@ watch(() => data.keyword, () => {
         <i class="iconfont icon-delete" />
       </button>
       <button
+        v-if="editable"
         class="btn"
         :disabled="data.selectedIcons.size===0"
         @click="batchGroup"

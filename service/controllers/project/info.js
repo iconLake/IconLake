@@ -2,9 +2,10 @@ import { includeKeys } from 'filter-obj'
 import { getConfig } from '../../config/index.js'
 import { Analyse } from '../../models/analyse.js'
 import { Project } from '../../models/project.js'
-import { PERMAMENT_FILES_MAX_NUM } from '../../utils/const.js'
+import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM } from '../../utils/const.js'
 import { isActive as isCosActive } from '../../utils/cos.js'
 import { deleteProjectDir } from './icon/gen/index.js'
+import { middleware as userMiddleware } from '../user/middleware.js'
 
 const config = getConfig()
 
@@ -15,20 +16,43 @@ const config = getConfig()
 export async function info (req, res) {
   if (!req.params.id) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
-  const fields = (typeof req.query.fields === 'string' && req.query.fields.length > 0) ? req.query.fields : '_id name desc'
+  const fields = `${
+    (typeof req.query.fields === 'string' && req.query.fields.length > 0)
+    ? req.query.fields
+    : '_id name desc'
+  } isPublic members`
   const project = await Project.findOne({
-    _id: req.params.id,
-    members: {
-      $elemMatch: {
-        userId: req.user._id
-      }
-    }
+    _id: req.params.id
   }, fields)
   if (project) {
+    if (project.isPublic) {
+      if (!project.invite.$isEmpty()) {
+        res.json({
+          error: ERROR_CODE.PERMISSION_DENIED
+        })
+        return
+      }
+    } else {
+      await userMiddleware(req, res, () => {})
+      const p = await Project.findOne({
+        _id: req.params.id,
+        members: {
+          $elemMatch: {
+            userId: req.user._id
+          }
+        }
+      }, '_id')
+      if (!p) {
+        res.json({
+          error: ERROR_CODE.PERMISSION_DENIED
+        })
+        return
+      }
+    }
     const result = project.toJSON()
     if (result.icons && result.icons.length > 0) {
       const analyse = await Analyse.findById(req.params.id)
@@ -55,7 +79,7 @@ export async function info (req, res) {
     res.json(result)
   } else {
     res.json({
-      error: 'projectNotExist'
+      error: ERROR_CODE.NOT_EXIST
     })
   }
 }
@@ -67,7 +91,7 @@ export async function edit (req, res) {
   let _id = req.body._id
   const data = includeKeys(req.body, ['name', 'desc', 'class', 'prefix'])
   if (typeof _id === 'string' && _id.length > 0) {
-    await Project.updateOne({
+    const result = await Project.updateOne({
       _id,
       members: {
         $elemMatch: {
@@ -78,6 +102,12 @@ export async function edit (req, res) {
     }, {
       $set: data
     })
+    if (result.matchedCount === 0) {
+      res.json({
+        error: ERROR_CODE.PERMISSION_DENIED
+      })
+      return
+    }
   } else {
     data.userId = req.user._id
     data.createTime = new Date()
@@ -101,7 +131,7 @@ export async function edit (req, res) {
 export async function del (req, res) {
   if (typeof req.body._id !== 'string' || typeof req.body.name !== 'string' || !req.body._id || !req.body.name) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -115,7 +145,13 @@ export async function del (req, res) {
       }
     }
   })
-  res.json(result.deletedCount === 1 ? {} : { error: 'delFail' })
+  if (result.matchedCount === 0) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
+  res.json(result.deletedCount === 1 ? {} : { error: ERROR_CODE.FAIL })
   deleteProjectDir(req.body._id)
 }
 
@@ -127,7 +163,7 @@ export async function del (req, res) {
 export async function clean (req, res) {
   if (typeof req.body._id !== 'string' || typeof req.body.name !== 'string' || !req.body._id || !req.body.name) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -147,6 +183,12 @@ export async function clean (req, res) {
       groups: []
     }
   })
-  res.json(result.modifiedCount === 1 ? {} : { error: 'cleanFail' })
+  if (result.matchedCount === 0) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
+  res.json(result.modifiedCount === 1 ? {} : { error: ERROR_CODE.FAIL })
   deleteProjectDir(req.body._id)
 }
