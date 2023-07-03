@@ -14,20 +14,30 @@ export function completeUrl (url) {
   return result
 }
 
-const localeReg = /^(zh-cn|en-us)$/i
+const localeWhiteList = [
+  'zh-cn',
+  'en-us'
+]
+
+const localeReg = new RegExp(`^(${localeWhiteList.join('|')})$`, 'i')
 
 /**
  * 获取语言
  * @param {request} req
  */
 export function getLocale (req) {
+  let locale = localeWhiteList[1]
   if (localeReg.test(req.query.locale)) {
-    return req.query.locale
+    locale = req.query.locale
+  } else if (localeReg.test(req.cookies.locale)) {
+    locale = req.cookies.locale
+  } else {
+    const headerMatches = new RegExp(`^(${localeWhiteList.join('|')})`, 'i').exec(req.get('Accept-Language'))
+    if (headerMatches) {
+      locale = headerMatches[1]
+    }
   }
-  if (localeReg.test(req.cookies.locale)) {
-    return req.cookies.locale
-  }
-  return 'zh-cn'
+  return locale.toLowerCase()
 }
 
 /**

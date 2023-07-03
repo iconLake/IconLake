@@ -70,7 +70,7 @@
         await keplr.enable(chainId)
         const offlineSigner = keplr.getOfflineSigner(chainId)
         const accounts = await offlineSigner.getAccounts()
-        const msg = `Login iconLake\n${new Date().toISOString()}`
+        const msg = `Login iconLake\n${new Date().toISOString()}\n${accounts[0].address}`
         const sig = await keplr.signArbitrary(chainId, accounts[0].address, msg)
         fetch('/api/oauth/blockchain', {
           method: 'POST',

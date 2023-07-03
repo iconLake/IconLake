@@ -7,9 +7,9 @@
   "otherLanguage": "中文",
   "useImmediately": "START",
   "web3IconManageTool": "icon lifecycle management tool in web3.0",
-  "convenientFeature": "Convenient: name, class, label..., search",
-  "clarityFeature": "Clarity: similar, homogeneous..., group",
-  "ControllableFeature": "Controled: where and how used..., monitor",
+  "feature1": "Icon management, from creation to archiving.",
+  "feature2": "Creating it and owning it by the blockchain.",
+  "feature3": "Decentralized, your assets, you own.",
   "help&feedback": "Help & Feedback",
   "login": "Login",
   "auth": "Auth",
@@ -120,5 +120,6 @@
   "collectAnySVG": "Help you to collect any SVG on any website.",
   "webStore": "Web Store",
   "downloadFile": "Download File",
-  "isPublic": "Is Public"
+  "isPublic": "Is Public",
+  "myAssets": "My Assets"
 }
