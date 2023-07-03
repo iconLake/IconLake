@@ -107,7 +107,7 @@ async function gotoLogin() {
         class="item flex"
         to="/user/assets"
       >
-        我的资产
+        {{ t('myAssets') }}
       </RouterLink>
       <div
         class="item flex"
@@ -164,7 +164,7 @@ async function gotoLogin() {
       height: 100%;
     }
   }
-  .iconfont {
+  .icon-user {
     font-size: 2.5rem;
   }
   .pop {

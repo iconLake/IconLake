@@ -7,9 +7,9 @@
   "otherLanguage": "English",
   "useImmediately": "立即使用",
   "web3IconManageTool": "web3.0时代的图标全生命周期管理工具",
-  "convenientFeature": "便捷：名称、Class、标签……，皆可搜",
-  "clarityFeature": "清晰：相似的、同类的……，分成组",
-  "ControllableFeature": "可控：哪儿用了、用了多少……，查监控",
+  "feature1": "图标管理，从诞生到归档。",
+  "feature2": "创作作品上链，确定所有权。",
+  "feature3": "去中心化，你的资产，你拥有。",
   "help&feedback": "帮助与反馈",
   "login": "登录",
   "auth": "授权",
@@ -120,5 +120,6 @@
   "collectAnySVG": "帮你采集任意网站的SVG",
   "webStore": "应用商店",
   "downloadFile": "下载文件",
-  "isPublic": "是否公开"
+  "isPublic": "是否公开",
+  "myAssets": "我的资产"
 }
