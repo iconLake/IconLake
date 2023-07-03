@@ -4,7 +4,7 @@ iconLake, make icon in control.
 
 ## 远景规划
 
-构建web3.0时代的图标全生命周期管理工具。（[查看详情](https://support.qq.com/products/370032/post/165190297819061376/)）
+构建web3.0时代的图标全生命周期管理工具。（[查看详情](https://support.qq.com/products/370032/post/168839837740865148/)）
 
 ## iconLake需要你
 
