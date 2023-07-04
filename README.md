@@ -25,6 +25,10 @@ iconLake是一个去中心化的项目，我们也在致力于用去中心化的
   <img src="./manage/resources/wxgroup.jpeg" alt="加入我们" width="300" />
 </p>
 
+## 代码仓库
+
+我们的主仓库位于[Gitee](https://gitee.com/iconLake/IconLake)，GitHub仓库也会定期更新，但是请大家优先关注我们在Gitee上的动向。
+
 ## 贡献
 
 ### 方式
