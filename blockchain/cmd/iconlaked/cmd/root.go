@@ -36,7 +36,6 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-
 	// this line is used by starport scaffolding # root/moduleImport
 
 	"iconlake/app"
@@ -361,7 +360,7 @@ func initAppConfig() (string, interface{}) {
 	//   own app.toml to override, or use this default value.
 	//
 	// In simapp, we set the min gas prices to 0.
-	srvCfg.MinGasPrices = "0ulake"
+	srvCfg.MinGasPrices = "0stake"
 
 	customAppConfig := CustomAppConfig{
 		Config: *srvCfg,
