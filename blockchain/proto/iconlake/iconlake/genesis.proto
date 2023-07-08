@@ -1,16 +1,12 @@
 syntax = "proto3";
-
 package iconlake.iconlake;
 
 import "gogoproto/gogo.proto";
 import "iconlake/iconlake/params.proto";
-import "iconlake/iconlake/account.proto";
 
 option go_package = "iconlake/x/iconlake/types";
 
 // GenesisState defines the iconlake module's genesis state.
 message GenesisState {
-           Params  params      = 1 [(gogoproto.nullable) = false];
-  repeated Account accountList = 2 [(gogoproto.nullable) = false];
+  Params params = 1 [(gogoproto.nullable) = false];
 }
-

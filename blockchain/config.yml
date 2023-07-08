@@ -37,11 +37,11 @@ genesis:
       - ed25519
   app_state:
     bank:
-      params:
-        send_enabled:
-          - denom: udrop
-            enabled: false
-        default_send_enabled: true
+      send_enabled:
+        - denom: udrop
+          enabled: false
+        - denom: ulake
+          enabled: true
     crisis:
       constant_fee:
         amount: "1000"
