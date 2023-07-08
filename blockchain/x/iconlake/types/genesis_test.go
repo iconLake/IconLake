@@ -3,13 +3,12 @@ package types_test
 import (
 	"testing"
 
-	"iconlake/x/iconlake/types"
-
 	"github.com/stretchr/testify/require"
+	"iconlake/x/iconlake/types"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
-	for _, tc := range []struct {
+	tests := []struct {
 		desc     string
 		genState *types.GenesisState
 		valid    bool
@@ -20,37 +19,16 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid:    true,
 		},
 		{
-			desc: "valid genesis state",
+			desc:     "valid genesis state",
 			genState: &types.GenesisState{
 
-				AccountList: []types.Account{
-					{
-						AccAddress: []byte("0"),
-					},
-					{
-						AccAddress: []byte("1"),
-					},
-				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
 		},
-		{
-			desc: "duplicated account",
-			genState: &types.GenesisState{
-				AccountList: []types.Account{
-					{
-						AccAddress: []byte("0"),
-					},
-					{
-						AccAddress: []byte("0"),
-					},
-				},
-			},
-			valid: false,
-		},
 		// this line is used by starport scaffolding # types/genesis/testcase
-	} {
+	}
+	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
 			err := tc.genState.Validate()
 			if tc.valid {

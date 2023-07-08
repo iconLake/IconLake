@@ -5,11 +5,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
-type MintKeeper interface {
-	// Methods imported from mint should be defined here
-	MintCoins(ctx sdk.Context, newCoins sdk.Coins) error
-}
-
 // AccountKeeper defines the expected account keeper used for simulations (noalias)
 type AccountKeeper interface {
 	GetAccount(ctx sdk.Context, addr sdk.AccAddress) types.AccountI
@@ -20,5 +15,4 @@ type AccountKeeper interface {
 type BankKeeper interface {
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	// Methods imported from bank should be defined here
-	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 }

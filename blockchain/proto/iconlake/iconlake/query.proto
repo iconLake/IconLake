@@ -1,58 +1,26 @@
 syntax = "proto3";
-
 package iconlake.iconlake;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "iconlake/iconlake/params.proto";
-import "iconlake/iconlake/account.proto";
 
 option go_package = "iconlake/x/iconlake/types";
 
 // Query defines the gRPC querier service.
 service Query {
-  
   // Parameters queries the parameters of the module.
-  rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/iconlake/iconlake/params";
-  
-  }
-  
-  // Queries a list of Account items.
-  rpc Account    (QueryGetAccountRequest) returns (QueryGetAccountResponse) {
-    option (google.api.http).get = "/iconlake/iconlake/account/{address}";
-  
-  }
-  rpc AccountAll (QueryAllAccountRequest) returns (QueryAllAccountResponse) {
-    option (google.api.http).get = "/iconlake/iconlake/account";
-  
   }
 }
+
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
 // QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
-  
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
 }
-
-message QueryGetAccountRequest {
-  string address = 1;
-}
-
-message QueryGetAccountResponse {
-  Account account = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllAccountRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllAccountResponse {
-  repeated Account                                account    = 1 [(gogoproto.nullable) = false];
-           cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
