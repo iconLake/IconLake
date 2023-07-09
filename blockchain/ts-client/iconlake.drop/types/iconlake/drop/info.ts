@@ -19,7 +19,7 @@ export const Info = {
       writer.uint32(10).string(message.address);
     }
     if (message.lastMintTime !== 0) {
-      writer.uint32(16).uint64(message.lastMintTime);
+      writer.uint32(16).int64(message.lastMintTime);
     }
     return writer;
   },
@@ -35,7 +35,7 @@ export const Info = {
           message.address = reader.string();
           break;
         case 2:
-          message.lastMintTime = longToNumber(reader.uint64() as Long);
+          message.lastMintTime = longToNumber(reader.int64() as Long);
           break;
         default:
           reader.skipType(tag & 7);

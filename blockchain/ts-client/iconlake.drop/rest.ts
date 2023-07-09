@@ -12,7 +12,7 @@
 export interface DropInfo {
   address?: string;
 
-  /** @format uint64 */
+  /** @format int64 */
   lastMintTime?: string;
 }
 
@@ -25,8 +25,8 @@ export interface DropMsgMintResponse {
    */
   amount?: V1Beta1Coin;
 
-  /** @format uint64 */
-  lastMintDropTime?: string;
+  /** @format int64 */
+  lastMintTime?: string;
 }
 
 /**
