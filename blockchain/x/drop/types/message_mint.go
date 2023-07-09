@@ -46,7 +46,7 @@ func (msg *MsgMint) ValidateBasic() error {
 	if msg.Amount.Denom != DropDenom {
 		return sdkerrors.Wrapf(ErrDenom, "only amount denom of \"%s\" is supported (%s)", DropDenom, err)
 	}
-	if msg.Amount.Amount.LTE(math.NewInt(10000)) {
+	if msg.Amount.Amount.LT(math.NewInt(10000)) {
 		return sdkerrors.Wrapf(ErrAmount, "amount should be greater than 10000%s (%s)", DropDenom, err)
 	}
 	return nil

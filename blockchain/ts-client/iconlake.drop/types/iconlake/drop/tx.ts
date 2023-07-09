@@ -12,7 +12,7 @@ export interface MsgMint {
 
 export interface MsgMintResponse {
   amount: Coin | undefined;
-  lastMintDropTime: number;
+  lastMintTime: number;
 }
 
 function createBaseMsgMint(): MsgMint {
@@ -76,7 +76,7 @@ export const MsgMint = {
 };
 
 function createBaseMsgMintResponse(): MsgMintResponse {
-  return { amount: undefined, lastMintDropTime: 0 };
+  return { amount: undefined, lastMintTime: 0 };
 }
 
 export const MsgMintResponse = {
@@ -84,8 +84,8 @@ export const MsgMintResponse = {
     if (message.amount !== undefined) {
       Coin.encode(message.amount, writer.uint32(10).fork()).ldelim();
     }
-    if (message.lastMintDropTime !== 0) {
-      writer.uint32(16).uint64(message.lastMintDropTime);
+    if (message.lastMintTime !== 0) {
+      writer.uint32(16).int64(message.lastMintTime);
     }
     return writer;
   },
@@ -101,7 +101,7 @@ export const MsgMintResponse = {
           message.amount = Coin.decode(reader, reader.uint32());
           break;
         case 2:
-          message.lastMintDropTime = longToNumber(reader.uint64() as Long);
+          message.lastMintTime = longToNumber(reader.int64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -114,14 +114,14 @@ export const MsgMintResponse = {
   fromJSON(object: any): MsgMintResponse {
     return {
       amount: isSet(object.amount) ? Coin.fromJSON(object.amount) : undefined,
-      lastMintDropTime: isSet(object.lastMintDropTime) ? Number(object.lastMintDropTime) : 0,
+      lastMintTime: isSet(object.lastMintTime) ? Number(object.lastMintTime) : 0,
     };
   },
 
   toJSON(message: MsgMintResponse): unknown {
     const obj: any = {};
     message.amount !== undefined && (obj.amount = message.amount ? Coin.toJSON(message.amount) : undefined);
-    message.lastMintDropTime !== undefined && (obj.lastMintDropTime = Math.round(message.lastMintDropTime));
+    message.lastMintTime !== undefined && (obj.lastMintTime = Math.round(message.lastMintTime));
     return obj;
   },
 
@@ -130,7 +130,7 @@ export const MsgMintResponse = {
     message.amount = (object.amount !== undefined && object.amount !== null)
       ? Coin.fromPartial(object.amount)
       : undefined;
-    message.lastMintDropTime = object.lastMintDropTime ?? 0;
+    message.lastMintTime = object.lastMintTime ?? 0;
     return message;
   },
 };
