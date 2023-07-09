@@ -1,0 +1,11 @@
+syntax = "proto3";
+package iconlake.drop;
+
+option go_package = "iconlake/x/drop/types";
+
+message Info {
+  string address = 1; 
+  int64 lastMintTime = 2; 
+  
+}
+

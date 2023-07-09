@@ -6,6 +6,7 @@ import (
 )
 
 type MintKeeper interface {
+	MintCoins(ctx sdk.Context, newCoins sdk.Coins) error
 	// Methods imported from mint should be defined here
 }
 
@@ -17,6 +18,6 @@ type AccountKeeper interface {
 
 // BankKeeper defines the expected interface needed to retrieve account balances.
 type BankKeeper interface {
-	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
+	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 	// Methods imported from bank should be defined here
 }
