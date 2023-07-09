@@ -4,6 +4,9 @@ const (
 	// ModuleName defines the module name
 	ModuleName = "iconlake"
 
+	// DROP denom
+	DropDenom = "udrop"
+
 	// StoreKey defines the primary module store key
 	StoreKey = ModuleName
 

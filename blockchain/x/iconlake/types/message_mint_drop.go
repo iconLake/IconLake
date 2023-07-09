@@ -1,8 +1,9 @@
 package types
 
 import (
+	sdkerrors "cosmossdk.io/errors"
+	math "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const TypeMsgMintDrop = "mint_drop"
@@ -40,7 +41,13 @@ func (msg *MsgMintDrop) GetSignBytes() []byte {
 func (msg *MsgMintDrop) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return sdkerrors.Wrapf(ErrAddress, "invalid creator address (%s)", err)
+	}
+	if msg.Amount.Denom != "udrop" {
+		return sdkerrors.Wrapf(ErrDenom, "only amount denom of \"udrop\" is supported (%s)", err)
+	}
+	if msg.Amount.Amount.LTE(math.NewInt(10000)) {
+		return sdkerrors.Wrapf(ErrAmount, "amount should be greater than 10000 (%s)", err)
 	}
 	return nil
 }
