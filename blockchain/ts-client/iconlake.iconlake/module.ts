@@ -9,6 +9,7 @@ import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
 import { MsgMintDrop } from "./types/iconlake/iconlake/tx";
 
+import { Account as typeAccount} from "./types"
 import { Params as typeParams} from "./types"
 
 export { MsgMintDrop };
@@ -99,6 +100,7 @@ class SDKModule {
 		this.query = queryClient({ addr: client.env.apiURL });		
 		this.updateTX(client);
 		this.structure =  {
+						Account: getStructure(typeAccount.fromPartial({})),
 						Params: getStructure(typeParams.fromPartial({})),
 						
 		};
