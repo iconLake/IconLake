@@ -46437,10 +46437,10 @@ paths:
                         }
       tags:
         - Query
-  /iconlake/iconlake/params:
+  /iconlake/drop/params:
     get:
       summary: Parameters queries the parameters of the module.
-      operationId: IconlakeIconlakeParams
+      operationId: IconlakeDropParams
       responses:
         '200':
           description: A successful response.
@@ -75212,15 +75212,10 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
-  iconlake.iconlake.MsgMintDropResponse:
-    type: object
-    properties:
-      lastMintDropTime:
-        type: string
-  iconlake.iconlake.Params:
+  iconlake.drop.Params:
     type: object
     description: Params defines the parameters for the module.
-  iconlake.iconlake.QueryParamsResponse:
+  iconlake.drop.QueryParamsResponse:
     type: object
     properties:
       params:
