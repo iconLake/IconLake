@@ -9,6 +9,10 @@
  * ---------------------------------------------------------------
  */
 
+export interface IconlakeMsgMintDropResponse {
+  lastMintDropTime?: string;
+}
+
 /**
  * Params defines the parameters for the module.
  */
@@ -31,6 +35,17 @@ export interface RpcStatus {
   code?: number;
   message?: string;
   details?: ProtobufAny[];
+}
+
+/**
+* Coin defines a token with a denomination and an amount.
+
+NOTE: The amount field is an Int which implements the custom method
+signatures required by gogoproto.
+*/
+export interface V1Beta1Coin {
+  denom?: string;
+  amount?: string;
 }
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType } from "axios";
