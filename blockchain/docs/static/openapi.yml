@@ -75212,6 +75212,24 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
+  iconlake.drop.MsgMintResponse:
+    type: object
+    properties:
+      amount:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      lastMintDropTime:
+        type: string
+        format: uint64
   iconlake.drop.Params:
     type: object
     description: Params defines the parameters for the module.
