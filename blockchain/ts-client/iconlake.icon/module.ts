@@ -9,6 +9,7 @@ import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
 import { MsgMint } from "./types/iconlake/icon/tx";
 
+import { ClassData as typeClassData} from "./types"
 import { IconData as typeIconData} from "./types"
 import { Params as typeParams} from "./types"
 
@@ -100,6 +101,7 @@ class SDKModule {
 		this.query = queryClient({ addr: client.env.apiURL });		
 		this.updateTX(client);
 		this.structure =  {
+						ClassData: getStructure(typeClassData.fromPartial({})),
 						IconData: getStructure(typeIconData.fromPartial({})),
 						Params: getStructure(typeParams.fromPartial({})),
 						
