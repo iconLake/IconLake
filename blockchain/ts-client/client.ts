@@ -90,12 +90,12 @@ export class IgniteClient extends EventEmitter {
       const chainName = chainId?.toUpperCase() + " Network";
       const bankqc = bankQueryClient({ addr: this.env.apiURL });
       const tokens = await (await bankqc.queryTotalSupply()).data;
-      const addrPrefix = this.env.prefix ?? "iconlake";
+      const addrPrefix = this.env.prefix ?? "cosmos";
       const rpc = this.env.rpcURL;
       const rest = this.env.apiURL;
 
       let bip44 = {
-        coinType: 1009,
+        coinType: 118,
       };
 
       let bech32Config = {
@@ -134,7 +134,7 @@ export class IgniteClient extends EventEmitter {
           return y;
         }) ?? [];
 
-      let coinType = 1009;
+      let coinType = 118;
 
       if (chainId) {
         const suggestOptions: ChainInfo = {
