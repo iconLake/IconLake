@@ -75501,6 +75501,19 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  iconlake.icon.IconData:
+    type: object
+    properties:
+      author:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      createTime:
+        type: string
+  iconlake.icon.MsgMintResponse:
+    type: object
   iconlake.icon.Params:
     type: object
     description: Params defines the parameters for the module.
