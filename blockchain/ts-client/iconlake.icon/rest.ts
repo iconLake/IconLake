@@ -163,7 +163,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title iconlake/icon/genesis.proto
+ * @title iconlake/icon/class_data.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
