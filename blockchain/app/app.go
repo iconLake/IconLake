@@ -562,8 +562,6 @@ func New(
 		app.GetSubspace(iconmoduletypes.ModuleName),
 
 		app.NftKeeper,
-		app.BankKeeper,
-		app.AccountKeeper,
 	)
 	iconModule := iconmodule.NewAppModule(appCodec, app.IconKeeper, app.AccountKeeper, app.BankKeeper)
 

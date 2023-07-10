@@ -3,6 +3,9 @@ package keeper
 import (
 	"testing"
 
+	"iconlake/x/icon/keeper"
+	"iconlake/x/icon/types"
+
 	tmdb "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -13,8 +16,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/require"
-	"iconlake/x/icon/keeper"
-	"iconlake/x/icon/types"
 )
 
 func IconKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
@@ -41,8 +42,6 @@ func IconKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		storeKey,
 		memStoreKey,
 		paramsSubspace,
-		nil,
-		nil,
 		nil,
 	)
 
