@@ -1,7 +1,23 @@
 syntax = "proto3";
+
 package iconlake.icon;
+
+import "iconlake/icon/icon_data.proto";
 
 option go_package = "iconlake/x/icon/types";
 
 // Msg defines the Msg service.
-service Msg {}
+service Msg {
+  rpc Mint (MsgMint) returns (MsgMintResponse);
+}
+message MsgMint {
+  string   creator = 1;
+  string   classId = 2;
+  string   id      = 3;
+  string   uri     = 4;
+  string   uriHash = 5;
+  IconData data    = 6;
+  uint64   supply  = 7;
+}
+
+message MsgMintResponse {}
