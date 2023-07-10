@@ -1,0 +1,11 @@
+syntax = "proto3";
+package iconlake.icon;
+
+option go_package = "iconlake/x/icon/types";
+
+message IconData {
+  string author = 1; 
+  string name = 2; 
+  string description = 3; 
+  string createTime = 4; 
+}

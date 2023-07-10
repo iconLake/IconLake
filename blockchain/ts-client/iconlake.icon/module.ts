@@ -8,6 +8,7 @@ import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
 
+import { IconData as typeIconData} from "./types"
 import { Params as typeParams} from "./types"
 
 export {  };
@@ -66,6 +67,7 @@ class SDKModule {
 		this.query = queryClient({ addr: client.env.apiURL });		
 		this.updateTX(client);
 		this.structure =  {
+						IconData: getStructure(typeIconData.fromPartial({})),
 						Params: getStructure(typeParams.fromPartial({})),
 						
 		};
