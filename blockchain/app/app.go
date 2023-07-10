@@ -116,6 +116,10 @@ import (
 	dropmodule "iconlake/x/drop"
 	dropmodulekeeper "iconlake/x/drop/keeper"
 	dropmoduletypes "iconlake/x/drop/types"
+	iconmodule "iconlake/x/icon"
+	iconmodulekeeper "iconlake/x/icon/keeper"
+	iconmoduletypes "iconlake/x/icon/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	appparams "iconlake/app/params"
@@ -179,6 +183,7 @@ var (
 		vesting.AppModuleBasic{},
 		consensus.AppModuleBasic{},
 		dropmodule.AppModuleBasic{},
+		iconmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -193,7 +198,8 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		dropmoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		dropmoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
+		iconmoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -258,6 +264,8 @@ type App struct {
 	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
 
 	DropKeeper dropmodulekeeper.Keeper
+
+	IconKeeper iconmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -306,6 +314,7 @@ func New(
 		capabilitytypes.StoreKey, group.StoreKey, icacontrollertypes.StoreKey, consensusparamtypes.StoreKey,
 		nftkeeper.StoreKey,
 		dropmoduletypes.StoreKey,
+		iconmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -546,6 +555,18 @@ func New(
 	)
 	dropModule := dropmodule.NewAppModule(appCodec, app.DropKeeper, app.AccountKeeper, app.BankKeeper)
 
+	app.IconKeeper = *iconmodulekeeper.NewKeeper(
+		appCodec,
+		keys[iconmoduletypes.StoreKey],
+		keys[iconmoduletypes.MemStoreKey],
+		app.GetSubspace(iconmoduletypes.ModuleName),
+
+		app.NftKeeper,
+		app.BankKeeper,
+		app.AccountKeeper,
+	)
+	iconModule := iconmodule.NewAppModule(appCodec, app.IconKeeper, app.AccountKeeper, app.BankKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	/**** IBC Routing ****/
@@ -609,6 +630,7 @@ func New(
 		transferModule,
 		icaModule,
 		dropModule,
+		iconModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 
 		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)), // always be last to make sure that it checks for all invariants and not only part of them
@@ -643,6 +665,7 @@ func New(
 		consensusparamtypes.ModuleName,
 		nft.ModuleName,
 		dropmoduletypes.ModuleName,
+		iconmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -670,6 +693,7 @@ func New(
 		consensusparamtypes.ModuleName,
 		nft.ModuleName,
 		dropmoduletypes.ModuleName,
+		iconmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -702,6 +726,7 @@ func New(
 		consensusparamtypes.ModuleName,
 		nft.ModuleName,
 		dropmoduletypes.ModuleName,
+		iconmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	}
 	app.mm.SetOrderInitGenesis(genesisModuleOrder...)
@@ -928,6 +953,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.GetSubspace(nft.ModuleName)
 	paramsKeeper.Subspace(dropmoduletypes.ModuleName)
+	paramsKeeper.Subspace(iconmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
