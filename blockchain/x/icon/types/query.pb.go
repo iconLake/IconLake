@@ -113,33 +113,145 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
+type QueryHashRequest struct {
+	HashType string `protobuf:"bytes,1,opt,name=hashType,proto3" json:"hashType,omitempty"`
+	Uri      string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
+}
+
+func (m *QueryHashRequest) Reset()         { *m = QueryHashRequest{} }
+func (m *QueryHashRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryHashRequest) ProtoMessage()    {}
+func (*QueryHashRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b1dbf00c133119c9, []int{2}
+}
+func (m *QueryHashRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryHashRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryHashRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryHashRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryHashRequest.Merge(m, src)
+}
+func (m *QueryHashRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryHashRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryHashRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryHashRequest proto.InternalMessageInfo
+
+func (m *QueryHashRequest) GetHashType() string {
+	if m != nil {
+		return m.HashType
+	}
+	return ""
+}
+
+func (m *QueryHashRequest) GetUri() string {
+	if m != nil {
+		return m.Uri
+	}
+	return ""
+}
+
+type QueryHashResponse struct {
+	GraphHash string `protobuf:"bytes,1,opt,name=graphHash,proto3" json:"graphHash,omitempty"`
+	FileHash  string `protobuf:"bytes,2,opt,name=fileHash,proto3" json:"fileHash,omitempty"`
+}
+
+func (m *QueryHashResponse) Reset()         { *m = QueryHashResponse{} }
+func (m *QueryHashResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryHashResponse) ProtoMessage()    {}
+func (*QueryHashResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b1dbf00c133119c9, []int{3}
+}
+func (m *QueryHashResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryHashResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryHashResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryHashResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryHashResponse.Merge(m, src)
+}
+func (m *QueryHashResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryHashResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryHashResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryHashResponse proto.InternalMessageInfo
+
+func (m *QueryHashResponse) GetGraphHash() string {
+	if m != nil {
+		return m.GraphHash
+	}
+	return ""
+}
+
+func (m *QueryHashResponse) GetFileHash() string {
+	if m != nil {
+		return m.FileHash
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "iconlake.icon.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "iconlake.icon.QueryParamsResponse")
+	proto.RegisterType((*QueryHashRequest)(nil), "iconlake.icon.QueryHashRequest")
+	proto.RegisterType((*QueryHashResponse)(nil), "iconlake.icon.QueryHashResponse")
 }
 
 func init() { proto.RegisterFile("iconlake/icon/query.proto", fileDescriptor_b1dbf00c133119c9) }
 
 var fileDescriptor_b1dbf00c133119c9 = []byte{
-	// 278 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x90, 0xb1, 0x4e, 0xc3, 0x30,
-	0x18, 0x84, 0x13, 0x04, 0x19, 0x8c, 0x58, 0x4c, 0x23, 0x20, 0x02, 0x03, 0x99, 0x10, 0x43, 0x7e,
-	0xb5, 0x7d, 0x83, 0x8e, 0x4c, 0xd0, 0x91, 0xcd, 0xa9, 0x2c, 0x2b, 0xa2, 0xf5, 0xef, 0xc6, 0x2e,
-	0xd0, 0x95, 0x27, 0x40, 0xe2, 0xa5, 0x3a, 0x56, 0x62, 0x61, 0x42, 0x28, 0xe1, 0x41, 0x50, 0xec,
-	0x80, 0x14, 0x40, 0xdd, 0x4e, 0xbe, 0xef, 0x4e, 0xf7, 0x9b, 0x1c, 0x15, 0x13, 0x54, 0x53, 0x7e,
-	0x27, 0xa0, 0x11, 0x30, 0x5f, 0x88, 0x72, 0x99, 0xe9, 0x12, 0x2d, 0xd2, 0xbd, 0x6f, 0x2b, 0x6b,
-	0x44, 0xd2, 0x93, 0x28, 0xd1, 0x39, 0xd0, 0x28, 0x0f, 0x25, 0xc7, 0x12, 0x51, 0x4e, 0x05, 0x70,
-	0x5d, 0x00, 0x57, 0x0a, 0x2d, 0xb7, 0x05, 0x2a, 0xd3, 0xba, 0x97, 0x13, 0x34, 0x33, 0x34, 0x90,
-	0x73, 0x23, 0x7c, 0x37, 0xdc, 0xf7, 0x73, 0x61, 0x79, 0x1f, 0x34, 0x97, 0x85, 0x72, 0x70, 0xcb,
-	0x26, 0xdd, 0x25, 0x9a, 0x97, 0x7c, 0xd6, 0xf6, 0xa4, 0x3d, 0x42, 0x6f, 0x9a, 0xf4, 0xb5, 0x7b,
-	0x1c, 0x8b, 0xf9, 0x42, 0x18, 0x9b, 0x5e, 0x91, 0xfd, 0xce, 0xab, 0xd1, 0xa8, 0x8c, 0xa0, 0x43,
-	0x12, 0xf9, 0xf0, 0x61, 0x78, 0x16, 0x5e, 0xec, 0x0e, 0xe2, 0xac, 0x73, 0x48, 0xe6, 0xf1, 0xd1,
-	0xf6, 0xea, 0xfd, 0x34, 0x18, 0xb7, 0xe8, 0xe0, 0x81, 0xec, 0xb8, 0x2e, 0xaa, 0x48, 0xe4, 0x01,
-	0x7a, 0xfe, 0x2b, 0xf7, 0x77, 0x41, 0x92, 0x6e, 0x42, 0xfc, 0x9c, 0xf4, 0xe4, 0xe9, 0xf5, 0xf3,
-	0x65, 0xeb, 0x80, 0xc6, 0xf0, 0xdf, 0x81, 0x23, 0x58, 0x55, 0x2c, 0x5c, 0x57, 0x2c, 0xfc, 0xa8,
-	0x58, 0xf8, 0x5c, 0xb3, 0x60, 0x5d, 0xb3, 0xe0, 0xad, 0x66, 0xc1, 0x6d, 0xfc, 0xc3, 0x3f, 0xfa,
-	0x84, 0x5d, 0x6a, 0x61, 0xf2, 0xc8, 0x7d, 0xc9, 0xf0, 0x2b, 0x00, 0x00, 0xff, 0xff, 0x87, 0x89,
-	0x4d, 0x3d, 0xba, 0x01, 0x00, 0x00,
+	// 377 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x92, 0xcf, 0x4e, 0x32, 0x31,
+	0x14, 0xc5, 0x67, 0xf8, 0xf8, 0x88, 0xd4, 0x98, 0x60, 0x61, 0x22, 0x8e, 0x38, 0xe0, 0xac, 0x8c,
+	0x8b, 0x69, 0x80, 0x17, 0x30, 0xac, 0x8c, 0x89, 0x89, 0x12, 0x57, 0xee, 0x0a, 0x29, 0x33, 0x13,
+	0xa1, 0x2d, 0xd3, 0xc1, 0xc8, 0xd6, 0x27, 0x30, 0xf1, 0xa5, 0x58, 0x92, 0xb8, 0x71, 0xa5, 0x06,
+	0x7c, 0x10, 0xd3, 0x3f, 0x22, 0x20, 0xba, 0xbb, 0x3d, 0xf7, 0xf4, 0x77, 0x4f, 0x6f, 0x0a, 0xf6,
+	0xe3, 0x2e, 0xa3, 0x7d, 0x7c, 0x4b, 0x90, 0x2c, 0xd0, 0x70, 0x44, 0x92, 0x71, 0xc0, 0x13, 0x96,
+	0x32, 0xb8, 0xf3, 0xd5, 0x0a, 0x64, 0xe1, 0x96, 0x42, 0x16, 0x32, 0xd5, 0x41, 0xb2, 0xd2, 0x26,
+	0xb7, 0x12, 0x32, 0x16, 0xf6, 0x09, 0xc2, 0x3c, 0x46, 0x98, 0x52, 0x96, 0xe2, 0x34, 0x66, 0x54,
+	0x98, 0xee, 0x49, 0x97, 0x89, 0x01, 0x13, 0xa8, 0x83, 0x05, 0xd1, 0x6c, 0x74, 0x57, 0xef, 0x90,
+	0x14, 0xd7, 0x11, 0xc7, 0x61, 0x4c, 0x95, 0xd9, 0x78, 0xdd, 0xd5, 0x24, 0x1c, 0x27, 0x78, 0x60,
+	0x38, 0x7e, 0x09, 0xc0, 0x2b, 0x79, 0xfb, 0x52, 0x89, 0x6d, 0x32, 0x1c, 0x11, 0x91, 0xfa, 0xe7,
+	0xa0, 0xb8, 0xa2, 0x0a, 0xce, 0xa8, 0x20, 0xb0, 0x09, 0x72, 0xfa, 0x72, 0xd9, 0xae, 0xd9, 0xc7,
+	0xdb, 0x0d, 0x27, 0x58, 0x79, 0x48, 0xa0, 0xed, 0xad, 0xec, 0xe4, 0xb5, 0x6a, 0xb5, 0x8d, 0xd5,
+	0x3f, 0x05, 0x05, 0xc5, 0x3a, 0xc3, 0x22, 0x32, 0x7c, 0xe8, 0x82, 0xad, 0x08, 0x8b, 0xe8, 0x7a,
+	0xcc, 0x89, 0x42, 0xe5, 0xdb, 0x8b, 0x33, 0x2c, 0x80, 0x7f, 0xa3, 0x24, 0x2e, 0x67, 0x94, 0x2c,
+	0x4b, 0xff, 0x02, 0xec, 0x2e, 0x11, 0x4c, 0x96, 0x0a, 0xc8, 0x87, 0x09, 0xe6, 0x91, 0x14, 0x0d,
+	0xe3, 0x5b, 0x90, 0x03, 0x7a, 0x71, 0x9f, 0xa8, 0xa6, 0x26, 0x2d, 0xce, 0x8d, 0x37, 0x1b, 0xfc,
+	0x57, 0x3c, 0x48, 0x41, 0x4e, 0x47, 0x86, 0x47, 0x6b, 0x2f, 0xf9, 0xb9, 0x13, 0xd7, 0xff, 0xcb,
+	0xa2, 0x43, 0xf9, 0x87, 0x0f, 0xcf, 0x1f, 0x4f, 0x99, 0x3d, 0xe8, 0xa0, 0x4d, 0x2b, 0x87, 0x3d,
+	0x90, 0x55, 0xe9, 0xaa, 0x9b, 0x50, 0x4b, 0xfb, 0x71, 0x6b, 0xbf, 0x1b, 0xcc, 0xa4, 0x03, 0x35,
+	0xc9, 0xf1, 0x8b, 0x6b, 0x93, 0xe4, 0x1a, 0x5b, 0x68, 0x32, 0xf3, 0xec, 0xe9, 0xcc, 0xb3, 0xdf,
+	0x67, 0x9e, 0xfd, 0x38, 0xf7, 0xac, 0xe9, 0xdc, 0xb3, 0x5e, 0xe6, 0x9e, 0x75, 0xe3, 0x2c, 0xdc,
+	0xf7, 0xda, 0x9f, 0x8e, 0x39, 0x11, 0x9d, 0x9c, 0xfa, 0x0c, 0xcd, 0xcf, 0x00, 0x00, 0x00, 0xff,
+	0xff, 0xd4, 0xfc, 0xb5, 0x96, 0xb4, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -156,6 +268,8 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// Queries a list of Hash items.
+	Hash(ctx context.Context, in *QueryHashRequest, opts ...grpc.CallOption) (*QueryHashResponse, error)
 }
 
 type queryClient struct {
@@ -175,10 +289,21 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
+func (c *queryClient) Hash(ctx context.Context, in *QueryHashRequest, opts ...grpc.CallOption) (*QueryHashResponse, error) {
+	out := new(QueryHashResponse)
+	err := c.cc.Invoke(ctx, "/iconlake.icon.Query/Hash", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// Queries a list of Hash items.
+	Hash(context.Context, *QueryHashRequest) (*QueryHashResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -187,6 +312,9 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+}
+func (*UnimplementedQueryServer) Hash(ctx context.Context, req *QueryHashRequest) (*QueryHashResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Hash not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -211,6 +339,24 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Hash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryHashRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Hash(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/iconlake.icon.Query/Hash",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Hash(ctx, req.(*QueryHashRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "iconlake.icon.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -218,6 +364,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Params",
 			Handler:    _Query_Params_Handler,
+		},
+		{
+			MethodName: "Hash",
+			Handler:    _Query_Hash_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -280,6 +430,80 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryHashRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryHashRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryHashRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Uri) > 0 {
+		i -= len(m.Uri)
+		copy(dAtA[i:], m.Uri)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Uri)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.HashType) > 0 {
+		i -= len(m.HashType)
+		copy(dAtA[i:], m.HashType)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.HashType)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryHashResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryHashResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryHashResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.FileHash) > 0 {
+		i -= len(m.FileHash)
+		copy(dAtA[i:], m.FileHash)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.FileHash)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.GraphHash) > 0 {
+		i -= len(m.GraphHash)
+		copy(dAtA[i:], m.GraphHash)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.GraphHash)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -308,6 +532,40 @@ func (m *QueryParamsResponse) Size() (n int) {
 	_ = l
 	l = m.Params.Size()
 	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryHashRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.HashType)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Uri)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryHashResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.GraphHash)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.FileHash)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
@@ -428,6 +686,234 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryHashRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryHashRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryHashRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field HashType", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.HashType = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Uri", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Uri = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryHashResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryHashResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryHashResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GraphHash", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GraphHash = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field FileHash", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.FileHash = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

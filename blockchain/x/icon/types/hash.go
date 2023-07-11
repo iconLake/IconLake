@@ -10,7 +10,6 @@ import (
 	"net/url"
 	"strings"
 
-	"cosmossdk.io/errors"
 	imageHash "github.com/corona10/goimagehash"
 	"gopkg.in/gographics/imagick.v2/imagick"
 )
@@ -33,7 +32,7 @@ func GetImgHash(uri string, hashType string) (graphHash string, fileHash string,
 	defer resp.Body.Close()
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", "", errors.Wrapf(err, "invalid param (Uri)")
+		return "", "", ErrParam.Wrapf("invalid param (Uri) (%s)", err)
 	}
 	var img image.Image
 	if strings.HasPrefix(resp.Header.Get("Content-Type"), "image/svg+xml") {
@@ -43,12 +42,12 @@ func GetImgHash(uri string, hashType string) (graphHash string, fileHash string,
 		defer mw.Destroy()
 		err = mw.ReadImageBlob(bodyBytes)
 		if err != nil {
-			return "", "", errors.Wrapf(err, "invalid param (Uri)")
+			return "", "", ErrParam.Wrapf("invalid param (Uri) (%s)", err)
 		}
 		mw.SetImageFormat("png")
 		pixels, err := mw.ExportImagePixels(0, 0, mw.GetImageWidth(), mw.GetImageHeight(), "RGBA", imagick.PIXEL_CHAR)
 		if err != nil {
-			return "", "", errors.Wrapf(err, "invalid param (Uri)")
+			return "", "", ErrParam.Wrapf("invalid param (Uri) (%s)", err)
 		}
 		imgTmp := image.NewRGBA(image.Rect(0, 0, int(mw.GetImageWidth()), int(mw.GetImageHeight())))
 		copy(imgTmp.Pix, pixels.([]uint8))
@@ -56,7 +55,7 @@ func GetImgHash(uri string, hashType string) (graphHash string, fileHash string,
 	} else {
 		img, _, err = image.Decode(bytes.NewReader(bodyBytes))
 		if err != nil {
-			return "", "", errors.Wrapf(err, "invalid param (Uri)")
+			return "", "", ErrParam.Wrapf("invalid param (Uri) (%s)", err)
 		}
 	}
 	switch hashType {
@@ -70,6 +69,6 @@ func GetImgHash(uri string, hashType string) (graphHash string, fileHash string,
 		hashStr := hex.EncodeToString(hash.Sum(nil))
 		return phash.ToString(), hashStr, nil
 	default:
-		return "", "", errors.Wrapf(errors.Error{}, "invalid hash type, expect (p)")
+		return "", "", ErrParam.Wrap("invalid hash type, expect (p)")
 	}
 }
