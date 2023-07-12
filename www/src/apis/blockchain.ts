@@ -2,8 +2,8 @@ import { CHAIN_ID, DROP_DENOM_MINI } from '@/utils/const';
 import { handleResponse } from '@/utils/request';
 import { Client } from '@iconlake/client'
 import { V1Beta1GetTxResponse } from '@iconlake/client/cosmos.tx.v1beta1/rest';
+import { MsgMint as MsgMintDrop } from '@iconlake/client/iconlake.drop/module';
 import { MsgMint as MsgMintIcon } from '@iconlake/client/iconlake.icon/module';
-import { MsgMintDrop } from '@iconlake/client/iconlake.iconlake/module';
 
 const apiURL = "http://127.0.0.1:1317";
 const rpcURL = "http://127.0.0.1:26657";
@@ -60,7 +60,7 @@ export async function getAccount() {
 export async function mintDrop(address: string, amount: number) {
   await detectKeplr()
   if (!isKeplrDetected) return
-  const res = await client.IconlakeIconlake.tx.sendMsgMintDrop({
+  const res = await client.IconlakeDrop.tx.sendMsgMint({
     value: MsgMintDrop.fromJSON({
       creator: address,
       amount: {

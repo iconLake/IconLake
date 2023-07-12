@@ -1,6 +1,6 @@
 {
   "name": "@iconlake/client",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "description": "iconLake Typescript Client",
   "author": "iconLake",
   "license": "Apache-2.0",
@@ -16,7 +16,9 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc"
+    "clean": "rm -rf ./dist",
+    "build-ts": "tsc",
+    "build": "pnpm run clean && pnpm run build-ts"
   },
   "packageManager": "pnpm@8.6.7",
   "dependencies": {
