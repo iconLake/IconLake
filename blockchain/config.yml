@@ -31,10 +31,6 @@ client:
   openapi:
     path: docs/static/openapi.yml
 genesis:
-  consensus_params:
-    validator:
-      pub_key_types:
-      - ed25519
   app_state:
     bank:
       send_enabled:
@@ -47,7 +43,7 @@ genesis:
         amount: "1000"
         denom: ulake
     gov:
-      deposit_params:
+      params:
         min_deposit:
         - amount: "10000000"
           denom: ulake
