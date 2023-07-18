@@ -95,7 +95,7 @@ export class IgniteClient extends EventEmitter {
       const rest = this.env.apiURL;
 
       let bip44 = {
-        coinType: 118,
+        coinType: 1009,
       };
 
       let bech32Config = {
@@ -134,7 +134,7 @@ export class IgniteClient extends EventEmitter {
           return y;
         }) ?? [];
 
-      let coinType = 118;
+      let coinType = 1009;
 
       if (chainId) {
         const suggestOptions: ChainInfo = {
