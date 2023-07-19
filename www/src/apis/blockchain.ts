@@ -1,12 +1,12 @@
-import { CHAIN_ID, DROP_DENOM_MINI } from '@/utils/const';
+import { CHAIN_ID, DROP_DENOM_MINI, IS_PRODUCTION } from '@/utils/const';
 import { handleResponse } from '@/utils/request';
 import { Client } from '@iconlake/client'
 import { V1Beta1GetTxResponse } from '@iconlake/client/cosmos.tx.v1beta1/rest';
 import { MsgMint as MsgMintDrop } from '@iconlake/client/iconlake.drop/module';
 import { MsgMint as MsgMintIcon } from '@iconlake/client/iconlake.icon/module';
 
-const apiURL = "http://127.0.0.1:1317";
-const rpcURL = "http://127.0.0.1:26657";
+const apiURL = "https://lcd.testnet.iconlake.com";
+const rpcURL = "https://rpc.testnet.iconlake.com";
 const prefix = "iconlake";
 
 export const env = {
@@ -35,7 +35,17 @@ async function detectKeplr() {
     alert("Please install keplr extension");
   } else {
     const chainId = CHAIN_ID;
-    await window.keplr.enable(chainId);
+    try {
+      await window.keplr.enable(chainId)
+    } catch (err) {
+      const chainInfo = await fetch(`/common/chain-${IS_PRODUCTION ? 'main' : 'test'}net.json`)
+        .then(res => res.json())
+      await window.keplr.experimentalSuggestChain(chainInfo)
+      await new Promise(resolve => {
+        setTimeout(resolve, 200)
+      })
+      await window.keplr.enable(chainId)
+    }
     const offlineSigner = window.keplr.getOfflineSigner(chainId);
     client.useSigner(offlineSigner)
     isKeplrDetected = true
