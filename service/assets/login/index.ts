@@ -1,4 +1,8 @@
 (async () => {
+  const isProduction = !/test|debug|dev|localhost|127\.0\.0\.1/i.test(location.href)
+  if (!isProduction) {
+    console.warn('You are in the developing mode.')
+  }
   // referer
   if (location.search && URL) {
     const url = new URL(location.href)
@@ -50,7 +54,7 @@
   if (params.login.code) {
     codeDom.classList.add('active')
     codeDom.addEventListener('click', () => {
-      const id = prompt('请填写Code：')
+      const id = prompt('Input Code:')
       if (id) {
         location.href = `/api/oauth/code?id=${id}`
       }
@@ -66,8 +70,18 @@
     keplrDom.addEventListener('click', async () => {
       if ('keplr' in window) {
         const keplr = window.keplr as any
-        const chainId = 'iconlake'
-        await keplr.enable(chainId)
+        const chainId = isProduction ? 'iconlake-1' : 'iconlake-testnet-1'
+        try {
+          await keplr.enable(chainId)
+        } catch (err) {
+          const chainInfo = await fetch(`/common/chain-${isProduction ? 'main' : 'test'}net.json`)
+            .then(res => res.json())
+          await keplr.experimentalSuggestChain(chainInfo)
+          await new Promise(resolve => {
+            setTimeout(resolve, 200)
+          })
+          await keplr.enable(chainId)
+        }
         const offlineSigner = keplr.getOfflineSigner(chainId)
         const accounts = await offlineSigner.getAccounts()
         const msg = `Login iconLake\n${new Date().toISOString()}\n${accounts[0].address}`

@@ -4,7 +4,7 @@ import { info, loginByBlockchain } from '@/apis/user';
 import { confirmDrop, getLocalDrop } from '@/utils/global';
 import { ref, onBeforeUnmount } from 'vue';
 import UserVue from '../../components/User.vue'
-import { formatDropAmount } from '@/utils'
+import { formatDropAmount, toast } from '@/utils'
 import HeaderVue from '@/components/Header.vue';
 import { getSignMsg } from '@/utils/blockchain';
 
@@ -38,7 +38,9 @@ onBeforeUnmount(() => {
 async function confirmAssets() {
   const userInfo = await info()
   if (!userInfo.blockchain) return
-  const data = await confirmDrop(+(prompt('Mint Drop', '10') ?? 0))
+  const data = await confirmDrop(+(prompt('Mint Drop', '1') ?? 0) * 10000).catch(err => {
+    toast(err)
+  })
   console.log(data)
   if (data && data.code === 0) {
     getAssets()
