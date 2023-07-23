@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getBalance, signMsg } from '@/apis/blockchain';
+import { getBalance, getDropInfo, signMsg } from '@/apis/blockchain';
 import { info, loginByBlockchain } from '@/apis/user';
 import { confirmDrop, getLocalDrop } from '@/utils/global';
 import { ref, onBeforeUnmount } from 'vue';
@@ -10,6 +10,8 @@ import { getSignMsg } from '@/utils/blockchain';
 
 const localDropAmount = ref(0)
 const comfirmedDropAmount = ref(0)
+const lastMintTime = ref('')
+const userInfo = ref()
 
 let timer: string | number | NodeJS.Timeout | undefined
 
@@ -22,11 +24,16 @@ async function getDrop() {
 }
 
 async function getAssets() {
-  const userInfo = await info()
-  if (userInfo.blockchain) {
-    const balance = await getBalance(userInfo.blockchain.id)
+  const uInfo = await info()
+  userInfo.value = uInfo
+  if (uInfo.blockchain) {
+    const balance = await getBalance(uInfo.blockchain.id)
     if (balance?.amount) {
       comfirmedDropAmount.value = +balance?.amount
+    }
+    const dropInfo = await getDropInfo(uInfo.blockchain.id)
+    if (dropInfo.info?.lastMintTime) {
+      lastMintTime.value = new Date(+dropInfo.info?.lastMintTime).toLocaleString()
     }
   }
 }
@@ -83,12 +90,14 @@ getAssets()
     <h3>
       我的资产
     </h3>
+    <p>区块链地址：{{ userInfo?.blockchain?.id }}</p>
     <p style="margin-top:50px">
       已确认资产：{{ formatDropAmount(comfirmedDropAmount) }}
     </p>
     <p>
       待确认资产：{{ formatDropAmount(localDropAmount) }}
     </p>
+    <p>上次确认时间：{{ lastMintTime }}</p>
     <button
       type="submit"
       class="btn"
