@@ -60,7 +60,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry});
 				let msg = this.msgSubmitEvidence({ value: MsgSubmitEvidence.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
