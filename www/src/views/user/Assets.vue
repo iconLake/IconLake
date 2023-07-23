@@ -38,13 +38,16 @@ onBeforeUnmount(() => {
 async function confirmAssets() {
   const userInfo = await info()
   if (!userInfo.blockchain) return
-  const data = await confirmDrop(+(prompt('Mint Drop', '1') ?? 0) * 10000).catch(err => {
+  const data = await confirmDrop(`${+(prompt('Mint Drop', '1') ?? 0) * 10000}`).catch(err => {
+    console.error(err)
     toast(err)
   })
   console.log(data)
   if (data && data.code === 0) {
     getAssets()
     getDrop()
+  } else {
+    toast(data?.rawLog ?? 'Failed')
   }
 }
 

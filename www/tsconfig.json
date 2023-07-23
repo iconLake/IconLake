@@ -9,7 +9,8 @@
     "preserveValueImports": false,
     "importsNotUsedAsValues": "preserve",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "ignoreDeprecations": "5.0"
+    "ignoreDeprecations": "5.0",
+    "skipLibCheck": true
   },
 
   "references": [
