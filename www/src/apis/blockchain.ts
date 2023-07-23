@@ -2,6 +2,7 @@ import { CHAIN_ID, DROP_DENOM_MINI, IS_PRODUCTION } from '@/utils/const'
 import { handleResponse } from '@/utils/request'
 import { Client } from '@iconlake/client'
 import type { V1Beta1GetTxResponse } from '@iconlake/client/types/cosmos.tx.v1beta1/rest'
+import type { DropQueryGetInfoResponse } from '@iconlake/client/types/iconlake.drop/rest'
 import type { MsgMint as MsgMintIcon } from '@iconlake/client/types/iconlake.icon/module'
 
 const apiURL = IS_PRODUCTION ? 'https://lcd.mainnet.iconlake.com' : 'https://lcd.testnet.iconlake.com'
@@ -122,5 +123,12 @@ export async function getTx(txHash: string) {
   const res = await client.CosmosTxV1Beta1.query.serviceGetTx(txHash)
   return await new Promise((resolve: (v: V1Beta1GetTxResponse) => void, reject) => {
     handleResponse<V1Beta1GetTxResponse>(res as any, resolve, reject);
+  })
+}
+
+export async function getDropInfo(address:string) {
+  const res = await client.IconlakeDrop.query.queryInfo(address)
+  return await new Promise((resolve: (v: DropQueryGetInfoResponse) => void, reject) => {
+    handleResponse<DropQueryGetInfoResponse>(res as any, resolve, reject);
   })
 }
