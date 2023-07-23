@@ -1,7 +1,6 @@
 package types
 
 import (
-	sdkerrors "cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -41,13 +40,16 @@ func (msg *MsgMint) GetSignBytes() []byte {
 func (msg *MsgMint) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
-		return sdkerrors.Wrapf(ErrAddress, "invalid creator address (%s)", err)
+		return ErrAddress.Wrapf("invalid creator address (%s)", err)
 	}
 	if msg.Amount.Denom != DropDenom {
-		return sdkerrors.Wrapf(ErrDenom, "only amount denom of \"%s\" is supported (%s)", DropDenom, err)
+		return ErrDenom.Wrapf("only amount denom of \"%s\" is supported (%s)", DropDenom, err)
 	}
 	if msg.Amount.Amount.LT(math.NewInt(10000)) {
-		return sdkerrors.Wrapf(ErrAmount, "amount should be greater than 10000%s (%s)", DropDenom, err)
+		return ErrAmount.Wrapf("amount should be greater than 10000%s (%s)", DropDenom, err)
+	}
+	if msg.Amount.Amount.GT(math.NewInt(600000)) {
+		return ErrAmount.Wrapf("amount should be littler than 600000%s (%s)", DropDenom, err)
 	}
 	return nil
 }
