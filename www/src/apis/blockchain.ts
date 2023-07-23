@@ -1,19 +1,18 @@
-import { CHAIN_ID, DROP_DENOM_MINI, IS_PRODUCTION } from '@/utils/const';
-import { handleResponse } from '@/utils/request';
+import { CHAIN_ID, DROP_DENOM_MINI, IS_PRODUCTION } from '@/utils/const'
+import { handleResponse } from '@/utils/request'
 import { Client } from '@iconlake/client'
-import { V1Beta1GetTxResponse } from '@iconlake/client/cosmos.tx.v1beta1/rest';
-import { MsgMint as MsgMintDrop } from '@iconlake/client/iconlake.drop/module';
-import { MsgMint as MsgMintIcon } from '@iconlake/client/iconlake.icon/module';
+import type { V1Beta1GetTxResponse } from '@iconlake/client/types/cosmos.tx.v1beta1/rest'
+import type { MsgMint as MsgMintIcon } from '@iconlake/client/types/iconlake.icon/module'
 
-const apiURL = "https://lcd.testnet.iconlake.com";
-const rpcURL = "https://rpc.testnet.iconlake.com";
-const prefix = "iconlake";
+const apiURL = IS_PRODUCTION ? 'https://lcd.mainnet.iconlake.com' : 'https://lcd.testnet.iconlake.com'
+const rpcURL = IS_PRODUCTION ? 'https://rpc.mainnet.iconlake.com' : 'https://rpc.testnet.iconlake.com'
+const prefix = 'iconlake'
 
 export const env = {
   apiURL,
   rpcURL,
   prefix,
-};
+}
 
 export const fee = {
   gas: '100000',
@@ -32,7 +31,7 @@ let isKeplrDetected = false
 async function detectKeplr() {
   if (isKeplrDetected) return
   if (!window.keplr) {
-    alert("Please install keplr extension");
+    alert('Please install keplr extension');
   } else {
     const chainId = CHAIN_ID;
     try {
@@ -54,7 +53,7 @@ async function detectKeplr() {
 
 export async function getBalance(address: string) {
   const res = await client.CosmosBankV1Beta1.query.queryBalance(address, {
-    denom: 'udrop'
+    denom: DROP_DENOM_MINI
   })
   return res.data.balance
 }
@@ -67,17 +66,17 @@ export async function getAccount() {
   return accounts[0]
 }
 
-export async function mintDrop(address: string, amount: number) {
+export async function mintDrop(address: string, amount: string) {
   await detectKeplr()
   if (!isKeplrDetected) return
   const res = await client.IconlakeDrop.tx.sendMsgMint({
-    value: MsgMintDrop.fromJSON({
+    value: {
       creator: address,
       amount: {
         amount,
         denom: DROP_DENOM_MINI
       }
-    }),
+    },
     fee
   })
   return res
@@ -107,13 +106,13 @@ export async function getHash(uri: string) {
   })
 }
 
-export async function mintIcon(msg: MsgMintIcon) {
+export async function mintIcon(value: MsgMintIcon) {
   await detectKeplr()
   if (!isKeplrDetected) return
   const account = await getAccount()
   if (!account) return
   const res = await client.IconlakeIcon.tx.sendMsgMint({
-    value: MsgMintIcon.fromJSON(msg),
+    value,
     fee
   })
   return res
