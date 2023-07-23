@@ -133,7 +133,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry});
 				let msg = this.msgFundCommunityPool({ value: MsgFundCommunityPool.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
@@ -147,7 +147,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry});
 				let msg = this.msgWithdrawValidatorCommission({ value: MsgWithdrawValidatorCommission.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
@@ -161,7 +161,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry});
 				let msg = this.msgCommunityPoolSpend({ value: MsgCommunityPoolSpend.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
@@ -175,7 +175,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry});
 				let msg = this.msgSetWithdrawAddress({ value: MsgSetWithdrawAddress.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
@@ -189,7 +189,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry});
 				let msg = this.msgWithdrawDelegatorReward({ value: MsgWithdrawDelegatorReward.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
@@ -203,7 +203,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry});
 				let msg = this.msgUpdateParams({ value: MsgUpdateParams.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
