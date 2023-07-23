@@ -1,6 +1,6 @@
 {
   "name": "@iconlake/client",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "iconLake Typescript Client",
   "author": "iconLake",
   "license": "Apache-2.0",

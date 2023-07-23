@@ -89,7 +89,5 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		}
 	}
 
-	_ = ctx
-
 	return &types.MsgMintResponse{}, nil
 }
