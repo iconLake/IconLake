@@ -12,4 +12,5 @@ var (
 	ErrDenom   = sdkerrors.Register(ModuleName, 1101, "denom error")
 	ErrAmount  = sdkerrors.Register(ModuleName, 1102, "amount error")
 	ErrMint    = sdkerrors.Register(ModuleName, 1103, "mint error")
+	ErrInit    = sdkerrors.Register(ModuleName, 1104, "init error")
 )

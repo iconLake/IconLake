@@ -10,6 +10,7 @@ option go_package = "iconlake/x/drop/types";
 // Msg defines the Msg service.
 service Msg {
   rpc Mint (MsgMint) returns (MsgMintResponse);
+  rpc Init (MsgInit) returns (MsgMintResponse);
 }
 message MsgMint {
   string                   creator = 1;
@@ -17,7 +18,11 @@ message MsgMint {
 }
 
 message MsgMintResponse {
-  cosmos.base.v1beta1.Coin amount      = 1 [(gogoproto.nullable) = false];
-  int64                   lastMintTime = 2;
+  cosmos.base.v1beta1.Coin amount       = 1 [(gogoproto.nullable) = false];
+  int64                    lastMintTime = 2;
 }
 
+message MsgInit {
+  string creator = 1;
+  string address = 2;
+}

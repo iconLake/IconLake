@@ -15,6 +15,11 @@ export interface MsgMintResponse {
   lastMintTime: number;
 }
 
+export interface MsgInit {
+  creator: string;
+  address: string;
+}
+
 function createBaseMsgMint(): MsgMint {
   return { creator: "", amount: undefined };
 }
@@ -135,9 +140,68 @@ export const MsgMintResponse = {
   },
 };
 
+function createBaseMsgInit(): MsgInit {
+  return { creator: "", address: "" };
+}
+
+export const MsgInit = {
+  encode(message: MsgInit, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.address !== "") {
+      writer.uint32(18).string(message.address);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgInit {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgInit();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.address = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgInit {
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      address: isSet(object.address) ? String(object.address) : "",
+    };
+  },
+
+  toJSON(message: MsgInit): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.address !== undefined && (obj.address = message.address);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgInit>, I>>(object: I): MsgInit {
+    const message = createBaseMsgInit();
+    message.creator = object.creator ?? "";
+    message.address = object.address ?? "";
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   Mint(request: MsgMint): Promise<MsgMintResponse>;
+  Init(request: MsgInit): Promise<MsgMintResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -145,10 +209,17 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.Mint = this.Mint.bind(this);
+    this.Init = this.Init.bind(this);
   }
   Mint(request: MsgMint): Promise<MsgMintResponse> {
     const data = MsgMint.encode(request).finish();
     const promise = this.rpc.request("iconlake.drop.Msg", "Mint", data);
+    return promise.then((data) => MsgMintResponse.decode(new _m0.Reader(data)));
+  }
+
+  Init(request: MsgInit): Promise<MsgMintResponse> {
+    const data = MsgInit.encode(request).finish();
+    const promise = this.rpc.request("iconlake.drop.Msg", "Init", data);
     return promise.then((data) => MsgMintResponse.decode(new _m0.Reader(data)));
   }
 }
