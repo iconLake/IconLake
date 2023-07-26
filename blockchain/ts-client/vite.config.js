@@ -6,7 +6,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'index.ts'),
       name: 'Client',
-      fileName: 'client',
+      fileName: 'index',
     },
     rollupOptions: {
       external: [],
