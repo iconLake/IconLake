@@ -1,5 +1,10 @@
 version: 1
 accounts:
+- name: iconlake
+  coins:
+  - 100000udrop
+  - 0ulake
+  mnemonic: icon lake ensure you own what you bring into exist any tiny
 - name: alice
   coins:
   - 200000000000000ulake

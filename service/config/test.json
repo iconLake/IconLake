@@ -36,5 +36,9 @@
     "gitee": true,
     "github": true,
     "keplr": true
+  },
+  "blockchain": {
+    "rpc": "http://127.0.0.1:26657",
+    "lcd": "http://127.0.0.1:1317"
   }
 }

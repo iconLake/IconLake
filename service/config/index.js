@@ -55,6 +55,10 @@ export const configs = {
  *      github: boolean\
  *      keplr: boolean\
  *    }\
+ *    blockchain: {\
+ *      rpc: string\
+ *      lcd: string\
+ *    }\
  *  }}
  */
 export function getConfig (env) {
