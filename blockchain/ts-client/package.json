@@ -45,6 +45,10 @@
     ".": {
       "import": "./dist/index.mjs",
       "require": "./dist/index.umd.js"
-    }
+    },
+    "./mjs": "./dist/index.mjs",
+    "./umd": "./dist/index.umd.js",
+    "./cjs": "./dist/index.js",
+    "./iife": "./dist/index.iife.js"
   }
 }
