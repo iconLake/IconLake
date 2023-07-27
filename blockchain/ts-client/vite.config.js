@@ -7,6 +7,7 @@ export default defineConfig({
       entry: resolve(__dirname, 'index.ts'),
       name: 'Client',
       fileName: 'index',
+      formats: ['cjs', 'es', 'iife', 'umd'],
     },
     rollupOptions: {
       external: [],
