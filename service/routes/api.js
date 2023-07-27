@@ -15,6 +15,7 @@ import * as projectIcon from '../controllers/project/icon.js'
 import * as projectFile from '../controllers/project/file.js'
 import * as iconInfo from '../controllers/icon/info.js'
 import { params as loginParams } from '../controllers/login/index.js'
+import { init as initDrop } from '../controllers/blockchain/drop.js'
 
 const router = Router()
 
@@ -53,5 +54,7 @@ router.post('/project/icon/setExpire', userMiddleware, projectIcon.setExpire)
 router.post('/project/file/upload', userMiddleware, projectFile.upload)
 
 router.post('/icon/info/edit', userMiddleware, iconInfo.edit)
+
+router.get('/blockchain/drop/init', userMiddleware, initDrop)
 
 export default router

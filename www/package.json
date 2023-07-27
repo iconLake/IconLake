@@ -17,7 +17,7 @@
   "author": "iconlake",
   "license": "AGPLv3",
   "dependencies": {
-    "@iconlake/client": "^0.1.8",
+    "@iconlake/client": "^0.1.10",
     "axios": "^0.27.2",
     "crypto-js": "^4.1.1",
     "element-plus": "^2.3.7",

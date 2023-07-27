@@ -1,6 +1,6 @@
 import { CHAIN_ID, DROP_DENOM_MINI, IS_PRODUCTION } from '@/utils/const'
-import { handleResponse } from '@/utils/request'
-import { Client } from '@iconlake/client'
+import request, { handleResponse } from '@/utils/request'
+import { Client, registry } from '@iconlake/client'
 import type { V1Beta1GetTxResponse } from '@iconlake/client/types/cosmos.tx.v1beta1/rest'
 import type { DropQueryGetInfoResponse } from '@iconlake/client/types/iconlake.drop/rest'
 import type { MsgMint as MsgMintIcon } from '@iconlake/client/types/iconlake.icon/module'
@@ -130,5 +130,11 @@ export async function getDropInfo(address:string) {
   const res = await client.IconlakeDrop.query.queryInfo(address)
   return await new Promise((resolve: (v: DropQueryGetInfoResponse) => void, reject) => {
     handleResponse<DropQueryGetInfoResponse>(res as any, resolve, reject);
+  })
+}
+
+export function initDrop() {
+  return <Promise<{transactionHash: string}>>request({
+    url: '/api/blockchain/drop/init',
   })
 }

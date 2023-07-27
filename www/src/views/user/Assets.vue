@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { getBalance, getDropInfo, signMsg } from '@/apis/blockchain';
-import { info, loginByBlockchain } from '@/apis/user';
+import { getBalance, getDropInfo, initDrop, signMsg } from '@/apis/blockchain';
+import { UserInfo, info, loginByBlockchain } from '@/apis/user';
 import { confirmDrop, getLocalDrop } from '@/utils/global';
 import { ref, onBeforeUnmount } from 'vue';
-import UserVue from '../../components/User.vue'
+import UserVue from '@/components/User.vue'
 import { formatDropAmount, toast } from '@/utils'
 import HeaderVue from '@/components/Header.vue';
 import { getSignMsg } from '@/utils/blockchain';
@@ -11,7 +11,7 @@ import { getSignMsg } from '@/utils/blockchain';
 const localDropAmount = ref(0)
 const comfirmedDropAmount = ref(0)
 const lastMintTime = ref('')
-const userInfo = ref()
+const userInfo = ref<UserInfo>()
 
 let timer: string | number | NodeJS.Timeout | undefined
 
@@ -43,10 +43,9 @@ onBeforeUnmount(() => {
 })
 
 async function confirmAssets() {
-  const userInfo = await info()
-  if (!userInfo.blockchain) return
+  userInfo.value = await info()
+  if (!userInfo.value.blockchain) return
   const data = await confirmDrop(`${+(prompt('Mint Drop', '1') ?? 0) * 10000}`).catch(err => {
-    console.error(err)
     toast(err)
   })
   console.log(data)
@@ -77,6 +76,13 @@ async function bindBlockchain() {
   }
 }
 
+async function initDropAccount() {
+  if (userInfo.value?.blockchain?.id) {
+    const res = await initDrop()
+    toast(res.transactionHash)
+  }
+}
+
 getDrop()
 getAssets()
 </script>
@@ -91,6 +97,15 @@ getAssets()
       我的资产
     </h3>
     <p>区块链地址：{{ userInfo?.blockchain?.id }}</p>
+    <p>
+      <button
+        type="submit"
+        class="btn"
+        @click="initDropAccount"
+      >
+        初始化账户
+      </button>
+    </p>
     <p style="margin-top:50px">
       已确认资产：{{ formatDropAmount(comfirmedDropAmount) }}
     </p>

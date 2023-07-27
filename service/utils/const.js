@@ -56,7 +56,8 @@ export const ERROR_CODE = {
   USER_NOT_LOGIN: 'userNotLogin',
   TOKEN_EXPIRED: 'tokenExpired',
   PERMISSION_DENIED: 'permissionDenied',
-  NOT_EXIST: 'notExist'
+  NOT_EXIST: 'notExist',
+  INTERNAL_ERROR: 'internalError'
 }
 
 /**
@@ -80,3 +81,11 @@ export const TEMPORARY_FILE_EXPIRE = 30
 export const CLOUD_TYPE = {
   TENCENT: 'tencent'
 }
+
+export const DROP_DENOM = 'DROP'
+export const DROP_DENOM_MINI = 'udrop'
+
+export const LAKE_DENOM = 'LAKE'
+export const LAKE_DENOM_MINI = 'ulake'
+
+export const ADDRESS_PREFIX = 'iconlake'
