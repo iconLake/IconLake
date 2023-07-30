@@ -55,7 +55,7 @@ getProjects().then(res => {
         :src="'/imgs/project-bg-circle-b.png'"
       >
       <div class="title">iconLake</div>
-      <div class="slogan">Make icon in control</div>
+      <div class="slogan">You create, you own!</div>
     </a>
     <div class="flex column start grow">
       <div class="operate">
