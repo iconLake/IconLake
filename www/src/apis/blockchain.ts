@@ -1,6 +1,6 @@
 import { CHAIN_ID, DROP_DENOM_MINI, IS_PRODUCTION } from '@/utils/const'
 import request, { handleResponse } from '@/utils/request'
-import { Client, registry } from '@iconlake/client'
+import { Client } from '@iconlake/client'
 import type { V1Beta1GetTxResponse } from '@iconlake/client/types/cosmos.tx.v1beta1/rest'
 import type { DropQueryGetInfoResponse } from '@iconlake/client/types/iconlake.drop/rest'
 import type { MsgMint as MsgMintIcon } from '@iconlake/client/types/iconlake.icon/module'
@@ -65,6 +65,11 @@ export async function getAccount() {
   const offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID)
   const accounts = await offlineSigner.getAccounts()
   return accounts[0]
+}
+
+export async function getChainAccount(address: string) {
+  const res = await client.CosmosAuthV1Beta1.query.queryAccount(address)
+  return res
 }
 
 export async function mintDrop(address: string, amount: string) {
