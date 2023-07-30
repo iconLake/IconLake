@@ -36,6 +36,7 @@ client:
   openapi:
     path: docs/static/openapi.yml
 genesis:
+  chain_id: iconlake-testnet-1
   app_state:
     bank:
       send_enabled:

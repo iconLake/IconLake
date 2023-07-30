@@ -39,7 +39,7 @@ async function create () {
     <!-- form -->
     <div class="project bg-main grow flex center">
       <div class="slogan-left">
-        Make
+        YOU CREATE,
       </div>
       <form
         class="fm"
@@ -87,7 +87,7 @@ async function create () {
     <!-- illus -->
     <div class="illus flex">
       <div class="slogan-right">
-        icon in control
+        YOU OWN!
       </div>
       <div class="img">
         <img
@@ -124,6 +124,7 @@ async function create () {
   position: relative;
   .fm {
     width: 36rem;
+    padding-top: 10rem;
     h1 {
       font-size: 2.25rem;
       font-weight: bold;

@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import { editIcon, getIcon, Icon as IconType, uploadFile } from '@/apis/project';
-import { getHash, mintIcon, getAccount, getTx } from '@/apis/blockchain';
+import { getHash, mintIcon, getAccount, getTx, getChainAccount } from '@/apis/blockchain';
 import Header from '@/components/Header.vue';
 import Icon from '@/components/Icon.vue';
 import User from '@/components/User.vue';
 import { reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { toast } from '@/utils';
+import { info } from '@/apis/user';
 
 const $route = useRoute()
 const projectId = ref($route.params.projectId as string)
@@ -19,6 +20,7 @@ const iconInfo = reactive({
   txHash: undefined
 } as IconType)
 const isPending = ref(false)
+const isChainAccountReady = ref(false)
 
 async function getIconInfo() {
   const icon = await getIcon(projectId.value, id.value)
@@ -53,8 +55,10 @@ async function publish() {
       createTime: new Date().toISOString()
     },
     supply: 1
-  }).catch(() => {
+  }).catch((err) => {
+    console.error(err)
     isPending.value = false
+    toast(err.message)
   })
   if (res?.code !== 0) {
     toast('Blockchain confirmation failed', 'error')
@@ -71,11 +75,23 @@ async function publish() {
   console.log(txInfo)
 }
 
+async function checkChainAccount() {
+  const userInfo = await info()
+  if (!userInfo.blockchain?.id) {
+    return
+  }
+  const account = await getChainAccount(userInfo.blockchain?.id).catch(console.error)
+  if (account) {
+    isChainAccountReady.value = true
+  }
+}
+
 getIconInfo()
+checkChainAccount()
 </script>
 
 <template>
-  <Header :back="true" />
+  <Header :back="`/icons/${projectId}`" />
   <User />
   <div class="main">
     <p>上链确权，保护版权</p>
@@ -94,14 +110,21 @@ getIconInfo()
       v-if="!iconInfo.txHash"
       class="operate"
     >
-      <el-button
-        type="primary"
+      <button
         class="btn"
         :loading="isPending"
+        :disabled="!isChainAccountReady"
         @click="publish"
       >
         {{ isPending ? '正在上链...' : '发布到区块链' }}
-      </el-button>
+      </button>
+      <div
+        style="margin-top: 1rem;"
+      >
+        <RouterLink to="/user/assets">
+          前往“我的资产”启用链上账户（没有初始化链上账户时显示）
+        </RouterLink>
+      </div>
     </div>
     <div
       v-else

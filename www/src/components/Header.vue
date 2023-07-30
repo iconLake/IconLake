@@ -28,7 +28,7 @@ const backUrl = computed(() => {
     <a
       href="/"
       class="logo"
-      title="iconLake, make icon in control."
+      title="iconLake - You create, you own!"
     >
       <img
         :src="`/imgs/logo${white ? '-white' : ''}.svg`"
