@@ -46673,14 +46673,16 @@ paths:
                       type: string
                   additionalProperties: {}
       parameters:
-        - name: hashType
-          in: query
-          required: false
-          type: string
-        - name: uri
-          in: query
-          required: false
-          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              hashType:
+                type: string
+              uri:
+                type: string
       tags:
         - Query
   /iconlake/icon/params:
@@ -75560,6 +75562,13 @@ definitions:
   iconlake.icon.Params:
     type: object
     description: Params defines the parameters for the module.
+  iconlake.icon.QueryHashRequest:
+    type: object
+    properties:
+      hashType:
+        type: string
+      uri:
+        type: string
   iconlake.icon.QueryHashResponse:
     type: object
     properties:
