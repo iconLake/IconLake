@@ -7,19 +7,13 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
-import { MsgMint } from "./types/iconlake/drop/tx";
 import { MsgInit } from "./types/iconlake/drop/tx";
+import { MsgMint } from "./types/iconlake/drop/tx";
 
 import { Info as typeInfo} from "./types"
 import { Params as typeParams} from "./types"
 
-export { MsgMint, MsgInit };
-
-type sendMsgMintParams = {
-  value: MsgMint,
-  fee?: StdFee,
-  memo?: string
-};
+export { MsgInit, MsgMint };
 
 type sendMsgInitParams = {
   value: MsgInit,
@@ -27,13 +21,19 @@ type sendMsgInitParams = {
   memo?: string
 };
 
-
-type msgMintParams = {
+type sendMsgMintParams = {
   value: MsgMint,
+  fee?: StdFee,
+  memo?: string
 };
+
 
 type msgInitParams = {
   value: MsgInit,
+};
+
+type msgMintParams = {
+  value: MsgMint,
 };
 
 
@@ -66,27 +66,13 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
-		async sendMsgMint({ value, fee, memo }: sendMsgMintParams): Promise<DeliverTxResponse> {
-			if (!signer) {
-					throw new Error('TxClient:sendMsgMint: Unable to sign Tx. Signer is not present.')
-			}
-			try {			
-				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry});
-				let msg = this.msgMint({ value: MsgMint.fromPartial(value) })
-				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
-			} catch (e: any) {
-				throw new Error('TxClient:sendMsgMint: Could not broadcast Tx: '+ e.message)
-			}
-		},
-		
 		async sendMsgInit({ value, fee, memo }: sendMsgInitParams): Promise<DeliverTxResponse> {
 			if (!signer) {
 					throw new Error('TxClient:sendMsgInit: Unable to sign Tx. Signer is not present.')
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry});
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
 				let msg = this.msgInit({ value: MsgInit.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
@@ -94,20 +80,34 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		
-		msgMint({ value }: msgMintParams): EncodeObject {
-			try {
-				return { typeUrl: "/iconlake.drop.MsgMint", value: MsgMint.fromPartial( value ) }  
+		async sendMsgMint({ value, fee, memo }: sendMsgMintParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgMint: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgMint({ value: MsgMint.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:MsgMint: Could not create message: ' + e.message)
+				throw new Error('TxClient:sendMsgMint: Could not broadcast Tx: '+ e.message)
 			}
 		},
+		
 		
 		msgInit({ value }: msgInitParams): EncodeObject {
 			try {
 				return { typeUrl: "/iconlake.drop.MsgInit", value: MsgInit.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgInit: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgMint({ value }: msgMintParams): EncodeObject {
+			try {
+				return { typeUrl: "/iconlake.drop.MsgMint", value: MsgMint.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgMint: Could not create message: ' + e.message)
 			}
 		},
 		

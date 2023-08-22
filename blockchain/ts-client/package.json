@@ -1,6 +1,6 @@
 {
   "name": "@iconlake/client",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "iconLake Typescript Client",
   "author": "iconLake",
   "license": "Apache-2.0",
@@ -22,7 +22,7 @@
     "build-js": "vite build",
     "build": "pnpm run build-ts && pnpm run build-js"
   },
-  "packageManager": "pnpm@8.6.7",
+  "packageManager": "pnpm@8.6.12",
   "dependencies": {
     "axios": "^0.21.4",
     "buffer": "^6.0.3",
@@ -32,8 +32,8 @@
   },
   "peerDependencies": {
     "@cosmjs/launchpad": "0.27.1",
-    "@cosmjs/proto-signing": "0.31.0",
-    "@cosmjs/stargate": "0.31.0"
+    "@cosmjs/proto-signing": "0.31.1",
+    "@cosmjs/stargate": "0.31.1"
   },
   "devDependencies": {
     "@keplr-wallet/types": "^0.11.3",

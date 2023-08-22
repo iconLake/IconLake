@@ -23,6 +23,11 @@ export type IconMsgMintResponse = object;
  */
 export type IconParams = object;
 
+export interface IconQueryHashRequest {
+  hashType?: string;
+  uri?: string;
+}
+
 export interface IconQueryHashResponse {
   graphHash?: string;
   fileHash?: string;
@@ -180,11 +185,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @summary Queries a list of Hash items.
    * @request POST:/iconlake/icon/hash
    */
-  queryHash = (query?: { hashType?: string; uri?: string }, params: RequestParams = {}) =>
+  queryHash = (body: IconQueryHashRequest, params: RequestParams = {}) =>
     this.request<IconQueryHashResponse, RpcStatus>({
       path: `/iconlake/icon/hash`,
       method: "POST",
-      query: query,
+      body: body,
+      type: ContentType.Json,
       format: "json",
       ...params,
     });
