@@ -74,14 +74,15 @@ func (msg *MsgMint) ValidateBasic() error {
 	}
 	hashType := msg.Id[0:1]
 	idLen := len(msg.Id)
-	if idLen <= 2 || idLen > 130 || hashType != string(pHash) || msg.Id[1:2] != ":" {
+	if idLen <= 2 || idLen > 66 || hashType != string(pHash) || msg.Id[1:2] != ":" {
 		return ErrParam.Wrap("invalid param (Id), expect format of \"p:xxxx\"")
 	}
 	_, err := url.ParseRequestURI(msg.Uri)
 	if err != nil {
 		return ErrParam.Wrap("invalid param (Uri)")
 	}
-	if len(msg.UriHash) < 32 {
+	uriHashLen := len(msg.UriHash)
+	if uriHashLen < 32 || uriHashLen > 64 {
 		return ErrParam.Wrap("invalid param (UriHash)")
 	}
 	_, err = sdk.AccAddressFromBech32(msg.Data.Author)
@@ -91,8 +92,8 @@ func (msg *MsgMint) ValidateBasic() error {
 	if len(msg.Data.Name) > 64 {
 		return ErrParam.Wrap("invalid param (Data.Name), expect within 64 chars")
 	}
-	if len(msg.Data.Description) > 1024 {
-		return ErrParam.Wrap("invalid param (Data.Description), expect within 1024 chars")
+	if len(msg.Data.Description) > 300 {
+		return ErrParam.Wrap("invalid param (Data.Description), expect within 300 chars")
 	}
 	createTime, err := time.Parse(time.RFC3339, msg.Data.CreateTime)
 	if err != nil {
