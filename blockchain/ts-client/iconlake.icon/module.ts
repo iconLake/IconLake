@@ -8,12 +8,13 @@ import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
 import { MsgMint } from "./types/iconlake/icon/tx";
+import { MsgUpdateClass } from "./types/iconlake/icon/tx";
 
 import { ClassData as typeClassData} from "./types"
 import { IconData as typeIconData} from "./types"
 import { Params as typeParams} from "./types"
 
-export { MsgMint };
+export { MsgMint, MsgUpdateClass };
 
 type sendMsgMintParams = {
   value: MsgMint,
@@ -21,9 +22,19 @@ type sendMsgMintParams = {
   memo?: string
 };
 
+type sendMsgUpdateClassParams = {
+  value: MsgUpdateClass,
+  fee?: StdFee,
+  memo?: string
+};
+
 
 type msgMintParams = {
   value: MsgMint,
+};
+
+type msgUpdateClassParams = {
+  value: MsgUpdateClass,
 };
 
 
@@ -70,12 +81,34 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+		async sendMsgUpdateClass({ value, fee, memo }: sendMsgUpdateClassParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgUpdateClass: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgUpdateClass({ value: MsgUpdateClass.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgUpdateClass: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
 		
 		msgMint({ value }: msgMintParams): EncodeObject {
 			try {
 				return { typeUrl: "/iconlake.icon.MsgMint", value: MsgMint.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgMint: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgUpdateClass({ value }: msgUpdateClassParams): EncodeObject {
+			try {
+				return { typeUrl: "/iconlake.icon.MsgUpdateClass", value: MsgUpdateClass.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgUpdateClass: Could not create message: ' + e.message)
 			}
 		},
 		
