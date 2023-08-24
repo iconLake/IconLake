@@ -48,7 +48,8 @@ func (msg *MsgMint) GetSignBytes() []byte {
 func CheckImgHash(uri string, uriHash string, id string) (bool, error) {
 	lowerUriHash := strings.ToLower(uriHash)
 	lowerId := strings.ToLower(id)
-	hashType := lowerId[0:1]
+	idParts := strings.SplitN(lowerId, ":", 3)
+	hashType := idParts[0]
 	switch hashType {
 	case string(pHash):
 		graphHash, fileHash, err := GetImgHash(uri, hashType)
@@ -58,8 +59,8 @@ func CheckImgHash(uri string, uriHash string, id string) (bool, error) {
 		if fileHash != lowerUriHash {
 			return false, ErrParam.Wrapf("invalid param (UriHash), expect (%s)", fileHash)
 		}
-		if graphHash != lowerId {
-			return false, ErrParam.Wrapf("invalid param (id), expect (%s)", graphHash)
+		if graphHash != strings.Join(idParts[:2], ":") {
+			return false, ErrParam.Wrapf("invalid param (id), expect graph hash (%s)", graphHash)
 		}
 	default:
 		return false, ErrParam.Wrap("invalid param (UriHash), invalid hash type, expect (p)")
@@ -68,6 +69,10 @@ func CheckImgHash(uri string, uriHash string, id string) (bool, error) {
 }
 
 func (msg *MsgMint) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return ErrParam.Wrapf("invalid param (Creator) (%s)", err)
+	}
 	classIdLen := len(msg.ClassId)
 	if classIdLen < 6 || classIdLen > 64 {
 		return ErrParam.Wrap("invalid param (ClassId), length should between 6 and 64")
@@ -75,9 +80,9 @@ func (msg *MsgMint) ValidateBasic() error {
 	hashType := msg.Id[0:1]
 	idLen := len(msg.Id)
 	if idLen <= 2 || idLen > 66 || hashType != string(pHash) || msg.Id[1:2] != ":" {
-		return ErrParam.Wrap("invalid param (Id), expect format of \"p:xxxx\"")
+		return ErrParam.Wrap("invalid param (Id), expect format of \"p:xxxx\" or \"p:xxxx:123\"")
 	}
-	_, err := url.ParseRequestURI(msg.Uri)
+	_, err = url.ParseRequestURI(msg.Uri)
 	if err != nil {
 		return ErrParam.Wrap("invalid param (Uri)")
 	}
@@ -86,7 +91,7 @@ func (msg *MsgMint) ValidateBasic() error {
 		return ErrParam.Wrap("invalid param (UriHash)")
 	}
 	_, err = sdk.AccAddressFromBech32(msg.Data.Author)
-	if err != nil {
+	if err != nil || msg.Creator != msg.Data.Author {
 		return ErrParam.Wrap("invalid param (Data.Author)")
 	}
 	if len(msg.Data.Name) > 64 {

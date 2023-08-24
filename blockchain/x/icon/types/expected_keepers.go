@@ -9,6 +9,7 @@ import (
 type NftKeeper interface {
 	HasClass(ctx sdk.Context, classID string) bool
 	SaveClass(ctx sdk.Context, class nft.Class) error
+	UpdateClass(ctx sdk.Context, class nft.Class) error
 	GetClass(ctx sdk.Context, classID string) (nft.Class, bool)
 	HasNFT(ctx sdk.Context, classID string, nftID string) bool
 	Mint(ctx sdk.Context, token nft.NFT, receiver sdk.AccAddress) error

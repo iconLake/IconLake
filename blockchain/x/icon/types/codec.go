@@ -9,6 +9,7 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgMint{}, "icon/Mint", nil)
+	cdc.RegisterConcrete(&MsgUpdateClass{}, "icon/UpdateClass", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -20,6 +21,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*IconDataI)(nil), &IconData{})
 	registry.RegisterInterface("icon/ClassData", (*ClassDataI)(nil))
 	registry.RegisterImplementations((*ClassDataI)(nil), &ClassData{})
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgUpdateClass{},
+	)
 	// this line is used by starport scaffolding # 3
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

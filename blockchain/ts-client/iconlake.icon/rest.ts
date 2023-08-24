@@ -18,6 +18,8 @@ export interface IconIconData {
 
 export type IconMsgMintResponse = object;
 
+export type IconMsgUpdateClassResponse = object;
+
 /**
  * Params defines the parameters for the module.
  */

@@ -72,3 +72,23 @@ func GetImgHash(uri string, hashType string) (graphHash string, fileHash string,
 		return "", "", ErrParam.Wrap("invalid hash type, expect (p)")
 	}
 }
+
+func GetFileHash(uri string) (fileHash string, e error) {
+	_, err := url.ParseRequestURI(uri)
+	if err != nil {
+		return "", err
+	}
+	resp, err := http.Get(uri)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", ErrParam.Wrapf("invalid param (Uri) (%s)", err)
+	}
+	hash := sha256.New()
+	hash.Write(bodyBytes)
+	hashStr := hex.EncodeToString(hash.Sum(nil))
+	return hashStr, nil
+}

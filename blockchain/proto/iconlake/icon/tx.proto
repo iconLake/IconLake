@@ -8,7 +8,8 @@ option go_package = "iconlake/x/icon/types";
 
 // Msg defines the Msg service.
 service Msg {
-  rpc Mint (MsgMint) returns (MsgMintResponse);
+  rpc Mint        (MsgMint       ) returns (MsgMintResponse       );
+  rpc UpdateClass (MsgUpdateClass) returns (MsgUpdateClassResponse);
 }
 message MsgMint {
   string   creator = 1;
@@ -21,3 +22,15 @@ message MsgMint {
 }
 
 message MsgMintResponse {}
+
+message MsgUpdateClass {
+  string    creator     = 1;
+  string    id          = 2;
+  string    name        = 3;
+  string    symbol      = 4;
+  string    description = 5;
+  string    uri         = 6;
+  string    uriHash     = 7;
+}
+
+message MsgUpdateClassResponse {}
