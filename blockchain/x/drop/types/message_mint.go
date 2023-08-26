@@ -43,13 +43,13 @@ func (msg *MsgMint) ValidateBasic() error {
 		return ErrAddress.Wrapf("invalid creator address (%s)", err)
 	}
 	if msg.Amount.Denom != DropDenom {
-		return ErrDenom.Wrapf("only amount denom of \"%s\" is supported (%s)", DropDenom, err)
+		return ErrDenom.Wrapf("only amount denom of \"%s\" is supported", DropDenom)
 	}
 	if msg.Amount.Amount.LT(math.NewInt(10000)) {
-		return ErrAmount.Wrapf("amount should be greater than 10000%s (%s)", DropDenom, err)
+		return ErrAmount.Wrapf("amount should be greater than 10000%s", DropDenom)
 	}
 	if msg.Amount.Amount.GT(math.NewInt(600000)) {
-		return ErrAmount.Wrapf("amount should be littler than 600000%s (%s)", DropDenom, err)
+		return ErrAmount.Wrapf("amount should be littler than 600000%s", DropDenom)
 	}
 	return nil
 }
