@@ -1,5 +1,5 @@
 import { locale, messages } from '../i18n'
-import { DROP_DENOM, DROP_DENOM_MINI, PUBLIC_PAGES } from './const'
+import { DROP_DENOM, DROP_DENOM_MINI, LAKE_DENOM, PUBLIC_PAGES } from './const'
 
 const toastContainer = document.createElement('div')
 toastContainer.className = 'toast-container'
@@ -92,8 +92,12 @@ export function formatTime(time: string) {
   return `${t.getFullYear()}-${t.getMonth() + 1}-${t.getDate()}`
 }
 
-export function formatDropAmount(dropAmount: number) {
-  return `${(dropAmount / 10000).toFixed(4)}${DROP_DENOM}`
+export function formatLakeAmount(lakeAmount: number, hasDenom = true) {
+  return `${(lakeAmount / 1000000).toFixed(6)}${hasDenom ? LAKE_DENOM : ''}`
+}
+
+export function formatDropAmount(dropAmount: number, hasDenom = true) {
+  return `${(dropAmount / 10000).toFixed(4)}${hasDenom ? DROP_DENOM : ''}`
 }
 
 export function parseDropAmount(dropAmount: string) {

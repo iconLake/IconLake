@@ -1,4 +1,4 @@
-import { DROP_DENOM_MINI, ERROR_CODE, LAKE_DENOM_MINI } from '../../utils/const.js'
+import { ERROR_CODE, LAKE_DENOM_MINI } from '../../utils/const.js'
 import { getClient } from './client.js'
 import { User } from '../../models/user.js'
 
@@ -24,10 +24,6 @@ export async function init (req, res) {
     },
     fee: {
       amount: [
-        {
-          amount: '0',
-          denom: DROP_DENOM_MINI
-        },
         {
           amount: '0',
           denom: LAKE_DENOM_MINI
