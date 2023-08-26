@@ -52,9 +52,9 @@ async function detectKeplr() {
   }
 }
 
-export async function getBalance(address: string) {
+export async function getBalance(address: string, denom: string) {
   const res = await client.CosmosBankV1Beta1.query.queryBalance(address, {
-    denom: DROP_DENOM_MINI
+    denom
   })
   return res.data.balance
 }

@@ -4,7 +4,6 @@ import Cookies from 'js-cookie'
 import { logout, info, UserInfo } from '../apis/user'
 import { useI18n } from 'vue-i18n'
 import { updateEncryptKey } from '@/utils/storage';
-import { mintDrop } from '@/utils/global';
 const { t } = useI18n()
 
 const locale = ref(Cookies.get('locale') || 'zh-cn')
@@ -28,9 +27,6 @@ async function getUserInfo () {
   Object.assign(userInfo, await info())
   isLoggedIn.value = true
   updateEncryptKey(userInfo._id)
-  if (userInfo.blockchain) {
-    mintDrop(userInfo.blockchain.id)
-  }
 }
 
 getUserInfo().catch(e => {
