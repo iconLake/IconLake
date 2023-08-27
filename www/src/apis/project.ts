@@ -107,9 +107,12 @@ export interface ListRes {
   list: Project[]
 }
 
-export function list() {
+export function list(fields?: string) {
   return <Promise<ListRes>>request({
     url: '/list',
+    params: {
+      fields
+    },
     baseURL
   })
 }

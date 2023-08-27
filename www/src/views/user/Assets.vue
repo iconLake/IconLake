@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { getBalance, getDropInfo, initDrop, mintDrop, signMsg } from '@/apis/blockchain'
+import { getBalance, getDropInfo, initDrop, mintDrop, signMsg, getNftClass } from '@/apis/blockchain'
 import { UserInfo, info, loginByBlockchain } from '@/apis/user'
+import { list as getProjectList } from '@/apis/project'
 import { ref, onBeforeUnmount } from 'vue'
 import UserVue from '@/components/User.vue'
 import { formatDropAmount, formatLakeAmount, toast } from '@/utils'
@@ -16,6 +17,7 @@ const lastMintTime = ref(-1)
 const dropingAmount = ref(0)
 const userInfo = ref<UserInfo>()
 const isConfirming = ref(false)
+const isIniting = ref(false)
 
 const dropingTimer = setInterval(() => {
   if (lastMintTime.value <= 0 || isConfirming.value) {
@@ -45,6 +47,8 @@ async function getAssets() {
       } else {
         lastMintTime.value = 0
       }
+    }).catch(() => {
+      lastMintTime.value = 0
     })
   }
 }
@@ -99,12 +103,24 @@ async function bindBlockchain() {
 
 async function initDropAccount() {
   if (userInfo.value?.blockchain?.id) {
-    const res = await initDrop()
-    toast(res.transactionHash)
+    isIniting.value = true
+    await initDrop()
+    toast("完成")
+    isIniting.value = false
+    getAssets()
   }
 }
 
+async function getNftClasses() {
+  const {list} = await getProjectList('_id')
+  list.forEach(async e => {
+    const info = await getNftClass(e._id)
+    console.log(info)
+  })
+}
+
 getAssets()
+getNftClasses()
 </script>
 
 <template>
