@@ -5,7 +5,7 @@ import { Project } from '../../models/project.js'
 import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM } from '../../utils/const.js'
 import { isActive as isCosActive } from '../../utils/cos.js'
 import { deleteProjectDir } from './icon/gen/index.js'
-import { middleware as userMiddleware } from '../user/middleware.js'
+import { middleware as userMiddleware, checkLogin } from '../user/middleware.js'
 
 const config = getConfig()
 
@@ -30,7 +30,8 @@ export async function info (req, res) {
   }, fields)
   if (project) {
     if (project.isPublic) {
-      if (!project.invite.$isEmpty()) {
+      const { user } = await checkLogin(req)
+      if (!project.invite.$isEmpty() && (!user || !project.members.some(e => e.userId.equals(user._id)))) {
         res.json({
           error: ERROR_CODE.PERMISSION_DENIED
         })
