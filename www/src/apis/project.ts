@@ -84,6 +84,7 @@ export interface Project {
   name: string
   files: Files
   desc: string
+  cover: string
   prefix: string
   class: string
   icons: Icon[]
@@ -392,7 +393,7 @@ export function setExpire(projectId: string, fileId: string, fileType: 'css'|'js
   })
 }
 
-export function uploadFile(projectId: string, _id: string, data: string | Buffer) {
+export function uploadFile(projectId: string, _id: string, data: string | ArrayBuffer) {
   return <Promise<{key: string, url: string}>>request({
     method: 'POST',
     url: '/file/upload',
