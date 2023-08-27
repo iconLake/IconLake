@@ -129,3 +129,8 @@ export function waitFor(until: Function) {
 export function isPagePublic(path = location.pathname) {
   return PUBLIC_PAGES.some(p => p.test(path))
 }
+
+export function getExt(name: string) {
+  const i = name.lastIndexOf('.')
+  return i === -1 ? '' : name.substring(i)
+}
