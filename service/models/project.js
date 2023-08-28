@@ -25,6 +25,7 @@ export const IconSchema = new Schema({
 export const ProjectSchema = new Schema({
   name: String,
   desc: String,
+  cover: String,
   prefix: {
     type: String,
     default: 'icon-'

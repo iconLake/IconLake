@@ -66,3 +66,16 @@ export function completeURL (url) {
   }
   return `${isActive ? config.cos.domain : ''}${/^\//.test(url) ? '' : '/'}${url}`
 }
+
+/**
+ * 瘦身URL
+ * @param {string} url
+ * @returns {string}
+ */
+export function slimURL (url) {
+  if (typeof url !== 'string') {
+    return ''
+  }
+  const prefix = new RegExp(`^${isActive ? config.cos.domain : ''}/`, 'i')
+  return url.replace(prefix, '')
+}
