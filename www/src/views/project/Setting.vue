@@ -12,12 +12,17 @@ const $route = useRoute()
 const projectId = $route.params.id as string
 const project = ref({
   name: '',
-  desc: ''
+  desc: '',
+  cover: '',
 })
 const isInfoEditing = computed(() => /\/info$/i.test($route.path))
 
 async function getProject() {
-  project.value = await info(projectId, 'name desc')
+  project.value = await info(projectId, 'name desc cover')
+}
+
+async function updateChain(e: Event) {
+  e.preventDefault()
 }
 
 getProject()
@@ -73,6 +78,9 @@ getProject()
       <router-link
         to="./info"
         class="flex info"
+        :style="{
+          'background-image': `url(${project.cover})`
+        }"
       >
         <div class="grow">
           <div class="flex">
@@ -88,7 +96,12 @@ getProject()
             {{ project.desc }}
           </div>
         </div>
-        <div class="icon" />
+        <div
+          class="btn update-chain"
+          @click="updateChain"
+        >
+          更新链上信息
+        </div>
       </router-link>
       <router-view />
     </div>
@@ -134,6 +147,9 @@ getProject()
   background: #fff;
   border-radius: 0.4rem;
   margin-bottom: 2.2rem;
+  background-size: cover;
+  background-position: center;
+  position: relative;
   .title {
     font-size: 1.8rem;
     font-weight: bold;
@@ -147,6 +163,12 @@ getProject()
     line-height: 2rem;
     margin-top: 1.5rem;
     word-break: break-all;
+  }
+  .update-chain {
+    box-shadow: 0.075rem 0.369rem 0.413rem 0.025rem rgba(0, 0, 0, 0.2);
+    position: absolute;
+    right: 1.125rem;
+    bottom: 1.125rem;
   }
 }
 </style>

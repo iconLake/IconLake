@@ -6,6 +6,7 @@ import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM } from '../../utils/const.js'
 import { isActive as isCosActive } from '../../utils/cos.js'
 import { deleteProjectDir } from './icon/gen/index.js'
 import { middleware as userMiddleware, checkLogin } from '../user/middleware.js'
+import { completeURL, slimURL } from '../../utils/file.js'
 
 const config = getConfig()
 
@@ -77,6 +78,9 @@ export async function info (req, res) {
       result.files.domain = isCosActive ? config.cos.domain : config.domain
       result.files.permamentMaxNum = PERMAMENT_FILES_MAX_NUM
     }
+    if ('cover' in result) {
+      result.cover = completeURL(result.cover)
+    }
     res.json(result)
   } else {
     res.json({
@@ -90,8 +94,11 @@ export async function info (req, res) {
  */
 export async function edit (req, res) {
   let _id = req.body._id
-  const data = includeKeys(req.body, ['name', 'desc', 'class', 'prefix'])
+  const data = includeKeys(req.body, ['name', 'desc', 'class', 'prefix', 'cover'])
   if (typeof _id === 'string' && _id.length > 0) {
+    if ('cover' in data) {
+      data.cover = slimURL(data.cover)
+    }
     const result = await Project.updateOne({
       _id,
       members: {

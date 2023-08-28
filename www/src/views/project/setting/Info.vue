@@ -22,7 +22,7 @@ const project = ref({
 })
 
 async function getProject() {
-  project.value = await info(projectId, 'name desc class prefix')
+  project.value = await info(projectId, 'name desc cover class prefix')
 }
 
 async function save() {
@@ -32,6 +32,7 @@ async function save() {
   await editInfo(projectId, project.value)
   toast(t('saveDone'))
   setTimeout(() => {
+    window.scrollTo(0, 0)
     location.reload()
   }, 1000)
 }
@@ -79,11 +80,18 @@ getProject()
       class="upload-input"
       @change="handleUpload"
     >
-      <img
+      <div
         v-if="project.cover"
-        :src="project.cover"
-        class="upload-preview"
+        class="preview-cnt"
       >
+        <img
+          :src="project.cover"
+          class="upload-preview"
+        >
+        <div class="preview-mask flex center">
+          <i class="iconfont icon-plus" />
+        </div>
+      </div>
       <div
         v-else
         class="upload-add flex center"
@@ -148,5 +156,29 @@ getProject()
   .upload-preview {
     height: 10rem;
   }
+}
+.preview-cnt {
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+  &:hover {
+    border-radius: 0.625rem;
+    .preview-mask {
+      opacity: 1;
+    }
+  }
+}
+.preview-mask {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  background-color: rgba($color: #fff, $alpha: 0.5);
+  opacity: 0;
+  transition: var(--transition);
+  border: #ccc 1px solid;
+  border-radius: 0.625rem;
 }
 </style>
