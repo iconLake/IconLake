@@ -22,12 +22,13 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 	}
 
 	msg.Data.Author = msg.Creator
+	msg.Data.CreateTime = ctx.BlockTime().Format(time.RFC3339)
 
 	classInfo, hasClass := k.nftKeeper.GetClass(ctx, msg.ClassId)
 	if !hasClass {
 		data := types.ClassData{
 			Author:     msg.Creator,
-			CreateTime: time.Now().Format(time.RFC3339),
+			CreateTime: ctx.BlockTime().Format(time.RFC3339),
 		}
 		dataAny, err := codecTypes.NewAnyWithValue(&data)
 		if err != nil {
@@ -50,7 +51,7 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 			return nil, err
 		}
 		if classData.GetAuthor() != msg.Creator {
-			err = types.ErrPermission.Wrapf("expected author is (%s)", classData.GetAuthor())
+			err = types.ErrPermission.Wrapf("expected class author is (%s)", classData.GetAuthor())
 			k.Logger(ctx).Error(err.Error())
 			return nil, err
 		}

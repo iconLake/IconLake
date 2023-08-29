@@ -112,8 +112,8 @@ func (msg *MsgMint) ValidateBasic() error {
 			now,
 		)
 	}
-	if msg.Supply == 0 {
-		return ErrParam.Wrap("invalid param (Supply)")
+	if msg.Supply <= 0 || msg.Supply > 99 {
+		return ErrParam.Wrap("invalid param (Supply), expect from 1 to 99")
 	}
 	isImgHashOk, err := CheckImgHash(msg.Uri, msg.UriHash, msg.Id)
 	if !isImgHashOk {
