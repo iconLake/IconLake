@@ -2,13 +2,14 @@
 import { getBalance, getDropInfo, initDrop, mintDrop, signMsg, getNftClass } from '@/apis/blockchain'
 import { UserInfo, info, loginByBlockchain } from '@/apis/user'
 import { list as getProjectList } from '@/apis/project'
-import { ref, onBeforeUnmount } from 'vue'
+import { ref, onBeforeUnmount, reactive } from 'vue'
 import UserVue from '@/components/User.vue'
 import { formatDropAmount, formatLakeAmount, toast } from '@/utils'
 import HeaderVue from '@/components/Header.vue'
 import LoadingVue from '@/components/Loading.vue'
 import { getSignMsg } from '@/utils/blockchain'
 import { DROP_DENOM_MINI, LAKE_DENOM_MINI, LAKE_DENOM, DROP_DENOM, MINT_DROP_AMOUNT_MAX, MINT_DROP_AMOUNT_MIN } from '@/utils/const'
+import type { V1Beta1Class } from '@iconlake/client/types/cosmos.nft.v1beta1/rest'
 
 const isKeplrAvailable = !!window.keplr
 const comfirmedDropAmount = ref(0)
@@ -18,6 +19,7 @@ const dropingAmount = ref(0)
 const userInfo = ref<UserInfo>()
 const isConfirming = ref(false)
 const isIniting = ref(false)
+const classes = reactive<V1Beta1Class[]>([])
 
 const dropingTimer = setInterval(() => {
   if (lastMintTime.value <= 0 || isConfirming.value) {
@@ -115,7 +117,9 @@ async function getNftClasses() {
   const {list} = await getProjectList('_id')
   list.forEach(async e => {
     const info = await getNftClass(e._id)
-    console.log(info)
+    if (info && info.class) {
+      classes.push(info.class)
+    }
   })
 }
 
@@ -209,6 +213,15 @@ getNftClasses()
     >
       初始化账户
     </button>
+  </div>
+  <div class="list">
+    <div
+      v-for="item in classes"
+      :key="item.id"
+      class="item"
+    >
+      {{ item.name }}
+    </div>
   </div>
 </template>
 

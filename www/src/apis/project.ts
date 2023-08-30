@@ -393,7 +393,7 @@ export function setExpire(projectId: string, fileId: string, fileType: 'css'|'js
   })
 }
 
-export function uploadFile(projectId: string, _id: string, data: string | ArrayBuffer) {
+export function uploadFile(projectId: string, _id: string, data: string | ArrayBuffer, dir?: string) {
   return <Promise<{key: string, url: string}>>request({
     method: 'POST',
     url: '/file/upload',
@@ -403,7 +403,8 @@ export function uploadFile(projectId: string, _id: string, data: string | ArrayB
     },
     params: {
       projectId,
-      _id
+      _id,
+      dir,
     },
     data
   })

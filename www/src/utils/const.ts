@@ -15,6 +15,11 @@ export const LAKE_DENOM_MINI = 'ulake'
 export const MINT_DROP_AMOUNT_MIN = 10000
 export const MINT_DROP_AMOUNT_MAX = 600000
 
+export const UPLOAD_DIR = {
+  COVER: 'cover',
+  ICON: 'icon',
+}
+
 export const PUBLIC_PAGES = [
   /^\/manage\/icons\/[^\/]+(\/use)?/i
 ]

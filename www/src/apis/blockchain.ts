@@ -4,7 +4,7 @@ import { Client } from '@iconlake/client'
 import type { V1Beta1QueryClassResponse } from '@iconlake/client/types/cosmos.nft.v1beta1/rest'
 import type { V1Beta1GetTxResponse } from '@iconlake/client/types/cosmos.tx.v1beta1/rest'
 import type { DropQueryGetInfoResponse } from '@iconlake/client/types/iconlake.drop/rest'
-import type { MsgMint as MsgMintIcon } from '@iconlake/client/types/iconlake.icon/module'
+import type { MsgMint as MsgMintIcon, MsgUpdateClass } from '@iconlake/client/types/iconlake.icon/module'
 
 const apiURL = IS_PRODUCTION ? 'https://lcd.mainnet.iconlake.com' : 'https://lcd.testnet.iconlake.com'
 const rpcURL = IS_PRODUCTION ? 'https://rpc.mainnet.iconlake.com' : 'https://rpc.testnet.iconlake.com'
@@ -150,4 +150,13 @@ export async function getNftClass(classId: string) {
   return await new Promise((resolve: (v: V1Beta1QueryClassResponse) => void, reject) => {
     handleResponse<V1Beta1QueryClassResponse>(res as any, resolve, reject);
   })
+}
+
+export async function updateClass(value: MsgUpdateClass) {
+  await detectKeplr()
+  if (!isKeplrDetected) return
+  const res = await client.IconlakeIcon.tx.sendMsgUpdateClass({
+    value
+  })
+  return res
 }
