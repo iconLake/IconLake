@@ -6,6 +6,7 @@ import { editInfo, info, uploadFile } from '../../../apis/project'
 import { getExt, toast } from '../../../utils'
 import { ElSwitch, ElUpload } from 'element-plus'
 import type { UploadFile } from 'element-plus'
+import { UPLOAD_DIR } from '@/utils/const'
 
 const { t } = useI18n()
 
@@ -46,7 +47,7 @@ async function handleUpload(file: UploadFile) {
     toast('暂不支持上传超过5MB的图片')
     return
   }
-  const res = await uploadFile(projectId, `${Date.now()}${getExt(file.name)}`, await file.raw.arrayBuffer())
+  const res = await uploadFile(projectId, `${Date.now()}${getExt(file.name)}`, await file.raw.arrayBuffer(), UPLOAD_DIR.COVER)
   project.value.cover = res.url
 }
 

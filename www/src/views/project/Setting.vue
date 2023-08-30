@@ -4,7 +4,11 @@ import { useRoute } from 'vue-router'
 import UserVue from '../../components/User.vue'
 import HeaderVue from '../../components/Header.vue'
 import { useI18n } from 'vue-i18n'
-import { info } from '../../apis/project';
+import { info } from '@/apis/project';
+import { info as userInfo } from '@/apis/user';
+import { getHash, updateClass, getNftClass } from '@/apis/blockchain'
+import Loading from '@/components/Loading.vue'
+import { toast } from '@/utils'
 
 const { t } = useI18n()
 
@@ -14,15 +18,61 @@ const project = ref({
   name: '',
   desc: '',
   cover: '',
+  class: '',
 })
 const isInfoEditing = computed(() => /\/info$/i.test($route.path))
+const isUpdatingChain = ref(false)
+const isDiffFromChain = ref(false)
 
 async function getProject() {
-  project.value = await info(projectId, 'name desc cover')
+  project.value = await info(projectId, 'name desc cover class')
+  getChainProject()
+}
+
+async function getChainProject() {
+  const info = await getNftClass(projectId).catch(() => {})
+  isDiffFromChain.value = !info
+    || !info.class
+    || info.class.name !== project.value.name
+    || info.class.description !== project.value.desc
+    || info.class.symbol !== project.value.class
+    || info.class.uri !== project.value.cover
 }
 
 async function updateChain(e: Event) {
   e.preventDefault()
+  const uri = project.value.cover
+  if (!uri) {
+    toast('请先设置封面')
+    return
+  }
+  isUpdatingChain.value = true
+  try {
+    const hash = await getHash(uri)
+    const user = await userInfo()
+    if (!user.blockchain?.id) {
+      return
+    }
+    const res = await updateClass({
+      creator: user.blockchain?.id,
+      id: projectId,
+      name: project.value.name,
+      description: project.value.desc,
+      symbol: project.value.class,
+      uri,
+      uriHash: hash.fileHash,
+    })
+    if (res?.code === 0) {
+      toast('更新成功')
+      isDiffFromChain.value = false
+    } else {
+      toast('更新失败')
+    }
+  } catch (e) {
+    toast('更新失败')
+    console.error(e)
+  }
+  isUpdatingChain.value = false
 }
 
 getProject()
@@ -97,10 +147,12 @@ getProject()
           </div>
         </div>
         <div
+          v-if="isDiffFromChain"
           class="btn update-chain"
           @click="updateChain"
         >
-          更新链上信息
+          <Loading v-if="isUpdatingChain" />
+          <span v-else>更新链上信息</span>
         </div>
       </router-link>
       <router-view />
