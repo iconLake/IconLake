@@ -5,10 +5,17 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"image"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
+
+	_ "golang.org/x/image/bmp"
+	_ "golang.org/x/image/tiff"
+	_ "golang.org/x/image/webp"
 
 	imageHash "github.com/corona10/goimagehash"
 	"gopkg.in/gographics/imagick.v2/imagick"
