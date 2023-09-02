@@ -5,6 +5,7 @@ import type { V1Beta1QueryClassResponse } from '@iconlake/client/types/cosmos.nf
 import type { V1Beta1GetTxResponse } from '@iconlake/client/types/cosmos.tx.v1beta1/rest'
 import type { DropQueryGetInfoResponse } from '@iconlake/client/types/iconlake.drop/rest'
 import type { MsgMint as MsgMintIcon, MsgUpdateClass } from '@iconlake/client/types/iconlake.icon/module'
+import { SHA256, lib } from 'crypto-js'
 
 const apiURL = IS_PRODUCTION ? 'https://lcd.mainnet.iconlake.com' : 'https://lcd.testnet.iconlake.com'
 const rpcURL = IS_PRODUCTION ? 'https://rpc.mainnet.iconlake.com' : 'https://rpc.testnet.iconlake.com'
@@ -159,4 +160,26 @@ export async function updateClass(value: MsgUpdateClass) {
     value
   })
   return res
+}
+
+interface verifyResult {
+  checked: boolean
+  url?: string
+}
+
+export async function verifyUriHash(uri: string | undefined, hash: string | undefined): Promise<verifyResult> {
+  if (!uri || !hash) {
+    return {
+      checked: false
+    }
+  }
+  const blob = await fetch(uri).then(e => e.blob())
+  const file = await blob.arrayBuffer()
+  const words = lib.WordArray.create()
+  ;(words as any).init(file)
+  const fileHash = SHA256(words)
+  return {
+    checked: hash === fileHash.toString(),
+    url: URL.createObjectURL(blob)
+  }
 }

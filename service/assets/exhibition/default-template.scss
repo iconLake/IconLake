@@ -1,0 +1,30 @@
+.info {
+  .cover {
+    height: 300px;
+    background-position: center;
+    background-size: cover;
+    position: relative;
+  }
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    color: #fff;
+    opacity: 0.9;
+  }
+  h1,
+  h2 {
+    padding: 8px 12px;
+  }
+  h1 {
+    font-size: 20px;
+    background-color: #476de8;
+  }
+  h2 {
+    font-size: 12px;
+    background-color: #476de8;
+  }
+}

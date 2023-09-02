@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getBalance, getDropInfo, initDrop, mintDrop, signMsg, getNftClass } from '@/apis/blockchain'
+import { getBalance, getDropInfo, initDrop, mintDrop, signMsg, getNftClass, verifyUriHash } from '@/apis/blockchain'
 import { UserInfo, info, loginByBlockchain } from '@/apis/user'
 import { list as getProjectList } from '@/apis/project'
 import { ref, onBeforeUnmount, reactive } from 'vue'
@@ -11,6 +11,10 @@ import { getSignMsg } from '@/utils/blockchain'
 import { DROP_DENOM_MINI, LAKE_DENOM_MINI, LAKE_DENOM, DROP_DENOM, MINT_DROP_AMOUNT_MAX, MINT_DROP_AMOUNT_MIN } from '@/utils/const'
 import type { V1Beta1Class } from '@iconlake/client/types/cosmos.nft.v1beta1/rest'
 
+type ClassInfo = V1Beta1Class & {
+  url?: string
+}
+
 const isKeplrAvailable = !!window.keplr
 const comfirmedDropAmount = ref(0)
 const lakeAmount = ref(0)
@@ -19,7 +23,7 @@ const dropingAmount = ref(0)
 const userInfo = ref<UserInfo>()
 const isConfirming = ref(false)
 const isIniting = ref(false)
-const classes = reactive<V1Beta1Class[]>([])
+const classes = reactive<ClassInfo[]>([])
 
 const dropingTimer = setInterval(() => {
   if (lastMintTime.value <= 0 || isConfirming.value) {
@@ -118,7 +122,11 @@ async function getNftClasses() {
   list.forEach(async e => {
     const info = await getNftClass(e._id)
     if (info && info.class) {
-      classes.push(info.class)
+      const verify = await verifyUriHash(info.class.uri, info.class.uri_hash).catch(() => {})
+      classes.push({
+        ...info.class,
+        url: verify ? verify.url : undefined
+      })
     }
   })
 }
@@ -214,14 +222,28 @@ getNftClasses()
       初始化账户
     </button>
   </div>
-  <div class="list">
-    <div
+  <div class="list flex start">
+    <a
       v-for="item in classes"
       :key="item.id"
       class="item"
+      :href="`/exhibition/${item.id ? encodeURIComponent(item.id) : ''}`"
+      target="_blank"
     >
-      {{ item.name }}
-    </div>
+      <div class="item-cover">
+        <div
+          class="cover-img"
+          :style="{
+            backgroundImage: `url(${item.url})`
+          }"
+        />
+      </div>
+      <div class="item-info">
+        <div class="info-name">
+          {{ item.name }}
+        </div>
+      </div>
+    </a>
   </div>
 </template>
 
@@ -292,5 +314,54 @@ getNftClasses()
 }
 .operate {
   margin: 0 0 5rem;
+}
+.list {
+  $item-width: 29.25rem;
+  padding: 0 0 4rem;
+  gap: 2rem;
+  flex-wrap: wrap;
+  width: $item-width * 4 + 2 * 3;
+  margin: 0 auto;
+  .item {
+    width: 29.25rem;
+    background-color: #fff;
+    border-radius: 1rem;
+    overflow: hidden;
+    &-cover {
+      width: 100%;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+    }
+    .cover-img {
+      width: 100%;
+      height: 100%;
+      transition: var(--transition);
+      background-position: center;
+      background-size: cover;
+    }
+    &:hover {
+      .cover-img {
+        transform: scale(1.2);
+      }
+    }
+    &-info {
+      padding: 2rem;
+      line-height: 1.4;
+      div {
+        padding-top: 1.5rem;
+        &:first-child {
+          padding-top: 0;
+        }
+      }
+    }
+    .info {
+      &-name {
+        font-size: 1.3rem;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+    }
+  }
 }
 </style>

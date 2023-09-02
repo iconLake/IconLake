@@ -20,7 +20,8 @@ const srcPath = './assets/'
 const destPath = './public/'
 const scssFiles = `${srcPath}**/*.scss`
 const tsFiles = `${srcPath}**/*.ts`
-const htmlFiles = `${srcPath}**/*.html`
+const i18nHtmlFiles = [`${srcPath}**/*.html`, `!${srcPath}exhibition/*.html`]
+const htmlFiles = `${srcPath}exhibition/*.html`
 
 let isChanged = false
 const srcOptions = {
@@ -41,13 +42,16 @@ export function css () {
 
 export function js () {
   return gulp.src(tsFiles, srcOptions)
-    .pipe(typescript())
+    .pipe(typescript({
+      module: 'esnext',
+      target: 'es6'
+    }))
     .pipe(uglify())
     .pipe(gulp.dest(destPath))
 }
 
 function htmlZh () {
-  return gulp.src(htmlFiles, srcOptions)
+  return gulp.src(i18nHtmlFiles, srcOptions)
     .pipe(replace(/\$\{(.+)\}/g, (match, param) => {
       return i18n.zh[param]
     }))
@@ -59,7 +63,7 @@ function htmlZh () {
 }
 
 function htmlEn () {
-  return gulp.src(htmlFiles, srcOptions)
+  return gulp.src(i18nHtmlFiles, srcOptions)
     .pipe(replace(/\$\{(.+)\}/g, (match, param) => {
       return i18n.en[param]
     }))
@@ -70,15 +74,25 @@ function htmlEn () {
     .pipe(gulp.dest(destPath))
 }
 
-const html = gulp.parallel(htmlZh, htmlEn)
+const i18nHtml = gulp.parallel(htmlZh, htmlEn)
+
+function html () {
+  return gulp.src(htmlFiles, {
+    ...srcOptions,
+    base: srcPath
+  })
+    .pipe(htmlmin({ collapseWhitespace: true }))
+    .pipe(gulp.dest(destPath))
+}
 
 function watch (cb) {
   gulp.watch(scssFiles, gulp.series(change, css))
   gulp.watch(tsFiles, gulp.series(change, js))
+  gulp.watch(i18nHtmlFiles, gulp.series(change, i18nHtml))
   gulp.watch(htmlFiles, gulp.series(change, html))
   cb()
 }
 
-export const init = gulp.parallel(css, js, html)
+export const init = gulp.parallel(css, js, i18nHtml, html)
 
 export default gulp.series(init, watch)

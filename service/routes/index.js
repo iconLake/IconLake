@@ -15,6 +15,13 @@ router.get('/', (req, res) => {
 
 router.get('/login', loginIndex)
 
+router.get('/exhibition/:projectId', express.static('public', { maxAge }), (_req, res) => {
+  res.sendFile('./public/exhibition/project.html', {
+    root,
+    maxAge
+  })
+})
+
 router.use('/', express.static('public', { maxAge }), (req, res, next) => {
   if (/^\/manage\//i.test(req.path)) {
     res.sendFile('./public/manage/index.html', {
