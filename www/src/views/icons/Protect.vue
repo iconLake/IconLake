@@ -50,8 +50,8 @@ async function publish() {
     uriHash: hash.fileHash,
     data: {
       author: account.address,
-      name: iconInfo.name,
-      description: '',
+      name: iconInfo.code,
+      description: iconInfo.name,
       createTime: new Date().toISOString()
     },
     supply: 1
