@@ -1,6 +1,9 @@
+$cover-height: 300px;
+
 .info {
+  background-color: #476de8;
   .cover {
-    height: 300px;
+    height: $cover-height;
     background-position: center;
     background-size: cover;
     position: relative;
@@ -26,5 +29,34 @@
   h2 {
     font-size: 12px;
     background-color: #476de8;
+  }
+}
+
+.nfts {
+  background: #eff3ff;
+  padding: 30px 0;
+  min-height: calc(100vh - $cover-height);
+  box-sizing: border-box;
+  &-container {
+    display: flex;
+    margin: 0 auto;
+    width: 1200px;
+    gap: 16px;
+  }
+}
+
+.nft {
+  width: 200px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #fff;
+  &-img {
+    height: 200px;
+    background-position: center;
+    background-size: cover;
+  }
+  &-name {
+    font-size: 14px;
+    padding: 16px;
   }
 }
