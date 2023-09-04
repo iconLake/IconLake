@@ -7,28 +7,47 @@ $cover-height: 300px;
     background-position: center;
     background-size: cover;
     position: relative;
+    &:hover {
+      .content {
+        top: 0;
+      }
+      h2,
+      h3 {
+        display: block;
+      }
+    }
   }
   .content {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
     position: absolute;
-    left: 20px;
-    bottom: 20px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 250px;
     color: #fff;
-    opacity: 0.9;
+    background-color: rgba($color: #476de8, $alpha: 0.9);
+    text-align: center;
+    transition: all 0.3s ease-out;
   }
   h1,
-  h2 {
+  h2,
+  h3 {
     padding: 8px 12px;
+    margin: 0;
   }
   h1 {
     font-size: 20px;
-    background-color: #476de8;
   }
   h2 {
     font-size: 12px;
-    background-color: #476de8;
+    display: none;
+  }
+  h3 {
+    font-size: 10px;
+    display: none;
   }
 }
 
@@ -50,6 +69,8 @@ $cover-height: 300px;
   border-radius: 10px;
   overflow: hidden;
   background-color: #fff;
+  color: #000;
+  text-decoration: none;
   &-img {
     height: 200px;
     background-position: center;
