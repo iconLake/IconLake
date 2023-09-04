@@ -12,7 +12,7 @@
     iconlakeDom?.setAttribute('info', JSON.stringify(info.class))
   }).catch(console.error)
 
-  import('./default-template.js').then(module => {
+  import('./default-template-project.js').then(module => {
     customElements.define('iconlake-exhibition', module.default)
   })
 

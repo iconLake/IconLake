@@ -2,6 +2,9 @@ interface Info {
   uri: string
   name: string
   description: string
+  data: {
+    author: string
+  }
 }
 
 interface Nft {
@@ -29,21 +32,24 @@ export default class DefaultTemplate extends HTMLElement {
       mode: 'open'
     })
 
+    const frag = document.createDocumentFragment()
+
     const css = document.createElement('link')
     css.setAttribute('rel', 'stylesheet')
-    css.setAttribute('href', './default-template.css')
-    this.shadowRoot?.appendChild(css)
+    css.setAttribute('href', './default-template-project.css')
+    frag.appendChild(css)
 
     let dom = document.createElement('div')
     dom.className = 'info'
-    this.shadowRoot?.appendChild(dom)
+    frag.appendChild(dom)
     dom = document.createElement('div')
     dom.className = 'nfts'
-    this.shadowRoot?.appendChild(dom)
+    frag.appendChild(dom)
+
+    this.shadowRoot?.appendChild(frag)
   }
 
   attributeChangedCallback (name: string, _oldValue, newValue: string | null) {
-    console.log(name, _oldValue, newValue)
     if (!this.shadowRoot) {
       return
     }
@@ -74,6 +80,9 @@ export default class DefaultTemplate extends HTMLElement {
     const nameDom = document.createElement('h1')
     nameDom.innerText = info?.name ?? ''
     contentDom.appendChild(nameDom)
+    const authorDom = document.createElement('h3')
+    authorDom.innerText = info?.data.author ?? ''
+    contentDom.appendChild(authorDom)
     if (info?.description) {
       const descDom = document.createElement('h2')
       descDom.innerText = info.description
@@ -101,7 +110,8 @@ export default class DefaultTemplate extends HTMLElement {
   }
 
   renderNft (root, nft: Nft) {
-    const nftDom = document.createElement('div')
+    const nftDom = document.createElement('a')
+    nftDom.href = `/exhibition/${encodeURIComponent(nft.class_id)}/${encodeURIComponent(nft.id)}`
     nftDom.className = 'nft'
     const imgDom = document.createElement('div')
     imgDom.className = 'nft-img'
