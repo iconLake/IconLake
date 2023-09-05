@@ -4,6 +4,7 @@ import (
 	"net/url"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -94,10 +95,10 @@ func (msg *MsgMint) ValidateBasic() error {
 	if err != nil || msg.Creator != msg.Data.Author {
 		return ErrParam.Wrap("invalid param (Data.Author)")
 	}
-	if len(msg.Data.Name) > 64 {
+	if utf8.RuneCountInString(msg.Data.Name) > 64 {
 		return ErrParam.Wrap("invalid param (Data.Name), expect within 64 chars")
 	}
-	if len(msg.Data.Description) > 300 {
+	if utf8.RuneCountInString(msg.Data.Description) > 300 {
 		return ErrParam.Wrap("invalid param (Data.Description), expect within 300 chars")
 	}
 	createTime, err := time.Parse(time.RFC3339, msg.Data.CreateTime)

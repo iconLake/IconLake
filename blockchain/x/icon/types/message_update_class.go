@@ -2,6 +2,7 @@ package types
 
 import (
 	"net/url"
+	"unicode/utf8"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -52,13 +53,13 @@ func (msg *MsgUpdateClass) ValidateBasic() error {
 	if idLen < 6 || idLen > 64 {
 		return ErrParam.Wrap("invalid param (Id), length should between 6 and 64")
 	}
-	if len(msg.Name) > 64 {
+	if utf8.RuneCountInString(msg.Name) > 64 {
 		return ErrParam.Wrap("invalid param (Name), expect within 64 chars")
 	}
-	if len(msg.Symbol) > 32 {
+	if utf8.RuneCountInString(msg.Symbol) > 32 {
 		return ErrParam.Wrap("invalid param (Symbol), expect within 32 chars")
 	}
-	if len(msg.Description) > 300 {
+	if utf8.RuneCountInString(msg.Description) > 300 {
 		return ErrParam.Wrap("invalid param (Description), expect within 300 chars")
 	}
 	_, err = url.ParseRequestURI(msg.Uri)
