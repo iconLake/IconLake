@@ -15,6 +15,20 @@ type ClassInfo = V1Beta1Class & {
   url?: string
 }
 
+const tokenSrc = {
+  lake: {
+    logo: '/imgs/lake-circle.svg',
+    bg: 'url(/imgs/token-lake-bg.png)',
+  },
+  drop: {
+    logo: '/imgs/drop.svg',
+    bg: 'url(/imgs/token-drop-bg.png)',
+  },
+  droping: {
+    bg: 'url(/imgs/token-droping-bg.png)',
+  },
+}
+
 const isKeplrAvailable = !!window.keplr
 const comfirmedDropAmount = ref(0)
 const lakeAmount = ref(0)
@@ -146,7 +160,7 @@ getNftClasses()
     <div class="item lake">
       <div class="logo flex center">
         <img
-          src="/imgs/lake-circle.svg"
+          :src="tokenSrc.lake.logo"
           alt="LAKE"
         >
       </div>
@@ -158,7 +172,7 @@ getNftClasses()
     <div class="item drop">
       <div class="logo flex center">
         <img
-          src="/imgs/drop.svg"
+          :src="tokenSrc.drop.logo"
           alt="LAKE"
         >
       </div>
@@ -170,7 +184,7 @@ getNftClasses()
     <div class="item droping">
       <div class="logo flex center">
         <img
-          src="/imgs/drop.svg"
+          :src="tokenSrc.drop.logo"
           alt="LAKE"
         >
       </div>
@@ -257,13 +271,13 @@ getNftClasses()
     margin: 0 1rem;
   }
   .lake {
-    background: url(/imgs/token-lake-bg.png) center/contain no-repeat;
+    background: v-bind('tokenSrc.lake.bg') center/contain no-repeat;
   }
   .drop {
-    background: url(/imgs/token-drop-bg.png) center/contain no-repeat;
+    background: v-bind('tokenSrc.drop.bg') center/contain no-repeat;
   }
   .droping {
-    background: url(/imgs/token-droping-bg.png) center/contain no-repeat;
+    background: v-bind('tokenSrc.droping.bg') center/contain no-repeat;
   }
   .logo {
     width: 2.813rem;
