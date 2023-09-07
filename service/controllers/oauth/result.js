@@ -64,7 +64,7 @@ export async function success (userInfo, req, res) {
       user.tokenExpire = tokenExpire
       user[userInfo.from] = userInfo
     } else {
-      const currentLogin = checkLogin(req)
+      const currentLogin = await checkLogin(req)
       if (currentLogin.user) {
         user = currentLogin.user
         user[userInfo.from] = userInfo

@@ -37,6 +37,7 @@ const dropingAmount = ref(0)
 const userInfo = ref<UserInfo>()
 const isConfirming = ref(false)
 const isIniting = ref(false)
+const isBinding = ref(false)
 const classes = reactive<ClassInfo[]>([])
 
 const dropingTimer = setInterval(() => {
@@ -101,8 +102,15 @@ async function confirmAssets() {
 }
 
 async function bindBlockchain() {
-  const msg = await getSignMsg()
-  const signRes = await signMsg(msg)
+  isBinding.value = true
+  const catchCall = () => {
+    isBinding.value = false
+  }
+  const msg = await getSignMsg().catch(catchCall)
+  if (!msg) {
+    return
+  }
+  const signRes = await signMsg(msg).catch(catchCall)
   if (!signRes) {
     return
   }
@@ -110,23 +118,30 @@ async function bindBlockchain() {
     msg,
     sig: signRes.signature,
     pubkey: signRes.pub_key
-  })
+  }).catch(catchCall)
+  if (!res) {
+    return
+  }
   if (res.userId && res.userId !== (await info())._id) {
     toast('此地址已绑定其他账号，即将为你切换账号')
     setTimeout(() => {
       location.reload()
     }, 2000)
   } else {
-    toast('绑定成功')
+    toast('绑定成功，正在加载你的链上资产')
+    userInfo.value = await info(true)
+    await getAssets()
+    isBinding.value = false
   }
 }
 
 async function initDropAccount() {
-  if (userInfo.value?.blockchain?.id) {
+  if (userInfo.value?.blockchain?.id && !isIniting.value) {
     isIniting.value = true
-    await initDrop()
-    toast("完成")
-    isIniting.value = false
+    await initDrop().finally(() => {
+      isIniting.value = false
+    })
+    toast("你的账户已开始积攒DROP啦")
     getAssets()
   }
 }
@@ -225,7 +240,8 @@ getNftClasses()
       class="btn"
       @click="bindBlockchain"
     >
-      绑定区块链账户
+      <LoadingVue v-if="isBinding" />
+      <span v-else>绑定区块链账户</span>
     </button>
     <button
       v-else-if="!lastMintTime"
@@ -233,7 +249,8 @@ getNftClasses()
       class="btn"
       @click="initDropAccount"
     >
-      初始化账户
+      <LoadingVue v-if="isIniting" />
+      <span v-else>开始积攒DROP</span>
     </button>
   </div>
   <div class="list flex start">
