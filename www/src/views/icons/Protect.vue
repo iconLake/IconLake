@@ -8,6 +8,7 @@ import { reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { toast } from '@/utils';
 import { info } from '@/apis/user';
+import LoadingVue from '@/components/Loading.vue';
 
 const $route = useRoute()
 const projectId = ref($route.params.projectId as string)
@@ -32,6 +33,9 @@ async function getIconInfo() {
 }
 
 async function publish() {
+  if (isPending.value) {
+    return
+  }
   isPending.value = true
   const file = await uploadFile(projectId.value, id.value + '.svg', `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="${iconInfo.svg.viewBox}">${iconInfo.svg.path}</svg>`)
   const url = /^http/.test(file.url) ? file.url : `${location.origin}${file.url}`
@@ -116,21 +120,15 @@ checkChainAccount()
         :disabled="!isChainAccountReady"
         @click="publish"
       >
-        {{ isPending ? '正在上链...' : '发布到区块链' }}
+        <LoadingVue v-if="isPending" />
+        <span v-else>发布到区块链</span>
       </button>
-      <div
-        style="margin-top: 1rem;"
-      >
-        <RouterLink to="/user/assets">
-          前往“我的资产”启用链上账户（没有初始化链上账户时显示）
-        </RouterLink>
-      </div>
     </div>
     <div
       v-else
       class="operate"
     >
-      链上记录ID: {{ iconInfo.txHash }}
+      上链记录ID: {{ iconInfo.txHash }}
     </div>
   </div>
 </template>
