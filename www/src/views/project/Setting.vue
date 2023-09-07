@@ -46,6 +46,9 @@ async function updateChain(e: Event) {
     toast('请先设置封面')
     return
   }
+  if (isUpdatingChain.value) {
+    return
+  }
   isUpdatingChain.value = true
   try {
     const hash = await getHash(uri)
