@@ -296,17 +296,25 @@ watch(() => data.keyword, () => {
       {{ data.name }}
     </div>
     <span
-      v-if="data.isPublic"
-      class="tag"
-    >【公开】</span>
+      :class="`iconfont icon-${data.isPublic ? '' : 'un'}visible visibility`"
+      :title="data.isPublic ? '公开，任何获得此页面链接的人都可访问' : '私有，仅项目成员可访问'"
+    />
     <router-link
       v-if="editable"
       :to="`/project/${data._id}/setting`"
       class="setting flex"
     >
-      <span>{{ t('setting') }}</span>
-      <i class="iconfont icon-setting-plain" />
+      <i
+        class="iconfont icon-setting-plain"
+        :title="t('setting')"
+      />
     </router-link>
+    <a
+      class="iconfont icon-exhibition exhibition"
+      :href="`/exhibition/${data._id}`"
+      target="_blank"
+      :title="t('exhibition')"
+    />
   </HeaderVue>
   <UserVue />
   <div
@@ -461,19 +469,26 @@ watch(() => data.keyword, () => {
   .name {
     margin-left: 2.2rem;
   }
-  .setting {
-    color: #fff;
-    height: 3rem;
-    background-color: #cfd5e6;
-	  border-radius: 1.5rem;
-    padding: 0 1.5rem;
+  .exhibition {
+    font-size: 3rem;
     margin-left: 1.3rem;
     &:hover {
-      background: $color-main;
+      color: var(--color-main);
+    }
+  }
+  .visibility {
+    font-size: 2rem;
+    margin-left: 1rem;
+    color: #4d4d4d;
+  }
+  .setting {
+    margin-left: 1.5rem;
+    color: #4d4d4d;
+    &:hover {
+      color: var(--color-main);
     }
     .iconfont {
-      font-size: 1.5rem;
-      margin-left: 0.3rem;
+      font-size: 2.5rem;
     }
   }
 }
