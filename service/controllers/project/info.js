@@ -94,7 +94,7 @@ export async function info (req, res) {
  */
 export async function edit (req, res) {
   let _id = req.body._id
-  const data = includeKeys(req.body, ['name', 'desc', 'class', 'prefix', 'cover'])
+  const data = includeKeys(req.body, ['name', 'desc', 'class', 'prefix', 'cover', 'isPublic'])
   if (typeof _id === 'string' && _id.length > 0) {
     if ('cover' in data) {
       data.cover = slimURL(data.cover)

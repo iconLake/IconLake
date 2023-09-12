@@ -115,7 +115,9 @@ getProject()
       maxlength="15"
     >
     <p>{{ t('isPublic') }}</p>
-    <ElSwitch v-model="project.isPublic" />
+    <ElSwitch
+      v-model="project.isPublic"
+    />
     <div class="flex center">
       <button
         type="submit"

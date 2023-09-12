@@ -98,12 +98,13 @@ checkChainAccount()
   <Header :back="`/icons/${projectId}`" />
   <User />
   <div class="main">
-    <p>上链确权，保护版权</p>
+    <p>上链，确权</p>
     <div
       v-if="iconInfo.svg.path"
       class="info"
     >
       <Icon :info="iconInfo" />
+      <p>{{ iconInfo.code }}</p>
       <p>{{ iconInfo.name }}</p>
     </div>
     <div class="warn">
