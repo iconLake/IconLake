@@ -80,14 +80,14 @@ export default class DefaultTemplate extends HTMLElement {
     const nameDom = document.createElement('h1')
     nameDom.innerText = info?.name ?? ''
     contentDom.appendChild(nameDom)
-    const authorDom = document.createElement('h3')
-    authorDom.innerText = info?.data.author ?? ''
-    contentDom.appendChild(authorDom)
     if (info?.description) {
       const descDom = document.createElement('h2')
       descDom.innerText = info.description
       contentDom.appendChild(descDom)
     }
+    const authorDom = document.createElement('h3')
+    authorDom.innerText = info?.data.author ? `Created by ${info?.data.author}` : ''
+    contentDom.appendChild(authorDom)
 
     root.appendChild(infoDom)
   }

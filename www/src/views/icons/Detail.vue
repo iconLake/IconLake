@@ -387,7 +387,7 @@ async function addGroup(name:string) {
   top: 2rem;
   left: 2rem;
   color: var(--color-main);
-  opacity: 0.2;
+  opacity: 0.5;
   cursor: pointer;
   &.protected {
     opacity: 1;
