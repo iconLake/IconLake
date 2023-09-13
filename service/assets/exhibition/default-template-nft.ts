@@ -64,7 +64,7 @@ export default class DefaultTemplate extends HTMLElement {
       infoDom.appendChild(descDom)
     }
     const authorDom = document.createElement('h3')
-    authorDom.innerText = info?.data.author ?? ''
+    authorDom.innerText = info?.data.author ? `Created by ${info?.data.author}` : ''
     infoDom.appendChild(authorDom)
 
     root.appendChild(infoDom)

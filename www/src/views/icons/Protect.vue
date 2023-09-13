@@ -1,14 +1,15 @@
 <script lang="ts" setup>
-import { editIcon, getIcon, Icon as IconType, uploadFile } from '@/apis/project';
-import { getHash, mintIcon, getAccount, getTx, getChainAccount } from '@/apis/blockchain';
-import Header from '@/components/Header.vue';
-import Icon from '@/components/Icon.vue';
-import User from '@/components/User.vue';
-import { reactive, ref } from 'vue';
-import { useRoute } from 'vue-router';
-import { toast } from '@/utils';
-import { info } from '@/apis/user';
-import LoadingVue from '@/components/Loading.vue';
+import { editIcon, getIcon, Icon as IconType, uploadFile } from '@/apis/project'
+import { getHash, mintIcon, getAccount, getTx, getChainAccount } from '@/apis/blockchain'
+import Header from '@/components/Header.vue'
+import Icon from '@/components/Icon.vue'
+import User from '@/components/User.vue'
+import { reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { toast } from '@/utils'
+import { info } from '@/apis/user'
+import type { UserInfo } from '@/apis/user'
+import LoadingVue from '@/components/Loading.vue'
 
 const $route = useRoute()
 const projectId = ref($route.params.projectId as string)
@@ -22,6 +23,7 @@ const iconInfo = reactive({
 } as IconType)
 const isPending = ref(false)
 const isChainAccountReady = ref(false)
+const userInfo = ref<UserInfo>()
 
 async function getIconInfo() {
   const icon = await getIcon(projectId.value, id.value)
@@ -80,11 +82,11 @@ async function publish() {
 }
 
 async function checkChainAccount() {
-  const userInfo = await info()
-  if (!userInfo.blockchain?.id) {
+  userInfo.value = await info()
+  if (!userInfo.value.blockchain?.id) {
     return
   }
-  const account = await getChainAccount(userInfo.blockchain?.id).catch(console.error)
+  const account = await getChainAccount(userInfo.value.blockchain?.id).catch(console.error)
   if (account) {
     isChainAccountReady.value = true
   }
@@ -104,18 +106,15 @@ checkChainAccount()
       class="info"
     >
       <Icon :info="iconInfo" />
-      <p>{{ iconInfo.code }}</p>
-      <p>{{ iconInfo.name }}</p>
-    </div>
-    <div class="warn">
-      <p>警告⚠️</p>
-      <p>请发布原创作品，否则区块链凭证将成为你侵权的证据。</p>
+      <h1>{{ iconInfo.code }}</h1>
+      <h2>{{ iconInfo.name }}</h2>
+      <h3>Created by {{ userInfo?.blockchain?.id }}</h3>
     </div>
     <div
-      v-if="!iconInfo.txHash"
       class="operate"
     >
       <button
+        v-if="!iconInfo.txHash"
         class="btn"
         :loading="isPending"
         :disabled="!isChainAccountReady"
@@ -124,12 +123,20 @@ checkChainAccount()
         <LoadingVue v-if="isPending" />
         <span v-else>发布到区块链</span>
       </button>
+      <div
+        v-else
+        class="success"
+      >
+        <i class="iconfont icon-info" />
+        上链记录ID: {{ iconInfo.txHash }}
+      </div>
     </div>
     <div
-      v-else
-      class="operate"
+      v-if="!iconInfo.txHash"
+      class="warn flex start"
     >
-      上链记录ID: {{ iconInfo.txHash }}
+      <i class="iconfont icon-warn" />
+      <p>请发布原创作品，否则区块链凭证将成为你侵权的证据。</p>
     </div>
   </div>
 </template>
@@ -137,20 +144,48 @@ checkChainAccount()
 <style lang="scss" scoped>
 .main {
   text-align: center;
-  padding: 5rem 0;
+  padding: 0 0 5rem;
 }
 .info {
-  margin-top: 5rem;
+  width: 36rem;
+  margin: 5rem auto;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 2rem;
+  line-height: 2;
   :deep(.icon-svg) {
-    width: 10rem;
-    height: 10rem;
+    width: 22rem;
+    height: 22rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  h3 {
+    font-size: 1rem;
+    opacity: 0.5;
+    margin-top: 3rem;
   }
 }
-.warn {
-  margin-top: 5rem;
-  opacity: 0.5;
+.warn,
+.success {
+  display: inline-flex;
+  margin: 4rem auto 0;
+  background: var(--color-danger);
+  color: #fff;
+  border-radius: 2rem;
+  padding: 2rem;
+  align-items: center;
+  .iconfont {
+    font-size: 3rem;
+    margin-right: 2rem;
+  }
+}
+.success {
+  background: var(--color-main);
+  margin-top: 0;
 }
 .operate {
-  margin-top: 5rem;
+  margin-top: 4rem;
 }
 </style>
