@@ -123,5 +123,13 @@
   "downloadFile": "下载文件",
   "isPublic": "是否公开",
   "myAssets": "我的资产",
-  "exhibition": "展览"
+  "exhibition": "展览",
+  "gotoInstall": "前往安装",
+  "openAccess": "公开，获得页面链接的任何人都可以访问",
+  "privateAccess": "私有，仅项目成员可访问",
+  "ownershipProtection": "所有权保护",
+  "onChainVerifyOwnership": "上链，确权",
+  "OnchainRecord": "上链记录",
+  "publishToBlockchain": "发布到区块链",
+  "publishOriginalWorks": "请发布原创作品，否则区块链凭证将成为你侵权的证据。"
 }

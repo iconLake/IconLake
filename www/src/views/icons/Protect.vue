@@ -10,7 +10,9 @@ import { toast } from '@/utils'
 import { info } from '@/apis/user'
 import type { UserInfo } from '@/apis/user'
 import LoadingVue from '@/components/Loading.vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const $route = useRoute()
 const projectId = ref($route.params.projectId as string)
 const id = ref($route.params.id as string)
@@ -100,7 +102,7 @@ checkChainAccount()
   <Header :back="`/icons/${projectId}`" />
   <User />
   <div class="main">
-    <p>上链，确权</p>
+    <p>{{ t('onChainVerifyOwnership') }}</p>
     <div
       v-if="iconInfo.svg.path"
       class="info"
@@ -121,14 +123,14 @@ checkChainAccount()
         @click="publish"
       >
         <LoadingVue v-if="isPending" />
-        <span v-else>发布到区块链</span>
+        <span v-else>{{ t('publishToBlockchain') }}</span>
       </button>
       <div
         v-else
         class="success"
       >
         <i class="iconfont icon-info" />
-        上链记录ID: {{ iconInfo.txHash }}
+        {{ t('OnchainRecord') }}ID: {{ iconInfo.txHash }}
       </div>
     </div>
     <div
@@ -136,7 +138,7 @@ checkChainAccount()
       class="warn flex start"
     >
       <i class="iconfont icon-warn" />
-      <p>请发布原创作品，否则区块链凭证将成为你侵权的证据。</p>
+      <p>{{ t('publishOriginalWorks') }}</p>
     </div>
   </div>
 </template>
@@ -147,7 +149,7 @@ checkChainAccount()
   padding: 0 0 5rem;
 }
 .info {
-  width: 36rem;
+  width: 38rem;
   margin: 5rem auto;
   background-color: #fff;
   padding: 2rem;

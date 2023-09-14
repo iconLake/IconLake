@@ -149,7 +149,7 @@ async function addGroup(name:string) {
       :to="`/icons/${projectId}/protect/${info._id}`"
       class="copyright"
       :class="info.txHash ? 'protected' : ''"
-      title="所有权保护"
+      :title="t('ownershipProtection')"
     >
       <i class="iconfont icon-protect" />
     </RouterLink>
