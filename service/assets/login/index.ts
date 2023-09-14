@@ -67,6 +67,9 @@
   const keplrDom = document.querySelector('.auth .keplr') as HTMLDivElement
   if (params.login.keplr) {
     keplrDom.classList.add('active')
+    if (!('keplr' in window)) {
+      keplrDom.classList.add('uninstall')
+    }
     keplrDom.addEventListener('click', async () => {
       if ('keplr' in window) {
         const keplr = window.keplr as any
@@ -104,7 +107,7 @@
           }
         })
       } else {
-        alert('请安装Keplr浏览器插件')
+        location.href = 'https://www.keplr.app/download'
       }
     })
   } else {

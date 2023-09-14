@@ -123,5 +123,13 @@
   "downloadFile": "Download File",
   "isPublic": "Is Public",
   "myAssets": "My Assets",
-  "exhibition": "Exhibition"
+  "exhibition": "Exhibition",
+  "gotoInstall": "Go to install ",
+  "openAccess": "Open, anyone who obtains the page link can access it",
+  "privateAccess": "Private, only project members can access",
+  "ownershipProtection": "Ownership Protection",
+  "onChainVerifyOwnership": "On Chain, Verify Ownership",
+  "OnchainRecord": "On-chain Record ",
+  "publishToBlockchain": "Publish to Blockchain",
+  "publishOriginalWorks": "Please publish original works, otherwise the blockchain certificate will become evidence of your copyright infringement."
 }

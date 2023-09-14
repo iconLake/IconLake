@@ -91,3 +91,19 @@
     }
   }
 }
+
+.keplr {
+  &.uninstall {
+    &:hover {
+      .label {
+        display: none;
+      }
+      .label-uninstall {
+        display: inline;
+      }
+    }
+  }
+  .label-uninstall {
+    display: none;
+  }
+}

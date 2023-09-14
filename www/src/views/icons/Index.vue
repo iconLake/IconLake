@@ -297,7 +297,7 @@ watch(() => data.keyword, () => {
     </div>
     <span
       :class="`iconfont icon-${data.isPublic ? '' : 'un'}visible visibility`"
-      :title="data.isPublic ? '公开，任何获得此页面链接的人都可访问' : '私有，仅项目成员可访问'"
+      :title="data.isPublic ? t('openAccess') : t('privateAccess')"
     />
     <router-link
       v-if="editable"
