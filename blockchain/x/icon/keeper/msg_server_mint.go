@@ -15,20 +15,38 @@ import (
 func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	isHashOk, err := types.CheckHash(msg.Uri, msg.UriHash, msg.Id)
+	if !isHashOk {
+		k.Logger(ctx).Error(err.Error())
+		return nil, err
+	}
+
 	accAddress, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
 
+	createTime, err := time.Parse(time.RFC3339, msg.Data.CreateTime)
+	if err != nil {
+		k.Logger(ctx).Error(err.Error())
+		return nil, err
+	}
+	blockTime := ctx.BlockTime()
+	if createTime.After(blockTime) || createTime.Before(blockTime.Add(-10*time.Hour)) {
+		err = types.ErrParam.Wrapf("createTime invalid")
+		k.Logger(ctx).Error(err.Error())
+		return nil, err
+	}
+
 	msg.Data.Author = msg.Creator
-	msg.Data.CreateTime = ctx.BlockTime().Format(time.RFC3339)
+	msg.Data.CreateTime = blockTime.Format(time.RFC3339)
 
 	classInfo, hasClass := k.nftKeeper.GetClass(ctx, msg.ClassId)
 	if !hasClass {
 		data := types.ClassData{
 			Author:     msg.Creator,
-			CreateTime: ctx.BlockTime().Format(time.RFC3339),
+			CreateTime: blockTime.Format(time.RFC3339),
 		}
 		dataAny, err := codecTypes.NewAnyWithValue(&data)
 		if err != nil {

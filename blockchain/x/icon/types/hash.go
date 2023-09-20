@@ -12,12 +12,14 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	_ "golang.org/x/image/bmp"
 	_ "golang.org/x/image/tiff"
 	_ "golang.org/x/image/webp"
 
 	imageHash "github.com/corona10/goimagehash"
+	"github.com/gabriel-vasile/mimetype"
 	"gopkg.in/gographics/imagick.v2/imagick"
 )
 
@@ -27,22 +29,39 @@ const (
 	pHash HashType = "p"
 )
 
-func GetImgHash(uri string, hashType string) (graphHash string, fileHash string, e error) {
+var httpClient = &http.Client{
+	Timeout: time.Minute * 10,
+}
+
+func GetFile(uri string) (file []byte, e error) {
 	_, err := url.ParseRequestURI(uri)
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
-	resp, err := http.Get(uri)
+	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
+	req.Header.Set("User-Agent", "iconlake")
+	res, err := httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	bodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	return bodyBytes, nil
+}
+
+func GetImgHash(uri string, hashType string) (graphHash string, fileHash string, e error) {
+	bodyBytes, err := GetFile(uri)
 	if err != nil {
 		return "", "", ErrParam.Wrapf("invalid param (Uri) (%s)", err)
 	}
 	var img image.Image
-	if strings.HasPrefix(resp.Header.Get("Content-Type"), "image/svg+xml") {
+	if strings.HasPrefix(mimetype.Detect(bodyBytes).String(), "image/svg+xml") {
 		imagick.Initialize()
 		defer imagick.Terminate()
 		mw := imagick.NewMagickWand()
@@ -81,16 +100,7 @@ func GetImgHash(uri string, hashType string) (graphHash string, fileHash string,
 }
 
 func GetFileHash(uri string) (fileHash string, e error) {
-	_, err := url.ParseRequestURI(uri)
-	if err != nil {
-		return "", err
-	}
-	resp, err := http.Get(uri)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
+	bodyBytes, err := GetFile(uri)
 	if err != nil {
 		return "", ErrParam.Wrapf("invalid param (Uri) (%s)", err)
 	}
@@ -98,4 +108,27 @@ func GetFileHash(uri string) (fileHash string, e error) {
 	hash.Write(bodyBytes)
 	hashStr := hex.EncodeToString(hash.Sum(nil))
 	return hashStr, nil
+}
+
+func CheckHash(uri string, uriHash string, id string) (bool, error) {
+	lowerUriHash := strings.ToLower(uriHash)
+	lowerId := strings.ToLower(id)
+	idParts := strings.SplitN(lowerId, ":", 3)
+	hashType := idParts[0]
+	switch hashType {
+	case string(pHash):
+		graphHash, fileHash, err := GetImgHash(uri, hashType)
+		if err != nil {
+			return false, err
+		}
+		if fileHash != lowerUriHash {
+			return false, ErrParam.Wrapf("invalid param (UriHash), expect (%s)", fileHash)
+		}
+		if graphHash != strings.Join(idParts[:2], ":") {
+			return false, ErrParam.Wrapf("invalid param (id), expect graph hash (%s)", graphHash)
+		}
+	default:
+		return false, ErrParam.Wrap("invalid param (UriHash), invalid hash type, expect (p)")
+	}
+	return true, nil
 }

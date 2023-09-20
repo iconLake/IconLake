@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"time"
 
 	"iconlake/x/drop/types"
 
@@ -24,7 +23,7 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		return nil, types.ErrMint.Wrap("account has not been initialized")
 	}
 
-	timestamp := time.Now().UnixMilli()
+	timestamp := ctx.BlockTime().UnixMilli()
 	seconds := sdk.NewInt((timestamp - info.LastMintTime) / 1000)
 	if msg.Amount.Amount.GT(seconds) {
 		return nil, types.ErrAmount.Wrapf("amount (%s%s) is available since last mint", seconds, types.DropDenom)

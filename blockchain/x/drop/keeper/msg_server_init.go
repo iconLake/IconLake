@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"time"
 
 	"iconlake/x/drop/types"
 
@@ -52,7 +51,7 @@ func (k msgServer) Init(goCtx context.Context, msg *types.MsgInit) (*types.MsgMi
 
 	info := types.Info{
 		Address:      msg.Address,
-		LastMintTime: time.Now().UnixMilli(),
+		LastMintTime: ctx.BlockTime().UnixMilli(),
 	}
 
 	k.SetInfo(ctx, info)

@@ -70,12 +70,5 @@ func (msg *MsgUpdateClass) ValidateBasic() error {
 	if uriHashLen < 32 || uriHashLen > 64 {
 		return ErrParam.Wrap("invalid param (UriHash)")
 	}
-	fileHash, err := GetFileHash(msg.Uri)
-	if err != nil {
-		return err
-	}
-	if fileHash != msg.UriHash {
-		return ErrParam.Wrap("invalid param (UriHash)")
-	}
 	return nil
 }

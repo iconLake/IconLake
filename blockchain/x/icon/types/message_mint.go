@@ -2,7 +2,6 @@ package types
 
 import (
 	"net/url"
-	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -46,29 +45,6 @@ func (msg *MsgMint) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func CheckImgHash(uri string, uriHash string, id string) (bool, error) {
-	lowerUriHash := strings.ToLower(uriHash)
-	lowerId := strings.ToLower(id)
-	idParts := strings.SplitN(lowerId, ":", 3)
-	hashType := idParts[0]
-	switch hashType {
-	case string(pHash):
-		graphHash, fileHash, err := GetImgHash(uri, hashType)
-		if err != nil {
-			return false, err
-		}
-		if fileHash != lowerUriHash {
-			return false, ErrParam.Wrapf("invalid param (UriHash), expect (%s)", fileHash)
-		}
-		if graphHash != strings.Join(idParts[:2], ":") {
-			return false, ErrParam.Wrapf("invalid param (id), expect graph hash (%s)", graphHash)
-		}
-	default:
-		return false, ErrParam.Wrap("invalid param (UriHash), invalid hash type, expect (p)")
-	}
-	return true, nil
-}
-
 func (msg *MsgMint) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
@@ -101,24 +77,12 @@ func (msg *MsgMint) ValidateBasic() error {
 	if utf8.RuneCountInString(msg.Data.Description) > 300 {
 		return ErrParam.Wrap("invalid param (Data.Description), expect within 300 chars")
 	}
-	createTime, err := time.Parse(time.RFC3339, msg.Data.CreateTime)
+	_, err = time.Parse(time.RFC3339, msg.Data.CreateTime)
 	if err != nil {
 		return ErrParam.Wrapf("invalid param (Data.CreateTime) (%s)", err)
 	}
-	now := time.Now()
-	if createTime.After(now) || createTime.Before(now.Add(-10*time.Hour)) {
-		return ErrParam.Wrapf("invalid param (Data.CreateTime: %s), expect within 10 hours (%s to %s)",
-			createTime,
-			now.Add(-10*time.Hour),
-			now,
-		)
-	}
 	if msg.Supply <= 0 || msg.Supply > 99 {
 		return ErrParam.Wrap("invalid param (Supply), expect from 1 to 99")
-	}
-	isImgHashOk, err := CheckImgHash(msg.Uri, msg.UriHash, msg.Id)
-	if !isImgHashOk {
-		return err
 	}
 	return nil
 }
