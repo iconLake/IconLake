@@ -9,7 +9,7 @@
   const iconlakeDom = document.querySelector('iconlake-exhibition')
 
   fetch(`${lcd}/cosmos/nft/v1beta1/classes/${projectId}`).then(e => e.json()).then(info => {
-    iconlakeDom?.setAttribute('info', JSON.stringify(info.class))
+    iconlakeDom?.setAttribute('info', info.class ? JSON.stringify(info.class) : '{}')
   }).catch(console.error)
 
   import('./default-template-project.js').then(module => {

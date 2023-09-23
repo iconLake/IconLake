@@ -263,15 +263,20 @@ getNftClasses()
     >
       <div class="item-cover">
         <div
-          class="cover-img"
+          class="cover-img flex center"
           :style="{
             backgroundImage: `url(${item.url})`
           }"
-        />
+        >
+          <i
+            v-if="!item.url"
+            class="iconfont icon-info"
+          />
+        </div>
       </div>
       <div class="item-info">
         <div class="info-name">
-          {{ item.name }}
+          {{ item.name || '尚未设置链上信息' }}
         </div>
       </div>
     </a>
@@ -368,7 +373,11 @@ getNftClasses()
       height: 100%;
       transition: var(--transition);
       background-position: center;
-      background-size: cover;
+      background-size: contain;
+      .iconfont {
+        font-size: 12rem;
+        color: #ddd;
+      }
     }
     &:hover {
       .cover-img {

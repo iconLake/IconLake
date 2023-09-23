@@ -279,12 +279,13 @@ $align: left, center, right;
   min-width: 20rem;
   text-align: center;
   animation: fade-down 0.3s ease 0s 1;
+  word-break: break-all;
   &-container {
     position: fixed;
     z-index: 99;
     top: 0;
-    left: 0;
-    right: 0;
+    left: 20%;
+    right: 20%;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -338,3 +339,5 @@ $align: left, center, right;
     background: #cfd5e6;
   }
 }
+
+@import "./element.scss";

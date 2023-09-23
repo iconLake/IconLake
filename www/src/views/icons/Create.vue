@@ -433,10 +433,16 @@ async function save () {
     font-size: 1rem;
     letter-spacing: 0rem;
     color: #476de8;
-    height: 2rem;
 
     label {
+      display: block;
       cursor: pointer;
+      height: 4rem;
+      width: 100%;
+      line-height: 4rem;
+      border: var(--color-main) 2px dashed;
+      border-radius: 1rem;
+      text-align: center;
     }
 
     +div:not(.upload) {

@@ -12,6 +12,7 @@ import UserVue from '../../components/User.vue'
 import { useI18n } from 'vue-i18n'
 import Select from '@/components/Select.vue'
 import * as user from '@/apis/user'
+import { ElTooltip } from 'element-plus'
 
 const { t } = useI18n()
 
@@ -295,10 +296,15 @@ watch(() => data.keyword, () => {
     <div class="name">
       {{ data.name }}
     </div>
-    <span
-      :class="`iconfont icon-${data.isPublic ? '' : 'un'}visible visibility`"
-      :title="data.isPublic ? t('openAccess') : t('privateAccess')"
-    />
+    <ElTooltip
+      effect="light"
+      :content="data.isPublic ? t('openAccess') : t('privateAccess')"
+      placement="right"
+    >
+      <span
+        :class="`iconfont icon-${data.isPublic ? '' : 'un'}visible visibility`"
+      />
+    </ElTooltip>
     <router-link
       v-if="editable"
       :to="`/project/${data._id}/setting`"
