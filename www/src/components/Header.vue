@@ -22,7 +22,7 @@ const backUrl = computed(() => {
     <router-link
       v-if="back"
       :to="backUrl"
-      class="iconfont icon-back back"
+      class="iconfont icon-back back flex center"
       :title="t('back')"
     />
     <a
@@ -47,7 +47,14 @@ const backUrl = computed(() => {
     color: #fff;
   }
   .back {
-    padding: 1.5rem;
+    height: 6rem;
+    width: 6rem;
+    transition: var(--transition);
+    border-bottom-right-radius: 1rem;
+    &:hover {
+      color: var(--color-main);
+      background: #fff;
+    }
   }
   .logo {
     align-self: flex-start;
