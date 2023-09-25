@@ -15,15 +15,11 @@ const (
 
 // InfoKey returns the store key to retrieve a Info from the index fields
 func InfoKey(
-	address string,
+	accAddress sdk.AccAddress,
 ) []byte {
 	var key []byte
 
-	addressBytes, err := sdk.AccAddressFromBech32(address)
-	if err != nil {
-		panic(ErrAddress)
-	}
-	key = append(key, addressBytes...)
+	key = append(key, accAddress...)
 	key = append(key, []byte("/")...)
 
 	return key

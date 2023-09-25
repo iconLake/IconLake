@@ -3,12 +3,13 @@ package keeper
 import (
 	"context"
 
+	"iconlake/x/drop/types"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"iconlake/x/drop/types"
 )
 
 func (k Keeper) InfoAll(goCtx context.Context, req *types.QueryAllInfoRequest) (*types.QueryAllInfoResponse, error) {
@@ -23,12 +24,11 @@ func (k Keeper) InfoAll(goCtx context.Context, req *types.QueryAllInfoRequest) (
 	infoStore := prefix.NewStore(store, types.KeyPrefix(types.InfoKeyPrefix))
 
 	pageRes, err := query.Paginate(infoStore, req.Pagination, func(key []byte, value []byte) error {
-		var info types.Info
-		if err := k.cdc.Unmarshal(value, &info); err != nil {
+		var infoRaw types.InfoRaw
+		if err := k.cdc.Unmarshal(value, &infoRaw); err != nil {
 			return err
 		}
-
-		infos = append(infos, info)
+		infos = append(infos, k.ConvertToInfo(infoRaw))
 		return nil
 	})
 
@@ -45,9 +45,13 @@ func (k Keeper) Info(goCtx context.Context, req *types.QueryGetInfoRequest) (*ty
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	accAddress, err := sdk.AccAddressFromBech32(req.Address)
+	if err != nil {
+		return nil, err
+	}
 	val, found := k.GetInfo(
 		ctx,
-		req.Address,
+		accAddress,
 	)
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")

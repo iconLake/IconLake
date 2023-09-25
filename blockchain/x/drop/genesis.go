@@ -1,16 +1,21 @@
 package drop
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"iconlake/x/drop/keeper"
 	"iconlake/x/drop/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // InitGenesis initializes the module's state from a provided genesis state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
 	// Set all the info
 	for _, elem := range genState.InfoList {
-		k.SetInfo(ctx, elem)
+		accAddress, _ := sdk.AccAddressFromBech32(elem.Address)
+		k.SetInfo(ctx, types.InfoRaw{
+			AccAddress:   accAddress,
+			LastMintTime: elem.LastMintTime,
+		})
 	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)

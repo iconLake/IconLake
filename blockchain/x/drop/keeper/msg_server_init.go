@@ -30,7 +30,7 @@ func (k msgServer) Init(goCtx context.Context, msg *types.MsgInit) (*types.MsgMi
 		return nil, err
 	}
 
-	_, isCreated := k.GetInfo(ctx, msg.Address)
+	_, isCreated := k.GetInfo(ctx, accAddress)
 	if isCreated {
 		return nil, types.ErrInit.Wrap("account has been initialized")
 	}
@@ -49,15 +49,15 @@ func (k msgServer) Init(goCtx context.Context, msg *types.MsgInit) (*types.MsgMi
 		return nil, err
 	}
 
-	info := types.Info{
-		Address:      msg.Address,
+	infoRaw := types.InfoRaw{
+		AccAddress:   accAddress,
 		LastMintTime: ctx.BlockTime().UnixMilli(),
 	}
 
-	k.SetInfo(ctx, info)
+	k.SetInfo(ctx, infoRaw)
 
 	return &types.MsgMintResponse{
 		Amount:       amounts[0],
-		LastMintTime: info.LastMintTime,
+		LastMintTime: infoRaw.LastMintTime,
 	}, nil
 }
