@@ -21,7 +21,8 @@ var _ = strconv.IntSize
 func TestInfoQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.DropKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNInfo(keeper, ctx, 2)
+	msgRaws := createNInfo(keeper, ctx, 2)
+	msgs := []types.Info{keeper.ConvertToInfo(msgRaws[0]), keeper.ConvertToInfo(msgRaws[1])}
 	tests := []struct {
 		desc     string
 		request  *types.QueryGetInfoRequest
@@ -45,7 +46,7 @@ func TestInfoQuerySingle(t *testing.T) {
 		{
 			desc: "KeyNotFound",
 			request: &types.QueryGetInfoRequest{
-				Address: strconv.Itoa(100000),
+				Address: "cosmos1xy4yqngt0nlkdcenxymg8tenrghmek4nmqm28k",
 			},
 			err: status.Error(codes.NotFound, "not found"),
 		},
@@ -73,7 +74,11 @@ func TestInfoQuerySingle(t *testing.T) {
 func TestInfoQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.DropKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNInfo(keeper, ctx, 5)
+	msgRaws := createNInfo(keeper, ctx, 5)
+	var msgs []types.Info
+	for _, msgRaw := range msgRaws {
+		msgs = append(msgs, keeper.ConvertToInfo(msgRaw))
+	}
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllInfoRequest {
 		return &types.QueryAllInfoRequest{

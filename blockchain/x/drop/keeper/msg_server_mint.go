@@ -18,7 +18,7 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		return nil, err
 	}
 
-	info, isCreated := k.GetInfo(ctx, msg.Creator)
+	info, isCreated := k.GetInfo(ctx, accAddress)
 	if !isCreated {
 		return nil, types.ErrMint.Wrap("account has not been initialized")
 	}
@@ -43,7 +43,10 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		return nil, err
 	}
 
-	k.SetInfo(ctx, info)
+	k.SetInfo(ctx, types.InfoRaw{
+		AccAddress:   accAddress,
+		LastMintTime: timestamp,
+	})
 
 	return &types.MsgMintResponse{
 		Amount:       amounts[0],

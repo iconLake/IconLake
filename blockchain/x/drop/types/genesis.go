@@ -2,6 +2,8 @@ package types
 
 import (
 	"fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // DefaultIndex is the default global index
@@ -23,7 +25,11 @@ func (gs GenesisState) Validate() error {
 	infoIndexMap := make(map[string]struct{})
 
 	for _, elem := range gs.InfoList {
-		index := string(InfoKey(elem.Address))
+		accAddress, err := sdk.AccAddressFromBech32(elem.Address)
+		if err != nil {
+			return err
+		}
+		index := string(InfoKey(accAddress))
 		if _, ok := infoIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for info")
 		}
