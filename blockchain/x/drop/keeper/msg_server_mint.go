@@ -28,7 +28,6 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 	if msg.Amount.Amount.GT(seconds) {
 		return nil, types.ErrAmount.Wrapf("amount (%s%s) is available since last mint", seconds, types.DropDenom)
 	}
-	info.LastMintTime = timestamp
 
 	amounts := sdk.NewCoins(msg.Amount)
 	err = k.mintKeeper.MintCoins(ctx, amounts)
