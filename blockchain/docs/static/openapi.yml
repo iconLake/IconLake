@@ -46685,6 +46685,65 @@ paths:
                 type: string
       tags:
         - Query
+  /iconlake/icon/nft/{classId}/{id}:
+    get:
+      summary: Queries a NFT info.
+      operationId: IconlakeIconNFT
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              classId:
+                type: string
+              id:
+                type: string
+              uri:
+                type: string
+              uriHash:
+                type: string
+              data:
+                type: object
+                properties:
+                  author:
+                    type: string
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  createTime:
+                    type: string
+                    format: int64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: classId
+          in: path
+          required: true
+          type: string
+        - name: id
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /iconlake/icon/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -75546,6 +75605,18 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  iconlake.icon.IconData:
+    type: object
+    properties:
+      author:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      createTime:
+        type: string
+        format: int64
   iconlake.icon.MsgMintResponse:
     type: object
   iconlake.icon.MsgUpdateClassResponse:
@@ -75567,6 +75638,29 @@ definitions:
         type: string
       fileHash:
         type: string
+  iconlake.icon.QueryNFTResponse:
+    type: object
+    properties:
+      classId:
+        type: string
+      id:
+        type: string
+      uri:
+        type: string
+      uriHash:
+        type: string
+      data:
+        type: object
+        properties:
+          author:
+            type: string
+          name:
+            type: string
+          description:
+            type: string
+          createTime:
+            type: string
+            format: int64
   iconlake.icon.QueryParamsResponse:
     type: object
     properties:
