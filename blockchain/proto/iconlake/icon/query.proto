@@ -6,6 +6,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "iconlake/icon/params.proto";
+import "iconlake/icon/icon_data.proto";
 
 option go_package = "iconlake/x/icon/types";
 
@@ -20,9 +21,14 @@ service Query {
   // Queries hash of a uri.
   rpc Hash (QueryHashRequest) returns (QueryHashResponse) {
     option (google.api.http) = {
-      post: "/iconlake/icon/hash",
+      post: "/iconlake/icon/hash"
       body: "*"
     };
+  }
+  
+  // Queries a NFT info.
+  rpc NFT (QueryNFTRequest) returns (QueryNFTResponse) {
+    option (google.api.http).get = "/iconlake/icon/nft/{classId}/{id}";
   }
 }
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -42,4 +48,17 @@ message QueryHashRequest {
 message QueryHashResponse {
   string graphHash = 1;
   string fileHash  = 2;
+}
+
+message QueryNFTRequest {
+  string classId = 1;
+  string id      = 2;
+}
+
+message QueryNFTResponse {
+  string   classId = 1;
+  string   id      = 2;
+  string   uri     = 3;
+  string   uriHash = 4;
+  IconData data    = 5;
 }
