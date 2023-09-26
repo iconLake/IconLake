@@ -3,10 +3,11 @@ package cli
 import (
 	"strconv"
 
+	"iconlake/x/icon/types"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
-	"iconlake/x/icon/types"
 )
 
 var _ = strconv.Itoa(0)
@@ -28,7 +29,6 @@ func CmdHash() *cobra.Command {
 			queryClient := types.NewQueryClient(clientCtx)
 
 			params := &types.QueryHashRequest{
-
 				HashType: reqHashType,
 				Uri:      reqUri,
 			}

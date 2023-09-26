@@ -2,7 +2,6 @@ package cli
 
 import (
 	"strconv"
-	"time"
 
 	"iconlake/x/icon/types"
 
@@ -17,28 +16,18 @@ var _ = strconv.Itoa(0)
 
 func CmdMint() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "mint [class-id] [id] [uri] [uri-hash] [data.author] [data.name] [data.description] [data.create-time] [supply]",
+		Use:   "mint [class-id] [id] [name] [description] [uri] [uri-hash] [supply]",
 		Short: "Broadcast message mint",
-		Args:  cobra.ExactArgs(9),
+		Args:  cobra.ExactArgs(7),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argClassId := args[0]
 			argId := args[1]
-			argUri := args[2]
-			argUriHash := args[3]
-			if err != nil {
-				return err
-			}
-			_, err = time.Parse(time.RFC3339, args[7])
-			if err != nil {
-				return err
-			}
-			argData := &types.IconData{
-				Author:      args[4],
-				Name:        args[5],
-				Description: args[6],
-				CreateTime:  args[7],
-			}
-			argSupply, err := cast.ToUint64E(args[8])
+			argName := args[2]
+			argDescription := args[3]
+			argUri := args[4]
+			argUriHash := args[5]
+
+			argSupply, err := cast.ToUint64E(args[6])
 			if err != nil {
 				return err
 			}
@@ -52,9 +41,10 @@ func CmdMint() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				argClassId,
 				argId,
+				argName,
+				argDescription,
 				argUri,
 				argUriHash,
-				argData,
 				argSupply,
 			)
 			if err := msg.ValidateBasic(); err != nil {

@@ -1,13 +1,13 @@
 package types
 
-type IconDataI interface {
-	GetAuthor() string
+type IconDataRawI interface {
+	GetAuthor() []byte
 	GetName() string
 	GetDescription() string
-	GetCreateTime() string
+	GetCreateTime() int64
 }
 
-type ClassDataI interface {
-	GetAuthor() string
-	GetCreateTime() string
+type ClassDataRawI interface {
+	GetAuthor() []byte
+	GetCreateTime() int64
 }

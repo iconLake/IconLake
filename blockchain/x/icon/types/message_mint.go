@@ -2,7 +2,6 @@ package types
 
 import (
 	"net/url"
-	"time"
 	"unicode/utf8"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,15 +11,16 @@ const TypeMsgMint = "mint"
 
 var _ sdk.Msg = &MsgMint{}
 
-func NewMsgMint(creator string, classId string, id string, uri string, uriHash string, data *IconData, supply uint64) *MsgMint {
+func NewMsgMint(creator string, classId string, id string, name string, description string, uri string, uriHash string, supply uint64) *MsgMint {
 	return &MsgMint{
-		Creator: creator,
-		ClassId: classId,
-		Id:      id,
-		Uri:     uri,
-		UriHash: uriHash,
-		Data:    data,
-		Supply:  supply,
+		Creator:     creator,
+		ClassId:     classId,
+		Id:          id,
+		Name:        name,
+		Description: description,
+		Uri:         uri,
+		UriHash:     uriHash,
+		Supply:      supply,
 	}
 }
 
@@ -59,6 +59,12 @@ func (msg *MsgMint) ValidateBasic() error {
 	if idLen <= 2 || idLen > 66 || hashType != string(pHash) || msg.Id[1:2] != ":" {
 		return ErrParam.Wrap("invalid param (Id), expect format of \"p:xxxx\" or \"p:xxxx:123\"")
 	}
+	if utf8.RuneCountInString(msg.Name) > 64 {
+		return ErrParam.Wrap("invalid param (Name), expect within 64 chars")
+	}
+	if utf8.RuneCountInString(msg.Description) > 300 {
+		return ErrParam.Wrap("invalid param (Description), expect within 300 chars")
+	}
 	_, err = url.ParseRequestURI(msg.Uri)
 	if err != nil {
 		return ErrParam.Wrap("invalid param (Uri)")
@@ -66,20 +72,6 @@ func (msg *MsgMint) ValidateBasic() error {
 	uriHashLen := len(msg.UriHash)
 	if uriHashLen < 32 || uriHashLen > 64 {
 		return ErrParam.Wrap("invalid param (UriHash)")
-	}
-	_, err = sdk.AccAddressFromBech32(msg.Data.Author)
-	if err != nil || msg.Creator != msg.Data.Author {
-		return ErrParam.Wrap("invalid param (Data.Author)")
-	}
-	if utf8.RuneCountInString(msg.Data.Name) > 64 {
-		return ErrParam.Wrap("invalid param (Data.Name), expect within 64 chars")
-	}
-	if utf8.RuneCountInString(msg.Data.Description) > 300 {
-		return ErrParam.Wrap("invalid param (Data.Description), expect within 300 chars")
-	}
-	_, err = time.Parse(time.RFC3339, msg.Data.CreateTime)
-	if err != nil {
-		return ErrParam.Wrapf("invalid param (Data.CreateTime) (%s)", err)
 	}
 	if msg.Supply <= 0 || msg.Supply > 99 {
 		return ErrParam.Wrap("invalid param (Supply), expect from 1 to 99")
