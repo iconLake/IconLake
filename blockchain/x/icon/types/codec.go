@@ -17,13 +17,13 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgMint{},
 	)
-	registry.RegisterInterface("icon/IconData", (*IconDataI)(nil))
-	registry.RegisterImplementations((*IconDataI)(nil), &IconData{})
-	registry.RegisterInterface("icon/ClassData", (*ClassDataI)(nil))
-	registry.RegisterImplementations((*ClassDataI)(nil), &ClassData{})
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgUpdateClass{},
 	)
+	registry.RegisterInterface("icon/IconDataRaw", (*IconDataRawI)(nil))
+	registry.RegisterImplementations((*IconDataRawI)(nil), &IconDataRaw{})
+	registry.RegisterInterface("icon/ClassDataRaw", (*ClassDataRawI)(nil))
+	registry.RegisterImplementations((*ClassDataRawI)(nil), &ClassDataRaw{})
 	// this line is used by starport scaffolding # 3
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

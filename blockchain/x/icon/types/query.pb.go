@@ -268,7 +268,7 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// Queries a list of Hash items.
+	// Queries hash of a uri.
 	Hash(ctx context.Context, in *QueryHashRequest, opts ...grpc.CallOption) (*QueryHashResponse, error)
 }
 
@@ -302,7 +302,7 @@ func (c *queryClient) Hash(ctx context.Context, in *QueryHashRequest, opts ...gr
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// Queries a list of Hash items.
+	// Queries hash of a uri.
 	Hash(context.Context, *QueryHashRequest) (*QueryHashResponse, error)
 }
 

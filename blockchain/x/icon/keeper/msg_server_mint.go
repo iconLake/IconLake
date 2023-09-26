@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	"strconv"
-	"time"
 
 	"iconlake/x/icon/types"
 
@@ -27,26 +26,13 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		return nil, err
 	}
 
-	createTime, err := time.Parse(time.RFC3339, msg.Data.CreateTime)
-	if err != nil {
-		k.Logger(ctx).Error(err.Error())
-		return nil, err
-	}
-	blockTime := ctx.BlockTime()
-	if createTime.After(blockTime) || createTime.Before(blockTime.Add(-10*time.Hour)) {
-		err = types.ErrParam.Wrapf("createTime invalid")
-		k.Logger(ctx).Error(err.Error())
-		return nil, err
-	}
-
-	msg.Data.Author = msg.Creator
-	msg.Data.CreateTime = blockTime.Format(time.RFC3339)
+	blockTime := ctx.BlockTime().UnixMilli()
 
 	classInfo, hasClass := k.nftKeeper.GetClass(ctx, msg.ClassId)
 	if !hasClass {
-		data := types.ClassData{
-			Author:     msg.Creator,
-			CreateTime: blockTime.Format(time.RFC3339),
+		data := types.ClassDataRaw{
+			Author:     accAddress,
+			CreateTime: blockTime,
 		}
 		dataAny, err := codecTypes.NewAnyWithValue(&data)
 		if err != nil {
@@ -62,24 +48,32 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 			return nil, err
 		}
 	} else {
-		var classData types.ClassDataI
+		var classData types.ClassDataRawI
 		err = k.cdc.UnpackAny(classInfo.Data, &classData)
 		if err != nil {
 			k.Logger(ctx).Error(err.Error())
 			return nil, err
 		}
-		if classData.GetAuthor() != msg.Creator {
-			err = types.ErrPermission.Wrapf("expected class author is (%s)", classData.GetAuthor())
+		var accAuthor sdk.AccAddress = classData.GetAuthor()
+		if !accAddress.Equals(accAuthor) {
+			err = types.ErrPermission.Wrapf("expected class author is (%s)", accAuthor.String())
 			k.Logger(ctx).Error(err.Error())
 			return nil, err
 		}
 	}
 
-	dataAny, err := codecTypes.NewAnyWithValue(msg.Data)
+	iconDataRaw := types.IconDataRaw{
+		Author:      accAddress,
+		Name:        msg.Name,
+		Description: msg.Description,
+		CreateTime:  blockTime,
+	}
+	dataAny, err := codecTypes.NewAnyWithValue(&iconDataRaw)
 	if err != nil {
 		k.Logger(ctx).Error(err.Error())
 		return nil, err
 	}
+
 	if msg.Supply > 1 {
 		for i := 0; i < int(msg.Supply); i++ {
 			err = k.nftKeeper.Mint(ctx, nft.NFT{

@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"time"
 
 	"iconlake/x/icon/types"
 
@@ -14,6 +13,12 @@ import (
 func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass) (*types.MsgUpdateClassResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	accAddress, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		k.Logger(ctx).Error(err.Error())
+		return nil, err
+	}
+
 	fileHash, err := types.GetFileHash(msg.Uri)
 	if err != nil {
 		return nil, err
@@ -24,9 +29,9 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 
 	classInfo, hasClass := k.nftKeeper.GetClass(ctx, msg.Id)
 	if !hasClass {
-		data := types.ClassData{
-			Author:     msg.Creator,
-			CreateTime: ctx.BlockTime().Format(time.RFC3339),
+		data := types.ClassDataRaw{
+			Author:     accAddress,
+			CreateTime: ctx.BlockTime().UnixMilli(),
 		}
 		dataAny, err := codecTypes.NewAnyWithValue(&data)
 		if err != nil {
@@ -47,14 +52,15 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 			return nil, err
 		}
 	} else {
-		var classData types.ClassDataI
+		var classData types.ClassDataRawI
 		err := k.cdc.UnpackAny(classInfo.Data, &classData)
 		if err != nil {
 			k.Logger(ctx).Error(err.Error())
 			return nil, err
 		}
-		if classData.GetAuthor() != msg.Creator {
-			err = types.ErrPermission.Wrapf("expected class author is (%s)", classData.GetAuthor())
+		var accAuthor sdk.AccAddress = classData.GetAuthor()
+		if !accAddress.Equals(accAuthor) {
+			err = types.ErrPermission.Wrapf("expected class author is (%s)", accAuthor.String())
 			k.Logger(ctx).Error(err.Error())
 			return nil, err
 		}

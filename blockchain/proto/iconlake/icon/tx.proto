@@ -12,13 +12,14 @@ service Msg {
   rpc UpdateClass (MsgUpdateClass) returns (MsgUpdateClassResponse);
 }
 message MsgMint {
-  string   creator = 1;
-  string   classId = 2;
-  string   id      = 3;
-  string   uri     = 4;
-  string   uriHash = 5;
-  IconData data    = 6;
-  uint64   supply  = 7;
+  string   creator     = 1;
+  string   classId     = 2;
+  string   id          = 3;
+  string   name        = 4;
+  string   description = 5;
+  string   uri         = 6;
+  string   uriHash     = 7;
+  uint64   supply      = 9;
 }
 
 message MsgMintResponse {}

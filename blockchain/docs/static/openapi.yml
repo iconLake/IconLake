@@ -46642,7 +46642,7 @@ paths:
         - Query
   /iconlake/icon/hash:
     post:
-      summary: Queries a list of Hash items.
+      summary: Queries hash of a uri.
       operationId: IconlakeIconHash
       responses:
         '200':
@@ -75546,17 +75546,6 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  iconlake.icon.IconData:
-    type: object
-    properties:
-      author:
-        type: string
-      name:
-        type: string
-      description:
-        type: string
-      createTime:
-        type: string
   iconlake.icon.MsgMintResponse:
     type: object
   iconlake.icon.MsgUpdateClassResponse:

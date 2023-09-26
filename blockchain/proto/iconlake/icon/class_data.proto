@@ -5,5 +5,10 @@ option go_package = "iconlake/x/icon/types";
 
 message ClassData {
   string author = 1; 
-  string createTime = 2; 
+  int64 createTime = 2; 
+}
+
+message ClassDataRaw {
+  bytes author = 1; 
+  int64 createTime = 2; 
 }
