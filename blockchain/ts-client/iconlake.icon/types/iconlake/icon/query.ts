@@ -1,5 +1,9 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
+import { PageResponse } from "../../cosmos/base/query/v1beta1/pagination";
+import { QueryClassesRequest, QueryNFTsRequest } from "../../cosmos/nft/v1beta1/query";
+import { ClassData } from "./class_data";
+import { IconData } from "./icon_data";
 import { Params } from "./params";
 
 export const protobufPackage = "iconlake.icon";
@@ -22,6 +26,51 @@ export interface QueryHashRequest {
 export interface QueryHashResponse {
   graphHash: string;
   fileHash: string;
+}
+
+export interface NFT {
+  classId: string;
+  id: string;
+  uri: string;
+  uriHash: string;
+  data: IconData | undefined;
+}
+
+export interface QueryNFTRequest {
+  classId: string;
+  id: string;
+}
+
+export interface QueryNFTResponse {
+  nft: NFT | undefined;
+}
+
+export interface QueryNFTsResponse {
+  nfts: NFT[];
+  pagination: PageResponse | undefined;
+}
+
+export interface QueryClassRequest {
+  id: string;
+}
+
+export interface Class {
+  id: string;
+  name: string;
+  symbol: string;
+  description: string;
+  uri: string;
+  uriHash: string;
+  data: ClassData | undefined;
+}
+
+export interface QueryClassResponse {
+  class: Class | undefined;
+}
+
+export interface QueryClassesResponse {
+  classes: Class[];
+  pagination: PageResponse | undefined;
 }
 
 function createBaseQueryParamsRequest(): QueryParamsRequest {
@@ -228,12 +277,537 @@ export const QueryHashResponse = {
   },
 };
 
+function createBaseNFT(): NFT {
+  return { classId: "", id: "", uri: "", uriHash: "", data: undefined };
+}
+
+export const NFT = {
+  encode(message: NFT, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.classId !== "") {
+      writer.uint32(10).string(message.classId);
+    }
+    if (message.id !== "") {
+      writer.uint32(18).string(message.id);
+    }
+    if (message.uri !== "") {
+      writer.uint32(26).string(message.uri);
+    }
+    if (message.uriHash !== "") {
+      writer.uint32(34).string(message.uriHash);
+    }
+    if (message.data !== undefined) {
+      IconData.encode(message.data, writer.uint32(42).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): NFT {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNFT();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.classId = reader.string();
+          break;
+        case 2:
+          message.id = reader.string();
+          break;
+        case 3:
+          message.uri = reader.string();
+          break;
+        case 4:
+          message.uriHash = reader.string();
+          break;
+        case 5:
+          message.data = IconData.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): NFT {
+    return {
+      classId: isSet(object.classId) ? String(object.classId) : "",
+      id: isSet(object.id) ? String(object.id) : "",
+      uri: isSet(object.uri) ? String(object.uri) : "",
+      uriHash: isSet(object.uriHash) ? String(object.uriHash) : "",
+      data: isSet(object.data) ? IconData.fromJSON(object.data) : undefined,
+    };
+  },
+
+  toJSON(message: NFT): unknown {
+    const obj: any = {};
+    message.classId !== undefined && (obj.classId = message.classId);
+    message.id !== undefined && (obj.id = message.id);
+    message.uri !== undefined && (obj.uri = message.uri);
+    message.uriHash !== undefined && (obj.uriHash = message.uriHash);
+    message.data !== undefined && (obj.data = message.data ? IconData.toJSON(message.data) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<NFT>, I>>(object: I): NFT {
+    const message = createBaseNFT();
+    message.classId = object.classId ?? "";
+    message.id = object.id ?? "";
+    message.uri = object.uri ?? "";
+    message.uriHash = object.uriHash ?? "";
+    message.data = (object.data !== undefined && object.data !== null) ? IconData.fromPartial(object.data) : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryNFTRequest(): QueryNFTRequest {
+  return { classId: "", id: "" };
+}
+
+export const QueryNFTRequest = {
+  encode(message: QueryNFTRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.classId !== "") {
+      writer.uint32(10).string(message.classId);
+    }
+    if (message.id !== "") {
+      writer.uint32(18).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryNFTRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryNFTRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.classId = reader.string();
+          break;
+        case 2:
+          message.id = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryNFTRequest {
+    return {
+      classId: isSet(object.classId) ? String(object.classId) : "",
+      id: isSet(object.id) ? String(object.id) : "",
+    };
+  },
+
+  toJSON(message: QueryNFTRequest): unknown {
+    const obj: any = {};
+    message.classId !== undefined && (obj.classId = message.classId);
+    message.id !== undefined && (obj.id = message.id);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryNFTRequest>, I>>(object: I): QueryNFTRequest {
+    const message = createBaseQueryNFTRequest();
+    message.classId = object.classId ?? "";
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseQueryNFTResponse(): QueryNFTResponse {
+  return { nft: undefined };
+}
+
+export const QueryNFTResponse = {
+  encode(message: QueryNFTResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.nft !== undefined) {
+      NFT.encode(message.nft, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryNFTResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryNFTResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.nft = NFT.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryNFTResponse {
+    return { nft: isSet(object.nft) ? NFT.fromJSON(object.nft) : undefined };
+  },
+
+  toJSON(message: QueryNFTResponse): unknown {
+    const obj: any = {};
+    message.nft !== undefined && (obj.nft = message.nft ? NFT.toJSON(message.nft) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryNFTResponse>, I>>(object: I): QueryNFTResponse {
+    const message = createBaseQueryNFTResponse();
+    message.nft = (object.nft !== undefined && object.nft !== null) ? NFT.fromPartial(object.nft) : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryNFTsResponse(): QueryNFTsResponse {
+  return { nfts: [], pagination: undefined };
+}
+
+export const QueryNFTsResponse = {
+  encode(message: QueryNFTsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.nfts) {
+      NFT.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryNFTsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryNFTsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.nfts.push(NFT.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryNFTsResponse {
+    return {
+      nfts: Array.isArray(object?.nfts) ? object.nfts.map((e: any) => NFT.fromJSON(e)) : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined,
+    };
+  },
+
+  toJSON(message: QueryNFTsResponse): unknown {
+    const obj: any = {};
+    if (message.nfts) {
+      obj.nfts = message.nfts.map((e) => e ? NFT.toJSON(e) : undefined);
+    } else {
+      obj.nfts = [];
+    }
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryNFTsResponse>, I>>(object: I): QueryNFTsResponse {
+    const message = createBaseQueryNFTsResponse();
+    message.nfts = object.nfts?.map((e) => NFT.fromPartial(e)) || [];
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageResponse.fromPartial(object.pagination)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryClassRequest(): QueryClassRequest {
+  return { id: "" };
+}
+
+export const QueryClassRequest = {
+  encode(message: QueryClassRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryClassRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryClassRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryClassRequest {
+    return { id: isSet(object.id) ? String(object.id) : "" };
+  },
+
+  toJSON(message: QueryClassRequest): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = message.id);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryClassRequest>, I>>(object: I): QueryClassRequest {
+    const message = createBaseQueryClassRequest();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseClass(): Class {
+  return { id: "", name: "", symbol: "", description: "", uri: "", uriHash: "", data: undefined };
+}
+
+export const Class = {
+  encode(message: Class, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    if (message.symbol !== "") {
+      writer.uint32(26).string(message.symbol);
+    }
+    if (message.description !== "") {
+      writer.uint32(34).string(message.description);
+    }
+    if (message.uri !== "") {
+      writer.uint32(42).string(message.uri);
+    }
+    if (message.uriHash !== "") {
+      writer.uint32(50).string(message.uriHash);
+    }
+    if (message.data !== undefined) {
+      ClassData.encode(message.data, writer.uint32(58).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Class {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseClass();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.string();
+          break;
+        case 2:
+          message.name = reader.string();
+          break;
+        case 3:
+          message.symbol = reader.string();
+          break;
+        case 4:
+          message.description = reader.string();
+          break;
+        case 5:
+          message.uri = reader.string();
+          break;
+        case 6:
+          message.uriHash = reader.string();
+          break;
+        case 7:
+          message.data = ClassData.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Class {
+    return {
+      id: isSet(object.id) ? String(object.id) : "",
+      name: isSet(object.name) ? String(object.name) : "",
+      symbol: isSet(object.symbol) ? String(object.symbol) : "",
+      description: isSet(object.description) ? String(object.description) : "",
+      uri: isSet(object.uri) ? String(object.uri) : "",
+      uriHash: isSet(object.uriHash) ? String(object.uriHash) : "",
+      data: isSet(object.data) ? ClassData.fromJSON(object.data) : undefined,
+    };
+  },
+
+  toJSON(message: Class): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = message.id);
+    message.name !== undefined && (obj.name = message.name);
+    message.symbol !== undefined && (obj.symbol = message.symbol);
+    message.description !== undefined && (obj.description = message.description);
+    message.uri !== undefined && (obj.uri = message.uri);
+    message.uriHash !== undefined && (obj.uriHash = message.uriHash);
+    message.data !== undefined && (obj.data = message.data ? ClassData.toJSON(message.data) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<Class>, I>>(object: I): Class {
+    const message = createBaseClass();
+    message.id = object.id ?? "";
+    message.name = object.name ?? "";
+    message.symbol = object.symbol ?? "";
+    message.description = object.description ?? "";
+    message.uri = object.uri ?? "";
+    message.uriHash = object.uriHash ?? "";
+    message.data = (object.data !== undefined && object.data !== null) ? ClassData.fromPartial(object.data) : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryClassResponse(): QueryClassResponse {
+  return { class: undefined };
+}
+
+export const QueryClassResponse = {
+  encode(message: QueryClassResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.class !== undefined) {
+      Class.encode(message.class, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryClassResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryClassResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.class = Class.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryClassResponse {
+    return { class: isSet(object.class) ? Class.fromJSON(object.class) : undefined };
+  },
+
+  toJSON(message: QueryClassResponse): unknown {
+    const obj: any = {};
+    message.class !== undefined && (obj.class = message.class ? Class.toJSON(message.class) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryClassResponse>, I>>(object: I): QueryClassResponse {
+    const message = createBaseQueryClassResponse();
+    message.class = (object.class !== undefined && object.class !== null) ? Class.fromPartial(object.class) : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryClassesResponse(): QueryClassesResponse {
+  return { classes: [], pagination: undefined };
+}
+
+export const QueryClassesResponse = {
+  encode(message: QueryClassesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.classes) {
+      Class.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryClassesResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryClassesResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.classes.push(Class.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryClassesResponse {
+    return {
+      classes: Array.isArray(object?.classes) ? object.classes.map((e: any) => Class.fromJSON(e)) : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined,
+    };
+  },
+
+  toJSON(message: QueryClassesResponse): unknown {
+    const obj: any = {};
+    if (message.classes) {
+      obj.classes = message.classes.map((e) => e ? Class.toJSON(e) : undefined);
+    } else {
+      obj.classes = [];
+    }
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryClassesResponse>, I>>(object: I): QueryClassesResponse {
+    const message = createBaseQueryClassesResponse();
+    message.classes = object.classes?.map((e) => Class.fromPartial(e)) || [];
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageResponse.fromPartial(object.pagination)
+      : undefined;
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
-  /** Queries a list of Hash items. */
+  /** Queries hash of a uri. */
   Hash(request: QueryHashRequest): Promise<QueryHashResponse>;
+  /** Queries a NFT info. */
+  NFT(request: QueryNFTRequest): Promise<QueryNFTResponse>;
+  /** Queries a list of NFTs of a class. */
+  NFTs(request: QueryNFTsRequest): Promise<QueryNFTsResponse>;
+  /** Queries a class info. */
+  Class(request: QueryClassRequest): Promise<QueryClassResponse>;
+  /** Queries a list of Class items. */
+  Classes(request: QueryClassesRequest): Promise<QueryClassesResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -242,6 +816,10 @@ export class QueryClientImpl implements Query {
     this.rpc = rpc;
     this.Params = this.Params.bind(this);
     this.Hash = this.Hash.bind(this);
+    this.NFT = this.NFT.bind(this);
+    this.NFTs = this.NFTs.bind(this);
+    this.Class = this.Class.bind(this);
+    this.Classes = this.Classes.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
@@ -253,6 +831,30 @@ export class QueryClientImpl implements Query {
     const data = QueryHashRequest.encode(request).finish();
     const promise = this.rpc.request("iconlake.icon.Query", "Hash", data);
     return promise.then((data) => QueryHashResponse.decode(new _m0.Reader(data)));
+  }
+
+  NFT(request: QueryNFTRequest): Promise<QueryNFTResponse> {
+    const data = QueryNFTRequest.encode(request).finish();
+    const promise = this.rpc.request("iconlake.icon.Query", "NFT", data);
+    return promise.then((data) => QueryNFTResponse.decode(new _m0.Reader(data)));
+  }
+
+  NFTs(request: QueryNFTsRequest): Promise<QueryNFTsResponse> {
+    const data = QueryNFTsRequest.encode(request).finish();
+    const promise = this.rpc.request("iconlake.icon.Query", "NFTs", data);
+    return promise.then((data) => QueryNFTsResponse.decode(new _m0.Reader(data)));
+  }
+
+  Class(request: QueryClassRequest): Promise<QueryClassResponse> {
+    const data = QueryClassRequest.encode(request).finish();
+    const promise = this.rpc.request("iconlake.icon.Query", "Class", data);
+    return promise.then((data) => QueryClassResponse.decode(new _m0.Reader(data)));
+  }
+
+  Classes(request: QueryClassesRequest): Promise<QueryClassesResponse> {
+    const data = QueryClassesRequest.encode(request).finish();
+    const promise = this.rpc.request("iconlake.icon.Query", "Classes", data);
+    return promise.then((data) => QueryClassesResponse.decode(new _m0.Reader(data)));
   }
 }
 

@@ -1,7 +1,6 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import { IconData } from "./icon_data";
 
 export const protobufPackage = "iconlake.icon";
 
@@ -9,9 +8,10 @@ export interface MsgMint {
   creator: string;
   classId: string;
   id: string;
+  name: string;
+  description: string;
   uri: string;
   uriHash: string;
-  data: IconData | undefined;
   supply: number;
 }
 
@@ -32,7 +32,7 @@ export interface MsgUpdateClassResponse {
 }
 
 function createBaseMsgMint(): MsgMint {
-  return { creator: "", classId: "", id: "", uri: "", uriHash: "", data: undefined, supply: 0 };
+  return { creator: "", classId: "", id: "", name: "", description: "", uri: "", uriHash: "", supply: 0 };
 }
 
 export const MsgMint = {
@@ -46,17 +46,20 @@ export const MsgMint = {
     if (message.id !== "") {
       writer.uint32(26).string(message.id);
     }
+    if (message.name !== "") {
+      writer.uint32(34).string(message.name);
+    }
+    if (message.description !== "") {
+      writer.uint32(42).string(message.description);
+    }
     if (message.uri !== "") {
-      writer.uint32(34).string(message.uri);
+      writer.uint32(50).string(message.uri);
     }
     if (message.uriHash !== "") {
-      writer.uint32(42).string(message.uriHash);
-    }
-    if (message.data !== undefined) {
-      IconData.encode(message.data, writer.uint32(50).fork()).ldelim();
+      writer.uint32(58).string(message.uriHash);
     }
     if (message.supply !== 0) {
-      writer.uint32(56).uint64(message.supply);
+      writer.uint32(72).uint64(message.supply);
     }
     return writer;
   },
@@ -78,15 +81,18 @@ export const MsgMint = {
           message.id = reader.string();
           break;
         case 4:
-          message.uri = reader.string();
+          message.name = reader.string();
           break;
         case 5:
-          message.uriHash = reader.string();
+          message.description = reader.string();
           break;
         case 6:
-          message.data = IconData.decode(reader, reader.uint32());
+          message.uri = reader.string();
           break;
         case 7:
+          message.uriHash = reader.string();
+          break;
+        case 9:
           message.supply = longToNumber(reader.uint64() as Long);
           break;
         default:
@@ -102,9 +108,10 @@ export const MsgMint = {
       creator: isSet(object.creator) ? String(object.creator) : "",
       classId: isSet(object.classId) ? String(object.classId) : "",
       id: isSet(object.id) ? String(object.id) : "",
+      name: isSet(object.name) ? String(object.name) : "",
+      description: isSet(object.description) ? String(object.description) : "",
       uri: isSet(object.uri) ? String(object.uri) : "",
       uriHash: isSet(object.uriHash) ? String(object.uriHash) : "",
-      data: isSet(object.data) ? IconData.fromJSON(object.data) : undefined,
       supply: isSet(object.supply) ? Number(object.supply) : 0,
     };
   },
@@ -114,9 +121,10 @@ export const MsgMint = {
     message.creator !== undefined && (obj.creator = message.creator);
     message.classId !== undefined && (obj.classId = message.classId);
     message.id !== undefined && (obj.id = message.id);
+    message.name !== undefined && (obj.name = message.name);
+    message.description !== undefined && (obj.description = message.description);
     message.uri !== undefined && (obj.uri = message.uri);
     message.uriHash !== undefined && (obj.uriHash = message.uriHash);
-    message.data !== undefined && (obj.data = message.data ? IconData.toJSON(message.data) : undefined);
     message.supply !== undefined && (obj.supply = Math.round(message.supply));
     return obj;
   },
@@ -126,9 +134,10 @@ export const MsgMint = {
     message.creator = object.creator ?? "";
     message.classId = object.classId ?? "";
     message.id = object.id ?? "";
+    message.name = object.name ?? "";
+    message.description = object.description ?? "";
     message.uri = object.uri ?? "";
     message.uriHash = object.uriHash ?? "";
-    message.data = (object.data !== undefined && object.data !== null) ? IconData.fromPartial(object.data) : undefined;
     message.supply = object.supply ?? 0;
     return message;
   },
