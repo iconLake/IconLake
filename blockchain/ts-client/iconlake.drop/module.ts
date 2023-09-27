@@ -11,6 +11,7 @@ import { MsgMint } from "./types/iconlake/drop/tx";
 import { MsgInit } from "./types/iconlake/drop/tx";
 
 import { Info as typeInfo} from "./types"
+import { InfoRaw as typeInfoRaw} from "./types"
 import { Params as typeParams} from "./types"
 
 export { MsgMint, MsgInit };
@@ -134,6 +135,7 @@ class SDKModule {
 		this.updateTX(client);
 		this.structure =  {
 						Info: getStructure(typeInfo.fromPartial({})),
+						InfoRaw: getStructure(typeInfoRaw.fromPartial({})),
 						Params: getStructure(typeParams.fromPartial({})),
 						
 		};

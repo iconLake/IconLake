@@ -11,8 +11,14 @@ import { MsgMint } from "./types/iconlake/icon/tx";
 import { MsgUpdateClass } from "./types/iconlake/icon/tx";
 
 import { ClassData as typeClassData} from "./types"
+import { ClassDataRaw as typeClassDataRaw} from "./types"
 import { IconData as typeIconData} from "./types"
+import { IconDataRaw as typeIconDataRaw} from "./types"
 import { Params as typeParams} from "./types"
+import { NFT as typeNFT} from "./types"
+import { QueryNFTsResponse as typeQueryNFTsResponse} from "./types"
+import { Class as typeClass} from "./types"
+import { QueryClassesResponse as typeQueryClassesResponse} from "./types"
 
 export { MsgMint, MsgUpdateClass };
 
@@ -135,8 +141,14 @@ class SDKModule {
 		this.updateTX(client);
 		this.structure =  {
 						ClassData: getStructure(typeClassData.fromPartial({})),
+						ClassDataRaw: getStructure(typeClassDataRaw.fromPartial({})),
 						IconData: getStructure(typeIconData.fromPartial({})),
+						IconDataRaw: getStructure(typeIconDataRaw.fromPartial({})),
 						Params: getStructure(typeParams.fromPartial({})),
+						NFT: getStructure(typeNFT.fromPartial({})),
+						QueryNFTsResponse: getStructure(typeQueryNFTsResponse.fromPartial({})),
+						Class: getStructure(typeClass.fromPartial({})),
+						QueryClassesResponse: getStructure(typeQueryClassesResponse.fromPartial({})),
 						
 		};
 		client.on('signer-changed',(signer) => {			
