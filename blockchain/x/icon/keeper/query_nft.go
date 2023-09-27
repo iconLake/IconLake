@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) NFT(goCtx context.Context, req *nft.QueryNFTRequest) (*types.QueryNFTResponse, error) {
+func (k Keeper) NFT(goCtx context.Context, req *types.QueryNFTRequest) (*types.QueryNFTResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -54,11 +54,6 @@ func (k Keeper) NFTs(goCtx context.Context, req *nft.QueryNFTsRequest) (*types.Q
 
 	var nfts []*types.NFT
 	for _, nftRaw := range res.Nfts {
-		var iconDataRaw types.IconDataRawI
-		err := k.cdc.UnpackAny(nftRaw.Data, &iconDataRaw)
-		if err != nil {
-			return nil, status.Error(codes.Internal, err.Error())
-		}
 		nft, err := k.ConvertToNFT(nftRaw)
 		if err != nil {
 			return nil, status.Error(codes.Internal, err.Error())
