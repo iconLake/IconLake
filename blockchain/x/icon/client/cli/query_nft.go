@@ -32,7 +32,7 @@ func CmdNFT() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &nft.QueryNFTRequest{
+			params := &types.QueryNFTRequest{
 				ClassId: reqClassId,
 				Id:      reqId,
 			}
