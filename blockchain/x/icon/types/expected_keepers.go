@@ -1,6 +1,8 @@
 package types
 
 import (
+	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/nft"
@@ -14,6 +16,7 @@ type NftKeeper interface {
 	HasNFT(ctx sdk.Context, classID, nftID string) bool
 	GetNFT(ctx sdk.Context, classID, nftID string) (nft.NFT, bool)
 	Mint(ctx sdk.Context, token nft.NFT, receiver sdk.AccAddress) error
+	NFTs(goCtx context.Context, r *nft.QueryNFTsRequest) (*nft.QueryNFTsResponse, error)
 	// Methods imported from nft should be defined here
 }
 

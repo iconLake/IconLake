@@ -7,6 +7,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "iconlake/icon/params.proto";
 import "iconlake/icon/icon_data.proto";
+import "cosmos/nft/v1beta1/query.proto";
 
 option go_package = "iconlake/x/icon/types";
 
@@ -27,10 +28,16 @@ service Query {
   }
   
   // Queries a NFT info.
-  rpc NFT (QueryNFTRequest) returns (QueryNFTResponse) {
-    option (google.api.http).get = "/iconlake/icon/nft/{classId}/{id}";
+  rpc NFT (cosmos.nft.v1beta1.QueryNFTRequest) returns (QueryNFTResponse) {
+    option (google.api.http).get = "/iconlake/icon/nft/{class_id}/{id}";
+  }
+
+  // Queries a list of NFTs of a class.
+  rpc NFTs (cosmos.nft.v1beta1.QueryNFTsRequest) returns (QueryNFTsResponse) {
+    option (google.api.http).get = "/iconlake/icon/nfts";
   }
 }
+
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
@@ -50,15 +57,19 @@ message QueryHashResponse {
   string fileHash  = 2;
 }
 
-message QueryNFTRequest {
+message NFT {
   string classId = 1;
   string id      = 2;
+  string uri     = 3;
+  string uriHash = 4;
+  IconData data  = 5;
 }
 
 message QueryNFTResponse {
-  string   classId = 1;
-  string   id      = 2;
-  string   uri     = 3;
-  string   uriHash = 4;
-  IconData data    = 5;
+  NFT nft = 1;
+}
+
+message QueryNFTsResponse {
+  repeated NFT nfts = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
