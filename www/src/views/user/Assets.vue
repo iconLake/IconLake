@@ -9,9 +9,9 @@ import HeaderVue from '@/components/Header.vue'
 import LoadingVue from '@/components/Loading.vue'
 import { getSignMsg } from '@/utils/blockchain'
 import { DROP_DENOM_MINI, LAKE_DENOM_MINI, LAKE_DENOM, DROP_DENOM, MINT_DROP_AMOUNT_MAX, MINT_DROP_AMOUNT_MIN } from '@/utils/const'
-import type { V1Beta1Class } from '@iconlake/client/types/cosmos.nft.v1beta1/rest'
+import type { IconlakeiconClass } from '@iconlake/client/types/iconlake.icon/rest'
 
-type ClassInfo = V1Beta1Class & {
+type ClassInfo = IconlakeiconClass & {
   url?: string
 }
 
@@ -151,7 +151,7 @@ async function getNftClasses() {
   list.forEach(async e => {
     const info = await getNftClass(e._id)
     if (info && info.class) {
-      const verify = await verifyUriHash(info.class.uri, info.class.uri_hash).catch(() => {})
+      const verify = await verifyUriHash(info.class.uri, info.class.uriHash).catch(() => {})
       classes.push({
         ...info.class,
         url: verify ? verify.url : undefined
