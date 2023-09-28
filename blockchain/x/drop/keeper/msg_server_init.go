@@ -50,7 +50,7 @@ func (k msgServer) Init(goCtx context.Context, msg *types.MsgInit) (*types.MsgMi
 	}
 
 	infoRaw := types.InfoRaw{
-		AccAddress:   accAddress,
+		Address:      accAddress,
 		LastMintTime: ctx.BlockTime().UnixMilli(),
 	}
 

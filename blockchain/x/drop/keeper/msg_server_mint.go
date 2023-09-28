@@ -43,7 +43,7 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 	}
 
 	k.SetInfo(ctx, types.InfoRaw{
-		AccAddress:   accAddress,
+		Address:      accAddress,
 		LastMintTime: timestamp,
 	})
 
