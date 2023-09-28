@@ -22,7 +22,7 @@ func createNInfo(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.InfoRaw 
 	for i := range items {
 		buf := make([]byte, 20, 0x0101010101)
 		binary.BigEndian.PutUint64(buf, uint64(i))
-		items[i].AccAddress = buf
+		items[i].Address = buf
 		keeper.SetInfo(ctx, items[i])
 	}
 	return items
@@ -34,7 +34,7 @@ func TestInfoGet(t *testing.T) {
 	for _, itemRaw := range items {
 		item := keeper.ConvertToInfo(itemRaw)
 		rst, found := keeper.GetInfo(ctx,
-			itemRaw.AccAddress,
+			itemRaw.Address,
 		)
 		require.True(t, found)
 		require.Equal(t,
@@ -49,10 +49,10 @@ func TestInfoRemove(t *testing.T) {
 	items := createNInfo(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveInfo(ctx,
-			item.AccAddress,
+			item.Address,
 		)
 		_, found := keeper.GetInfo(ctx,
-			item.AccAddress,
+			item.Address,
 		)
 		require.False(t, found)
 	}

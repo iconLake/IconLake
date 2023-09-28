@@ -12,7 +12,7 @@ func (k Keeper) SetInfo(ctx sdk.Context, infoRaw types.InfoRaw) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfoKeyPrefix))
 	b := k.cdc.MustMarshal(&infoRaw)
 	store.Set(types.InfoKey(
-		infoRaw.AccAddress,
+		infoRaw.Address,
 	), b)
 }
 
@@ -64,7 +64,7 @@ func (k Keeper) GetAllInfo(ctx sdk.Context) (list []types.Info) {
 }
 
 func (k Keeper) ConvertToInfo(infoRaw types.InfoRaw) types.Info {
-	var aa sdk.AccAddress = infoRaw.AccAddress
+	var aa sdk.AccAddress = infoRaw.Address
 	return types.Info{
 		Address:      aa.String(),
 		LastMintTime: infoRaw.LastMintTime,

@@ -9,6 +9,6 @@ message Info {
 }
 
 message InfoRaw {
-  bytes accAddress = 1;
+  bytes address = 1;
   int64 lastMintTime = 2;
 }

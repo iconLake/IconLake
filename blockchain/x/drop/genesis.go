@@ -13,7 +13,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.InfoList {
 		accAddress, _ := sdk.AccAddressFromBech32(elem.Address)
 		k.SetInfo(ctx, types.InfoRaw{
-			AccAddress:   accAddress,
+			Address:      accAddress,
 			LastMintTime: elem.LastMintTime,
 		})
 	}
