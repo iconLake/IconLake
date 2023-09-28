@@ -1,10 +1,10 @@
 import { CHAIN_ID, DROP_DENOM_MINI, IS_PRODUCTION } from '@/utils/const'
 import request, { handleResponse } from '@/utils/request'
 import { Client } from '@iconlake/client'
-import type { V1Beta1QueryClassResponse } from '@iconlake/client/types/cosmos.nft.v1beta1/rest'
 import type { V1Beta1GetTxResponse } from '@iconlake/client/types/cosmos.tx.v1beta1/rest'
 import type { DropQueryGetInfoResponse } from '@iconlake/client/types/iconlake.drop/rest'
 import type { MsgMint as MsgMintIcon, MsgUpdateClass } from '@iconlake/client/types/iconlake.icon/module'
+import type { IconlakeiconQueryClassResponse } from '@iconlake/client/types/iconlake.icon/rest'
 import { SHA256, lib } from 'crypto-js'
 
 const apiURL = IS_PRODUCTION ? 'https://lcd.mainnet.iconlake.com' : 'https://lcd.testnet.iconlake.com'
@@ -147,9 +147,9 @@ export function initDrop() {
 }
 
 export async function getNftClass(classId: string) {
-  const res = await client.CosmosNftV1Beta1.query.queryClass(classId)
-  return await new Promise((resolve: (v: V1Beta1QueryClassResponse) => void, reject) => {
-    handleResponse<V1Beta1QueryClassResponse>(res as any, resolve, reject);
+  const res = await client.IconlakeIcon.query.queryClass(classId)
+  return await new Promise((resolve: (v: IconlakeiconQueryClassResponse) => void, reject) => {
+    handleResponse<IconlakeiconQueryClassResponse>(res as any, resolve, reject);
   })
 }
 

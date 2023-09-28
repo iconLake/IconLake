@@ -56,12 +56,8 @@ async function publish() {
     id: hash.graphHash,
     uri: url,
     uriHash: hash.fileHash,
-    data: {
-      author: account.address,
-      name: iconInfo.code,
-      description: iconInfo.name,
-      createTime: new Date().toISOString()
-    },
+    name: iconInfo.code,
+    description: iconInfo.name,
     supply: 1
   }).catch((err) => {
     console.error(err)
