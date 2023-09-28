@@ -10,7 +10,7 @@ export interface Info {
 }
 
 export interface InfoRaw {
-  accAddress: Uint8Array;
+  address: Uint8Array;
   lastMintTime: number;
 }
 
@@ -73,13 +73,13 @@ export const Info = {
 };
 
 function createBaseInfoRaw(): InfoRaw {
-  return { accAddress: new Uint8Array(), lastMintTime: 0 };
+  return { address: new Uint8Array(), lastMintTime: 0 };
 }
 
 export const InfoRaw = {
   encode(message: InfoRaw, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.accAddress.length !== 0) {
-      writer.uint32(10).bytes(message.accAddress);
+    if (message.address.length !== 0) {
+      writer.uint32(10).bytes(message.address);
     }
     if (message.lastMintTime !== 0) {
       writer.uint32(16).int64(message.lastMintTime);
@@ -95,7 +95,7 @@ export const InfoRaw = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.accAddress = reader.bytes();
+          message.address = reader.bytes();
           break;
         case 2:
           message.lastMintTime = longToNumber(reader.int64() as Long);
@@ -110,22 +110,22 @@ export const InfoRaw = {
 
   fromJSON(object: any): InfoRaw {
     return {
-      accAddress: isSet(object.accAddress) ? bytesFromBase64(object.accAddress) : new Uint8Array(),
+      address: isSet(object.address) ? bytesFromBase64(object.address) : new Uint8Array(),
       lastMintTime: isSet(object.lastMintTime) ? Number(object.lastMintTime) : 0,
     };
   },
 
   toJSON(message: InfoRaw): unknown {
     const obj: any = {};
-    message.accAddress !== undefined
-      && (obj.accAddress = base64FromBytes(message.accAddress !== undefined ? message.accAddress : new Uint8Array()));
+    message.address !== undefined
+      && (obj.address = base64FromBytes(message.address !== undefined ? message.address : new Uint8Array()));
     message.lastMintTime !== undefined && (obj.lastMintTime = Math.round(message.lastMintTime));
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<InfoRaw>, I>>(object: I): InfoRaw {
     const message = createBaseInfoRaw();
-    message.accAddress = object.accAddress ?? new Uint8Array();
+    message.address = object.address ?? new Uint8Array();
     message.lastMintTime = object.lastMintTime ?? 0;
     return message;
   },
