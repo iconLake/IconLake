@@ -31,8 +31,9 @@ async function getIconInfo() {
   const icon = await getIcon(projectId.value, id.value)
   Object.assign(iconInfo, icon.info)
   if (icon.info.txHash) {
-    const txInfo = await getTx(icon.info.txHash)
-    console.log(txInfo)
+    await getTx(icon.info.txHash).catch(() => {
+      iconInfo.txHash = undefined
+    })
   }
 }
 
@@ -44,14 +45,12 @@ async function publish() {
   const file = await uploadFile(projectId.value, id.value + '.svg', `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="${iconInfo.svg.viewBox}">${iconInfo.svg.path}</svg>`)
   const url = /^http/.test(file.url) ? file.url : `${location.origin}${file.url}`
   const hash = await getHash(url)
-  const account = await getAccount()
-  if (!account) {
-    toast('Cannot get blockchain account', 'error')
+  if (!userInfo.value || !userInfo.value.blockchain?.id) {
     isPending.value = false
     return
   }
   const res = await mintIcon({
-    creator: account.address,
+    creator: userInfo.value.blockchain?.id,
     classId: projectId.value,
     id: hash.graphHash,
     uri: url,
@@ -75,8 +74,6 @@ async function publish() {
   })
   toast('Blockchain confirmation successful', 'success')
   isPending.value = true
-  const txInfo = await getTx(res.transactionHash)
-  console.log(txInfo)
 }
 
 async function checkChainAccount() {

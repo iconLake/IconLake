@@ -77,6 +77,10 @@ export async function getChainAccount(address: string) {
 export async function mintDrop(address: string, amount: string) {
   await detectKeplr()
   if (!isKeplrDetected) return
+  const account = await getAccount()
+  if (!account || account.address !== address) {
+    return Promise.reject(new Error('Active account in Keplr not same'))
+  }
   const res = await client.IconlakeDrop.tx.sendMsgMint({
     value: {
       creator: address,
@@ -118,7 +122,9 @@ export async function mintIcon(value: MsgMintIcon) {
   await detectKeplr()
   if (!isKeplrDetected) return
   const account = await getAccount()
-  if (!account) return
+  if (!account || account.address !== value.creator) {
+    return Promise.reject(new Error('Active account in Keplr not same'))
+  }
   const res = await client.IconlakeIcon.tx.sendMsgMint({
     value,
     fee
@@ -156,6 +162,10 @@ export async function getNftClass(classId: string) {
 export async function updateClass(value: MsgUpdateClass) {
   await detectKeplr()
   if (!isKeplrDetected) return
+  const account = await getAccount()
+  if (!account || account.address !== value.creator) {
+    return Promise.reject(new Error('Active account in Keplr not same'))
+  }
   const res = await client.IconlakeIcon.tx.sendMsgUpdateClass({
     value
   })
