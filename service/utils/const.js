@@ -57,7 +57,8 @@ export const ERROR_CODE = {
   TOKEN_EXPIRED: 'tokenExpired',
   PERMISSION_DENIED: 'permissionDenied',
   NOT_EXIST: 'notExist',
-  INTERNAL_ERROR: 'internalError'
+  INTERNAL_ERROR: 'internalError',
+  NOT_ENABLED: 'notEnabled'
 }
 
 /**

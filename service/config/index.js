@@ -56,8 +56,16 @@ export const configs = {
  *      keplr: boolean\
  *    }\
  *    blockchain: {\
- *      rpc: string\
- *      lcd: string\
+ *      public: {\
+ *        rpc: string\
+ *        lcd: string\
+ *        backendService: {\
+ *          initDROP: boolean\
+ *        }\
+ *      }\
+ *      private: {\
+ *        mnemonic: string\
+ *      }\
  *    }\
  *  }}
  */
