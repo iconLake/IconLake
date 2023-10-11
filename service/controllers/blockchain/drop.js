@@ -1,8 +1,17 @@
 import { ERROR_CODE, LAKE_DENOM_MINI } from '../../utils/const.js'
 import { getClient } from './client.js'
 import { User } from '../../models/user.js'
+import { getConfig } from '../../config/index.js'
+import { enableFeature } from '../../utils/index.js'
 
-export async function init (req, res) {
+const config = getConfig()
+
+/**
+ * @api {get} /blockchain/drop/init 初始化DROP账户
+ */
+export const init = enableFeature(config.blockchain.public.backendService.initDROP, initDROP)
+
+async function initDROP (req, res) {
   const client = await getClient()
   const accounts = await client.signer.getAccounts()
   if (accounts.length === 0) {
@@ -25,7 +34,7 @@ export async function init (req, res) {
     fee: {
       amount: [
         {
-          amount: '0',
+          amount: '50000',
           denom: LAKE_DENOM_MINI
         }
       ],

@@ -1,3 +1,5 @@
+import { ERROR_CODE } from './const.js'
+
 /**
  * 补全url
  * @param {string} url
@@ -49,6 +51,23 @@ export function setLocale (req, res) {
   if (localeReg.test(req.query.locale)) {
     res.cookie('locale', req.query.locale, {
       maxAge: 365 * 24 * 3600 * 1000
+    })
+  }
+}
+
+/**
+ * 启用特性
+ * @param {boolean} isEnable
+ * @param {function} featureFunction
+ * @returns function
+ */
+export function enableFeature (isEnable, featureFunction) {
+  if (isEnable) {
+    return featureFunction
+  }
+  return (_req, res) => {
+    return res.json({
+      error: ERROR_CODE.NOT_ENABLED
     })
   }
 }
