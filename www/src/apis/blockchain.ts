@@ -7,6 +7,8 @@ import type { MsgMint as MsgMintIcon, MsgUpdateClass } from '@iconlake/client/ty
 import type { IconlakeiconQueryClassResponse } from '@iconlake/client/types/iconlake.icon/rest'
 import { SHA256, lib } from 'crypto-js'
 
+const baseURL = '/api/blockchain/'
+
 const apiURL = IS_PRODUCTION ? 'https://lcd.mainnet.iconlake.com' : 'https://lcd.testnet.iconlake.com'
 const rpcURL = IS_PRODUCTION ? 'https://rpc.mainnet.iconlake.com' : 'https://rpc.testnet.iconlake.com'
 const prefix = 'iconlake'
@@ -139,16 +141,30 @@ export async function getTx(txHash: string) {
   })
 }
 
-export async function getDropInfo(address:string) {
+export async function getDropInfo(address: string) {
   const res = await client.IconlakeDrop.query.queryInfo(address)
   return await new Promise((resolve: (v: DropQueryGetInfoResponse) => void, reject) => {
     handleResponse<DropQueryGetInfoResponse>(res as any, resolve, reject);
   })
 }
 
-export function initDrop() {
-  return <Promise<{transactionHash: string}>>request({
-    url: '/api/blockchain/drop/init',
+export async function initDrop(creator: string, address: string, isBackendService: boolean) {
+  if (isBackendService) {
+    return <Promise<{transactionHash: string}>>request({
+      url: '/api/blockchain/drop/init',
+    })
+  }
+  await detectKeplr()
+  if (!isKeplrDetected) return
+  const account = await getAccount()
+  if (!account || account.address !== address) {
+    return Promise.reject(new Error('Active account in Keplr not same'))
+  }
+  return await client.IconlakeDrop.tx.sendMsgInit({
+    value: {
+      creator,
+      address,
+    }
   })
 }
 
@@ -192,4 +208,22 @@ export async function verifyUriHash(uri: string | undefined, hash: string | unde
     checked: hash === fileHash.toString(),
     url: URL.createObjectURL(blob)
   }
+}
+
+export interface BlockchainInfo {
+  config: {
+    rpc: string
+    lcd: string
+    backendService: {
+      initDROP: boolean
+    }
+  }
+}
+
+export function getInfo() {
+  return <Promise<BlockchainInfo>>request({
+    method: 'GET',
+    url: '/info',
+    baseURL,
+  })
 }

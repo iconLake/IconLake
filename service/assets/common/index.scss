@@ -84,6 +84,7 @@ button {
   font-size: 1.125rem;
   &:disabled {
     opacity: 0.7;
+    cursor: not-allowed;
   }
 }
 
