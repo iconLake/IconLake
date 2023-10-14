@@ -298,7 +298,7 @@ watch(() => data.keyword, () => {
     </div>
     <ElTooltip
       effect="light"
-      :content="data.isPublic ? t('openAccess') : t('privateAccess')"
+      :content="data.isPublic ? t('publicAccess') : t('privateAccess')"
       placement="right"
     >
       <span

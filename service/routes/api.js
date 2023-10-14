@@ -16,6 +16,7 @@ import * as projectFile from '../controllers/project/file.js'
 import * as iconInfo from '../controllers/icon/info.js'
 import { params as loginParams } from '../controllers/login/index.js'
 import { init as initDrop } from '../controllers/blockchain/drop.js'
+import { info as blockchainInfo } from '../controllers/blockchain/info.js'
 
 const router = Router()
 
@@ -56,5 +57,6 @@ router.post('/project/file/upload', userMiddleware, projectFile.upload)
 router.post('/icon/info/edit', userMiddleware, iconInfo.edit)
 
 router.get('/blockchain/drop/init', userMiddleware, initDrop)
+router.get('/blockchain/info', blockchainInfo)
 
 export default router

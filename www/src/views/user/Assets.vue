@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import { getBalance, getDropInfo, initDrop, mintDrop, signMsg, getNftClass, verifyUriHash } from '@/apis/blockchain'
+import { getBalance, getDropInfo, initDrop, mintDrop, signMsg, getNftClass, verifyUriHash, getInfo } from '@/apis/blockchain'
+import type { BlockchainInfo } from '@/apis/blockchain'
 import { UserInfo, info, loginByBlockchain } from '@/apis/user'
 import { list as getProjectList } from '@/apis/project'
-import { ref, onBeforeUnmount, reactive } from 'vue'
+import { ref, onBeforeUnmount, reactive, computed } from 'vue'
 import UserVue from '@/components/User.vue'
-import { formatDropAmount, formatLakeAmount, toast } from '@/utils'
+import { formatDropAmount, formatLakeAmount, toast, copy } from '@/utils'
 import HeaderVue from '@/components/Header.vue'
 import LoadingVue from '@/components/Loading.vue'
 import { getSignMsg } from '@/utils/blockchain'
 import { DROP_DENOM_MINI, LAKE_DENOM_MINI, LAKE_DENOM, DROP_DENOM, MINT_DROP_AMOUNT_MAX, MINT_DROP_AMOUNT_MIN } from '@/utils/const'
 import type { IconlakeiconClass } from '@iconlake/client/types/iconlake.icon/rest'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 type ClassInfo = IconlakeiconClass & {
   url?: string
@@ -39,6 +43,7 @@ const isConfirming = ref(false)
 const isIniting = ref(false)
 const isBinding = ref(false)
 const classes = reactive<ClassInfo[]>([])
+const blockchainInfo = ref<BlockchainInfo>()
 
 const dropingTimer = setInterval(() => {
   if (lastMintTime.value <= 0 || isConfirming.value) {
@@ -47,6 +52,10 @@ const dropingTimer = setInterval(() => {
   const time = Math.floor((Date.now() - lastMintTime.value) / 1000)
   dropingAmount.value = time > MINT_DROP_AMOUNT_MAX ? MINT_DROP_AMOUNT_MAX : time
 }, 1000)
+
+const canInitDROP = computed(() => blockchainInfo.value?.config?.backendService.initDROP || lakeAmount.value > 0)
+
+const shareMsg = computed(() => `${t('helpToInitMintingDROP')} https://iconlake.com/manage/assets/drop/init?addr=${userInfo.value?.blockchain?.id}`)
 
 async function getAssets() {
   const uInfo = await info()
@@ -84,11 +93,11 @@ async function confirmAssets() {
   }
   userInfo.value = await info()
   if (!userInfo.value.blockchain) {
-    toast('请先绑定你的区块链账户')
+    toast(t('bindBlockchainAccount'))
     return
   }
   if (dropingAmount.value < MINT_DROP_AMOUNT_MIN) {
-    toast('最少确认1DROP，以防账户余额过低无法再确认新的DROP')
+    toast(t('atLeast1DROP'))
     return
   }
   isConfirming.value = true
@@ -96,7 +105,7 @@ async function confirmAssets() {
   if (data && data.code === 0) {
     getAssets()
   } else {
-    toast(data?.rawLog ?? 'Failed')
+    toast(data?.rawLog ?? t('fail'))
   }
   isConfirming.value = false
 }
@@ -123,12 +132,12 @@ async function bindBlockchain() {
     return
   }
   if (res.userId && res.userId !== (await info())._id) {
-    toast('此地址已绑定其他账号，即将为你切换账号')
+    toast(t('alreadyBoundAndSwitch'))
     setTimeout(() => {
       location.reload()
     }, 2000)
   } else {
-    toast('绑定成功，正在加载你的链上资产')
+    toast(t('boundAndLoadAssets'))
     userInfo.value = await info(true)
     await getAssets()
     isBinding.value = false
@@ -138,10 +147,14 @@ async function bindBlockchain() {
 async function initDropAccount() {
   if (userInfo.value?.blockchain?.id && !isIniting.value) {
     isIniting.value = true
-    await initDrop().finally(() => {
+    await initDrop(
+      userInfo.value?.blockchain?.id,
+      userInfo.value?.blockchain?.id,
+      !!blockchainInfo.value?.config.backendService.initDROP,
+    ).finally(() => {
       isIniting.value = false
     })
-    toast("你的账户已开始积攒DROP啦")
+    toast(t('alreadyMinting'))
     getAssets()
   }
 }
@@ -160,6 +173,16 @@ async function getNftClasses() {
   })
 }
 
+async function getBlockchainInfo() {
+  blockchainInfo.value = await getInfo()
+}
+
+function copyShareMsg() {
+  copy(shareMsg.value)
+  toast(t('copyDone'))
+}
+
+getBlockchainInfo()
 getAssets()
 getNftClasses()
 </script>
@@ -168,7 +191,7 @@ getNftClasses()
   <HeaderVue
     :back="true"
   >
-    <span>我的链上地址：{{ userInfo?.blockchain?.id }}</span>
+    <span>{{ t('myBlockchainAddress') }}{{ userInfo?.blockchain?.id }}</span>
   </HeaderVue>
   <UserVue />
   <div class="token flex center">
@@ -205,7 +228,7 @@ getNftClasses()
       </div>
       <div class="amount">
         <div class="label">
-          待确认资产
+          {{ t('assetsToConfirm') }}
         </div>
         <span class="num">{{ formatDropAmount(dropingAmount, false) }}</span>
         <span class="denom">DROP</span>
@@ -217,7 +240,7 @@ getNftClasses()
         <LoadingVue
           v-if="isConfirming"
         />
-        <span v-else>确认资产</span>
+        <span v-else>{{ t('confirmAssets') }}</span>
       </div>
     </div>
   </div>
@@ -231,7 +254,7 @@ getNftClasses()
         type="submit"
         class="btn"
       >
-        安装Keplr钱包
+        {{ t('installKeplr') }}
       </button>
     </a>
     <button
@@ -241,17 +264,31 @@ getNftClasses()
       @click="bindBlockchain"
     >
       <LoadingVue v-if="isBinding" />
-      <span v-else>绑定区块链账户</span>
+      <span v-else>{{ t('bindBlckchainAccount') }}</span>
     </button>
     <button
       v-else-if="!lastMintTime"
       type="submit"
       class="btn"
+      :disabled="!canInitDROP"
       @click="initDropAccount"
     >
       <LoadingVue v-if="isIniting" />
-      <span v-else>开始积攒DROP</span>
+      <span v-else>{{ t('mintDROP') }}</span>
     </button>
+  </div>
+  <div
+    v-if="!canInitDROP"
+    class="help-init"
+  >
+    <p>{{ t('notEnoughLAKEToInitMintingDROP') }}</p>
+    <div
+      class="example"
+      @click="copyShareMsg"
+    >
+      <div class="iconfont icon-copy" />
+      {{ shareMsg }}
+    </div>
   </div>
   <div class="list flex start">
     <a
@@ -276,7 +313,7 @@ getNftClasses()
       </div>
       <div class="item-info">
         <div class="info-name">
-          {{ item.name || '尚未设置链上信息' }}
+          {{ item.name || t('noInfoInBlockchain') }}
         </div>
       </div>
     </a>
@@ -350,6 +387,27 @@ getNftClasses()
 }
 .operate {
   margin: 0 0 5rem;
+}
+.help-init {
+  p {
+    text-align: center;
+  }
+  .example {
+    background: #fff;
+    width: 50rem;
+    margin: 3rem auto;
+    padding: 2rem 4rem 2rem 2rem;
+    border-radius: 1.5rem;
+    line-height: 2.2rem;
+    position: relative;
+    cursor: pointer;
+    .icon-copy {
+      position: absolute;
+      right: 1.2rem;
+      top: 1.2rem;
+      color: var(--color-main);
+    }
+  }
 }
 .list {
   $item-width: 29.25rem;
