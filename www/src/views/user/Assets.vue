@@ -36,6 +36,7 @@ const tokenSrc = {
 const isKeplrAvailable = !!window.keplr
 const comfirmedDropAmount = ref(0)
 const lakeAmount = ref(0)
+const isLAKEAmountLoaded = ref(false)
 const lastMintTime = ref(-1)
 const dropingAmount = ref(0)
 const userInfo = ref<UserInfo>()
@@ -54,6 +55,7 @@ const dropingTimer = setInterval(() => {
 }, 1000)
 
 const canInitDROP = computed(() => blockchainInfo.value?.config?.backendService.initDROP || lakeAmount.value > 0)
+const isLoaded = computed(() => !!userInfo.value && !!blockchainInfo.value && isLAKEAmountLoaded.value)
 
 const shareMsg = computed(() => `${t('helpToInitMintingDROP')} https://iconlake.com/manage/assets/drop/init?addr=${userInfo.value?.blockchain?.id}`)
 
@@ -65,6 +67,8 @@ async function getAssets() {
       if (balance?.amount) {
         lakeAmount.value = +balance?.amount
       }
+    }).finally(() => {
+      isLAKEAmountLoaded.value = true
     })
     getBalance(uInfo.blockchain.id, DROP_DENOM_MINI).then(balance => {
       if (balance?.amount) {
@@ -244,7 +248,10 @@ getNftClasses()
       </div>
     </div>
   </div>
-  <div class="operate flex center">
+  <div
+    v-if="isLoaded"
+    class="operate flex center"
+  >
     <a
       v-if="!isKeplrAvailable"
       href="https://www.keplr.app/download"
@@ -278,7 +285,7 @@ getNftClasses()
     </button>
   </div>
   <div
-    v-if="!canInitDROP"
+    v-if="isLoaded && !canInitDROP"
     class="help-init"
   >
     <p>{{ t('notEnoughLAKEToInitMintingDROP') }}</p>
