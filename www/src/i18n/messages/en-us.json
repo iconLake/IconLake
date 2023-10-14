@@ -141,7 +141,7 @@
   "assetsToConfirm": "Assets to be confirmed",
   "confirmAssets": "Confirm",
   "installKeplr": "Install Keplr",
-  "bindBlckchainAccount": "Bind blockchain account",
+  "bindBlckchainAccount": "Bind Blockchain Account",
   "mintDROP": "Start Minting DROP",
   "notEnoughLAKEToInitMintingDROP": "You don’t have enough LAKE to start minting DROP, go to X for help!",
   "noInfoInBlockchain": "No on-chain information",

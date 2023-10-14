@@ -84,6 +84,8 @@ async function getAssets() {
     }).catch(() => {
       lastMintTime.value = 0
     })
+  } else {
+    isLAKEAmountLoaded.value = true
   }
 }
 
@@ -285,7 +287,7 @@ getNftClasses()
     </button>
   </div>
   <div
-    v-if="isLoaded && !canInitDROP"
+    v-if="isLoaded && userInfo?.blockchain?.id && !canInitDROP"
     class="help-init"
   >
     <p>{{ t('notEnoughLAKEToInitMintingDROP') }}</p>
