@@ -57,7 +57,7 @@ const dropingTimer = setInterval(() => {
 const canInitDROP = computed(() => blockchainInfo.value?.config?.backendService.initDROP || lakeAmount.value > 0)
 const isLoaded = computed(() => !!userInfo.value && !!blockchainInfo.value && isLAKEAmountLoaded.value)
 
-const shareMsg = computed(() => `${t('helpToInitMintingDROP')} https://iconlake.com/manage/assets/drop/init?addr=${userInfo.value?.blockchain?.id}`)
+const shareMsg = computed(() => `${t('helpToInitMintingDROP')} ${location.origin}/manage/user/assets/drop/init?addr=${userInfo.value?.blockchain?.id}`)
 
 async function getAssets() {
   const uInfo = await info()

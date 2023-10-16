@@ -157,7 +157,7 @@ export async function initDrop(creator: string, address: string, isBackendServic
   await detectKeplr()
   if (!isKeplrDetected) return
   const account = await getAccount()
-  if (!account || account.address !== address) {
+  if (!account || account.address !== creator) {
     return Promise.reject(new Error('Active account in Keplr not same'))
   }
   return await client.IconlakeDrop.tx.sendMsgInit({
