@@ -84,6 +84,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/user/assets',
     name: 'userAssets',
     component: () => import('../views/user/Assets.vue')
+  },
+  {
+    path: '/user/assets/drop/init',
+    name: 'initDROP',
+    component: () => import('../views/user/assets/drop/Init.vue')
   }
 ]
 
