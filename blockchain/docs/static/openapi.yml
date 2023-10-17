@@ -46640,7 +46640,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /iconlake/icon/class/{id}:
+  /iconlake/icon/class:
     get:
       summary: Queries a class info.
       operationId: IconlakeIconClass
@@ -46860,8 +46860,8 @@ paths:
                         }
       parameters:
         - name: id
-          in: path
-          required: true
+          in: query
+          required: false
           type: string
       tags:
         - Query
@@ -47384,7 +47384,7 @@ paths:
                 type: string
       tags:
         - Query
-  /iconlake/icon/nft/{classId}/{id}:
+  /iconlake/icon/nft:
     get:
       summary: Queries a NFT info.
       operationId: IconlakeIconNFT
@@ -47604,12 +47604,12 @@ paths:
                         }
       parameters:
         - name: classId
-          in: path
-          required: true
+          in: query
+          required: false
           type: string
         - name: id
-          in: path
-          required: true
+          in: query
+          required: false
           type: string
       tags:
         - Query

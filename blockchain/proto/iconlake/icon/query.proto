@@ -30,7 +30,7 @@ service Query {
   
   // Queries a NFT info.
   rpc NFT (QueryNFTRequest) returns (QueryNFTResponse) {
-    option (google.api.http).get = "/iconlake/icon/nft/{classId}/{id}";
+    option (google.api.http).get = "/iconlake/icon/nft";
   }
   
   // Queries a list of NFTs of a class.
@@ -40,7 +40,7 @@ service Query {
   
   // Queries a class info.
   rpc Class (QueryClassRequest) returns (QueryClassResponse) {
-    option (google.api.http).get = "/iconlake/icon/class/{id}";
+    option (google.api.http).get = "/iconlake/icon/class";
   }
 
   // Queries a list of Class items.
