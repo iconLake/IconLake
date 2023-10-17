@@ -13,7 +13,7 @@
 
   const iconlakeDom = document.querySelector('iconlake-nft')
 
-  fetch(`${lcd}/cosmos/nft/v1beta1/nfts/${projectId}/${nftId}`).then(e => e.json()).then(info => {
+  fetch(`${lcd}/iconlake/icon/nft?classId=${projectId}&id=${nftId}`).then(e => e.json()).then(info => {
     iconlakeDom?.setAttribute('info', JSON.stringify(info.nft))
   }).catch(console.error)
 

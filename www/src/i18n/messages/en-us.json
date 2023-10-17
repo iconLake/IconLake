@@ -145,5 +145,6 @@
   "mintDROP": "Start Minting DROP",
   "notEnoughLAKEToInitMintingDROP": "You don’t have enough LAKE to start minting DROP, copy the content below and send it to X for help!",
   "noInfoInBlockchain": "No on-chain information",
-  "helpToInitMintingDROP": "#InitIconlakeDROP Who can help me enable the minting of DROP? How much is negotiable!"
+  "helpToInitMintingDROP": "#InitIconlakeDROP Who can help me enable the minting of DROP? How much is negotiable!",
+  "openSource": "Open Source"
 }

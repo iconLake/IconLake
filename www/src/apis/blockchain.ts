@@ -168,8 +168,8 @@ export async function initDrop(creator: string, address: string, isBackendServic
   })
 }
 
-export async function getNftClass(classId: string) {
-  const res = await client.IconlakeIcon.query.queryClass(classId)
+export async function getNftClass(id: string) {
+  const res = await client.IconlakeIcon.query.queryClass({ id })
   return await new Promise((resolve: (v: IconlakeiconQueryClassResponse) => void, reject) => {
     handleResponse<IconlakeiconQueryClassResponse>(res as any, resolve, reject);
   })
