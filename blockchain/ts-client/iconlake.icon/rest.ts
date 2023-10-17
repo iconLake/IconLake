@@ -432,12 +432,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryClass
    * @summary Queries a class info.
-   * @request GET:/iconlake/icon/class/{id}
+   * @request GET:/iconlake/icon/class
    */
-  queryClass = (id: string, params: RequestParams = {}) =>
+  queryClass = (query?: { id?: string }, params: RequestParams = {}) =>
     this.request<IconlakeiconQueryClassResponse, RpcStatus>({
-      path: `/iconlake/icon/class/${id}`,
+      path: `/iconlake/icon/class`,
       method: "GET",
+      query: query,
       format: "json",
       ...params,
     });
@@ -492,12 +493,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryNft
    * @summary Queries a NFT info.
-   * @request GET:/iconlake/icon/nft/{classId}/{id}
+   * @request GET:/iconlake/icon/nft
    */
-  queryNFT = (classId: string, id: string, params: RequestParams = {}) =>
+  queryNFT = (query?: { classId?: string; id?: string }, params: RequestParams = {}) =>
     this.request<IconlakeiconQueryNFTResponse, RpcStatus>({
-      path: `/iconlake/icon/nft/${classId}/${id}`,
+      path: `/iconlake/icon/nft`,
       method: "GET",
+      query: query,
       format: "json",
       ...params,
     });
