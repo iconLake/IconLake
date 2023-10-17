@@ -8,7 +8,7 @@
 
   const iconlakeDom = document.querySelector('iconlake-exhibition')
 
-  fetch(`${lcd}/cosmos/nft/v1beta1/classes/${projectId}`).then(e => e.json()).then(info => {
+  fetch(`${lcd}/iconlake/icon/class?id=${projectId}`).then(e => e.json()).then(info => {
     iconlakeDom?.setAttribute('info', info.class ? JSON.stringify(info.class) : '{}')
   }).catch(console.error)
 
@@ -16,7 +16,7 @@
     customElements.define('iconlake-exhibition', module.default)
   })
 
-  fetch(`${lcd}/cosmos/nft/v1beta1/nfts?class_id=${projectId}`).then(e => e.json()).then(data => {
+  fetch(`${lcd}/iconlake/icon/nfts?class_id=${projectId}`).then(e => e.json()).then(data => {
     iconlakeDom?.setAttribute('nfts', JSON.stringify(data.nfts))
     iconlakeDom?.setAttribute('pagination', JSON.stringify(data.pagination))
   })

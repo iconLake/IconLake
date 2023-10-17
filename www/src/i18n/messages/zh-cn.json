@@ -145,5 +145,6 @@
   "mintDROP": "开始积攒DROP",
   "notEnoughLAKEToInitMintingDROP": "你没有足够的LAKE来开启积攒DROP，复制下面的内容发到微博上求助吧！",
   "noInfoInBlockchain": "尚未设置链上信息",
-  "helpToInitMintingDROP": "#求助开启iconLake的积攒DROP# 谁能帮我开启积攒DROP？钱乃身外之物，好商量！"
+  "helpToInitMintingDROP": "#求助开启iconLake的积攒DROP# 谁能帮我开启积攒DROP？钱乃身外之物，好商量！",
+  "openSource": "开源"
 }
