@@ -123,6 +123,7 @@
   "downloadFile": "Download File",
   "isPublic": "Is Public",
   "myAssets": "My Assets",
+  "myProjects": "My Projects",
   "exhibition": "Exhibition",
   "gotoInstall": "Go to install ",
   "publicAccess": "Public, anyone who obtains the page link can access it",
@@ -146,5 +147,9 @@
   "notEnoughLAKEToInitMintingDROP": "You don’t have enough LAKE to start minting DROP, copy the content below and send it to X for help!",
   "noInfoInBlockchain": "No on-chain information",
   "helpToInitMintingDROP": "#InitIconlakeDROP Who can help me enable the minting of DROP? How much is negotiable!",
-  "openSource": "Open Source"
+  "openSource": "Open Source",
+  "setCoverFirst": "Please set the cover first",
+  "updateCompleted": "Update Completed",
+  "updateFailed": "Update Failed",
+  "UpdateOnchainInformation": "Update On-chain Information"
 }

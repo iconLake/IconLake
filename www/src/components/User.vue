@@ -105,6 +105,12 @@ async function gotoLogin() {
       >
         {{ t('myAssets') }}
       </RouterLink>
+      <RouterLink
+        class="item flex"
+        to="/home"
+      >
+        {{ t('myProjects') }}
+      </RouterLink>
       <div
         class="item flex"
         @click="toggleLocale"
