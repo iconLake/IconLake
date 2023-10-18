@@ -123,6 +123,7 @@
   "downloadFile": "下载文件",
   "isPublic": "是否公开",
   "myAssets": "我的资产",
+  "myProjects": "我的项目",
   "exhibition": "展览",
   "gotoInstall": "前往安装",
   "publicAccess": "公开，获得页面链接的任何人都可以访问",
@@ -146,5 +147,9 @@
   "notEnoughLAKEToInitMintingDROP": "你没有足够的LAKE来开启积攒DROP，复制下面的内容发到微博上求助吧！",
   "noInfoInBlockchain": "尚未设置链上信息",
   "helpToInitMintingDROP": "#求助开启iconLake的积攒DROP# 谁能帮我开启积攒DROP？钱乃身外之物，好商量！",
-  "openSource": "开源"
+  "openSource": "开源",
+  "setCoverFirst": "请先设置封面",
+  "updateCompleted": "更新成功",
+  "updateFailed": "更新失败",
+  "UpdateOnchainInformation": "更新链上信息"
 }

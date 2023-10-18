@@ -43,7 +43,7 @@ async function updateChain(e: Event) {
   e.preventDefault()
   const uri = project.value.cover
   if (!uri) {
-    toast('请先设置封面')
+    toast(t('setCoverFirst'))
     return
   }
   if (isUpdatingChain.value) {
@@ -66,13 +66,13 @@ async function updateChain(e: Event) {
       uriHash: hash.fileHash,
     })
     if (res?.code === 0) {
-      toast('更新成功')
+      toast(t('updateCompleted'))
       isDiffFromChain.value = false
     } else {
-      toast('更新失败')
+      toast(res?.rawLog ?? t('updateFailed'))
     }
-  } catch (e) {
-    toast('更新失败')
+  } catch (e: any) {
+    toast(e.message ?? t('updateFailed'))
     console.error(e)
   }
   isUpdatingChain.value = false
@@ -155,7 +155,9 @@ getProject()
           @click="updateChain"
         >
           <Loading v-if="isUpdatingChain" />
-          <span v-else>更新链上信息</span>
+          <span v-else>
+            {{ t('UpdateOnchainInformation') }}
+          </span>
         </div>
       </router-link>
       <router-view />
