@@ -144,7 +144,7 @@ getProjects().then(res => {
     right: 0;
     bottom: 2rem;
     color: #fff;
-    font-size: 1rem;
+    font-size: 1.2rem;
     text-align: center;
   }
 }
@@ -160,7 +160,7 @@ getProjects().then(res => {
 	border-radius: 0.625rem;
   box-sizing: border-box;
   &-title {
-    font-size: 1.125rem;
+    font-size: 1.2rem;
 	  font-weight: bold;
     margin-bottom: 1.875rem;
   }
