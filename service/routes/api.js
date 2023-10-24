@@ -17,6 +17,10 @@ import * as iconInfo from '../controllers/icon/info.js'
 import { params as loginParams } from '../controllers/login/index.js'
 import { init as initDrop } from '../controllers/blockchain/drop.js'
 import { info as blockchainInfo } from '../controllers/blockchain/info.js'
+import { add as addBlacklist, del as delBlacklist } from '../controllers/blacklist/update.js'
+import adminMiddleware from '../controllers/admin/middleware.js'
+import { verify as verifyAdmin } from '../controllers/admin/info.js'
+import { verifyNFT, verifyProject, verifyAddress } from '../controllers/blacklist/verify.js'
 
 const router = Router()
 
@@ -58,5 +62,13 @@ router.post('/icon/info/edit', userMiddleware, iconInfo.edit)
 
 router.get('/blockchain/drop/init', userMiddleware, initDrop)
 router.get('/blockchain/info', blockchainInfo)
+
+router.get('/admin/info/verify', userMiddleware, verifyAdmin)
+router.post('/admin/blacklist/add', adminMiddleware, addBlacklist)
+router.post('/admin/blacklist/del', adminMiddleware, delBlacklist)
+
+router.get('/blacklist/verify/nft', verifyNFT)
+router.get('/blacklist/verify/project', verifyProject)
+router.get('/blacklist/verify/address', verifyAddress)
 
 export default router

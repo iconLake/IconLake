@@ -48,5 +48,8 @@
     "private": {
       "mnemonic": "icon lake ensure you own what you bring into exist any tiny"
     }
+  },
+  "admin": {
+    "userIds": []
   }
 }
