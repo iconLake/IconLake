@@ -67,6 +67,9 @@ export const configs = {
  *        mnemonic: string\
  *      }\
  *    }\
+ *    admin: {\
+ *      userIds: string[]\
+ *    }\
  *  }}
  */
 export function getConfig (env) {
