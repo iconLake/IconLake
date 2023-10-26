@@ -12,12 +12,16 @@ const GroupSchema = new Schema({
 export const IconSchema = new Schema({
   groupId: Schema.Types.ObjectId,
   name: String,
+  desc: String,
   code: String,
   unicode: String,
   tags: [String],
   svg: {
     viewBox: String,
     path: String
+  },
+  img: {
+    url: String
   },
   txHash: String
 })
