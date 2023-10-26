@@ -44,7 +44,7 @@ export async function add (req, res) {
     return
   }
   const project = await Project.findById(_id, 'iconIndex')
-  const startIndex = (project.iconIndex || 0) + 1
+  const startIndex = project.iconIndex
   icons.forEach((e, i) => {
     e.unicode = (startIndex + i).toString(16)
   })
