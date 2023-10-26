@@ -4,7 +4,7 @@ import { writeFile, mkdir, readFile, rm, rename } from 'fs/promises'
 import { webfont } from 'webfont'
 import UglifyJS from 'uglify-js'
 import { nanoid } from 'nanoid'
-import { minify } from 'csso'
+import CleanCSS from 'clean-css'
 import { Project } from '../../../../models/project.js'
 import { ERROR_CODE, ONE_DAY_SECONDS, TEMPORARY_FILE_EXPIRE } from '../../../../utils/const.js'
 import { getConfig } from '../../../../config/index.js'
@@ -13,6 +13,8 @@ import mongoose from 'mongoose'
 
 const config = getConfig()
 const domain = isCosActive ? config.cos.domain : config.domain
+
+const cleanCSS = new CleanCSS()
 
 /**
  * icon生成资源路径
@@ -69,13 +71,8 @@ export async function genCSS (req, res, projectId, project) {
   const svgsPath = new URL(svgsRelativePath, dir)
   await mkdir(svgsPath)
   const metaMap = new Map()
-  let unicode = 2000 // 预防unicode不存在
   await Promise.all(project.icons.map(async icon => {
     const file = new URL(`${icon.code}.svg`, svgsPath)
-    if (!icon.unicode) {
-      icon.unicode = ++unicode
-      console.error('UnicodeError:', projectId, icon.code)
-    }
     await writeFile(file, `<svg viewBox="${icon.svg.viewBox}" version="1.1" xmlns="http://www.w3.org/2000/svg">${icon.svg.path}</svg>`)
     metaMap.set(icon.code, {
       unicode: [String.fromCodePoint(+`0x${icon.unicode}`)],
@@ -106,7 +103,7 @@ export async function genCSS (req, res, projectId, project) {
       await putObject(`${destPath}iconlake.ttf`, result.ttf)
       await putObject(`${destPath}iconlake.woff`, result.woff)
       await putObject(`${destPath}iconlake.woff2`, Buffer.from(result.woff2))
-      await putObject(`${destPath}iconlake.css`, minify(result.template).css)
+      await putObject(`${destPath}iconlake.css`, cleanCSS.minify(result.template).styles)
       await rm(new URL(projectId, srcPath), {
         recursive: true,
         force: true
@@ -119,7 +116,7 @@ export async function genCSS (req, res, projectId, project) {
           recursive: true
         })
       }
-      writeFile(new URL('iconlake.css', dir), minify(result.template).css)
+      writeFile(new URL('iconlake.css', dir), cleanCSS.minify(result.template).styles)
       writeFile(new URL('iconlake.ttf', dir), result.ttf)
       writeFile(new URL('iconlake.woff', dir), result.woff)
       writeFile(new URL('iconlake.woff2', dir), result.woff2)

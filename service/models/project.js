@@ -63,7 +63,7 @@ export const ProjectSchema = new Schema({
   }],
   iconIndex: {
     type: Number,
-    default: 0x60000
+    default: 0xE000
   },
   icons: [IconSchema],
   iconUpdateTime: Date,
