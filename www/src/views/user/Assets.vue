@@ -76,8 +76,8 @@ async function getAssets() {
       }
     })
     getDropInfo(uInfo.blockchain.id).then(dropInfo => {
-      if (dropInfo.info?.lastMintTime) {
-        lastMintTime.value = +dropInfo.info?.lastMintTime
+      if (dropInfo.info?.last_mint_time) {
+        lastMintTime.value = +dropInfo.info?.last_mint_time
       } else {
         lastMintTime.value = 0
       }
@@ -170,7 +170,7 @@ async function getNftClasses() {
   list.forEach(async e => {
     const info = await getNftClass(e._id)
     if (info && info.class) {
-      const verify = await verifyUriHash(info.class.uri, info.class.uriHash).catch(() => {})
+      const verify = await verifyUriHash(info.class.uri, info.class.uri_hash).catch(() => {})
       classes.push({
         ...info.class,
         url: verify ? verify.url : undefined
