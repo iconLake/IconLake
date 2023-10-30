@@ -4,11 +4,11 @@ package iconlake.icon;
 option go_package = "iconlake/x/icon/types";
 
 message ClassData {
-  string author = 1; 
-  int64 createTime = 2; 
+  string author      = 1; 
+  int64  create_time = 2; 
 }
 
 message ClassDataRaw {
-  bytes author = 1; 
-  int64 createTime = 2; 
+  bytes author      = 1; 
+  int64 create_time = 2; 
 }

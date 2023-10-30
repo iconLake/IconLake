@@ -12,29 +12,27 @@ option go_package = "iconlake/x/drop/types";
 
 // Query defines the gRPC querier service.
 service Query {
-  
   // Parameters queries the parameters of the module.
   rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/iconlake/drop/params";
-  
   }
   
-  // Queries a list of Info items.
-  rpc Info    (QueryGetInfoRequest) returns (QueryGetInfoResponse) {
+  // Queries a Info item by address.
+  rpc Info (QueryGetInfoRequest) returns (QueryGetInfoResponse) {
     option (google.api.http).get = "/iconlake/drop/info/{address}";
-  
   }
+
+  // Queries a list of all Info items.
   rpc InfoAll (QueryAllInfoRequest) returns (QueryAllInfoResponse) {
     option (google.api.http).get = "/iconlake/drop/info";
-  
   }
 }
+
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
 // QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
-  
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
 }
@@ -55,4 +53,3 @@ message QueryAllInfoResponse {
   repeated Info                                   info       = 1 [(gogoproto.nullable) = false];
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
-

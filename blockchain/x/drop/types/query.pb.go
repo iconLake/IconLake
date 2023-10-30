@@ -355,8 +355,9 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// Queries a list of Info items.
+	// Queries a Info item by address.
 	Info(ctx context.Context, in *QueryGetInfoRequest, opts ...grpc.CallOption) (*QueryGetInfoResponse, error)
+	// Queries a list of all Info items.
 	InfoAll(ctx context.Context, in *QueryAllInfoRequest, opts ...grpc.CallOption) (*QueryAllInfoResponse, error)
 }
 
@@ -399,8 +400,9 @@ func (c *queryClient) InfoAll(ctx context.Context, in *QueryAllInfoRequest, opts
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// Queries a list of Info items.
+	// Queries a Info item by address.
 	Info(context.Context, *QueryGetInfoRequest) (*QueryGetInfoResponse, error)
+	// Queries a list of all Info items.
 	InfoAll(context.Context, *QueryAllInfoRequest) (*QueryAllInfoResponse, error)
 }
 

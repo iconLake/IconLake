@@ -46439,6 +46439,7 @@ paths:
         - Query
   /iconlake/drop/info:
     get:
+      summary: Queries a list of all Info items.
       operationId: IconlakeDropInfoAll
       responses:
         '200':
@@ -46453,7 +46454,7 @@ paths:
                   properties:
                     address:
                       type: string
-                    lastMintTime:
+                    last_mint_time:
                       type: string
                       format: int64
               pagination:
@@ -46563,7 +46564,7 @@ paths:
         - Query
   /iconlake/drop/info/{address}:
     get:
-      summary: Queries a list of Info items.
+      summary: Queries a Info item by address.
       operationId: IconlakeDropInfo
       responses:
         '200':
@@ -46576,7 +46577,7 @@ paths:
                 properties:
                   address:
                     type: string
-                  lastMintTime:
+                  last_mint_time:
                     type: string
                     format: int64
         default:
@@ -46663,14 +46664,14 @@ paths:
                     type: string
                   uri:
                     type: string
-                  uriHash:
+                  uri_hash:
                     type: string
                   data:
                     type: object
                     properties:
                       author:
                         type: string
-                      createTime:
+                      create_time:
                         type: string
                         format: int64
         default:
@@ -46890,14 +46891,14 @@ paths:
                       type: string
                     uri:
                       type: string
-                    uriHash:
+                    uri_hash:
                       type: string
                     data:
                       type: object
                       properties:
                         author:
                           type: string
-                        createTime:
+                        create_time:
                           type: string
                           format: int64
               pagination:
@@ -47182,9 +47183,9 @@ paths:
           schema:
             type: object
             properties:
-              graphHash:
+              graph_hash:
                 type: string
-              fileHash:
+              file_hash:
                 type: string
         default:
           description: An unexpected error response.
@@ -47378,7 +47379,7 @@ paths:
           schema:
             type: object
             properties:
-              hashType:
+              hash_type:
                 type: string
               uri:
                 type: string
@@ -47397,13 +47398,13 @@ paths:
               nft:
                 type: object
                 properties:
-                  classId:
+                  class_id:
                     type: string
                   id:
                     type: string
                   uri:
                     type: string
-                  uriHash:
+                  uri_hash:
                     type: string
                   data:
                     type: object
@@ -47414,7 +47415,7 @@ paths:
                         type: string
                       description:
                         type: string
-                      createTime:
+                      create_time:
                         type: string
                         format: int64
         default:
@@ -47603,7 +47604,7 @@ paths:
                           "value": "1.212s"
                         }
       parameters:
-        - name: classId
+        - name: class_id
           in: query
           required: false
           type: string
@@ -47628,13 +47629,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    classId:
+                    class_id:
                       type: string
                     id:
                       type: string
                     uri:
                       type: string
-                    uriHash:
+                    uri_hash:
                       type: string
                     data:
                       type: object
@@ -47645,7 +47646,7 @@ paths:
                           type: string
                         description:
                           type: string
-                        createTime:
+                        create_time:
                           type: string
                           format: int64
               pagination:
@@ -76877,7 +76878,7 @@ definitions:
     properties:
       address:
         type: string
-      lastMintTime:
+      last_mint_time:
         type: string
         format: int64
   iconlake.drop.MsgMintResponse:
@@ -76895,7 +76896,7 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
-      lastMintTime:
+      last_mint_time:
         type: string
         format: int64
   iconlake.drop.Params:
@@ -76911,7 +76912,7 @@ definitions:
           properties:
             address:
               type: string
-            lastMintTime:
+            last_mint_time:
               type: string
               format: int64
       pagination:
@@ -76948,7 +76949,7 @@ definitions:
         properties:
           address:
             type: string
-          lastMintTime:
+          last_mint_time:
             type: string
             format: int64
   iconlake.drop.QueryParamsResponse:
@@ -76971,14 +76972,14 @@ definitions:
         type: string
       uri:
         type: string
-      uriHash:
+      uri_hash:
         type: string
       data:
         type: object
         properties:
           author:
             type: string
-          createTime:
+          create_time:
             type: string
             format: int64
   iconlake.icon.ClassData:
@@ -76986,7 +76987,7 @@ definitions:
     properties:
       author:
         type: string
-      createTime:
+      create_time:
         type: string
         format: int64
   iconlake.icon.IconData:
@@ -76998,7 +76999,7 @@ definitions:
         type: string
       description:
         type: string
-      createTime:
+      create_time:
         type: string
         format: int64
   iconlake.icon.MsgMintResponse:
@@ -77008,13 +77009,13 @@ definitions:
   iconlake.icon.NFT:
     type: object
     properties:
-      classId:
+      class_id:
         type: string
       id:
         type: string
       uri:
         type: string
-      uriHash:
+      uri_hash:
         type: string
       data:
         type: object
@@ -77025,7 +77026,7 @@ definitions:
             type: string
           description:
             type: string
-          createTime:
+          create_time:
             type: string
             format: int64
   iconlake.icon.Params:
@@ -77047,14 +77048,14 @@ definitions:
             type: string
           uri:
             type: string
-          uriHash:
+          uri_hash:
             type: string
           data:
             type: object
             properties:
               author:
                 type: string
-              createTime:
+              create_time:
                 type: string
                 format: int64
   iconlake.icon.QueryClassesResponse:
@@ -77075,14 +77076,14 @@ definitions:
               type: string
             uri:
               type: string
-            uriHash:
+            uri_hash:
               type: string
             data:
               type: object
               properties:
                 author:
                   type: string
-                createTime:
+                create_time:
                   type: string
                   format: int64
       pagination:
@@ -77114,16 +77115,16 @@ definitions:
   iconlake.icon.QueryHashRequest:
     type: object
     properties:
-      hashType:
+      hash_type:
         type: string
       uri:
         type: string
   iconlake.icon.QueryHashResponse:
     type: object
     properties:
-      graphHash:
+      graph_hash:
         type: string
-      fileHash:
+      file_hash:
         type: string
   iconlake.icon.QueryNFTResponse:
     type: object
@@ -77131,13 +77132,13 @@ definitions:
       nft:
         type: object
         properties:
-          classId:
+          class_id:
             type: string
           id:
             type: string
           uri:
             type: string
-          uriHash:
+          uri_hash:
             type: string
           data:
             type: object
@@ -77148,7 +77149,7 @@ definitions:
                 type: string
               description:
                 type: string
-              createTime:
+              create_time:
                 type: string
                 format: int64
   iconlake.icon.QueryNFTsResponse:
@@ -77159,13 +77160,13 @@ definitions:
         items:
           type: object
           properties:
-            classId:
+            class_id:
               type: string
             id:
               type: string
             uri:
               type: string
-            uriHash:
+            uri_hash:
               type: string
             data:
               type: object
@@ -77176,7 +77177,7 @@ definitions:
                   type: string
                 description:
                   type: string
-                createTime:
+                create_time:
                   type: string
                   format: int64
       pagination:
