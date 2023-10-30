@@ -2,24 +2,23 @@ syntax = "proto3";
 
 package iconlake.icon;
 
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/nft/v1beta1/query.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
-import "iconlake/icon/params.proto";
-import "iconlake/icon/icon_data.proto";
-import "cosmos/nft/v1beta1/query.proto";
 import "iconlake/icon/class_data.proto";
+import "iconlake/icon/icon_data.proto";
+import "iconlake/icon/params.proto";
 
 option go_package = "iconlake/x/icon/types";
 
 // Query defines the gRPC querier service.
 service Query {
-  
   // Parameters queries the parameters of the module.
   rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/iconlake/icon/params";
   }
-  
+
   // Queries hash of a uri.
   rpc Hash (QueryHashRequest) returns (QueryHashResponse) {
     option (google.api.http) = {
@@ -27,17 +26,17 @@ service Query {
       body: "*"
     };
   }
-  
+
   // Queries a NFT info.
   rpc NFT (QueryNFTRequest) returns (QueryNFTResponse) {
     option (google.api.http).get = "/iconlake/icon/nft";
   }
-  
+
   // Queries a list of NFTs of a class.
   rpc NFTs (cosmos.nft.v1beta1.QueryNFTsRequest) returns (QueryNFTsResponse) {
     option (google.api.http).get = "/iconlake/icon/nfts";
   }
-  
+
   // Queries a class info.
   rpc Class (QueryClassRequest) returns (QueryClassResponse) {
     option (google.api.http).get = "/iconlake/icon/class";
@@ -48,6 +47,7 @@ service Query {
     option (google.api.http).get = "/iconlake/icon/classes";
   }
 }
+
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
@@ -58,26 +58,26 @@ message QueryParamsResponse {
 }
 
 message QueryHashRequest {
-  string hashType = 1;
-  string uri      = 2;
+  string hash_type = 1;
+  string uri       = 2;
 }
 
 message QueryHashResponse {
-  string graphHash = 1;
-  string fileHash  = 2;
+  string graph_hash = 1;
+  string file_hash  = 2;
 }
 
 message NFT {
-  string   classId = 1;
-  string   id      = 2;
-  string   uri     = 3;
-  string   uriHash = 4;
-  IconData data    = 5;
+  string   class_id = 1;
+  string   id       = 2;
+  string   uri      = 3;
+  string   uri_hash = 4;
+  IconData data     = 5;
 }
 
 message QueryNFTRequest {
-  string classId = 1;
-  string id      = 2;
+  string class_id = 1;
+  string id       = 2;
 }
 
 message QueryNFTResponse {
@@ -99,7 +99,7 @@ message Class {
   string    symbol      = 3;
   string    description = 4;
   string    uri         = 5;
-  string    uriHash     = 6;
+  string    uri_hash    = 6;
   ClassData data        = 7;
 }
 

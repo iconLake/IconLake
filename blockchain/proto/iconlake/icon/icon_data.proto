@@ -4,15 +4,15 @@ package iconlake.icon;
 option go_package = "iconlake/x/icon/types";
 
 message IconData {
-  string author = 1;
-  string name = 2;
+  string author      = 1;
+  string name        = 2;
   string description = 3;
-  int64 createTime = 4;
+  int64  create_time = 4;
 }
 
 message IconDataRaw {
-  bytes author = 1;
-  string name = 2;
+  bytes  author      = 1;
+  string name        = 2;
   string description = 3;
-  int64 createTime = 4;
+  int64  create_time = 4;
 }
