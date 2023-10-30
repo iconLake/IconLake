@@ -334,8 +334,9 @@ export const QueryAllInfoResponse = {
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
-  /** Queries a list of Info items. */
+  /** Queries a Info item by address. */
   Info(request: QueryGetInfoRequest): Promise<QueryGetInfoResponse>;
+  /** Queries a list of all Info items. */
   InfoAll(request: QueryAllInfoRequest): Promise<QueryAllInfoResponse>;
 }
 

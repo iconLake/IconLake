@@ -13,7 +13,7 @@ export interface DropInfo {
   address?: string;
 
   /** @format int64 */
-  lastMintTime?: string;
+  last_mint_time?: string;
 }
 
 export interface DropMsgMintResponse {
@@ -26,7 +26,7 @@ export interface DropMsgMintResponse {
   amount?: V1Beta1Coin;
 
   /** @format int64 */
-  lastMintTime?: string;
+  last_mint_time?: string;
 }
 
 /**
@@ -285,6 +285,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    *
    * @tags Query
    * @name QueryInfoAll
+   * @summary Queries a list of all Info items.
    * @request GET:/iconlake/drop/info
    */
   queryInfoAll = (
@@ -310,7 +311,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    *
    * @tags Query
    * @name QueryInfo
-   * @summary Queries a list of Info items.
+   * @summary Queries a Info item by address.
    * @request GET:/iconlake/drop/info/{address}
    */
   queryInfo = (address: string, params: RequestParams = {}) =>

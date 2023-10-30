@@ -13,7 +13,7 @@ export interface IconClassData {
   author?: string;
 
   /** @format int64 */
-  createTime?: string;
+  create_time?: string;
 }
 
 export interface IconIconData {
@@ -22,7 +22,7 @@ export interface IconIconData {
   description?: string;
 
   /** @format int64 */
-  createTime?: string;
+  create_time?: string;
 }
 
 export type IconMsgMintResponse = object;
@@ -35,13 +35,13 @@ export type IconMsgUpdateClassResponse = object;
 export type IconParams = object;
 
 export interface IconQueryHashRequest {
-  hashType?: string;
+  hash_type?: string;
   uri?: string;
 }
 
 export interface IconQueryHashResponse {
-  graphHash?: string;
-  fileHash?: string;
+  graph_hash?: string;
+  file_hash?: string;
 }
 
 /**
@@ -58,15 +58,15 @@ export interface IconlakeiconClass {
   symbol?: string;
   description?: string;
   uri?: string;
-  uriHash?: string;
+  uri_hash?: string;
   data?: IconClassData;
 }
 
 export interface IconlakeiconNFT {
-  classId?: string;
+  class_id?: string;
   id?: string;
   uri?: string;
-  uriHash?: string;
+  uri_hash?: string;
   data?: IconIconData;
 }
 
@@ -495,7 +495,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @summary Queries a NFT info.
    * @request GET:/iconlake/icon/nft
    */
-  queryNFT = (query?: { classId?: string; id?: string }, params: RequestParams = {}) =>
+  queryNFT = (query?: { class_id?: string; id?: string }, params: RequestParams = {}) =>
     this.request<IconlakeiconQueryNFTResponse, RpcStatus>({
       path: `/iconlake/icon/nft`,
       method: "GET",

@@ -59,7 +59,7 @@ export const MsgMint = {
       writer.uint32(58).string(message.uriHash);
     }
     if (message.supply !== 0) {
-      writer.uint32(72).uint64(message.supply);
+      writer.uint32(64).uint64(message.supply);
     }
     return writer;
   },
@@ -92,7 +92,7 @@ export const MsgMint = {
         case 7:
           message.uriHash = reader.string();
           break;
-        case 9:
+        case 8:
           message.supply = longToNumber(reader.uint64() as Long);
           break;
         default:
