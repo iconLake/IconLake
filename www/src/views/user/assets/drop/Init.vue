@@ -63,8 +63,8 @@ async function getInfo() {
     }
   })
   getDropInfo(addr.value).then(dropInfo => {
-    if (dropInfo.info?.lastMintTime) {
-      lastMintTime.value = +dropInfo.info?.lastMintTime
+    if (dropInfo.info?.last_mint_time) {
+      lastMintTime.value = +dropInfo.info?.last_mint_time
     }
   })
 }

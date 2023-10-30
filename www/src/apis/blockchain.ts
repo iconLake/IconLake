@@ -112,7 +112,7 @@ export interface HashRes {
 
 export async function getHash(uri: string) {
   const res = await client.IconlakeIcon.query.queryHash({
-    hashType: 'p',
+    hash_type: 'p',
     uri
   })
   return await new Promise((resolve: (v: HashRes) => void, reject) => {
