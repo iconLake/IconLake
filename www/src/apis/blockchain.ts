@@ -4,7 +4,7 @@ import { Client } from '@iconlake/client'
 import type { V1Beta1GetTxResponse } from '@iconlake/client/types/cosmos.tx.v1beta1/rest'
 import type { DropQueryGetInfoResponse } from '@iconlake/client/types/iconlake.drop/rest'
 import type { MsgMint as MsgMintIcon, MsgUpdateClass } from '@iconlake/client/types/iconlake.icon/module'
-import type { IconlakeiconQueryClassResponse } from '@iconlake/client/types/iconlake.icon/rest'
+import type { IconQueryHashResponse, IconlakeiconQueryClassResponse } from '@iconlake/client/types/iconlake.icon/rest'
 import { SHA256, lib } from 'crypto-js'
 
 const baseURL = '/api/blockchain/'
@@ -105,18 +105,13 @@ export async function signMsg(msg: string) {
   return res
 }
 
-export interface HashRes {
-  fileHash: string;
-  graphHash: string;
-}
-
 export async function getHash(uri: string) {
   const res = await client.IconlakeIcon.query.queryHash({
     hash_type: 'p',
     uri
   })
-  return await new Promise((resolve: (v: HashRes) => void, reject) => {
-    handleResponse<HashRes>(res as any, resolve, reject);
+  return await new Promise((resolve: (v: IconQueryHashResponse) => void, reject) => {
+    handleResponse<IconQueryHashResponse>(res as any, resolve, reject);
   })
 }
 
