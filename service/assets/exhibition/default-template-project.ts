@@ -8,15 +8,15 @@ interface Info {
 }
 
 interface Nft {
-  classId: string
+  class_id: string
   id: string
   uri: string
-  uriHash: string
+  uri_hash: string
   data: {
     author: string
     name: string
     description: string
-    createTime: string
+    create_time: string
   }
 }
 
@@ -107,7 +107,7 @@ export default class DefaultTemplate extends HTMLElement {
 
   renderNft (root, nft: Nft) {
     const nftDom = document.createElement('a')
-    nftDom.href = `/exhibition/${encodeURIComponent(nft.classId)}/${encodeURIComponent(nft.id)}`
+    nftDom.href = `/exhibition/${encodeURIComponent(nft.class_id)}/${encodeURIComponent(nft.id)}`
     nftDom.className = 'nft'
     const coverDom = document.createElement('div')
     coverDom.className = 'nft-cover'

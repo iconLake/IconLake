@@ -4,7 +4,7 @@ interface Info {
     author: string
     name: string
     description: string
-    createTime: string
+    create_time: string
   }
 }
 
