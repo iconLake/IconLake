@@ -52,9 +52,9 @@ async function publish() {
   const res = await mintIcon({
     creator: userInfo.value.blockchain?.id,
     classId: projectId.value,
-    id: hash.graphHash,
+    id: hash.graph_hash ?? '',
     uri: url,
-    uriHash: hash.fileHash,
+    uriHash: hash.file_hash ?? '',
     name: iconInfo.code,
     description: iconInfo.name,
     supply: 1

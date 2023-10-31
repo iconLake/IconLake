@@ -63,7 +63,7 @@ async function updateChain(e: Event) {
       description: project.value.desc,
       symbol: project.value.class,
       uri,
-      uriHash: hash.fileHash,
+      uriHash: hash.file_hash ?? '',
     })
     if (res?.code === 0) {
       toast(t('updateCompleted'))
