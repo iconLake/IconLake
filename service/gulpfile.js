@@ -2,7 +2,6 @@ import fs from 'fs'
 import gulp from 'gulp'
 import SASS from 'sass'
 import gulpSASS from 'gulp-sass'
-import sourcemap from 'gulp-sourcemaps'
 import cssmin from 'gulp-clean-css'
 import typescript from 'gulp-typescript'
 import uglify from 'gulp-uglify'
@@ -35,19 +34,15 @@ function change (cb) {
 
 export function css () {
   return gulp.src(scssFiles, srcOptions)
-    .pipe(sourcemap.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(cssmin())
-    .pipe(sourcemap.write('./'))
     .pipe(gulp.dest(destPath))
 }
 
 export function js () {
   return gulp.src(tsFiles, srcOptions)
-    .pipe(sourcemap.init())
     .pipe(typescript())
     .pipe(uglify())
-    .pipe(sourcemap.write('./'))
     .pipe(gulp.dest(destPath))
 }
 
