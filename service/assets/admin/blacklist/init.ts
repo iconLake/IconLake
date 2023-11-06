@@ -1,4 +1,12 @@
+import type { IconLakeAPI } from '../../exhibition/api'
+
 (() => {
+  const iconlakeAPI = (window as any).iconlakeAPI as IconLakeAPI
+  if (!iconlakeAPI) {
+    console.error('window.iconlakeAPI is not defined')
+    return
+  }
+
   const container = document.createElement('div')
   container.style.position = 'fixed'
   container.style.left = '0'
@@ -32,25 +40,20 @@
     container.appendChild(gap)
   }
 
-  const getInfo = () => {
-    let info: {
-      classId?: string
-      id?: string
-      data?: {
-        author?: string
-      }
-    } = {}
-    try {
-      info = JSON.parse(document.querySelector('iconlake-nft')?.getAttribute('info') ?? '{}')
-    } catch (e) {
-      console.error(e)
-      alert('无法解析信息')
-    }
-    return info
+  const cachedInfo = {
+    classId: '',
+    nftId: '',
+    author: ''
   }
+  const getInfo = async () => {
+    cachedInfo.classId = iconlakeAPI.project.id
+    cachedInfo.nftId = iconlakeAPI.nft.id
+    cachedInfo.author = await iconlakeAPI.nft.getInfo().then(res => res.data.author)
+  }
+  getInfo()
 
   createBtn('封禁作者', async () => {
-    const address = prompt('作者账户地址:', getInfo().data?.author ?? '')
+    const address = prompt('作者账户地址:', cachedInfo.author ?? '')
     if (!address) {
       return
     }
@@ -71,7 +74,7 @@
   })
 
   createBtn('解封作者', async () => {
-    const address = prompt('作者账户地址:', getInfo().data?.author ?? '')
+    const address = prompt('作者账户地址:', cachedInfo.author ?? '')
     if (!address) {
       return
     }
@@ -94,7 +97,7 @@
   createGap()
 
   createBtn('封禁项目', async () => {
-    const projectId = prompt('项目ID:', getInfo().classId ?? '')
+    const projectId = prompt('项目ID:', cachedInfo.classId ?? '')
     if (!projectId) {
       return
     }
@@ -115,7 +118,7 @@
   })
 
   createBtn('解封项目', async () => {
-    const projectId = prompt('项目ID:', getInfo().classId ?? '')
+    const projectId = prompt('项目ID:', cachedInfo.classId ?? '')
     if (!projectId) {
       return
     }
@@ -138,11 +141,11 @@
   createGap()
 
   createBtn('封禁NFT', async () => {
-    const projectId = prompt('项目ID:', getInfo().classId ?? '')
+    const projectId = prompt('项目ID:', cachedInfo.classId ?? '')
     if (!projectId) {
       return
     }
-    const nftId = prompt('NFT ID:', getInfo().id ?? '')
+    const nftId = prompt('NFT ID:', cachedInfo.nftId ?? '')
     if (!nftId) {
       return
     }
@@ -164,11 +167,11 @@
   })
 
   createBtn('解封NFT', async () => {
-    const projectId = prompt('项目ID:', getInfo().classId ?? '')
+    const projectId = prompt('项目ID:', cachedInfo.classId ?? '')
     if (!projectId) {
       return
     }
-    const nftId = prompt('NFT ID:', getInfo().id ?? '')
+    const nftId = prompt('NFT ID:', cachedInfo.nftId ?? '')
     if (!nftId) {
       return
     }

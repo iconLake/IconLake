@@ -1,18 +1,6 @@
-interface Info {
-  uri: string
-  data: {
-    author: string
-    name: string
-    description: string
-    create_time: string
-  }
-}
+import type { IconLakeAPI, Nft } from './api'
 
 export default class DefaultTemplate extends HTMLElement {
-  static get observedAttributes () {
-    return ['info']
-  }
-
   constructor () {
     super()
 
@@ -32,21 +20,20 @@ export default class DefaultTemplate extends HTMLElement {
     frag.appendChild(dom)
 
     this.shadowRoot?.appendChild(frag)
-  }
 
-  attributeChangedCallback (name: string, _oldValue, newValue: string | null) {
-    if (!this.shadowRoot) {
+    const iconlakeAPI = (window as any).iconlakeAPI as IconLakeAPI
+    if (!iconlakeAPI) {
+      console.error('window.iconlakeAPI is not defined')
       return
     }
-    switch (name) {
-      case 'info':
-        this.renderInfo(this.shadowRoot, newValue ? JSON.parse(newValue) : null)
-        break
-    }
+    iconlakeAPI.nft.getInfo().then((info) => {
+      this.shadowRoot && this.renderInfo(this.shadowRoot, info)
+      iconlakeAPI.loading.isShow = false
+    })
   }
 
-  renderInfo (root: ShadowRoot, info: Info | null) {
-    const infoDom = this.shadowRoot?.querySelector('.info')
+  renderInfo (root: ShadowRoot, info: Nft | null) {
+    const infoDom = root.querySelector('.info')
     if (!infoDom) {
       return
     }
