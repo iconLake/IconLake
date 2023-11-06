@@ -1,34 +1,19 @@
-(async () => {
-  const isProduction = !/test|localhost|127\.0\.0\.1/i.test(location.href)
-  const lcd = isProduction
-    ? 'https://lcd.iconlake.com'
-    : 'https://lcd.testnet.iconlake.com'
-  const parts = location.pathname.split('/')
-  const projectId = parts[2]
-  if (!projectId) {
-    return
-  }
-  const nftId = parts[3]
-  if (!nftId) {
-    return
-  }
+import { IconLakeAPI } from './api';
 
+(async () => {
+  const iconlakeAPI = (window as any).iconlakeAPI as IconLakeAPI
+  if (!iconlakeAPI) {
+    console.error('window.iconlakeAPI is not defined')
+    return
+  }
   const iconlakeDom = document.querySelector('iconlake-nft')
   if (!iconlakeDom) {
     return
   }
 
-  const info = await fetch(
-    `${lcd}/iconlake/icon/nft?classId=${projectId}&id=${nftId}`
-  )
-    .then((e) => e.json())
-    .catch(console.error)
-  if (!info) {
-    return
-  }
-
+  const info = await iconlakeAPI.nft.getInfo()
   const verify = await fetch(
-    `/api/blacklist/verify/nft?address=${info.nft.data.author}&projectId=${projectId}&nftId=${nftId}`
+    `/api/blacklist/verify/nft?address=${info.data.author}&projectId=${iconlakeAPI.project.id}&nftId=${iconlakeAPI.nft.id}`
   )
     .then((e) => e.json())
     .catch(console.error)
@@ -54,8 +39,6 @@
     blockIcon.className = 'blocked-admin'
     document.body.appendChild(blockIcon)
   }
-
-  iconlakeDom.setAttribute('info', JSON.stringify(info.nft))
 
   import('./default-template-nft.js').then((module) => {
     customElements.define('iconlake-nft', module.default)

@@ -1,30 +1,6 @@
-interface Info {
-  uri: string
-  name: string
-  description: string
-  data: {
-    author: string
-  }
-}
-
-interface Nft {
-  class_id: string
-  id: string
-  uri: string
-  uri_hash: string
-  data: {
-    author: string
-    name: string
-    description: string
-    create_time: string
-  }
-}
+import type { IconLakeAPI, ProjectInfo, Nft } from './api'
 
 export default class DefaultTemplate extends HTMLElement {
-  static get observedAttributes () {
-    return ['info', 'nfts', 'pagination']
-  }
-
   constructor () {
     super()
 
@@ -47,24 +23,23 @@ export default class DefaultTemplate extends HTMLElement {
     frag.appendChild(dom)
 
     this.shadowRoot?.appendChild(frag)
-  }
 
-  attributeChangedCallback (name: string, _oldValue, newValue: string | null) {
-    if (!this.shadowRoot) {
+    const iconlakeAPI = (window as any).iconlakeAPI as IconLakeAPI
+    if (!iconlakeAPI) {
+      console.error('window.iconlakeAPI is not defined')
       return
     }
-    switch (name) {
-      case 'info':
-        this.renderInfo(this.shadowRoot, newValue ? JSON.parse(newValue) : null)
-        break
-      case 'nfts':
-        this.renderNfts(this.shadowRoot, newValue ? JSON.parse(newValue) : null)
-        break
-    }
+    iconlakeAPI.project.getInfo().then((info) => {
+      this.shadowRoot && this.renderInfo(this.shadowRoot, info)
+      iconlakeAPI.loading.isShow = false
+    })
+    iconlakeAPI.project.getNfts().then((res) => {
+      this.shadowRoot && this.renderNfts(this.shadowRoot, res.nfts)
+    })
   }
 
-  renderInfo (root: ShadowRoot, info: Info | null) {
-    const infoDom = this.shadowRoot?.querySelector('.info')
+  renderInfo (root: ShadowRoot, info: ProjectInfo | null) {
+    const infoDom = root.querySelector('.info')
     if (!infoDom) {
       return
     }
@@ -90,8 +65,8 @@ export default class DefaultTemplate extends HTMLElement {
     contentDom.appendChild(authorDom)
   }
 
-  renderNfts (root, nfts: Nft[]) {
-    const nftsDom = this.shadowRoot?.querySelector('.nfts')
+  renderNfts (root: ShadowRoot, nfts: Nft[]) {
+    const nftsDom = root.querySelector('.nfts')
     if (!nftsDom) {
       return
     }
@@ -107,7 +82,7 @@ export default class DefaultTemplate extends HTMLElement {
 
   renderNft (root, nft: Nft) {
     const nftDom = document.createElement('a')
-    nftDom.href = `/exhibition/${encodeURIComponent(nft.class_id)}/${encodeURIComponent(nft.id)}`
+    nftDom.href = `/exhibition/${encodeURIComponent(nft.classId)}/${encodeURIComponent(nft.id)}`
     nftDom.className = 'nft'
     const coverDom = document.createElement('div')
     coverDom.className = 'nft-cover'
