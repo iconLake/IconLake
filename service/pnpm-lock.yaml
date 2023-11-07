@@ -53,6 +53,9 @@ dependencies:
   helmet:
     specifier: ^6.2.0
     version: 6.2.0
+  isbot:
+    specifier: ^3.7.0
+    version: 3.7.0
   mongoose:
     specifier: ^6.11.1
     version: 6.11.1
@@ -5199,6 +5202,11 @@ packages:
   /isarray@1.0.0:
     resolution: {integrity: sha1-u5NdSFgsuhaMBoNJV6VKPgcSTxE=}
     dev: true
+
+  /isbot@3.7.0:
+    resolution: {integrity: sha512-9BcjlI89966BqWJmYdTnRub85sit931MyCthSIPtgoOsTjoW7A2MVa09HzPpYE2+G4vyAxfDvR0AbUGV0FInQg==}
+    engines: {node: '>=12'}
+    dev: false
 
   /isexe@2.0.0:
     resolution: {integrity: sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=}
