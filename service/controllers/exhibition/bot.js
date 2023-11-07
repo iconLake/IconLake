@@ -11,7 +11,6 @@ export async function renderProject (req, res) {
       `${config.blockchain.public.lcd}/iconlake/icon/nfts?class_id=${req.params.projectId}`
     ).then((res) => res.json())
   ])
-  console.log(project, nfts)
   res.send(`<!DOCTYPE html>
   <html lang="en">
   <head>
