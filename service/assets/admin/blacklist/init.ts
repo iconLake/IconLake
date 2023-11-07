@@ -48,7 +48,11 @@ import type { IconLakeAPI } from '../../exhibition/api'
   const getInfo = async () => {
     cachedInfo.classId = iconlakeAPI.project.id
     cachedInfo.nftId = iconlakeAPI.nft.id
-    cachedInfo.author = await iconlakeAPI.nft.getInfo().then(res => res.data.author)
+    if (iconlakeAPI.nft.id) {
+      cachedInfo.author = await iconlakeAPI.nft.getInfo().then(res => res.data.author)
+    } else if (iconlakeAPI.project.id) {
+      cachedInfo.author = await iconlakeAPI.project.getInfo().then(res => res.data.author)
+    }
   }
   getInfo()
 
@@ -137,6 +141,10 @@ import type { IconLakeAPI } from '../../exhibition/api'
       location.reload()
     }
   })
+
+  if (!iconlakeAPI.nft.id) {
+    return
+  }
 
   createGap()
 

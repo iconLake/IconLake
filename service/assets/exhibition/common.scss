@@ -26,6 +26,12 @@ body {
   }
 }
 
+.blocked {
+  text-align: center;
+  line-height: 100vh;
+  margin: 0;
+}
+
 .blocked-admin {
   position: fixed;
   top: 0;

@@ -1,4 +1,4 @@
-import { IconLakeAPI } from './api';
+import type { IconLakeAPI } from './api';
 
 (async () => {
   const iconlakeAPI = (window as any).iconlakeAPI as IconLakeAPI
@@ -26,6 +26,7 @@ import { IconLakeAPI } from './api';
     ).then((e) => e.json()).then((data) => data.isAdmin)
     if (!isAdmin) {
       iconlakeDom.innerHTML = '<h1 class="blocked">This NFT has been blocked.</h1>'
+      iconlakeAPI.loading.isShow = false
       return
     }
     const blockIcon = document.createElement('div')
