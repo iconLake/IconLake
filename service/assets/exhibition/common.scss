@@ -12,15 +12,37 @@ body {
   bottom: 0;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   z-index: 9999;
   background: #fff;
   display: none;
+  font-size: 30px;
+  background: #000;
   color: #aaa;
-  font-size: 100px;
+  img {
+    height: 200px;
+    &.logo-white {
+      display: inline;
+    }
+    &.logo-blue {
+      display: none;
+    }
+  }
+  @media (prefers-color-scheme: light) {
+    background: #fff;
+    img {
+      &.logo-white {
+        display: none;
+      }
+      &.logo-blue {
+        display: inline;
+      }
+    }
+  }
   &.show {
     display: flex;
   }
-  &::before {
+  &::after {
     content: 'loading...';
     text-transform: uppercase;
   }
