@@ -282,6 +282,7 @@ async function onSetExpire(id: string, value: number) {
     </div>
     <div class="t-center operate">
       <button
+        v-if="editable"
         class="btn"
         :disabled="data.icons.length === 0"
         @click="generate"
@@ -350,6 +351,7 @@ async function onSetExpire(id: string, value: number) {
       </div>
       <div class="expire">
         <ElSwitch
+          v-if="editable"
           v-model="file.expire"
           :title="t('validity')"
           :active-value="PERMANENT_FILE_EXPIRE"
@@ -459,17 +461,15 @@ async function onSetExpire(id: string, value: number) {
   }
   .expire {
     position: relative;
+    min-width: 3rem;
     .el-switch {
-      height: 20px;
+      height: 2rem;
+      margin-bottom: 0.3rem;
     }
     .days {
-      position: absolute;
       font-size: 1rem;
-      bottom: -1.35rem;
-      left: -50%;
-      right: -50%;
       text-align: center;
-      transform: scale(0.6);
+      transform: scale(0.8);
       white-space: nowrap;
       color: #aaa;
     }
