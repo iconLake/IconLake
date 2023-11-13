@@ -12,6 +12,11 @@ import type { IconLakeAPI } from './api';
   }
 
   const info = await iconlakeAPI.nft.getInfo()
+  if (!info) {
+    iconlakeDom.innerHTML = '<h1 class="blocked">This NFT have not been published to the chain.</h1>'
+    iconlakeAPI.loading.isShow = false
+    return
+  }
   const verify = await fetch(
     `/api/blacklist/verify/nft?address=${info.data.author}&projectId=${iconlakeAPI.project.id}&nftId=${iconlakeAPI.nft.id}`
   )
