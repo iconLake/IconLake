@@ -23,9 +23,12 @@ export function generateToken () {
  * @param {User} user
  */
 export function setToken (res, user) {
-  res.cookie('token', `${user.id}.${user.token}`, {
+  res.cookie('token', `${user.id}:${user.token}`, {
     maxAge: TOKEN_MAX_AGE,
-    httpOnly: true
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: true,
+    priority: 'high'
   })
 }
 

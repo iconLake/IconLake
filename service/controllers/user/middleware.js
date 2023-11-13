@@ -32,7 +32,7 @@ export async function checkLogin (req) {
       error: ERROR_CODE.USER_NOT_LOGIN
     }
   }
-  const i = req.cookies.token.indexOf('.')
+  const i = req.cookies.token.indexOf(':')
   if (i === -1 || i === req.cookies.token.length - 1) {
     return {
       error: ERROR_CODE.USER_NOT_LOGIN
