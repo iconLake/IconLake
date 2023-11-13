@@ -12,6 +12,11 @@ import type { IconLakeAPI } from './api'
   }
 
   const info = await iconlakeAPI.project.getInfo()
+  if (!info) {
+    iconlakeDom.innerHTML = '<h1 class="blocked">This Project have not been published to the chain.</h1>'
+    iconlakeAPI.loading.isShow = false
+    return
+  }
   const verify = await fetch(
     `/api/blacklist/verify/project?address=${info.data.author}&projectId=${iconlakeAPI.project.id}`
   )
