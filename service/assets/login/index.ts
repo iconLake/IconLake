@@ -113,4 +113,11 @@
   } else {
     codeDom.style.display = 'none'
   }
+
+  // check login
+  fetch('/api/user/info').then(res => res.json()).then(res => {
+    if (!res.error) {
+      location.href = '/manage/home'
+    }
+  })
 })()

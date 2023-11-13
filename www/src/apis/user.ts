@@ -2,7 +2,6 @@ export interface UserInfo {
   _id: string
   name: string
   avatar: string
-  token: string
   tokenExpire: Date
   blockchain?: {
     id: string
