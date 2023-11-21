@@ -6,7 +6,7 @@ export async function info (req, res) {
   if (isbot(req.get('user-agent')) || req.query.bot) {
     return renderProject(req, res)
   }
-  res.sendFile('./public/exhibition/project.html', {
+  res.sendFile('./public/exhibition/index.html', {
     root: ROOT,
     maxAge: RESOURCE_MAX_AGE
   })

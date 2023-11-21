@@ -46,7 +46,8 @@ import type { IconLakeAPI } from './api';
     document.body.appendChild(blockIcon)
   }
 
-  import('./default-template-nft.js').then((module) => {
+  const url = '/themes/default/components/nft-b31a686d.js'
+  import(url).then((module) => {
     customElements.define('iconlake-nft', module.default)
   })
 })();

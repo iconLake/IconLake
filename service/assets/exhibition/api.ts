@@ -53,6 +53,7 @@ export interface IconLakeAPI {
     id: string
     getInfo: (id?: string) => Promise<Nft>
   }
+  verifyHash: (uri: string, uriHash: string) => Promise<number>
 }
 
 ((globalThis: Window & { iconlakeAPI: IconLakeAPI }) => {
@@ -153,6 +154,21 @@ export interface IconLakeAPI {
     return await fetch(`${lcd}/iconlake/icon/nft?class_id=${project.id}&id=${nid}`).then(res => res.json()).then(res => transferKey(res.nft))
   }
 
+  function verifyHash (uri: string, uriHash: string) {
+    return fetch(uri).then(res => res.blob()).then(blob => blob.arrayBuffer()).then(async buf => {
+      const url = '/libs/js-sha256/sha256.min.js'
+      const m = await import(url)
+      const hash = m.default.sha256(buf)
+      if (hash === uriHash) {
+        return 1
+      }
+      return 0
+    }).catch((err) => {
+      console.error(err)
+      return -1
+    })
+  }
+
   globalThis.iconlakeAPI = {
     version: 1,
     isProduction,
@@ -161,6 +177,7 @@ export interface IconLakeAPI {
     },
     loading,
     project,
-    nft
+    nft,
+    verifyHash
   }
 })(window as never)
