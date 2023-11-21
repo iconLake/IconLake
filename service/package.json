@@ -37,6 +37,7 @@
     "filter-obj": "^5.1.0",
     "helmet": "^6.2.0",
     "isbot": "^3.7.0",
+    "js-sha256": "^0.10.1",
     "mongoose": "^6.11.1",
     "nanoid": "^4.0.2",
     "node-fetch": "^3.3.1",

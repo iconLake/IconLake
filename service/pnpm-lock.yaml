@@ -56,6 +56,9 @@ dependencies:
   isbot:
     specifier: ^3.7.0
     version: 3.7.0
+  js-sha256:
+    specifier: ^0.10.1
+    version: 0.10.1
   mongoose:
     specifier: ^6.11.1
     version: 6.11.1
@@ -5252,6 +5255,10 @@ packages:
       git-sha1: 0.1.2
       pako: 0.2.9
     dev: true
+
+  /js-sha256@0.10.1:
+    resolution: {integrity: sha512-5obBtsz9301ULlsgggLg542s/jqtddfOpV5KJc4hajc9JV8GeY2gZHSVpYBn4nWqAUTJ9v+xwtbJ1mIBgIH5Vw==}
+    dev: false
 
   /js-sha3@0.8.0:
     resolution: {integrity: sha512-gF1cRrHhIzNfToc802P800N8PpXS+evLLXfsVpowqmAFR9uwbi89WvXg2QspOmXL8QL86J4T1EpFu+yUkwJY3Q==}
