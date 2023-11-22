@@ -151,5 +151,11 @@
   "setCoverFirst": "请先设置封面",
   "updateCompleted": "更新成功",
   "updateFailed": "更新失败",
-  "UpdateOnchainInformation": "更新链上信息"
+  "UpdateOnchainInformation": "更新链上信息",
+  "initedAndNoNeedAgain": "此地址已被开启，无需再次开启。",
+  "notEnoughLAKE": "你没有足够的LAKE。",
+  "invalidAddress": "地址无效",
+  "start": "开启",
+  "enableDROPMintingForSomeone1": "替",
+  "enableDROPMintingForSomeone2": "开启积攒DROP"
 }

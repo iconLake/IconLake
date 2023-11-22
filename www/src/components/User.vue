@@ -148,6 +148,7 @@ async function gotoLogin() {
   position: absolute;
   top: 1.9rem;
   right: 2.5rem;
+  z-index: 99;
   .avatar {
     width: 4rem;
     height: 4rem;

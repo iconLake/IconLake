@@ -3,12 +3,13 @@ import { useRoute } from 'vue-router'
 import HeaderVue from '@/components/Header.vue'
 import UserVue from '@/components/User.vue'
 import LoadingVue from '@/components/Loading.vue'
-import { computed, ref } from 'vue';
-import { info } from '@/apis/user';
-import { getBalance, getDropInfo, initDrop } from '@/apis/blockchain';
-import { LAKE_DENOM_MINI } from '@/utils/const';
-import { toast } from '@/utils';
+import { computed, ref } from 'vue'
+import { info } from '@/apis/user'
+import { getBalance, getDropInfo, initDrop } from '@/apis/blockchain'
+import { LAKE_DENOM_MINI } from '@/utils/const'
+import { toast } from '@/utils'
 import { useI18n } from 'vue-i18n'
+import { fromBech32 } from '@cosmjs/encoding'
 
 const { t } = useI18n()
 
@@ -21,15 +22,18 @@ const addr = ref('')
 const isIniting = ref(false)
 
 if (typeof $route.query.addr === 'string') {
-  addr.value = $route.query.addr
+  try {
+    fromBech32($route.query.addr)
+    addr.value = $route.query.addr
+  } catch {}
 }
 
 const helpMsg = computed(() => {
   if (lastMintTime.value > 0) {
-    return '此地址已被初始化'
+    return t('initedAndNoNeedAgain')
   }
   if (!userInfo.value?.blockchain?.id || lakeAmount.value <= 0) {
-    return '你没有足够的LAKE'
+    return t('notEnoughLAKE')
   }
   return ''
 })
@@ -75,15 +79,22 @@ getInfo()
 <template>
   <HeaderVue :back="true" />
   <UserVue />
-  <div class="flex center column">
-    <div>替{{ $route.query.addr }}开启积攒DROP</div>
+  <div class="flex center column page">
+    <div
+      v-if="addr.length > 8"
+    >
+      {{ t('enableDROPMintingForSomeone1') }}<span class="addr">{{ addr }}</span>{{ t('enableDROPMintingForSomeone2') }}
+    </div>
+    <div v-if="addr === ''">
+      {{ t('invalidAddress') }}
+    </div>
     <button
       class="btn init"
-      :disabled="!userInfo?.blockchain?.id || lakeAmount <= 0 || lastMintTime > 0"
+      :disabled="!userInfo?.blockchain?.id || lakeAmount <= 0 || lastMintTime > 0 || addr === ''"
       @click="init"
     >
       <LoadingVue v-if="isIniting" />
-      <span v-else>开启</span>
+      <span v-else>{{ t('start') }}</span>
     </button>
     <div class="help">
       {{ helpMsg }}
@@ -92,11 +103,29 @@ getInfo()
 </template>
 
 <style lang="scss" scoped>
+.page {
+  background: url('/imgs/init-drop-bg.png') center no-repeat;
+  background-size: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  align-items: flex-start;
+  padding: 0 12rem;
+  .addr {
+    color: var(--color-main);
+    margin: 0 3px;
+    font-weight: bold;
+  }
+}
 .init {
-  margin-top: 5rem;
+  margin-top: 3rem;
 }
 
 .help {
-  margin-top: 2rem;
+  margin-top: 2.8rem;
+  font-size: 1rem;
+  color: #808008;
 }
 </style>
