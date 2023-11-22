@@ -43,6 +43,8 @@ const backUrl = computed(() => {
 .header {
   height: 6rem;
   justify-content: flex-start;
+  position: relative;
+  z-index: 99;
   &.white {
     color: #fff;
   }

@@ -151,5 +151,11 @@
   "setCoverFirst": "Please set the cover first",
   "updateCompleted": "Update Completed",
   "updateFailed": "Update Failed",
-  "UpdateOnchainInformation": "Update On-chain Information"
+  "UpdateOnchainInformation": "Update On-chain Information",
+  "initedAndNoNeedAgain": "This address has been enabled and does not need to enable again.",
+  "notEnoughLAKE": "You don't have enough LAKE.",
+  "invalidAddress": "Invalid Address",
+  "start": "Start",
+  "enableDROPMintingForSomeone1": "Enable DROP Minting For ",
+  "enableDROPMintingForSomeone2": ""
 }

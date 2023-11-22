@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@cosmjs/encoding':
+    specifier: ^0.31.3
+    version: 0.31.3
   '@iconlake/client':
     specifier: ^0.3.0
     version: 0.3.0(@cosmjs/launchpad@0.27.1)(@cosmjs/proto-signing@0.31.1)(@cosmjs/stargate@0.31.1)
@@ -181,6 +184,14 @@ packages:
 
   /@cosmjs/encoding@0.31.1:
     resolution: {integrity: sha512-IuxP6ewwX6vg9sUJ8ocJD92pkerI4lyG8J5ynAM3NaX3q+n+uMoPRSQXNeL9bnlrv01FF1kIm8if/f5F7ZPtkA==}
+    dependencies:
+      base64-js: 1.5.1
+      bech32: 1.1.4
+      readonly-date: 1.0.0
+    dev: false
+
+  /@cosmjs/encoding@0.31.3:
+    resolution: {integrity: sha512-6IRtG0fiVYwyP7n+8e54uTx2pLYijO48V3t9TLiROERm5aUAIzIlz6Wp0NYaI5he9nh1lcEGJ1lkquVKFw3sUg==}
     dependencies:
       base64-js: 1.5.1
       bech32: 1.1.4
