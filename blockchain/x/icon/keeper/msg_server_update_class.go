@@ -19,14 +19,6 @@ func (k msgServer) UpdateClass(goCtx context.Context, msg *types.MsgUpdateClass)
 		return nil, err
 	}
 
-	fileHash, err := types.GetFileHash(msg.Uri)
-	if err != nil {
-		return nil, err
-	}
-	if fileHash != msg.UriHash {
-		return nil, types.ErrParam.Wrap("invalid param (UriHash)")
-	}
-
 	classInfo, hasClass := k.nftKeeper.GetClass(ctx, msg.Id)
 	if !hasClass {
 		data := types.ClassDataRaw{
