@@ -14,12 +14,6 @@ import (
 func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	isHashOk, err := types.CheckHash(msg.Uri, msg.UriHash, msg.Id)
-	if !isHashOk {
-		k.Logger(ctx).Error(err.Error())
-		return nil, err
-	}
-
 	accAddress, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		k.Logger(ctx).Error(err.Error())
