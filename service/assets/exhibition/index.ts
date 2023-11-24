@@ -44,8 +44,15 @@ import type { IconLakeAPI } from './api'
     document.body.appendChild(blockIcon)
   }
 
-  const url = '/themes/default/components/exhibition-640cdf73.js'
-  import(url).then(module => {
+  let themeUrl = '/themes/default/components/exhibition-640cdf73.js'
+  const qUrl = new URL(location.href)
+  if (qUrl.searchParams.has('theme')) {
+    const tUrl = qUrl.searchParams.get('theme')
+    if (tUrl) {
+      themeUrl = tUrl
+    }
+  }
+  import(themeUrl).then(module => {
     customElements.define('iconlake-exhibition', module.default)
   })
 })();
