@@ -1,10 +1,32 @@
 # iconLake
 
-iconLake - You create, you own!
+iconLake - You Create, You Own!
 
-## 远景规划
+## 目标
 
-构建web3.0时代的创作全生命周期管理工具。（[查看详情](https://support.qq.com/products/370032/post/168839837740865148/)）
+构建web3.0时代的创作全生命周期管理工具。
+
+## 初心与使命
+
+iconLake的初心是为创作者服务，我们希望每一位创作者的每一件作品都能够得到尊重和保护，并且能够以每一位创作者独有的气质来展览他们的作品。
+
+## iconLake对“我”的价值
+
+### “我”是创作者
+
+1. iconLake可以帮助我分门别类地归档我的所有创作；
+2. iconLake可以保护我的原创作品的版权，确保我的作品能够让我赚到钱；
+3. iconLake可以为我提供个性化的作品展览；
+
+### “我”是普通用户
+
+1. iconLake可以让我欣赏到大量优质原创作品；
+2. iconLake可以让我拥有我喜欢的作品；
+
+### “我”是开发者
+
+1. 我可以通过iconLake为创作者开发个性化的主题来赚钱；
+2. 我可以通过参与iconLake的建设来赚取奖励，成为iconLake的“股东”；
 
 ## iconLake需要你
 
