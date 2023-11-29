@@ -157,5 +157,6 @@
   "invalidAddress": "地址无效",
   "start": "开启",
   "enableDROPMintingForSomeone1": "替",
-  "enableDROPMintingForSomeone2": "开启积攒DROP"
+  "enableDROPMintingForSomeone2": "开启积攒DROP",
+  "activeKeplrAccountAs": "请切换Keplr里当前活跃的账户为{addr}"
 }

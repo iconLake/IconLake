@@ -6,12 +6,15 @@ import type { DropQueryGetInfoResponse } from '@iconlake/client/types/iconlake.d
 import type { MsgMint as MsgMintIcon, MsgUpdateClass } from '@iconlake/client/types/iconlake.icon/module'
 import type { IconQueryHashResponse, IconlakeiconQueryClassResponse } from '@iconlake/client/types/iconlake.icon/rest'
 import { SHA256, lib } from 'crypto-js'
+import i18n from '@/i18n'
 
 const baseURL = '/api/blockchain/'
 
 const apiURL = IS_PRODUCTION ? 'https://lcd.mainnet.iconlake.com' : 'https://lcd.testnet.iconlake.com'
 const rpcURL = IS_PRODUCTION ? 'https://rpc.mainnet.iconlake.com' : 'https://rpc.testnet.iconlake.com'
 const prefix = 'iconlake'
+
+const { t } = i18n.global
 
 export const env = {
   apiURL,
@@ -81,7 +84,7 @@ export async function mintDrop(address: string, amount: string) {
   if (!isKeplrDetected) return
   const account = await getAccount()
   if (!account || account.address !== address) {
-    return Promise.reject(new Error('Active account in Keplr not same'))
+    return Promise.reject(new Error(t('activeKeplrAccountAs', { addr: address })))
   }
   const res = await client.IconlakeDrop.tx.sendMsgMint({
     value: {
@@ -120,7 +123,7 @@ export async function mintIcon(value: MsgMintIcon) {
   if (!isKeplrDetected) return
   const account = await getAccount()
   if (!account || account.address !== value.creator) {
-    return Promise.reject(new Error('Active account in Keplr not same'))
+    return Promise.reject(new Error(t('activeKeplrAccountAs', { addr: value.creator })))
   }
   const res = await client.IconlakeIcon.tx.sendMsgMint({
     value,
@@ -153,7 +156,7 @@ export async function initDrop(creator: string, address: string, isBackendServic
   if (!isKeplrDetected) return
   const account = await getAccount()
   if (!account || account.address !== creator) {
-    return Promise.reject(new Error('Active account in Keplr not same'))
+    return Promise.reject(new Error(t('activeKeplrAccountAs', { addr: creator })))
   }
   return await client.IconlakeDrop.tx.sendMsgInit({
     value: {
@@ -175,7 +178,7 @@ export async function updateClass(value: MsgUpdateClass) {
   if (!isKeplrDetected) return
   const account = await getAccount()
   if (!account || account.address !== value.creator) {
-    return Promise.reject(new Error('Active account in Keplr not same'))
+    return Promise.reject(new Error(t('activeKeplrAccountAs', { addr: value.creator })))
   }
   const res = await client.IconlakeIcon.tx.sendMsgUpdateClass({
     value

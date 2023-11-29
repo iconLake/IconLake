@@ -107,11 +107,16 @@ async function confirmAssets() {
     return
   }
   isConfirming.value = true
-  const data = await mintDrop(userInfo.value.blockchain.id, `${dropingAmount.value}`).catch(console.error)
-  if (data && data.code === 0) {
-    getAssets()
-  } else {
-    toast(data?.rawLog ?? t('fail'))
+  const data = await mintDrop(userInfo.value.blockchain.id, `${dropingAmount.value}`).catch((err) => {
+    console.error(err)
+    toast(err.message ?? t('fail'))
+  })
+  if (data) {
+    if (data.code === 0) {
+      getAssets()
+    } else {
+      toast(data?.rawLog ?? t('fail'))
+    }
   }
   isConfirming.value = false
 }
@@ -153,15 +158,19 @@ async function bindBlockchain() {
 async function initDropAccount() {
   if (userInfo.value?.blockchain?.id && !isIniting.value) {
     isIniting.value = true
-    await initDrop(
+    const res = await initDrop(
       userInfo.value?.blockchain?.id,
       userInfo.value?.blockchain?.id,
       !!blockchainInfo.value?.config.backendService.initDROP,
-    ).finally(() => {
-      isIniting.value = false
+    ).catch((err) => {
+      console.error(err)
+      toast(err.message ?? t('fail'))
     })
-    toast(t('alreadyMinting'))
-    getAssets()
+    if (res) {
+      toast(t('alreadyMinting'))
+      getAssets()
+    }
+    isIniting.value = false
   }
 }
 

@@ -63,6 +63,9 @@ async function publish() {
     isPending.value = false
     toast(err.message)
   })
+  if (!res) {
+    return
+  }
   if (res?.code !== 0) {
     toast('Blockchain confirmation failed', 'error')
     isPending.value = false

@@ -49,8 +49,8 @@ async function init() {
     false,
   ).then(() => {
     toast(t('alreadyMinting'))
-  }).catch(() => {
-    toast(t('fail'))
+  }).catch((err) => {
+    toast(err.message ?? t('fail'))
   }).finally(() => {
     isIniting.value = false
   })

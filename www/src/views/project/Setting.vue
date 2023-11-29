@@ -50,30 +50,30 @@ async function updateChain(e: Event) {
     return
   }
   isUpdatingChain.value = true
-  try {
-    const hash = await getHash(uri)
-    const user = await userInfo()
-    if (!user.blockchain?.id) {
-      return
-    }
-    const res = await updateClass({
-      creator: user.blockchain?.id,
-      id: projectId,
-      name: project.value.name,
-      description: project.value.desc,
-      symbol: project.value.class,
-      uri,
-      uriHash: hash.file_hash ?? '',
-    })
+  const hash = await getHash(uri)
+  const user = await userInfo()
+  if (!user.blockchain?.id) {
+    return
+  }
+  const res = await updateClass({
+    creator: user.blockchain?.id,
+    id: projectId,
+    name: project.value.name,
+    description: project.value.desc,
+    symbol: project.value.class,
+    uri,
+    uriHash: hash.file_hash ?? '',
+  }).catch((err) => {
+    console.error(err)
+    toast(err.message ?? t('updateFailed'))
+  })
+  if (res) {
     if (res?.code === 0) {
       toast(t('updateCompleted'))
       isDiffFromChain.value = false
     } else {
       toast(res?.rawLog ?? t('updateFailed'))
     }
-  } catch (e: any) {
-    toast(e.message ?? t('updateFailed'))
-    console.error(e)
   }
   isUpdatingChain.value = false
 }

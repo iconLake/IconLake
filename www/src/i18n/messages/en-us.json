@@ -157,5 +157,6 @@
   "invalidAddress": "Invalid Address",
   "start": "Start",
   "enableDROPMintingForSomeone1": "Enable DROP Minting For ",
-  "enableDROPMintingForSomeone2": ""
+  "enableDROPMintingForSomeone2": "",
+  "activeKeplrAccountAs": "Please switch the currently active account in Keplr to {addr}"
 }
