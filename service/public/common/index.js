@@ -1,1 +1,0 @@
-(()=>{var e,t=document.querySelector("#footer-beian"),t=(t&&window.locale&&"zh-cn"!==window.locale&&(t.style.display="none"),window._hmt instanceof Array||(window._hmt=[]),document.createElement("script")),n=(t.src="https://hm.baidu.com/hm.js?ca9958613563db708c30668d0920fce3",document.getElementsByTagName("script")[0]);null!=(e=n.parentNode)&&e.insertBefore(t,n)})();
