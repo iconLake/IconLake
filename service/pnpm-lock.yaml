@@ -115,6 +115,9 @@ devDependencies:
   gulp-htmlmin:
     specifier: ^5.0.1
     version: 5.0.1
+  gulp-json-minify:
+    specifier: ^1.2.3
+    version: 1.2.3
   gulp-rename:
     specifier: ^2.0.0
     version: 2.0.0
@@ -4501,6 +4504,14 @@ packages:
       through2: 2.0.5
     dev: true
 
+  /gulp-json-minify@1.2.3:
+    resolution: {integrity: sha512-R/NbXVA4vbcu01pCNmoKvcw0+zFU/SRftEThkporyQyVmZ5xJcySILiE81/TyNadW5FDkg6/lgSYptgH8vOBRQ==}
+    engines: {node: '>=6.0.0'}
+    dependencies:
+      node-json-minify: 3.0.0
+      through2: 4.0.2
+    dev: true
+
   /gulp-rename@2.0.0:
     resolution: {integrity: sha512-97Vba4KBzbYmR5VBs9mWmK+HwIf5mj+/zioxfZhOKeXtx5ZjBk57KFlePf5nxq9QsTtFl0ejnHE3zTC9MHXqyQ==}
     engines: {node: '>=4'}
@@ -5970,6 +5981,10 @@ packages:
       fetch-blob: 3.2.0
       formdata-polyfill: 4.0.10
     dev: false
+
+  /node-json-minify@3.0.0:
+    resolution: {integrity: sha512-BH1dWvkrbrqoRjlxF17VCXa3W3UpynDPo8DRbbk7TiTyScbYPXJc4FSqEyS98trl1EYJ32+zA/WdE0dTPs7+yw==}
+    dev: true
 
   /normalize-package-data@2.5.0:
     resolution: {integrity: sha512-/5CMN3T0R4XTj4DcGaexo+roZSdSFW/0AOOTROrjxzCG1wrWXEsGbRKevjlIL+ZDE4sZlJr5ED4YW0yqmkK+eA==}
@@ -7692,6 +7707,12 @@ packages:
     resolution: {integrity: sha512-enaDQ4MUyP2W6ZyT6EsMzqBPZaM/avg8iuo+l2d3QCs0J+6RaqkHV/2/lOwDTueBHeJ/2LG9lrLW3d5rWPucuQ==}
     dependencies:
       inherits: 2.0.4
+      readable-stream: 3.6.0
+    dev: true
+
+  /through2@4.0.2:
+    resolution: {integrity: sha512-iOqSav00cVxEEICeD7TjLB1sueEL+81Wpzp2bY17uZjZN0pWZPuo4suZ/61VujxmqSGFfgOcNuTZ85QJwNZQpw==}
+    dependencies:
       readable-stream: 3.6.0
     dev: true
 

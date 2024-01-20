@@ -5,6 +5,7 @@ import gulpSASS from 'gulp-sass'
 import cssmin from 'gulp-clean-css'
 import typescript from 'gulp-typescript'
 import uglify from 'gulp-uglify'
+import jsonMinify from 'gulp-json-minify'
 import htmlmin from 'gulp-htmlmin'
 import replace from 'gulp-replace'
 import rename from 'gulp-rename'
@@ -20,6 +21,7 @@ const srcPath = './assets/'
 const destPath = './public/'
 const scssFiles = `${srcPath}**/*.scss`
 const tsFiles = `${srcPath}**/*.ts`
+const jsonFiles = `${srcPath}**/*.json`
 const i18nHtmlFiles = [`${srcPath}**/*.html`, `!${srcPath}exhibition/*.html`]
 const htmlFiles = `${srcPath}exhibition/*.html`
 
@@ -47,6 +49,12 @@ export function js () {
       target: 'es6'
     }))
     .pipe(uglify())
+    .pipe(gulp.dest(destPath))
+}
+
+export function json () {
+  return gulp.src(jsonFiles, srcOptions)
+    .pipe(jsonMinify())
     .pipe(gulp.dest(destPath))
 }
 
@@ -88,11 +96,12 @@ function html () {
 function watch (cb) {
   gulp.watch(scssFiles, gulp.series(change, css))
   gulp.watch(tsFiles, gulp.series(change, js))
+  gulp.watch(jsonFiles, gulp.series(change, json))
   gulp.watch(i18nHtmlFiles, gulp.series(change, i18nHtml))
   gulp.watch(htmlFiles, gulp.series(change, html))
   cb()
 }
 
-export const build = gulp.parallel(css, js, i18nHtml, html)
+export const build = gulp.parallel(css, js, json, i18nHtml, html)
 
 export default gulp.series(build, watch)
