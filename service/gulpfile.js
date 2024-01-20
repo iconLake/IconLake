@@ -93,6 +93,6 @@ function watch (cb) {
   cb()
 }
 
-export const init = gulp.parallel(css, js, i18nHtml, html)
+export const build = gulp.parallel(css, js, i18nHtml, html)
 
-export default gulp.series(init, watch)
+export default gulp.series(build, watch)

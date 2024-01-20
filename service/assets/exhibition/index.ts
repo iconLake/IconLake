@@ -13,7 +13,7 @@ import type { IconLakeAPI } from './api'
 
   const info = await iconlakeAPI.project.getInfo()
   if (!info) {
-    iconlakeDom.innerHTML = '<h1 class="blocked">This Project have not been published to the chain.</h1>'
+    iconlakeDom.innerHTML = '<h1 class="blocked">This project has not been published to the chain.</h1>'
     iconlakeAPI.loading.isShow = false
     return
   }
@@ -30,7 +30,7 @@ import type { IconLakeAPI } from './api'
       '/api/admin/info/verify'
     ).then((e) => e.json()).then((data) => data.isAdmin)
     if (!isAdmin) {
-      iconlakeDom.innerHTML = '<h1 class="blocked">This Project has been blocked.</h1>'
+      iconlakeDom.innerHTML = '<h1 class="blocked">This project has been blocked.</h1>'
       iconlakeAPI.loading.isShow = false
       return
     }
