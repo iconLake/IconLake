@@ -155,7 +155,12 @@ export interface IconLakeAPI {
   }
 
   function verifyHash (uri: string, uriHash: string) {
-    return fetch(uri).then(res => res.blob()).then(blob => blob.arrayBuffer()).then(async buf => {
+    return fetch(uri, {
+      mode: 'cors',
+      headers: {
+        'Cache-Control': 'no-cache'
+      }
+    }).then(res => res.blob()).then(blob => blob.arrayBuffer()).then(async buf => {
       const url = '/libs/js-sha256/sha256.min.js'
       const m = await import(url)
       const hash = m.default.sha256(buf)
