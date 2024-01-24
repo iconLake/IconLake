@@ -5,7 +5,7 @@ export async function migrate (project) {
   const len = project.icons.length
   for (let i = 0; i < len; i++) {
     const icon = project.icons[i]
-    if (!icon.svg || !icon.svg.path) {
+    if (!icon.svg || !icon.svg.path || icon.svg.url) {
       continue
     }
     const content = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="${icon.svg.viewBox}">${icon.svg.path}</svg>`

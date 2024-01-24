@@ -11,6 +11,8 @@ const job = new CronJob('0 0 3 * * *', () => {
 
 export function init () {
   job.start()
+  // start job when app start
+  start()
 }
 
 let startTime = Date.now()
