@@ -134,3 +134,14 @@ export function getExt(name: string) {
   const i = name.lastIndexOf('.')
   return i === -1 ? '' : name.substring(i)
 }
+
+export function readFileAsText(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      resolve(reader.result as string)
+    }
+    reader.onerror = reject
+    reader.readAsText(file)
+  })
+}

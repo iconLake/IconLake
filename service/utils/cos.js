@@ -42,6 +42,32 @@ export const putObject = isActive
   : () => {}
 
 /**
+ * 获取对象
+ * @param {string} key
+ */
+function tencentGetObject (key) {
+  return new Promise((resolve, reject) => {
+    cos.getObject({
+      Bucket: config.bucket,
+      Region: config.region,
+      Key: key
+    }, (err, data) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(data.Body)
+      }
+    })
+  })
+}
+
+export const getObject = isActive
+  ? {
+      [CLOUD_TYPE.TENCENT]: tencentGetObject
+    }[config.type]
+  : () => {}
+
+/**
  * 列出对象
  * @param {string} prefix
  * @param {string} [delimiter]

@@ -69,7 +69,7 @@
   "delProjectWarning": "Cleaning or deleting the project will delete all related icons. Please be careful!",
   "inputForSafe": "To prevent incorrect operation, please enter the project name",
   "fillProjectName": "Fill in the project name",
-  "pageRefererCount": "References",
+  "pageReferer": "References",
   "refererCount": "Reference Count",
   "search": "Search",
   "batchDeleteConfirm": "Do you want to delete {n} icons?",
@@ -158,5 +158,8 @@
   "start": "Start",
   "enableDROPMintingForSomeone1": "Enable DROP Minting For ",
   "enableDROPMintingForSomeone2": "",
-  "activeKeplrAccountAs": "Please switch the currently active account in Keplr to {addr}"
+  "activeKeplrAccountAs": "Please switch the currently active account in Keplr to {addr}",
+  "fileSizeLimitExceeded": "Uploading files exceeding 5MB is not currently supported.",
+  "fileUploadFailed": "File upload failed",
+  "fileIsSameAsOld": "The file is the same as the old one"
 }

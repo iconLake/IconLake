@@ -1,6 +1,5 @@
 import { includeKeys } from 'filter-obj'
 import { getConfig } from '../../config/index.js'
-import { Analyse } from '../../models/analyse.js'
 import { Project } from '../../models/project.js'
 import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM } from '../../utils/const.js'
 import { isActive as isCosActive } from '../../utils/cos.js'
@@ -57,19 +56,14 @@ export async function info (req, res) {
     }
     const result = project.toJSON()
     if (result.icons && result.icons.length > 0) {
-      const analyse = await Analyse.findById(req.params.id)
-      if (analyse && analyse.icons && analyse.icons.length > 0) {
-        result.icons.forEach(e => {
-          if (!e._id) {
-            return
-          }
-          if (!e.analyse) {
-            e.analyse = {}
-          }
-          const anaIcon = analyse.icons.id(e._id)
-          e.analyse.pageCount = anaIcon ? anaIcon.pages.length : 0
-        })
-      }
+      result.icons.forEach(e => {
+        if (!e._id) {
+          return
+        }
+        if (e.svg && e.svg.url) {
+          e.svg.url = completeURL(e.svg.url)
+        }
+      })
     }
     if (/files/.test(fields) && !result.files) {
       result.files = {}
@@ -187,7 +181,6 @@ export async function clean (req, res) {
   }, {
     $set: {
       icons: [],
-      sources: [],
       groups: []
     }
   })

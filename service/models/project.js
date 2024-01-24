@@ -17,7 +17,14 @@ export const IconSchema = new Schema({
   unicode: String,
   tags: [String],
   svg: {
+    url: String,
+    /**
+     * @deprecated replace with 'url'
+     */
     viewBox: String,
+    /**
+     * @deprecated replace with 'url'
+     */
     path: String
   },
   img: {

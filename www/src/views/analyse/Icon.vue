@@ -99,10 +99,8 @@ getList()
   border-radius: 0.4rem;
   padding: 5rem;
   .icon {
-    :deep(.icon-svg) {
-      width: 21.5rem;
-      height: 21.5rem;
-    }
+    width: 21.5rem;
+    height: 21.5rem;
   }
   .info {
     font-size: 1.4rem;

@@ -2,10 +2,11 @@
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
-import { addIcon, BaseIcon, info } from '../../apis/project'
+import { addIcon, BaseIcon, info, uploadFile } from '../../apis/project'
 import HeaderVue from '../../components/Header.vue'
 import UserVue from '../../components/User.vue'
-import { toast } from '../../utils'
+import { readFileAsText, toast } from '../../utils'
+import { MD5 } from 'crypto-js'
 
 const { t } = useI18n()
 
@@ -68,45 +69,27 @@ function updateIcons() {
 function onSVGChange(e: Event) {
   const files = (e.target as HTMLInputElement).files
   if (files && files.length > 0) {
-    Array.from(files).forEach(file => {
+    Array.from(files).forEach(async file => {
       if (file.type !== 'image/svg+xml') {
         return
       }
-      const reader = new FileReader()
-      reader.readAsText(file, 'utf-8')
-      reader.onload = () => {
-        try {
-          const parser = new DOMParser()
-          const doc = parser.parseFromString(reader.result as string, 'image/svg+xml')
-          const code = file.name.substring(0, file.name.lastIndexOf('.'))
-          let viewBox = doc.documentElement.getAttribute('viewBox')
-          if (!viewBox) {
-            const w = doc.documentElement.getAttribute('width')
-            const h = doc.documentElement.getAttribute('height')
-            if (w && h) {
-              viewBox = `0 0 ${w} ${h}`
-            } else {
-              viewBox = ''
-            }
+      const svgText = await readFileAsText(file)
+      const code = file.name.substring(0, file.name.lastIndexOf('.'))
+      const hash = MD5(svgText).toString()
+      uploadFile(data._id, `${hash}.svg`, svgText).then(res => {
+        const svg = {
+          code,
+          name: code,
+          svg: {
+            url: res.url,
           }
-          const svg = {
-            code,
-            name: code,
-            svg: {
-              viewBox,
-              path: Array.from(doc.documentElement.children).map(node => node.outerHTML).join('')
-            }
-          }
-          cachedIcons.set(code, svg)
-          updateIcons()
-        } catch (err) {
-          console.error(err)
-          toast.error(t('fileCouldNotBeParsed'))
         }
-      }
-      reader.onerror = () => {
-        toast.error(t('fileLoadFailed'))
-      }
+        cachedIcons.set(code, svg)
+        updateIcons()
+      }).catch((err) => {
+        console.error(err)
+        toast.error(t('fileUploadFailed'))
+      })
     })
   }
 }
@@ -233,10 +216,7 @@ async function save () {
         :key="item.code"
         class="item"
       >
-        <svg
-          :viewBox="item.svg?.viewBox"
-          v-html="item.svg?.path"
-        />
+        <img :src="item.svg?.url">
         <div
           v-if="item.code"
           class="name"
@@ -413,7 +393,7 @@ async function save () {
       margin-bottom: 5rem;
     }
 
-    svg {
+    img {
       height: 2rem;
     }
 

@@ -10,6 +10,7 @@ import { ERROR_CODE, ONE_DAY_SECONDS, TEMPORARY_FILE_EXPIRE } from '../../../../
 import { getConfig } from '../../../../config/index.js'
 import { deleteObjects, getBucket, isActive as isCosActive, putObject } from '../../../../utils/cos.js'
 import mongoose from 'mongoose'
+import { getText } from '../../../../utils/file.js'
 
 const config = getConfig()
 const domain = isCosActive ? config.cos.domain : config.domain
@@ -73,7 +74,11 @@ export async function genCSS (req, res, projectId, project) {
   const metaMap = new Map()
   await Promise.all(project.icons.map(async icon => {
     const file = new URL(`${icon.code}.svg`, svgsPath)
-    await writeFile(file, `<svg viewBox="${icon.svg.viewBox}" version="1.1" xmlns="http://www.w3.org/2000/svg">${icon.svg.path}</svg>`)
+    if (!icon.svg.url) {
+      return
+    }
+    const svgContent = await getText(icon.svg.url)
+    await writeFile(file, svgContent)
     metaMap.set(icon.code, {
       unicode: [String.fromCodePoint(+`0x${icon.unicode}`)],
       unicodeNum: icon.unicode
@@ -145,7 +150,11 @@ export async function genCSS (req, res, projectId, project) {
  * 生成js
  */
 export async function genJS (req, res, projectId, project) {
-  const data = JSON.stringify(project.icons.map(e => [e.code, e.svg.viewBox, e.svg.path]))
+  const icons = await Promise.all(project.icons.filter(icon => icon.svg.url).map(async icon => {
+    const svgContent = await getText(icon.svg.url)
+    return [icon.code, svgContent]
+  }))
+  const data = JSON.stringify(icons)
   const hash = crypto.createHash('md5').update(data).digest('hex')
   const jsTemp = await readFile(new URL('./template.js', import.meta.url))
   const ugResult = UglifyJS.minify(
@@ -187,11 +196,15 @@ export async function genJS (req, res, projectId, project) {
  * 生成vue
  */
 export async function genVUE (req, res, projectId, project) {
-  const data = JSON.stringify(project.icons.map(e => [e.code, e.svg.viewBox, e.svg.path]))
+  const icons = await Promise.all(project.icons.filter(icon => icon.svg.url).map(async icon => {
+    const svgContent = await getText(icon.svg.url)
+    return [icon.code, svgContent]
+  }))
+  const data = JSON.stringify(icons)
   const hash = crypto.createHash('md5').update(data).digest('hex')
   const vueTemp = await readFile(new URL('./template.vue', import.meta.url))
   res.json({
-    content: vueTemp.toString().replace('[\'__DATA__\']', data).replace('__HASH__', hash)
+    content: vueTemp.toString().replace('["__DATA__"]', data).replace('__HASH__', hash)
   })
 }
 
@@ -199,11 +212,15 @@ export async function genVUE (req, res, projectId, project) {
  * 生成react
  */
 export async function genReact (req, res, projectId, project) {
-  const data = JSON.stringify(project.icons.map(e => [e.code, e.svg.viewBox, e.svg.path]))
+  const icons = await Promise.all(project.icons.filter(icon => icon.svg.url).map(async icon => {
+    const svgContent = await getText(icon.svg.url)
+    return [icon.code, svgContent]
+  }))
+  const data = JSON.stringify(icons)
   const hash = crypto.createHash('md5').update(data).digest('hex')
   const reactTemp = await readFile(new URL('./template.react', import.meta.url))
   res.json({
-    content: reactTemp.toString().replace('[\'__DATA__\']', data).replace('__HASH__', hash)
+    content: reactTemp.toString().replace('["__DATA__"]', data).replace('__HASH__', hash)
   })
 }
 

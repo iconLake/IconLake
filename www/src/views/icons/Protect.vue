@@ -42,9 +42,7 @@ async function publish() {
     return
   }
   isPending.value = true
-  const file = await uploadFile(projectId.value, id.value + '.svg', `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="${iconInfo.svg.viewBox}">${iconInfo.svg.path}</svg>`)
-  const url = /^http/.test(file.url) ? file.url : `${location.origin}${file.url}`
-  const hash = await getHash(url)
+  const hash = await getHash(iconInfo.svg.url)
   if (!userInfo.value || !userInfo.value.blockchain?.id) {
     isPending.value = false
     return
@@ -53,7 +51,7 @@ async function publish() {
     creator: userInfo.value.blockchain?.id,
     classId: projectId.value,
     id: hash.graph_hash ?? '',
-    uri: url,
+    uri: iconInfo.svg.url,
     uriHash: hash.file_hash ?? '',
     name: iconInfo.code,
     description: iconInfo.name,
@@ -151,7 +149,7 @@ checkChainAccount()
   padding: 2rem;
   border-radius: 2rem;
   line-height: 2;
-  :deep(.icon-svg) {
+  .icon {
     width: 22rem;
     height: 22rem;
   }

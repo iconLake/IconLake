@@ -245,11 +245,19 @@ async function batchGroup() {
 }
 
 function updateIcon(eData: {
+  _id: string
   name?: string
   groupId?: string
   tags?: string[]
+  svg?: {
+    url: string
+  }
 }) {
-  Object.assign(data.detail.info, eData)
+  const icon = data.icons.find(e => e._id === eData._id)
+  if (!icon) {
+    return
+  }
+  Object.assign(icon, eData)
   if ('groupId' in eData) {
     getList()
   }
@@ -578,7 +586,7 @@ watch(() => data.keyword, () => {
       padding: 0 0.5rem;
     }
   }
-  :deep(.icon-svg) {
+  .icon {
     width: 3.8rem;
     height: 3.8rem;
     margin-bottom: 2.5rem;

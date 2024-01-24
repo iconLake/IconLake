@@ -90,7 +90,7 @@ getProject()
           class="upload-preview"
         >
         <div class="preview-mask flex center">
-          <i class="iconfont icon-plus" />
+          <i class="iconfont icon-edit" />
         </div>
       </div>
       <div
@@ -163,9 +163,8 @@ getProject()
 .preview-cnt {
   position: relative;
   overflow: hidden;
-  transition: var(--transition);
+  border-radius: 0.625rem;
   &:hover {
-    border-radius: 0.625rem;
     .preview-mask {
       opacity: 1;
     }
@@ -178,10 +177,13 @@ getProject()
   bottom: 0;
   left: 0;
   z-index: 1;
-  background-color: rgba($color: #fff, $alpha: 0.5);
+  background-color: rgba($color: #000, $alpha: 0.1);
   opacity: 0;
   transition: var(--transition);
-  border: #ccc 1px solid;
-  border-radius: 0.625rem;
+  color: #fff;
+  transition: var(--transition);
+  .iconfont {
+    font-size: 2rem;
+  }
 }
 </style>

@@ -1,11 +1,15 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <script lang="ts" setup>
-import { computed, nextTick, reactive, ref, watchEffect } from 'vue'
-import { addTag, delTag, editGroup, editIcon, Group, Icon } from '../../apis/project'
+import { computed, nextTick, reactive, ref, watch, watchEffect } from 'vue'
+import { addTag, delTag, editGroup, editIcon, getIconPages, Group, Icon, uploadFile } from '../../apis/project'
 import IconComponent from '../../components/Icon.vue'
-import { copy, toast } from '../../utils'
+import { copy, readFileAsText, toast } from '../../utils'
 import { useI18n } from 'vue-i18n'
 import Select from '@/components/Select.vue'
+import { ElUpload } from 'element-plus'
+import type { UploadFile } from 'element-plus'
+import { UPLOAD_DIR } from '@/utils/const'
+import { MD5 } from 'crypto-js'
 
 const { t } = useI18n()
 
@@ -21,9 +25,13 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update', data: {
+    _id: string
     name?: string
     groupId?: string
     tags?: string[]
+    svg?: {
+      url: string
+    }
   }): void
   (e: 'addGroup', data: Group): void
 }>()
@@ -113,10 +121,13 @@ async function deleteTag(i: number, tag: string) {
 
 async function saveInfo(key: 'name' | 'code' | 'groupId') {
   const data: {
+    _id: string
     name?: string
     code?: string
     groupId?: string
-  } = {}
+  } = {
+    _id: props.info._id
+  }
   if (key === 'code' && props.icons.some(e => e.code === input.code)) {
     return toast(t('codeExists'))
   }
@@ -138,6 +149,64 @@ async function addGroup(name:string) {
   toast(t('saveDone'))
   emit('addGroup', g)
 }
+
+async function getPageCount() {
+  if (typeof props.info.analyse?.pageCount === 'number') {
+    return
+  }
+  const id = props.info._id
+  const data = await getIconPages(props.projectId, id)
+  if (id !== props.info._id) {
+    return
+  }
+  props.info.analyse = {
+    pageCount: data.pages.length
+  }
+}
+
+let idChangeTimer: NodeJS.Timeout
+watch(() => props.info._id, () => {
+  idChangeTimer && clearTimeout(idChangeTimer)
+  idChangeTimer = setTimeout(() => {
+    getPageCount()
+  }, 200)
+})
+
+async function handleUpload(file: UploadFile) {
+  if (!file.raw || !/^image\/svg\+xml$/i.test(file.raw?.type)) {
+    toast(t('pleaseSelectFile', {type: 'SVG'}))
+    return
+  }
+  if (!file.size || file.size / 1024 / 1024 > 5) {
+    toast(t('fileSizeLimitExceeded'))
+    return
+  }
+  const _id = props.info._id
+  const oldUrl = props.info.svg.url
+  const svgText = await readFileAsText(file.raw)
+  const hash = MD5(svgText).toString()
+  const fileName = `${hash}.svg`
+  if (new RegExp(`${fileName}$`).test(oldUrl)) {
+    toast(t('fileIsSameAsOld'))
+    return
+  }
+  const res = await uploadFile(props.projectId, fileName, svgText, UPLOAD_DIR.ICON).catch((err) => {
+    console.error(err)
+    toast.error(t('fileUploadFailed'))
+  })
+  if (!res) {
+    return
+  }
+  const data = {
+    _id,
+    svg: {
+      url: res.url
+    }
+  }
+  await editIcon(props.projectId, props.info._id, { svg: data.svg })
+  toast(t('saveDone'))
+  emit('update', data)
+}
 </script>
 
 <template>
@@ -155,12 +224,23 @@ async function addGroup(name:string) {
     </RouterLink>
     <div class="flex start">
       <div>
-        <IconComponent :info="info" />
+        <ElUpload
+          :show-file-list="false"
+          :auto-upload="false"
+          accept="image/svg+xml"
+          class="upload-input"
+          @change="handleUpload"
+        >
+          <IconComponent :info="info" />
+          <div class="mask flex center">
+            <i class="iconfont icon-edit" />
+          </div>
+        </ElUpload>
         <router-link
           :to="`/analyse/icon/${projectId}/${info._id}`"
           class="count-use c-main"
         >
-          {{ t('pageRefererCount') }} {{ info.analyse?.pageCount }}
+          {{ t('pageReferer') }}{{ (typeof info.analyse?.pageCount === 'number') ? ` ${info.analyse.pageCount}` : '' }}
         </router-link>
       </div>
       <div class="info grow">
@@ -273,10 +353,8 @@ async function addGroup(name:string) {
   transition: opacity 0.1s ease-in-out;
   opacity: v-bind(opacity);
   .icon {
-    :deep(.icon-svg) {
-      width: 13.375rem;
-      height: 13.375rem;
-    }
+    width: 13.375rem;
+    height: 13.375rem;
   }
   .count-use {
     display: block;
@@ -394,6 +472,37 @@ async function addGroup(name:string) {
   }
   .iconfont {
     font-size: 3rem;
+  }
+}
+
+.upload-input {
+  position: relative;
+  .mask {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1);
+    color: #fff;
+    font-size: 2.5rem;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    border-radius: 1.875rem;
+    .iconfont {
+      font-size: 2rem;
+    }
+  }
+  &:hover {
+    border-radius: 1.875rem;
+    overflow: hidden;
+    .mask {
+      transition: var(--transition);
+      transition-delay: 300ms;
+      opacity: 1;
+    }
   }
 }
 </style>

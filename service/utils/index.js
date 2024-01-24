@@ -1,21 +1,5 @@
 import { ERROR_CODE } from './const.js'
 
-/**
- * 补全url
- * @param {string} url
- * @returns string
- */
-export function completeUrl (url) {
-  if (!/^(https?:)?\/\//.test(url)) {
-    return ''
-  }
-  let result = url
-  if (/^\/\//.test(url)) {
-    result = `https:${result}`
-  }
-  return result
-}
-
 const localeWhiteList = [
   'zh-cn',
   'en-us'

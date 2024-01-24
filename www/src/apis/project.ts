@@ -10,8 +10,15 @@ export interface BaseIcon {
   name: string
   code: string
   svg: {
-    viewBox: string
-    path: string
+    url: string
+    /**
+     * @deprecated replace with 'url'
+     */
+    viewBox?: string
+    /**
+     * @deprecated replace with 'url'
+     */
+    path?: string
   }
 }
 
@@ -300,6 +307,9 @@ export function editIcon(projectId: string, _id: string, info: {
   name?: string
   groupId?: string
   txHash?: string
+  svg?: {
+    url: string
+  }
 }) {
   return <Promise<Res>>request({
     method: 'POST',

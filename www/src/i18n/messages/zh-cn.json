@@ -69,7 +69,7 @@
   "delProjectWarning": "清空或删除项目将导致项目的所有数据永久性丢失，请谨慎操作！",
   "inputForSafe": "为防止操作错误，请输入项目名称",
   "fillProjectName": "填写项目名称",
-  "pageRefererCount": "页面引用数量",
+  "pageReferer": "引用页面",
   "refererCount": "引用次数",
   "search": "搜索",
   "batchDeleteConfirm": "确定删除{n}个图标吗？",
@@ -158,5 +158,8 @@
   "start": "开启",
   "enableDROPMintingForSomeone1": "替",
   "enableDROPMintingForSomeone2": "开启积攒DROP",
-  "activeKeplrAccountAs": "请切换Keplr里当前活跃的账户为{addr}"
+  "activeKeplrAccountAs": "请切换Keplr里当前活跃的账户为{addr}",
+  "fileSizeLimitExceeded": "暂不支持上传大小超过5MB的文件",
+  "fileUploadFailed": "文件上传失败",
+  "fileIsSameAsOld": "文件内容跟之前的一样"
 }

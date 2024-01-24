@@ -3,7 +3,7 @@ import fs, { createWriteStream } from 'fs'
 import { writeFile } from 'fs/promises'
 import fetch from 'node-fetch'
 import { pipeline } from 'stream/promises'
-import { isActive, putObject } from './cos.js'
+import { getObject, isActive, putObject } from './cos.js'
 import { getConfig } from '../config/index.js'
 
 const config = getConfig()
@@ -30,6 +30,34 @@ export async function save (name, data, path = 'file/') {
   return {
     key
   }
+}
+
+/**
+ * 获取文件
+ * @param {string} key
+ */
+export async function getData (key) {
+  if (isActive) {
+    return await getObject(key)
+  } else {
+    const p = new URL(key, new URL('../public/', import.meta.url))
+    if (!fs.existsSync(p)) {
+      return null
+    }
+    return await fs.readFile(p)
+  }
+}
+
+/**
+ * 获取文本文件
+ * @param {string} key
+ */
+export async function getText (key) {
+  const data = await getData(key)
+  if (!data) {
+    return null
+  }
+  return data.toString()
 }
 
 /**

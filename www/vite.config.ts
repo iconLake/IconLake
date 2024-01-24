@@ -25,6 +25,7 @@ export default defineConfig({
       '/exhibition': proxyDomain,
       '/admin': proxyDomain,
       '/themes': proxyDomain,
+      '/libs': proxyDomain,
     }
   },
   build: {
