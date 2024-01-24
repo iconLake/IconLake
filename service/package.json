@@ -11,7 +11,7 @@
     "dev-clean": "pnpm exec pm2 delete service-dev",
     "build:server": "pnpm i -P=false && pnpm exec gulp build",
     "build:www": "cd ../www && pnpm i -P=false && pnpm run build-only",
-    "build": "pnpm exec npm-run-all -p build:*",
+    "build": "pnpm i -P=false && pnpm exec npm-run-all -p build:*",
     "pro": "pnpm i -P && pm2 reload ecosystem.config.cjs --env production",
     "test": "pnpm i -P && pm2 reload ecosystem.config.cjs --env test"
   },
