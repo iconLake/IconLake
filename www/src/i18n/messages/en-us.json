@@ -161,5 +161,7 @@
   "activeKeplrAccountAs": "Please switch the currently active account in Keplr to {addr}",
   "fileSizeLimitExceeded": "Uploading files exceeding 5MB is not currently supported.",
   "fileUploadFailed": "File upload failed",
-  "fileIsSameAsOld": "The file is the same as the old one"
+  "fileIsSameAsOld": "The file is the same as the old one",
+  "blockchainConfirmationSuccessful": "Blockchain confirmation successful",
+  "blockchainConfirmationFailed": "Blockchain confirmation failed"
 }

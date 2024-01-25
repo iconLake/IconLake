@@ -161,5 +161,7 @@
   "activeKeplrAccountAs": "请切换Keplr里当前活跃的账户为{addr}",
   "fileSizeLimitExceeded": "暂不支持上传大小超过5MB的文件",
   "fileUploadFailed": "文件上传失败",
-  "fileIsSameAsOld": "文件内容跟之前的一样"
+  "fileIsSameAsOld": "文件内容跟之前的一样",
+  "blockchainConfirmationSuccessful": "上链成功",
+  "blockchainConfirmationFailed": "上链失败"
 }

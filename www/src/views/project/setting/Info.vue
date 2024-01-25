@@ -155,6 +155,7 @@ getProject()
     width: 4rem;
     border: #ccc 1px solid;
     border-radius: 0.625rem;
+    color: var(--el-color-black);
   }
   .upload-preview {
     height: 10rem;

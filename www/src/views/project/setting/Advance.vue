@@ -87,7 +87,7 @@ input {
   width: 100%;
   margin: 2.2rem 0 3.5rem;
   border: solid 0.1rem #ccc;
-  padding: 0 4rem;
+  padding: 0 4rem !important;
   font-size: 1.4rem;
 }
 .btn {

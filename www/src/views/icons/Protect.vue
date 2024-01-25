@@ -65,7 +65,7 @@ async function publish() {
     return
   }
   if (res?.code !== 0) {
-    toast('Blockchain confirmation failed', 'error')
+    toast(t('blockchainConfirmationFailed'), 'error')
     isPending.value = false
     return
   }
@@ -73,7 +73,7 @@ async function publish() {
   await editIcon(projectId.value, id.value, {
     txHash: res.transactionHash
   })
-  toast('Blockchain confirmation successful', 'success')
+  toast(t('blockchainConfirmationSuccessful'), 'success')
   isPending.value = true
 }
 
@@ -98,7 +98,7 @@ checkChainAccount()
   <div class="main">
     <p>{{ t('onChainVerifyOwnership') }}</p>
     <div
-      v-if="iconInfo.svg.path"
+      v-if="iconInfo.svg.url"
       class="info"
     >
       <Icon :info="iconInfo" />
