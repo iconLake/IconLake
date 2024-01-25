@@ -77,7 +77,12 @@ export async function genCSS (req, res, projectId, project) {
     if (!icon.svg.url) {
       return
     }
-    const svgContent = await getText(icon.svg.url)
+    const svgContent = await getText(icon.svg.url).catch(err => {
+      console.error('Cannot get svg content:', `${icon.code}.svg`, icon.svg.url, err)
+    })
+    if (!svgContent) {
+      return
+    }
     await writeFile(file, svgContent)
     metaMap.set(icon.code, {
       unicode: [String.fromCodePoint(+`0x${icon.unicode}`)],
@@ -151,7 +156,9 @@ export async function genCSS (req, res, projectId, project) {
  */
 export async function genJS (req, res, projectId, project) {
   const icons = await Promise.all(project.icons.filter(icon => icon.svg.url).map(async icon => {
-    const svgContent = await getText(icon.svg.url)
+    const svgContent = await getText(icon.svg.url).catch(err => {
+      console.error('Cannot get svg content:', `${icon.code}.svg`, icon.svg.url, err)
+    })
     return [icon.code, svgContent]
   }))
   const data = JSON.stringify(icons)

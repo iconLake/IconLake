@@ -154,7 +154,7 @@ export async function edit (req, res) {
     isEmpty = false
   }
   if (typeof req.body.svg?.url === 'string') {
-    $set['icons.$.svg.url'] = req.body.svg.url
+    $set['icons.$.svg.url'] = slimURL(req.body.svg.url)
     $set.iconUpdateTime = new Date()
     $set['icons.$.txHash'] = ''
     isEmpty = false
