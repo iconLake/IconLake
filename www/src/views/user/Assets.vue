@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { getBalance, getDropInfo, initDrop, mintDrop, signMsg, getNftClass, verifyUriHash, getInfo } from '@/apis/blockchain'
+import { getBalance, getDropInfo, initDrop, mintDrop, signMsg, getNftClass, verifyUriHash, getInfo, getNFTs } from '@/apis/blockchain'
 import type { BlockchainInfo } from '@/apis/blockchain'
 import { UserInfo, info, loginByBlockchain } from '@/apis/user'
-import { list as getProjectList } from '@/apis/project'
-import { ref, onBeforeUnmount, reactive, computed } from 'vue'
+import { ref, onBeforeUnmount, reactive, computed, onMounted } from 'vue'
 import UserVue from '@/components/User.vue'
 import { formatDropAmount, formatLakeAmount, toast, copy } from '@/utils'
 import HeaderVue from '@/components/Header.vue'
@@ -60,9 +59,8 @@ const isLoaded = computed(() => !!userInfo.value && !!blockchainInfo.value && is
 const shareMsg = computed(() => `${t('helpToInitMintingDROP')} ${location.origin}/manage/user/assets/drop/init?addr=${userInfo.value?.blockchain?.id}`)
 
 async function getAssets() {
-  const uInfo = await info()
-  userInfo.value = uInfo
-  if (uInfo.blockchain) {
+  const uInfo = userInfo.value
+  if (uInfo?.blockchain) {
     getBalance(uInfo.blockchain.id, LAKE_DENOM_MINI).then(balance => {
       if (balance?.amount) {
         lakeAmount.value = +balance?.amount
@@ -175,15 +173,34 @@ async function initDropAccount() {
 }
 
 async function getNftClasses() {
-  const {list} = await getProjectList('_id')
-  list.forEach(async e => {
-    const info = await getNftClass(e._id)
-    if (info && info.class) {
-      const verify = await verifyUriHash(info.class.uri, info.class.uri_hash).catch(() => {})
-      classes.push({
-        ...info.class,
-        url: verify ? verify.url : undefined
-      })
+  if (!userInfo.value?.blockchain?.id) {
+    return
+  }
+  const { nfts } = await getNFTs({
+    owner: userInfo.value?.blockchain?.id,
+  })
+  if (!nfts) {
+    return
+  }
+  const classIds: {
+    [key: string]: number
+  } = {}
+  nfts.forEach((e) => {
+    if (e.class_id) {
+      if (!classIds[e.class_id]) {
+        classIds[e.class_id] = 0
+        getNftClass(e.class_id).then(async (info) => {
+          if (info && info.class) {
+            classes.push(info.class)
+            const i = classes.length - 1
+            const verify = await verifyUriHash(info.class.uri, info.class.uri_hash).catch(() => {})
+            if (verify) {
+              classes[i].url = info.class.uri
+            }
+          }
+        })
+      }
+      classIds[e.class_id] += 1
     }
   })
 }
@@ -198,8 +215,11 @@ function copyShareMsg() {
 }
 
 getBlockchainInfo()
-getAssets()
-getNftClasses()
+onMounted(async () => {
+  userInfo.value = await info()
+  getAssets()
+  getNftClasses()
+})
 </script>
 
 <template>
@@ -320,7 +340,7 @@ getNftClasses()
         <div
           class="cover-img flex center"
           :style="{
-            backgroundImage: `url(${item.url})`
+            backgroundImage: item.url ? `url(${item.url})` : 'none'
           }"
         >
           <i

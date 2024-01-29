@@ -4,7 +4,7 @@ import { Client } from '@iconlake/client'
 import type { V1Beta1GetTxResponse } from '@iconlake/client/types/cosmos.tx.v1beta1/rest'
 import type { DropQueryGetInfoResponse } from '@iconlake/client/types/iconlake.drop/rest'
 import type { MsgMint as MsgMintIcon, MsgUpdateClass } from '@iconlake/client/types/iconlake.icon/module'
-import type { IconQueryHashResponse, IconlakeiconQueryClassResponse } from '@iconlake/client/types/iconlake.icon/rest'
+import type { IconQueryHashResponse, IconlakeiconQueryClassResponse, IconlakeiconQueryNFTsResponse } from '@iconlake/client/types/iconlake.icon/rest'
 import { SHA256, lib } from 'crypto-js'
 import i18n from '@/i18n'
 
@@ -166,6 +166,17 @@ export async function initDrop(creator: string, address: string, isBackendServic
   })
 }
 
+export async function getNFTs(q: {
+  owner: string
+}) {
+  const res = await client.IconlakeIcon.query.queryNFTs({
+    owner: q.owner
+  })
+  return await new Promise((resolve: (v: IconlakeiconQueryNFTsResponse) => void, reject) => {
+    handleResponse<IconlakeiconQueryNFTsResponse>(res as any, resolve, reject);
+  })
+}
+
 export async function getNftClass(id: string) {
   const res = await client.IconlakeIcon.query.queryClass({ id })
   return await new Promise((resolve: (v: IconlakeiconQueryClassResponse) => void, reject) => {
@@ -197,7 +208,11 @@ export async function verifyUriHash(uri: string | undefined, hash: string | unde
       checked: false
     }
   }
-  const blob = await fetch(uri).then(e => e.blob())
+  const blob = await fetch(uri, {
+    headers: {
+      "Cache-Control": "no-cache"
+    }
+  }).then(e => e.blob())
   const file = await blob.arrayBuffer()
   const words = lib.WordArray.create()
   ;(words as any).init(file)
