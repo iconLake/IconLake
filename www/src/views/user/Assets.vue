@@ -191,11 +191,14 @@ async function getNftClasses() {
         classIds[e.class_id] = 0
         getNftClass(e.class_id).then(async (info) => {
           if (info && info.class) {
-            classes.push(info.class)
+            classes.push({
+              ...info.class,
+              url: info.class.uri
+            })
             const i = classes.length - 1
             const verify = await verifyUriHash(info.class.uri, info.class.uri_hash).catch(() => {})
-            if (verify) {
-              classes[i].url = info.class.uri
+            if (!verify) {
+              classes[i].url = undefined
             }
           }
         })
