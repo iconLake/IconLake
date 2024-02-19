@@ -68,6 +68,9 @@ genesis:
     distribution:
       params:
         withdraw_addr_enabled: false
+    drop:
+      params:
+        init_amount: "80000"
 validators:
 - name: alice
   bonded: 100000000000000ulake

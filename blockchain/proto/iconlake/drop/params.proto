@@ -8,4 +8,5 @@ option go_package = "iconlake/x/drop/types";
 // Params defines the parameters for the module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
+  int64  init_amount = 1;
 }

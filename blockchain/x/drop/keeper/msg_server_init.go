@@ -35,7 +35,8 @@ func (k msgServer) Init(goCtx context.Context, msg *types.MsgInit) (*types.MsgMi
 		return nil, types.ErrInit.Wrap("account has been initialized")
 	}
 
-	amounts := sdk.NewCoins(sdk.NewCoin(types.DropDenom, sdk.NewInt(100000)))
+	params := k.GetParams(ctx)
+	amounts := sdk.NewCoins(sdk.NewCoin(types.DropDenom, sdk.NewInt(params.InitAmount)))
 
 	err = k.mintKeeper.MintCoins(ctx, amounts)
 	if err != nil {

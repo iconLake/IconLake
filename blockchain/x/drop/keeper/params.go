@@ -1,13 +1,16 @@
 package keeper
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"iconlake/x/drop/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // GetParams get all parameters as types.Params
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
-	return types.NewParams()
+	params := types.DefaultParams()
+	k.paramstore.GetParamSetIfExists(ctx, &params)
+	return params
 }
 
 // SetParams set the params
