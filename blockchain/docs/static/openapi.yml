@@ -46620,8 +46620,14 @@ paths:
                 type: object
                 properties:
                   init_amount:
-                    type: integer
-                    format: int32
+                    type: string
+                    format: int64
+                  min_amount_per_mint:
+                    type: string
+                    format: int64
+                  max_amount_per_mint:
+                    type: string
+                    format: int64
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -76907,8 +76913,14 @@ definitions:
     type: object
     properties:
       init_amount:
-        type: integer
-        format: int32
+        type: string
+        format: int64
+      min_amount_per_mint:
+        type: string
+        format: int64
+      max_amount_per_mint:
+        type: string
+        format: int64
     description: Params defines the parameters for the module.
   iconlake.drop.QueryAllInfoResponse:
     type: object
@@ -76968,8 +76980,14 @@ definitions:
         type: object
         properties:
           init_amount:
-            type: integer
-            format: int32
+            type: string
+            format: int64
+          min_amount_per_mint:
+            type: string
+            format: int64
+          max_amount_per_mint:
+            type: string
+            format: int64
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   iconlake.icon.Class:
     type: object

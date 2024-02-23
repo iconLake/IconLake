@@ -71,6 +71,8 @@ genesis:
     drop:
       params:
         init_amount: "80000"
+        min_amount_per_mint: "20000"
+        max_amount_per_mint: "880000"
 validators:
 - name: alice
   bonded: 100000000000000ulake

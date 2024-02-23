@@ -8,7 +8,9 @@ import (
 )
 
 var (
-	KeyInitAmount = []byte("InitAmount")
+	KeyInitAmount       = []byte("InitAmount")
+	KeyMinAmountPerMint = []byte("MinAmountPerMint")
+	KeyMaxAmountPerMint = []byte("MaxAmountPerMint")
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -19,24 +21,26 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 // NewParams creates a new Params instance
-func NewParams(initAmount int64) Params {
+func NewParams(initAmount, minAmountPerMint, maxAmountPerMint int64) Params {
 	return Params{
 		initAmount,
+		minAmountPerMint,
+		maxAmountPerMint,
 	}
 }
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
-	return NewParams(100000)
+	return NewParams(100000, 10000, 600000)
 }
 
-func ValidateInitAmount(i interface{}) error {
+func ValidateAmount(i interface{}) error {
 	_, ok := i.(int64)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 	if i.(int64) < 0 {
-		return fmt.Errorf("init amount must be larger than or equal to 0: %d", i)
+		return fmt.Errorf("amount must be larger than or equal to 0: %d", i)
 	}
 	return nil
 }
@@ -44,12 +48,17 @@ func ValidateInitAmount(i interface{}) error {
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyInitAmount, &p.InitAmount, ValidateInitAmount),
+		paramtypes.NewParamSetPair(KeyInitAmount, &p.InitAmount, ValidateAmount),
+		paramtypes.NewParamSetPair(KeyMinAmountPerMint, &p.MinAmountPerMint, ValidateAmount),
+		paramtypes.NewParamSetPair(KeyMaxAmountPerMint, &p.MaxAmountPerMint, ValidateAmount),
 	}
 }
 
 // Validate validates the set of params
 func (p Params) Validate() error {
+	if p.MaxAmountPerMint < p.MinAmountPerMint {
+		return fmt.Errorf("max amount per mint (%d) must be larger than or equal to min amount per mint (%d)", p.MaxAmountPerMint, p.MinAmountPerMint)
+	}
 	return nil
 }
 
