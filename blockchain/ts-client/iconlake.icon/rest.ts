@@ -25,6 +25,8 @@ export interface IconIconData {
   create_time?: string;
 }
 
+export type IconMsgBurnResponse = object;
+
 export type IconMsgMintResponse = object;
 
 export type IconMsgUpdateClassResponse = object;

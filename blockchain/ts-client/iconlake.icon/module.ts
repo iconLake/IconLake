@@ -7,6 +7,7 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
+import { MsgBurn } from "./types/iconlake/icon/tx";
 import { MsgUpdateClass } from "./types/iconlake/icon/tx";
 import { MsgMint } from "./types/iconlake/icon/tx";
 
@@ -20,7 +21,13 @@ import { QueryNFTsResponse as typeQueryNFTsResponse} from "./types"
 import { Class as typeClass} from "./types"
 import { QueryClassesResponse as typeQueryClassesResponse} from "./types"
 
-export { MsgUpdateClass, MsgMint };
+export { MsgBurn, MsgUpdateClass, MsgMint };
+
+type sendMsgBurnParams = {
+  value: MsgBurn,
+  fee?: StdFee,
+  memo?: string
+};
 
 type sendMsgUpdateClassParams = {
   value: MsgUpdateClass,
@@ -34,6 +41,10 @@ type sendMsgMintParams = {
   memo?: string
 };
 
+
+type msgBurnParams = {
+  value: MsgBurn,
+};
 
 type msgUpdateClassParams = {
   value: MsgUpdateClass,
@@ -73,6 +84,20 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
+		async sendMsgBurn({ value, fee, memo }: sendMsgBurnParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgBurn: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgBurn({ value: MsgBurn.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgBurn: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
 		async sendMsgUpdateClass({ value, fee, memo }: sendMsgUpdateClassParams): Promise<DeliverTxResponse> {
 			if (!signer) {
 					throw new Error('TxClient:sendMsgUpdateClass: Unable to sign Tx. Signer is not present.')
@@ -101,6 +126,14 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+		
+		msgBurn({ value }: msgBurnParams): EncodeObject {
+			try {
+				return { typeUrl: "/iconlake.icon.MsgBurn", value: MsgBurn.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgBurn: Could not create message: ' + e.message)
+			}
+		},
 		
 		msgUpdateClass({ value }: msgUpdateClassParams): EncodeObject {
 			try {

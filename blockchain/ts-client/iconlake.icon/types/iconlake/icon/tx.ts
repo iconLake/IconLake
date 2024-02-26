@@ -31,6 +31,15 @@ export interface MsgUpdateClass {
 export interface MsgUpdateClassResponse {
 }
 
+export interface MsgBurn {
+  creator: string;
+  classId: string;
+  id: string;
+}
+
+export interface MsgBurnResponse {
+}
+
 function createBaseMsgMint(): MsgMint {
   return { creator: "", classId: "", id: "", name: "", description: "", uri: "", uriHash: "", supply: 0 };
 }
@@ -324,10 +333,117 @@ export const MsgUpdateClassResponse = {
   },
 };
 
+function createBaseMsgBurn(): MsgBurn {
+  return { creator: "", classId: "", id: "" };
+}
+
+export const MsgBurn = {
+  encode(message: MsgBurn, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.classId !== "") {
+      writer.uint32(18).string(message.classId);
+    }
+    if (message.id !== "") {
+      writer.uint32(26).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurn {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgBurn();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.classId = reader.string();
+          break;
+        case 3:
+          message.id = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgBurn {
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      classId: isSet(object.classId) ? String(object.classId) : "",
+      id: isSet(object.id) ? String(object.id) : "",
+    };
+  },
+
+  toJSON(message: MsgBurn): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.classId !== undefined && (obj.classId = message.classId);
+    message.id !== undefined && (obj.id = message.id);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgBurn>, I>>(object: I): MsgBurn {
+    const message = createBaseMsgBurn();
+    message.creator = object.creator ?? "";
+    message.classId = object.classId ?? "";
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseMsgBurnResponse(): MsgBurnResponse {
+  return {};
+}
+
+export const MsgBurnResponse = {
+  encode(_: MsgBurnResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurnResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgBurnResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgBurnResponse {
+    return {};
+  },
+
+  toJSON(_: MsgBurnResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgBurnResponse>, I>>(_: I): MsgBurnResponse {
+    const message = createBaseMsgBurnResponse();
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   Mint(request: MsgMint): Promise<MsgMintResponse>;
   UpdateClass(request: MsgUpdateClass): Promise<MsgUpdateClassResponse>;
+  Burn(request: MsgBurn): Promise<MsgBurnResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -336,6 +452,7 @@ export class MsgClientImpl implements Msg {
     this.rpc = rpc;
     this.Mint = this.Mint.bind(this);
     this.UpdateClass = this.UpdateClass.bind(this);
+    this.Burn = this.Burn.bind(this);
   }
   Mint(request: MsgMint): Promise<MsgMintResponse> {
     const data = MsgMint.encode(request).finish();
@@ -347,6 +464,12 @@ export class MsgClientImpl implements Msg {
     const data = MsgUpdateClass.encode(request).finish();
     const promise = this.rpc.request("iconlake.icon.Msg", "UpdateClass", data);
     return promise.then((data) => MsgUpdateClassResponse.decode(new _m0.Reader(data)));
+  }
+
+  Burn(request: MsgBurn): Promise<MsgBurnResponse> {
+    const data = MsgBurn.encode(request).finish();
+    const promise = this.rpc.request("iconlake.icon.Msg", "Burn", data);
+    return promise.then((data) => MsgBurnResponse.decode(new _m0.Reader(data)));
   }
 }
 

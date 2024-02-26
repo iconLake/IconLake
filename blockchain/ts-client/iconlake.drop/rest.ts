@@ -32,7 +32,16 @@ export interface DropMsgMintResponse {
 /**
  * Params defines the parameters for the module.
  */
-export type DropParams = object;
+export interface DropParams {
+  /** @format int64 */
+  init_amount?: string;
+
+  /** @format int64 */
+  min_amount_per_mint?: string;
+
+  /** @format int64 */
+  max_amount_per_mint?: string;
+}
 
 export interface DropQueryAllInfoResponse {
   info?: DropInfo[];
