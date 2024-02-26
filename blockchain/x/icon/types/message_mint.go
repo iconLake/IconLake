@@ -45,19 +45,35 @@ func (msg *MsgMint) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
+func CheckClassId(classId string) error {
+	classIdLen := len(classId)
+	if classIdLen < 6 || classIdLen > 64 {
+		return ErrParam.Wrap("invalid param (ClassId), length should between 6 and 64")
+	}
+	return nil
+}
+
+func CheckId(id string) error {
+	hashType := id[0:1]
+	idLen := len(id)
+	if idLen <= 2 || idLen > 66 || hashType != string(pHash) || id[1:2] != ":" {
+		return ErrParam.Wrap("invalid param (Id), expect format of \"p:xxxx\" or \"p:xxxx:123\"")
+	}
+	return nil
+}
+
 func (msg *MsgMint) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return ErrParam.Wrapf("invalid param (Creator) (%s)", err)
 	}
-	classIdLen := len(msg.ClassId)
-	if classIdLen < 6 || classIdLen > 64 {
-		return ErrParam.Wrap("invalid param (ClassId), length should between 6 and 64")
+	err = CheckClassId(msg.ClassId)
+	if err != nil {
+		return err
 	}
-	hashType := msg.Id[0:1]
-	idLen := len(msg.Id)
-	if idLen <= 2 || idLen > 66 || hashType != string(pHash) || msg.Id[1:2] != ":" {
-		return ErrParam.Wrap("invalid param (Id), expect format of \"p:xxxx\" or \"p:xxxx:123\"")
+	err = CheckId(msg.Id)
+	if err != nil {
+		return err
 	}
 	if utf8.RuneCountInString(msg.Name) > 64 {
 		return ErrParam.Wrap("invalid param (Name), expect within 64 chars")

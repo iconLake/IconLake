@@ -16,8 +16,10 @@ type NftKeeper interface {
 	HasNFT(ctx sdk.Context, classID, nftID string) bool
 	GetNFT(ctx sdk.Context, classID, nftID string) (nft.NFT, bool)
 	Mint(ctx sdk.Context, token nft.NFT, receiver sdk.AccAddress) error
+	Burn(ctx sdk.Context, classID string, nftID string) error
 	NFTs(goCtx context.Context, req *nft.QueryNFTsRequest) (*nft.QueryNFTsResponse, error)
 	Classes(goCtx context.Context, req *nft.QueryClassesRequest) (*nft.QueryClassesResponse, error)
+	GetOwner(ctx sdk.Context, classID string, nftID string) sdk.AccAddress
 	// Methods imported from nft should be defined here
 }
 

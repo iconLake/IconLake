@@ -77032,6 +77032,8 @@ definitions:
       create_time:
         type: string
         format: int64
+  iconlake.icon.MsgBurnResponse:
+    type: object
   iconlake.icon.MsgMintResponse:
     type: object
   iconlake.icon.MsgUpdateClassResponse:

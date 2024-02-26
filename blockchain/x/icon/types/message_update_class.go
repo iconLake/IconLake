@@ -49,9 +49,9 @@ func (msg *MsgUpdateClass) ValidateBasic() error {
 	if err != nil {
 		return ErrParam.Wrapf("invalid creator address (%s)", err)
 	}
-	idLen := len(msg.Id)
-	if idLen < 6 || idLen > 64 {
-		return ErrParam.Wrap("invalid param (Id), length should between 6 and 64")
+	err = CheckClassId(msg.Id)
+	if err != nil {
+		return err
 	}
 	if utf8.RuneCountInString(msg.Name) > 64 {
 		return ErrParam.Wrap("invalid param (Name), expect within 64 chars")
