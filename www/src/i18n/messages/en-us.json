@@ -163,5 +163,8 @@
   "fileUploadFailed": "File upload failed",
   "fileIsSameAsOld": "The file is the same as the old one",
   "blockchainConfirmationSuccessful": "Blockchain confirmation successful",
-  "blockchainConfirmationFailed": "Blockchain confirmation failed"
+  "blockchainConfirmationFailed": "Blockchain confirmation failed",
+  "burnIcon": "Destroy on-chain certificate",
+  "burnDone": "Destroyed successfully",
+  "burnFailed": "Destruction failed"
 }

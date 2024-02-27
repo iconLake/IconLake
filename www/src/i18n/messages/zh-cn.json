@@ -163,5 +163,8 @@
   "fileUploadFailed": "文件上传失败",
   "fileIsSameAsOld": "文件内容跟之前的一样",
   "blockchainConfirmationSuccessful": "上链成功",
-  "blockchainConfirmationFailed": "上链失败"
+  "blockchainConfirmationFailed": "上链失败",
+  "burnIcon": "销毁链上凭证",
+  "burnDone": "销毁成功",
+  "burnFailed": "销毁失败"
 }

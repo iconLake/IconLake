@@ -3,7 +3,7 @@ import request, { handleResponse } from '@/utils/request'
 import { Client } from '@iconlake/client'
 import type { V1Beta1GetTxResponse } from '@iconlake/client/types/cosmos.tx.v1beta1/rest'
 import type { DropQueryGetInfoResponse } from '@iconlake/client/types/iconlake.drop/rest'
-import type { MsgMint as MsgMintIcon, MsgUpdateClass } from '@iconlake/client/types/iconlake.icon/module'
+import type { MsgMint as MsgMintIcon, MsgBurn as MsgBurnIcon, MsgUpdateClass } from '@iconlake/client/types/iconlake.icon/module'
 import type { IconQueryHashResponse, IconlakeiconQueryClassResponse, IconlakeiconQueryNFTsResponse } from '@iconlake/client/types/iconlake.icon/rest'
 import { SHA256, lib } from 'crypto-js'
 import i18n from '@/i18n'
@@ -126,6 +126,20 @@ export async function mintIcon(value: MsgMintIcon) {
     return Promise.reject(new Error(t('activeKeplrAccountAs', { addr: value.creator })))
   }
   const res = await client.IconlakeIcon.tx.sendMsgMint({
+    value,
+    fee
+  })
+  return res
+}
+
+export async function burnIcon(value: MsgBurnIcon) {
+  await detectKeplr()
+  if (!isKeplrDetected) return
+  const account = await getAccount()
+  if (!account || account.address !== value.creator) {
+    return Promise.reject(new Error(t('activeKeplrAccountAs', { addr: value.creator })))
+  }
+  const res = await client.IconlakeIcon.tx.sendMsgBurn({
     value,
     fee
   })

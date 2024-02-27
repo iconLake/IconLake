@@ -1,16 +1,17 @@
 <script lang="ts" setup>
 import { editIcon, getIcon, Icon as IconType, uploadFile } from '@/apis/project'
-import { getHash, mintIcon, getAccount, getTx, getChainAccount } from '@/apis/blockchain'
+import { getHash, mintIcon, getAccount, getTx, getChainAccount, burnIcon } from '@/apis/blockchain'
 import Header from '@/components/Header.vue'
 import Icon from '@/components/Icon.vue'
 import User from '@/components/User.vue'
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { toast } from '@/utils'
 import { info } from '@/apis/user'
 import type { UserInfo } from '@/apis/user'
 import LoadingVue from '@/components/Loading.vue'
 import { useI18n } from 'vue-i18n'
+import { IS_PRODUCTION } from '@/utils/const'
 
 const { t } = useI18n()
 const $route = useRoute()
@@ -26,6 +27,14 @@ const iconInfo = reactive({
 const isPending = ref(false)
 const isChainAccountReady = ref(false)
 const userInfo = ref<UserInfo>()
+
+const txUrl = computed(() => {
+  if (iconInfo.txHash) {
+    return `${IS_PRODUCTION ? 'https://ping.pub/iconLake' : 'https://testnet.ping.pub/iconLake'}/tx/${iconInfo.txHash}`
+  } else {
+    return ''
+  }
+})
 
 async function getIconInfo() {
   const icon = await getIcon(projectId.value, id.value)
@@ -88,6 +97,34 @@ async function checkChainAccount() {
   }
 }
 
+async function onBurnIcon() {
+  if (iconInfo.txHash && userInfo.value?.blockchain?.id) {
+    isPending.value = true
+    const txRes = await getTx(iconInfo.txHash).catch(err => {
+      console.error(err)
+      toast(err.message)
+      isPending.value = false
+    })
+    if (!txRes) {
+      return
+    }
+    const msg = txRes.tx?.body?.messages![0] as any
+    const res = await burnIcon({
+      creator: userInfo.value.blockchain?.id,
+      classId: msg.class_id,
+      id: msg.id
+    }).catch((err) => {
+      console.error(err)
+      toast(err.message)
+      isPending.value = false
+    })
+    if (!res) {
+      return
+    }
+    toast(t('burnDone'))
+  }
+}
+
 getIconInfo()
 checkChainAccount()
 </script>
@@ -105,6 +142,18 @@ checkChainAccount()
       <h1>{{ iconInfo.code }}</h1>
       <h2>{{ iconInfo.name }}</h2>
       <h3>Created by {{ userInfo?.blockchain?.id }}</h3>
+      <div
+        v-if="iconInfo.txHash"
+        class="burn flex center"
+        :title="t('burnIcon')"
+        @click="onBurnIcon"
+      >
+        <LoadingVue v-if="isPending" />
+        <i
+          v-else
+          class="iconfont icon-close"
+        />
+      </div>
     </div>
     <div
       class="operate"
@@ -119,13 +168,15 @@ checkChainAccount()
         <LoadingVue v-if="isPending" />
         <span v-else>{{ t('publishToBlockchain') }}</span>
       </button>
-      <div
+      <a
         v-else
+        target="_blank"
+        :href="txUrl"
         class="success"
       >
         <i class="iconfont icon-info" />
         {{ t('OnchainRecord') }}ID: {{ iconInfo.txHash }}
-      </div>
+      </a>
     </div>
     <div
       v-if="!iconInfo.txHash"
@@ -149,6 +200,7 @@ checkChainAccount()
   padding: 2rem;
   border-radius: 2rem;
   line-height: 2;
+  position: relative;
   .icon {
     width: 22rem;
     height: 22rem;
@@ -161,6 +213,25 @@ checkChainAccount()
     font-size: 1rem;
     opacity: 0.5;
     margin-top: 3rem;
+  }
+  .burn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--color-danger);
+    color: #fff;
+    width: 4rem;
+    height: 4rem;
+    border-top-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+    opacity: 0;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  &:hover {
+    .burn {
+      opacity: 1;
+    }
   }
 }
 .warn,
