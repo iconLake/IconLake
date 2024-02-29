@@ -1,5 +1,5 @@
 # iconlake
-**iconlake** is a blockchain built using Cosmos SDK and Tendermint and created with [Ignite CLI](https://ignite.com/cli).
+**iconlake** is a blockchain built using Cosmos SDK and Tendermint and created with [Ignite CLI](https://github.com/iconLake/ignite-cli).
 
 ## Get started
 
@@ -20,7 +20,7 @@ To release a new version of your blockchain, create and push a new tag with `v` 
 
 ```
 git tag v0.1
-git push origin v0.1
+ignite chain build --release --check-dependencies --clear-cache
 ```
 
 After a draft release is created, make your final changes from the release page and publish it.
