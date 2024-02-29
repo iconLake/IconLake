@@ -7,9 +7,9 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
-import { MsgBurn } from "./types/iconlake/icon/tx";
-import { MsgUpdateClass } from "./types/iconlake/icon/tx";
 import { MsgMint } from "./types/iconlake/icon/tx";
+import { MsgUpdateClass } from "./types/iconlake/icon/tx";
+import { MsgBurn } from "./types/iconlake/icon/tx";
 
 import { ClassData as typeClassData} from "./types"
 import { ClassDataRaw as typeClassDataRaw} from "./types"
@@ -21,10 +21,10 @@ import { QueryNFTsResponse as typeQueryNFTsResponse} from "./types"
 import { Class as typeClass} from "./types"
 import { QueryClassesResponse as typeQueryClassesResponse} from "./types"
 
-export { MsgBurn, MsgUpdateClass, MsgMint };
+export { MsgMint, MsgUpdateClass, MsgBurn };
 
-type sendMsgBurnParams = {
-  value: MsgBurn,
+type sendMsgMintParams = {
+  value: MsgMint,
   fee?: StdFee,
   memo?: string
 };
@@ -35,23 +35,23 @@ type sendMsgUpdateClassParams = {
   memo?: string
 };
 
-type sendMsgMintParams = {
-  value: MsgMint,
+type sendMsgBurnParams = {
+  value: MsgBurn,
   fee?: StdFee,
   memo?: string
 };
 
 
-type msgBurnParams = {
-  value: MsgBurn,
+type msgMintParams = {
+  value: MsgMint,
 };
 
 type msgUpdateClassParams = {
   value: MsgUpdateClass,
 };
 
-type msgMintParams = {
-  value: MsgMint,
+type msgBurnParams = {
+  value: MsgBurn,
 };
 
 
@@ -84,17 +84,17 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
-		async sendMsgBurn({ value, fee, memo }: sendMsgBurnParams): Promise<DeliverTxResponse> {
+		async sendMsgMint({ value, fee, memo }: sendMsgMintParams): Promise<DeliverTxResponse> {
 			if (!signer) {
-					throw new Error('TxClient:sendMsgBurn: Unable to sign Tx. Signer is not present.')
+					throw new Error('TxClient:sendMsgMint: Unable to sign Tx. Signer is not present.')
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
 				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgBurn({ value: MsgBurn.fromPartial(value) })
+				let msg = this.msgMint({ value: MsgMint.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:sendMsgBurn: Could not broadcast Tx: '+ e.message)
+				throw new Error('TxClient:sendMsgMint: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
@@ -112,26 +112,26 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		async sendMsgMint({ value, fee, memo }: sendMsgMintParams): Promise<DeliverTxResponse> {
+		async sendMsgBurn({ value, fee, memo }: sendMsgBurnParams): Promise<DeliverTxResponse> {
 			if (!signer) {
-					throw new Error('TxClient:sendMsgMint: Unable to sign Tx. Signer is not present.')
+					throw new Error('TxClient:sendMsgBurn: Unable to sign Tx. Signer is not present.')
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
 				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgMint({ value: MsgMint.fromPartial(value) })
+				let msg = this.msgBurn({ value: MsgBurn.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:sendMsgMint: Could not broadcast Tx: '+ e.message)
+				throw new Error('TxClient:sendMsgBurn: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
 		
-		msgBurn({ value }: msgBurnParams): EncodeObject {
+		msgMint({ value }: msgMintParams): EncodeObject {
 			try {
-				return { typeUrl: "/iconlake.icon.MsgBurn", value: MsgBurn.fromPartial( value ) }  
+				return { typeUrl: "/iconlake.icon.MsgMint", value: MsgMint.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:MsgBurn: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgMint: Could not create message: ' + e.message)
 			}
 		},
 		
@@ -143,11 +143,11 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		msgMint({ value }: msgMintParams): EncodeObject {
+		msgBurn({ value }: msgBurnParams): EncodeObject {
 			try {
-				return { typeUrl: "/iconlake.icon.MsgMint", value: MsgMint.fromPartial( value ) }  
+				return { typeUrl: "/iconlake.icon.MsgBurn", value: MsgBurn.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:MsgMint: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgBurn: Could not create message: ' + e.message)
 			}
 		},
 		
