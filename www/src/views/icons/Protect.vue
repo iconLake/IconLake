@@ -83,7 +83,7 @@ async function publish() {
     txHash: res.transactionHash
   })
   toast(t('blockchainConfirmationSuccessful'), 'success')
-  isPending.value = true
+  isPending.value = false
 }
 
 async function checkChainAccount() {
@@ -121,7 +121,18 @@ async function onBurnIcon() {
     if (!res) {
       return
     }
+    if (res?.code !== 0) {
+      console.error(res)
+      toast(t('burnFailed'), 'error')
+      isPending.value = false
+      return
+    }
+    await editIcon(projectId.value, id.value, {
+      txHash: '',
+    })
     toast(t('burnDone'))
+    iconInfo.txHash = undefined
+    isPending.value = false
   }
 }
 
