@@ -76909,6 +76909,8 @@ definitions:
       last_mint_time:
         type: string
         format: int64
+  iconlake.drop.MsgUpdateParamsResponse:
+    type: object
   iconlake.drop.Params:
     type: object
     properties:

@@ -21,6 +21,7 @@ type (
 
 		mintKeeper types.MintKeeper
 		bankKeeper types.BankKeeper
+		authority  string
 	}
 )
 
@@ -32,10 +33,15 @@ func NewKeeper(
 
 	mintKeeper types.MintKeeper,
 	bankKeeper types.BankKeeper,
+	authority string,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
+	}
+
+	if _, err := sdk.AccAddressFromBech32(authority); err != nil {
+		panic(fmt.Errorf("invalid drop authority address: %w", err))
 	}
 
 	return &Keeper{
@@ -46,7 +52,13 @@ func NewKeeper(
 
 		mintKeeper: mintKeeper,
 		bankKeeper: bankKeeper,
+
+		authority: authority,
 	}
+}
+
+func (k Keeper) GetAuthority() string {
+	return k.authority
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {

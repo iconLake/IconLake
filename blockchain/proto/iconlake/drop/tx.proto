@@ -4,15 +4,16 @@ package iconlake.drop;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
+import "iconlake/drop/params.proto";
 
 option go_package = "iconlake/x/drop/types";
 
 // Msg defines the Msg service.
 service Msg {
-  rpc Mint (MsgMint) returns (MsgMintResponse);
-  rpc Init (MsgInit) returns (MsgMintResponse);
+  rpc Mint         (MsgMint        ) returns (MsgMintResponse        );
+  rpc Init         (MsgInit        ) returns (MsgMintResponse        );
+  rpc UpdateParams (MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
-
 message MsgMint {
   string                   creator = 1;
   cosmos.base.v1beta1.Coin amount  = 2 [(gogoproto.nullable) = false];
@@ -27,3 +28,11 @@ message MsgInit {
   string creator = 1;
   string address = 2;
 }
+
+message MsgUpdateParams {
+  string authority = 1;
+  Params params    = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateParamsResponse {}
+

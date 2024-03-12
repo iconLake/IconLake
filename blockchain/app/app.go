@@ -552,6 +552,8 @@ func New(
 
 		app.MintKeeper,
 		app.BankKeeper,
+
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	dropModule := dropmodule.NewAppModule(appCodec, app.DropKeeper, app.AccountKeeper, app.BankKeeper)
 
