@@ -53,6 +53,7 @@ genesis:
         min_deposit:
         - amount: "10000000"
           denom: ulake
+        voting_period: "300s"
     mint:
       minter:
         inflation: "0.080000000000000000"
