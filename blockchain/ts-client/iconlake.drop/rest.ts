@@ -29,6 +29,8 @@ export interface DropMsgMintResponse {
   last_mint_time?: string;
 }
 
+export type DropMsgUpdateParamsResponse = object;
+
 /**
  * Params defines the parameters for the module.
  */

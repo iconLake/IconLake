@@ -9,12 +9,13 @@ import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
 import { MsgInit } from "./types/iconlake/drop/tx";
 import { MsgMint } from "./types/iconlake/drop/tx";
+import { MsgUpdateParams } from "./types/iconlake/drop/tx";
 
 import { Info as typeInfo} from "./types"
 import { InfoRaw as typeInfoRaw} from "./types"
 import { Params as typeParams} from "./types"
 
-export { MsgInit, MsgMint };
+export { MsgInit, MsgMint, MsgUpdateParams };
 
 type sendMsgInitParams = {
   value: MsgInit,
@@ -28,6 +29,12 @@ type sendMsgMintParams = {
   memo?: string
 };
 
+type sendMsgUpdateParamsParams = {
+  value: MsgUpdateParams,
+  fee?: StdFee,
+  memo?: string
+};
+
 
 type msgInitParams = {
   value: MsgInit,
@@ -35,6 +42,10 @@ type msgInitParams = {
 
 type msgMintParams = {
   value: MsgMint,
+};
+
+type msgUpdateParamsParams = {
+  value: MsgUpdateParams,
 };
 
 
@@ -95,6 +106,20 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+		async sendMsgUpdateParams({ value, fee, memo }: sendMsgUpdateParamsParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgUpdateParams: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgUpdateParams({ value: MsgUpdateParams.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgUpdateParams: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
 		
 		msgInit({ value }: msgInitParams): EncodeObject {
 			try {
@@ -109,6 +134,14 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 				return { typeUrl: "/iconlake.drop.MsgMint", value: MsgMint.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgMint: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgUpdateParams({ value }: msgUpdateParamsParams): EncodeObject {
+			try {
+				return { typeUrl: "/iconlake.drop.MsgUpdateParams", value: MsgUpdateParams.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgUpdateParams: Could not create message: ' + e.message)
 			}
 		},
 		

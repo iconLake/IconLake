@@ -2,6 +2,7 @@
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { Coin } from "../../cosmos/base/v1beta1/coin";
+import { Params } from "./params";
 
 export const protobufPackage = "iconlake.drop";
 
@@ -18,6 +19,14 @@ export interface MsgMintResponse {
 export interface MsgInit {
   creator: string;
   address: string;
+}
+
+export interface MsgUpdateParams {
+  authority: string;
+  params: Params | undefined;
+}
+
+export interface MsgUpdateParamsResponse {
 }
 
 function createBaseMsgMint(): MsgMint {
@@ -198,10 +207,110 @@ export const MsgInit = {
   },
 };
 
+function createBaseMsgUpdateParams(): MsgUpdateParams {
+  return { authority: "", params: undefined };
+}
+
+export const MsgUpdateParams = {
+  encode(message: MsgUpdateParams, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.authority !== "") {
+      writer.uint32(10).string(message.authority);
+    }
+    if (message.params !== undefined) {
+      Params.encode(message.params, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateParams {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateParams();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.authority = reader.string();
+          break;
+        case 2:
+          message.params = Params.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgUpdateParams {
+    return {
+      authority: isSet(object.authority) ? String(object.authority) : "",
+      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
+    };
+  },
+
+  toJSON(message: MsgUpdateParams): unknown {
+    const obj: any = {};
+    message.authority !== undefined && (obj.authority = message.authority);
+    message.params !== undefined && (obj.params = message.params ? Params.toJSON(message.params) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateParams>, I>>(object: I): MsgUpdateParams {
+    const message = createBaseMsgUpdateParams();
+    message.authority = object.authority ?? "";
+    message.params = (object.params !== undefined && object.params !== null)
+      ? Params.fromPartial(object.params)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseMsgUpdateParamsResponse(): MsgUpdateParamsResponse {
+  return {};
+}
+
+export const MsgUpdateParamsResponse = {
+  encode(_: MsgUpdateParamsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateParamsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateParamsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgUpdateParamsResponse {
+    return {};
+  },
+
+  toJSON(_: MsgUpdateParamsResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateParamsResponse>, I>>(_: I): MsgUpdateParamsResponse {
+    const message = createBaseMsgUpdateParamsResponse();
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   Mint(request: MsgMint): Promise<MsgMintResponse>;
   Init(request: MsgInit): Promise<MsgMintResponse>;
+  UpdateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -210,6 +319,7 @@ export class MsgClientImpl implements Msg {
     this.rpc = rpc;
     this.Mint = this.Mint.bind(this);
     this.Init = this.Init.bind(this);
+    this.UpdateParams = this.UpdateParams.bind(this);
   }
   Mint(request: MsgMint): Promise<MsgMintResponse> {
     const data = MsgMint.encode(request).finish();
@@ -221,6 +331,12 @@ export class MsgClientImpl implements Msg {
     const data = MsgInit.encode(request).finish();
     const promise = this.rpc.request("iconlake.drop.Msg", "Init", data);
     return promise.then((data) => MsgMintResponse.decode(new _m0.Reader(data)));
+  }
+
+  UpdateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse> {
+    const data = MsgUpdateParams.encode(request).finish();
+    const promise = this.rpc.request("iconlake.drop.Msg", "UpdateParams", data);
+    return promise.then((data) => MsgUpdateParamsResponse.decode(new _m0.Reader(data)));
   }
 }
 
