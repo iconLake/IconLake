@@ -18,7 +18,7 @@
   "license": "AGPLv3",
   "dependencies": {
     "@cosmjs/encoding": "^0.31.3",
-    "@iconlake/client": "^0.5.0",
+    "@iconlake/client": "^0.6.0",
     "axios": "^0.27.2",
     "crypto-js": "^4.1.1",
     "element-plus": "^2.3.7",
