@@ -36,7 +36,7 @@ export const client = new Client(env)
 
 let isKeplrDetected = false
 
-async function detectKeplr() {
+export async function detectKeplr() {
   if (isKeplrDetected) return
   if (!window.keplr) {
     alert('Please install keplr extension');
@@ -45,6 +45,7 @@ async function detectKeplr() {
     try {
       await window.keplr.enable(chainId)
     } catch (err) {
+      console.error(err)
       const chainInfo = await fetch(`/common/chain-${IS_PRODUCTION ? 'main' : 'test'}net.json`)
         .then(res => res.json())
       await window.keplr.experimentalSuggestChain(chainInfo)

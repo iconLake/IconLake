@@ -121,8 +121,10 @@ async function confirmAssets() {
 
 async function bindBlockchain() {
   isBinding.value = true
-  const catchCall = () => {
+  const catchCall = (err: Error) => {
+    console.error(err)
     isBinding.value = false
+    toast(err.message ?? t('fail'))
   }
   const msg = await getSignMsg().catch(catchCall)
   if (!msg) {
