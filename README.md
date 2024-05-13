@@ -22,7 +22,7 @@ iconLake是一个去中心化的项目，我们也在致力于用去中心化的
 无论你是开发工程师、设计师、产品经理、运营、运维、测试、用户…… iconLake需要你。
 
 <p align="center">
-  <img src="./manage/resources/wxgroup.jpg" alt="加入我们" width="300" />
+  <img src="./documents/resources/wxgroup.jpg" alt="加入我们" width="300" />
 </p>
 
 ## 贡献
