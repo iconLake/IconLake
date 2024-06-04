@@ -1,5 +1,5 @@
 {
-  "domain": "https://iconlake.com:8443",
+  "domain": "https://test.iconlake.com",
   "http": {
     "port": 8080
   },
@@ -39,8 +39,8 @@
   },
   "blockchain": {
     "public": {
-      "rpc": "https://rpc.testnet.iconlake.com",
-      "lcd": "https://lcd.testnet.iconlake.com",
+      "rpc": "https://node.test.iconlake.com:26657",
+      "lcd": "https://node.test.iconlake.com:1317",
       "backendService": {
         "initDROP": false
       }
