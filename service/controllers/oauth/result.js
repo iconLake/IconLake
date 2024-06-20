@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid'
 import { User } from '../../models/user.js'
 import { AVATAR_PATH, TOKEN_MAX_AGE } from '../../utils/const.js'
 import { download, save as saveFile } from '../../utils/file.js'
+import { checkLogin } from '../user/middleware.js'
 
 /**
  * 生成token
@@ -22,9 +23,12 @@ export function generateToken () {
  * @param {User} user
  */
 export function setToken (res, user) {
-  res.cookie('token', `${user.id}.${user.token}`, {
+  res.cookie('token', `${user.id}:${user.token}`, {
     maxAge: TOKEN_MAX_AGE,
-    httpOnly: true
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: true,
+    priority: 'high'
   })
 }
 
@@ -63,13 +67,19 @@ export async function success (userInfo, req, res) {
       user.tokenExpire = tokenExpire
       user[userInfo.from] = userInfo
     } else {
-      user = new User({
-        name: userInfo.name,
-        avatar: '',
-        token,
-        tokenExpire,
-        [userInfo.from]: userInfo
-      })
+      const currentLogin = await checkLogin(req)
+      if (currentLogin.user) {
+        user = currentLogin.user
+        user[userInfo.from] = userInfo
+      } else {
+        user = new User({
+          name: userInfo.name,
+          avatar: '',
+          token,
+          tokenExpire,
+          [userInfo.from]: userInfo
+        })
+      }
     }
     if (userInfo.avatar) {
       user.avatar = await saveAvatar(user.id, userInfo.avatar, user.avatar)
@@ -81,7 +91,14 @@ export async function success (userInfo, req, res) {
       referer = req.cookies.referer
       res.clearCookie('referer')
     }
-    res.redirect(referer)
+    if (userInfo.responseType === 'json') {
+      res.json({
+        redirect: referer,
+        userId: user._id
+      })
+    } else {
+      res.redirect(referer)
+    }
   } else {
     fail({
       error: 'userAuthError'

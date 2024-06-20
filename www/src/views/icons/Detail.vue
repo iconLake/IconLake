@@ -1,10 +1,15 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <script lang="ts" setup>
-import { computed, nextTick, reactive, ref, watchEffect } from 'vue'
-import { addTag, delTag, editGroup, editIcon, Group, Icon } from '../../apis/project'
+import { computed, nextTick, reactive, ref, watch, watchEffect } from 'vue'
+import { addTag, delTag, editGroup, editIcon, getIconPages, Group, Icon, uploadFile } from '../../apis/project'
 import IconComponent from '../../components/Icon.vue'
-import { copy, toast } from '../../utils'
+import { copy, readFileAsText, toast } from '../../utils'
 import { useI18n } from 'vue-i18n'
 import Select from '@/components/Select.vue'
+import { ElUpload } from 'element-plus'
+import type { UploadFile } from 'element-plus'
+import { UPLOAD_DIR } from '@/utils/const'
+import { MD5 } from 'crypto-js'
 
 const { t } = useI18n()
 
@@ -20,9 +25,13 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update', data: {
+    _id: string
     name?: string
     groupId?: string
     tags?: string[]
+    svg?: {
+      url: string
+    }
   }): void
   (e: 'addGroup', data: Group): void
 }>()
@@ -112,10 +121,13 @@ async function deleteTag(i: number, tag: string) {
 
 async function saveInfo(key: 'name' | 'code' | 'groupId') {
   const data: {
+    _id: string
     name?: string
     code?: string
     groupId?: string
-  } = {}
+  } = {
+    _id: props.info._id
+  }
   if (key === 'code' && props.icons.some(e => e.code === input.code)) {
     return toast(t('codeExists'))
   }
@@ -137,70 +149,188 @@ async function addGroup(name:string) {
   toast(t('saveDone'))
   emit('addGroup', g)
 }
+
+async function getPageCount() {
+  if (typeof props.info.analyse?.pageCount === 'number') {
+    return
+  }
+  const id = props.info._id
+  const data = await getIconPages(props.projectId, id)
+  if (id !== props.info._id) {
+    return
+  }
+  props.info.analyse = {
+    pageCount: data.pages.length
+  }
+}
+
+let idChangeTimer: NodeJS.Timeout
+watch(() => props.info._id, () => {
+  idChangeTimer && clearTimeout(idChangeTimer)
+  idChangeTimer = setTimeout(() => {
+    getPageCount()
+  }, 200)
+})
+
+async function handleUpload(file: UploadFile) {
+  if (!file.raw || !/^image\/svg\+xml$/i.test(file.raw?.type)) {
+    toast(t('pleaseSelectFile', {type: 'SVG'}))
+    return
+  }
+  if (!file.size || file.size / 1024 / 1024 > 5) {
+    toast(t('fileSizeLimitExceeded'))
+    return
+  }
+  const _id = props.info._id
+  const oldUrl = props.info.svg.url
+  const svgText = await readFileAsText(file.raw)
+  const hash = MD5(svgText).toString()
+  const fileName = `${hash}.svg`
+  if (new RegExp(`${fileName}$`).test(oldUrl)) {
+    toast(t('fileIsSameAsOld'))
+    return
+  }
+  const res = await uploadFile(props.projectId, fileName, svgText, UPLOAD_DIR.ICON).catch((err) => {
+    console.error(err)
+    toast.error(t('fileUploadFailed'))
+  })
+  if (!res) {
+    return
+  }
+  const data = {
+    _id,
+    svg: {
+      url: res.url
+    }
+  }
+  await editIcon(props.projectId, props.info._id, { svg: data.svg })
+  toast(t('saveDone'))
+  emit('update', data)
+}
 </script>
 
 <template>
-  <div class="detail" ref="root">
+  <div
+    ref="root"
+    class="detail"
+  >
+    <RouterLink
+      :to="`/icons/${projectId}/protect/${info._id}`"
+      class="copyright"
+      :class="info.txHash ? 'protected' : ''"
+      :title="t('ownershipProtection')"
+    >
+      <i class="iconfont icon-protect" />
+    </RouterLink>
     <div class="flex start">
       <div>
-        <IconComponent :info="info" />
-        <router-link :to="`/analyse/icon/${projectId}/${info._id}`" class="count-use c-main">{{t('pageRefererCount')}} {{info.analyse?.pageCount}}</router-link>
+        <ElUpload
+          :show-file-list="false"
+          :auto-upload="false"
+          accept="image/svg+xml"
+          class="upload-input"
+          @change="handleUpload"
+        >
+          <IconComponent :info="info" />
+          <div class="mask flex center">
+            <i class="iconfont icon-edit" />
+          </div>
+        </ElUpload>
+        <router-link
+          :to="`/analyse/icon/${projectId}/${info._id}`"
+          class="count-use c-main"
+        >
+          {{ t('pageReferer') }}{{ (typeof info.analyse?.pageCount === 'number') ? ` ${info.analyse.pageCount}` : '' }}
+        </router-link>
       </div>
       <div class="info grow">
         <div class="item">
-          <div class="label">{{t('name')}}</div>
+          <div class="label">
+            {{ t('name') }}
+          </div>
           <div class="value">
             <input
-              type="text"
-              v-model="input.name"
               ref="nameInputDom"
+              v-model="input.name"
+              type="text"
               @change="saveInfo('name')"
             >
-            <i class="iconfont icon-edit pointer" @click="focus('name')"></i>
+            <i
+              class="iconfont icon-edit pointer"
+              @click="focus('name')"
+            />
           </div>
         </div>
         <div class="item">
-          <div class="label">{{t('code')}}</div>
+          <div class="label">
+            {{ t('code') }}
+          </div>
           <div class="value">
             <input
-              type="text"
-              v-model="input.code"
               ref="codeInputDom"
+              v-model="input.code"
+              type="text"
               @change="saveInfo('code')"
             >
-            <i class="iconfont icon-edit pointer" @click="focus('code')"></i>
+            <i
+              class="iconfont icon-edit pointer"
+              @click="focus('code')"
+            />
           </div>
         </div>
         <div class="item info-group">
-          <div class="label">{{t('group')}}</div>
+          <div class="label">
+            {{ t('group') }}
+          </div>
           <div class="value">
             <Select
+              v-model="input.groupId"
               :options="groupOptions"
               :addable="true"
               :placeholder="t('ungrouped')"
-              v-model="input.groupId"
               @change="saveInfo('groupId')"
               @add="addGroup"
-            ></Select>
+            />
           </div>
         </div>
         <div class="item info-tag">
-          <div class="label">{{t('tag')}}</div>
-          <div class="value"></div>
-          <i class="iconfont icon-add-circle pointer" :class="{'icon-add-circle': !isTagAdding, 'icon-remove-circle': isTagAdding}" @click="showAddTag"></i>
+          <div class="label">
+            {{ t('tag') }}
+          </div>
+          <div class="value" />
+          <i
+            class="iconfont icon-add-circle pointer"
+            :class="{'icon-add-circle': !isTagAdding, 'icon-remove-circle': isTagAdding}"
+            @click="showAddTag"
+          />
         </div>
         <div class="tags flex start">
-          <div class="tag flex" v-for="tag, i in info.tags" :key="tag">
-            <span>{{tag}}</span>
-            <i class="iconfont icon-delete-fill pointer tag-del" @click="deleteTag(i, tag)"></i>
+          <div
+            v-for="tag, i in info.tags"
+            :key="tag"
+            class="tag flex"
+          >
+            <span>{{ tag }}</span>
+            <i
+              class="iconfont icon-delete-fill pointer tag-del"
+              @click="deleteTag(i, tag)"
+            />
           </div>
-          <div class="tag flex" v-if="isTagAdding">
-            <input type="text" maxlength="8" v-model="input.tag" ref="tagInputDom">
+          <div
+            v-if="isTagAdding"
+            class="tag flex"
+          >
+            <input
+              ref="tagInputDom"
+              v-model="input.tag"
+              type="text"
+              maxlength="8"
+            >
             <i
               class="iconfont icon-checked pointer tag-add"
               :class="{active: input.tag}"
               @click="saveTag"
-            ></i>
+            />
           </div>
         </div>
       </div>
@@ -223,10 +353,8 @@ async function addGroup(name:string) {
   transition: opacity 0.1s ease-in-out;
   opacity: v-bind(opacity);
   .icon {
-    :deep(.icon-svg) {
-      width: 13.375rem;
-      height: 13.375rem;
-    }
+    width: 13.375rem;
+    height: 13.375rem;
   }
   .count-use {
     display: block;
@@ -328,6 +456,52 @@ async function addGroup(name:string) {
       font-size: inherit;
       color: inherit;
       width: 10rem;
+    }
+  }
+}
+
+.copyright {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  color: var(--color-main);
+  opacity: 0.5;
+  cursor: pointer;
+  &.protected {
+    opacity: 1;
+  }
+  .iconfont {
+    font-size: 3rem;
+  }
+}
+
+.upload-input {
+  position: relative;
+  .mask {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1);
+    color: #fff;
+    font-size: 2.5rem;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    border-radius: 1.875rem;
+    .iconfont {
+      font-size: 2rem;
+    }
+  }
+  &:hover {
+    border-radius: 1.875rem;
+    overflow: hidden;
+    .mask {
+      transition: var(--transition);
+      transition-delay: 300ms;
+      opacity: 1;
     }
   }
 }

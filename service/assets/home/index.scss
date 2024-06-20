@@ -99,7 +99,7 @@ header {
       }
       h3 {
         position: absolute;
-        right: 45%;
+        left: 18%;
         top: 3rem;
         font-size: 2.25rem;
         font-weight: normal;
@@ -133,7 +133,11 @@ footer {
   right: 0;
   text-align: center;
   color: #fff;
-  a {
-    margin-left: 2rem;
+  gap: 1.5rem;
+  img {
+    height: 1.5rem;
+  }
+  .open-source {
+    gap: 1rem;
   }
 }

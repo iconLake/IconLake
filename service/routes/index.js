@@ -2,6 +2,8 @@ import express, { Router } from 'express'
 import { getLocale, setLocale } from '../utils/index.js'
 import { ROOT as root, RESOURCE_MAX_AGE as maxAge } from '../utils/const.js'
 import loginIndex from '../controllers/login/index.js'
+import { info as exhibitionIndexInfo } from '../controllers/exhibition/index.js'
+import { info as exhibitionNftInfo } from '../controllers/exhibition/nft.js'
 
 const router = Router()
 
@@ -14,6 +16,10 @@ router.get('/', (req, res) => {
 })
 
 router.get('/login', loginIndex)
+
+router.get('/exhibition/:projectId/:nftId', express.static('public', { maxAge }), exhibitionNftInfo)
+
+router.get('/exhibition/:projectId', express.static('public', { maxAge }), exhibitionIndexInfo)
 
 router.use('/', express.static('public', { maxAge }), (req, res, next) => {
   if (/^\/manage\//i.test(req.path)) {

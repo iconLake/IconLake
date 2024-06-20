@@ -2,6 +2,7 @@ import { Analyse } from '../../models/analyse.js'
 import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
 import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM, PERMANENT_FILE_EXPIRE } from '../../utils/const.js'
+import { completeURL, slimURL } from '../../utils/file.js'
 import { genCSS, genJS, genReact, genVUE } from './icon/gen/index.js'
 
 /**
@@ -26,6 +27,9 @@ export async function info (req, res) {
     return
   }
   const info = project.icons.id(req.query._id)
+  if (info && info.svg && info.svg.url) {
+    info.svg.url = completeURL(info.svg.url)
+  }
   res.json({
     info
   })
@@ -47,6 +51,9 @@ export async function add (req, res) {
   const startIndex = project.iconIndex
   icons.forEach((e, i) => {
     e.unicode = (startIndex + i).toString(16)
+    if (e.svg && e.svg.url) {
+      e.svg.url = slimURL(e.svg.url)
+    }
   })
   await Project.updateOne({
     _id
@@ -129,17 +136,27 @@ export async function edit (req, res) {
   }
   let isEmpty = true
   const $set = {}
-  if (req.body.name) {
+  if (typeof req.body.name === 'string') {
     $set['icons.$.name'] = req.body.name
     isEmpty = false
   }
-  if (req.body.code) {
+  if (typeof req.body.code === 'string') {
     $set['icons.$.code'] = req.body.code
     $set.iconUpdateTime = new Date()
     isEmpty = false
   }
   if (typeof req.body.groupId === 'string') {
     $set['icons.$.groupId'] = req.body.groupId ? req.body.groupId : null
+    isEmpty = false
+  }
+  if (typeof req.body.txHash === 'string') {
+    $set['icons.$.txHash'] = req.body.txHash
+    isEmpty = false
+  }
+  if (typeof req.body.svg?.url === 'string') {
+    $set['icons.$.svg.url'] = slimURL(req.body.svg.url)
+    $set.iconUpdateTime = new Date()
+    $set['icons.$.txHash'] = ''
     isEmpty = false
   }
   if (isEmpty) {
@@ -247,7 +264,7 @@ export async function pages (req, res) {
     pages = iconAnalyse ? iconAnalyse.pages : []
   }
   res.json({
-    updateTime: analyse.updateTime,
+    updateTime: analyse?.updateTime,
     pages
   })
 }

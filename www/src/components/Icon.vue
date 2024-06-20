@@ -8,19 +8,22 @@ const props = defineProps<{
 
 <template>
   <div class="icon">
-    <svg
+    <img
+      v-if="info.svg && info.svg.url"
       class="icon-svg"
-      version="1.1"
-      xmlns="http://www.w3.org/2000/svg"
-      :viewBox="props.info.svg?.viewBox"
-      v-html="props.info.svg?.path"></svg>
+      :src="info.svg?.url"
+    >
   </div>
 </template>
 
 <style lang="scss" scoped>
-.icon-svg {
+.icon {
+  display: inline-block;
   width: 2rem;
   height: 2rem;
-  fill: currentColor;
+}
+.icon-svg {
+  width: 100%;
+  height: 100%;
 }
 </style>

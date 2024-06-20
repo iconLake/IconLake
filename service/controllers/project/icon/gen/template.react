@@ -1,39 +1,55 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import { useEffect, useRef } from "react";
 
-function IconSvg({ name, width = '18px', height = '18px', pure, ...args }) {
-  const data = ['__DATA__'];
-  const iconMap = {};
-  data.forEach(e => {
+function IconSvg({
+  name,
+  width = "18px",
+  height = "18px",
+  pure = false,
+  ...args
+}: {
+  name: string;
+  width?: string;
+  height?: string;
+  pure?: boolean;
+  [key: string]: unknown;
+}) {
+  const rootDom = useRef<null | HTMLSpanElement>(null);
+  const data = ["__DATA__"];
+  const iconMap: {
+    [key: string]: {
+      content: string;
+    };
+  } = {};
+  data.forEach((e) => {
     iconMap[e[0]] = {
-      viewBox: e[1],
-      path: e[2],
+      content: e[1],
     };
   });
 
-  const getPath = (name, pure) => ({
-    __html: pure ? iconMap[name].path.replace(/fill=".*?"/ig, '').replace(/stroke=".*?"/ig, '') : iconMap[name].path
+  const getContent = (name: string, pure: boolean) => ({
+    __html: pure
+      ? iconMap[name].content
+          .replace(/fill=".*?"/gi, "")
+          .replace(/stroke=".*?"/gi, "")
+      : iconMap[name].content,
   });
 
+  useEffect(() => {
+    if (rootDom.current) {
+      const svgDom = rootDom.current.querySelector("svg");
+      svgDom?.setAttribute("width", width);
+      svgDom?.setAttribute("height", height);
+    }
+  }, [width, height, name]);
+
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      version="1.1"
+    <span
       data-icon-version="__HASH__"
-      width={width}
-      height={height}
-      viewBox={iconMap[name].viewBox}
-      dangerouslySetInnerHTML={getPath(name, pure)}
+      dangerouslySetInnerHTML={getContent(name, pure)}
+      ref={rootDom}
       {...args}
     />
   );
 }
-
-IconSvg.propTypes = {
-  name: PropTypes.string.isRequired,
-  width: PropTypes.string,
-  height: PropTypes.string,
-  pure: PropTypes.bool,
-};
 
 export default IconSvg;

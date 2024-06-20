@@ -1,10 +1,11 @@
 import { includeKeys } from 'filter-obj'
 import { getConfig } from '../../config/index.js'
-import { Analyse } from '../../models/analyse.js'
 import { Project } from '../../models/project.js'
-import { PERMAMENT_FILES_MAX_NUM } from '../../utils/const.js'
+import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM } from '../../utils/const.js'
 import { isActive as isCosActive } from '../../utils/cos.js'
 import { deleteProjectDir } from './icon/gen/index.js'
+import { middleware as userMiddleware, checkLogin } from '../user/middleware.js'
+import { completeURL, slimURL } from '../../utils/file.js'
 
 const config = getConfig()
 
@@ -15,35 +16,54 @@ const config = getConfig()
 export async function info (req, res) {
   if (!req.params.id) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
-  const fields = (typeof req.query.fields === 'string' && req.query.fields.length > 0) ? req.query.fields : '_id name desc'
+  const fields = `${
+    (typeof req.query.fields === 'string' && req.query.fields.length > 0)
+    ? req.query.fields
+    : '_id name desc'
+  } isPublic members`
   const project = await Project.findOne({
-    _id: req.params.id,
-    members: {
-      $elemMatch: {
-        userId: req.user._id
-      }
-    }
+    _id: req.params.id
   }, fields)
   if (project) {
+    if (project.isPublic) {
+      const { user } = await checkLogin(req)
+      if (!project.invite.$isEmpty() && (!user || !project.members.some(e => e.userId.equals(user._id)))) {
+        res.json({
+          error: ERROR_CODE.PERMISSION_DENIED
+        })
+        return
+      }
+    } else {
+      await userMiddleware(req, res, () => {})
+      const p = await Project.findOne({
+        _id: req.params.id,
+        members: {
+          $elemMatch: {
+            userId: req.user._id
+          }
+        }
+      }, '_id')
+      if (!p) {
+        res.json({
+          error: ERROR_CODE.PERMISSION_DENIED
+        })
+        return
+      }
+    }
     const result = project.toJSON()
     if (result.icons && result.icons.length > 0) {
-      const analyse = await Analyse.findById(req.params.id)
-      if (analyse && analyse.icons && analyse.icons.length > 0) {
-        result.icons.forEach(e => {
-          if (!e._id) {
-            return
-          }
-          if (!e.analyse) {
-            e.analyse = {}
-          }
-          const anaIcon = analyse.icons.id(e._id)
-          e.analyse.pageCount = anaIcon ? anaIcon.pages.length : 0
-        })
-      }
+      result.icons.forEach(e => {
+        if (!e._id) {
+          return
+        }
+        if (e.svg && e.svg.url) {
+          e.svg.url = completeURL(e.svg.url)
+        }
+      })
     }
     if (/files/.test(fields) && !result.files) {
       result.files = {}
@@ -52,10 +72,13 @@ export async function info (req, res) {
       result.files.domain = isCosActive ? config.cos.domain : config.domain
       result.files.permamentMaxNum = PERMAMENT_FILES_MAX_NUM
     }
+    if ('cover' in result) {
+      result.cover = completeURL(result.cover)
+    }
     res.json(result)
   } else {
     res.json({
-      error: 'projectNotExist'
+      error: ERROR_CODE.NOT_EXIST
     })
   }
 }
@@ -65,9 +88,12 @@ export async function info (req, res) {
  */
 export async function edit (req, res) {
   let _id = req.body._id
-  const data = includeKeys(req.body, ['name', 'desc', 'class', 'prefix'])
+  const data = includeKeys(req.body, ['name', 'desc', 'class', 'prefix', 'cover', 'isPublic'])
   if (typeof _id === 'string' && _id.length > 0) {
-    await Project.updateOne({
+    if ('cover' in data) {
+      data.cover = slimURL(data.cover)
+    }
+    const result = await Project.updateOne({
       _id,
       members: {
         $elemMatch: {
@@ -78,6 +104,12 @@ export async function edit (req, res) {
     }, {
       $set: data
     })
+    if (result.matchedCount === 0) {
+      res.json({
+        error: ERROR_CODE.PERMISSION_DENIED
+      })
+      return
+    }
   } else {
     data.userId = req.user._id
     data.createTime = new Date()
@@ -101,7 +133,7 @@ export async function edit (req, res) {
 export async function del (req, res) {
   if (typeof req.body._id !== 'string' || typeof req.body.name !== 'string' || !req.body._id || !req.body.name) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -115,7 +147,13 @@ export async function del (req, res) {
       }
     }
   })
-  res.json(result.deletedCount === 1 ? {} : { error: 'delFail' })
+  if (result.matchedCount === 0) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
+  res.json(result.deletedCount === 1 ? {} : { error: ERROR_CODE.FAIL })
   deleteProjectDir(req.body._id)
 }
 
@@ -127,7 +165,7 @@ export async function del (req, res) {
 export async function clean (req, res) {
   if (typeof req.body._id !== 'string' || typeof req.body.name !== 'string' || !req.body._id || !req.body.name) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -143,10 +181,15 @@ export async function clean (req, res) {
   }, {
     $set: {
       icons: [],
-      sources: [],
       groups: []
     }
   })
-  res.json(result.modifiedCount === 1 ? {} : { error: 'cleanFail' })
+  if (result.matchedCount === 0) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
+  res.json(result.modifiedCount === 1 ? {} : { error: ERROR_CODE.FAIL })
   deleteProjectDir(req.body._id)
 }

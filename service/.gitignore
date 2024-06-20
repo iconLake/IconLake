@@ -3,5 +3,13 @@ node_modules
 *.map
 public/src
 public/avatar
+public/icon
 public/tmp
+public/manage
+public/admin
+public/common
+public/exhibition
+public/home
+public/login
+public/monitor
 .pnpm-store

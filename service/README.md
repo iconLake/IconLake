@@ -1,36 +1,49 @@
 # iconLake Service
 
 ## 环境要求
+
 1. nodejs >= 16
 2. pnpm >= 7
 
 ## 开发
 
 ### 配置
+
 修改`config/development.json`文件里的配置项。
+
 ### 安装
-```
+
+```shell
 pnpm i
 ```
+
 ### 启动
-```
+
+```shell
 pnpm run dev
 ```
 
 ## 部署
 
 ### 配置
+
 修改`config/production.json`文件里的配置项。
+
 ### 安装
-```
+
+```shell
 pnpm i -P
 ```
+
 ### 测试环境启动
-```
+
+```shell
 pnpm run test
 ```
+
 ### 生产环境启动
-```
+
+```shell
 pnpm run pro
 ```
 

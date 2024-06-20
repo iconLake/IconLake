@@ -10,7 +10,7 @@
     "cert": ""
   },
   "mongodb": {
-    "uri": "mongodb://user-iconlake:ABCDEFGH12345678_1@mongo:27017/iconlake?retryWrites=true"
+    "uri": "mongodb://user:password@127.0.0.1:27017/iconlake?retryWrites=true"
   },
   "gitee": {
     "clientId": "",
@@ -21,7 +21,7 @@
     "clientSecret": ""
   },
   "center": {
-    "domain": "http://center:9009"
+    "domain": "http://127.0.0.1:9009"
   },
   "cos": {
     "domain": "https://cdn.iconlake.com",
@@ -34,6 +34,22 @@
   "login": {
     "code": true,
     "gitee": false,
-    "github": false
+    "github": false,
+    "keplr": true
+  },
+  "blockchain": {
+    "public": {
+      "rpc": "https://node.test.iconlake.com:26657",
+      "lcd": "https://node.test.iconlake.com:1317",
+      "backendService": {
+        "initDROP": false
+      }
+    },
+    "private": {
+      "mnemonic": "icon lake ensure you own what you bring into exist any tiny"
+    }
+  },
+  "admin": {
+    "userIds": []
   }
 }

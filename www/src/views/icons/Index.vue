@@ -3,7 +3,7 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
-import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon, editGroup } from '../../apis/project'
+import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon, editGroup, Member } from '../../apis/project'
 import IconVue from '../../components/Icon.vue'
 import { confirm, toast } from '../../utils'
 import Detail from './Detail.vue'
@@ -11,10 +11,18 @@ import HeaderVue from '../../components/Header.vue'
 import UserVue from '../../components/User.vue'
 import { useI18n } from 'vue-i18n'
 import Select from '@/components/Select.vue'
+import * as user from '@/apis/user'
+import { ElTooltip } from 'element-plus'
 
 const { t } = useI18n()
 
 const $route = useRoute()
+
+const userInfo = ref({} as user.UserInfo)
+
+user.info().then(u => {
+  userInfo.value = u
+})
 
 const data = reactive({
   _id: $route.params.id as string,
@@ -32,7 +40,9 @@ const data = reactive({
   isBatching: false,
   selectedIcons: new Map<string, Icon>(),
   keyword: '',
-  batchGroupId: ''
+  batchGroupId: '',
+  members: [] as Member[],
+  isPublic: false
 })
 
 const batchGroupFormDom = ref<Element>()
@@ -42,9 +52,18 @@ const groupOptions = computed(() => [
   ...data.groups.map(e => ({ label: e.name, value: e._id }))
 ])
 
+const editable = computed(() => {
+  if (data.members.length === 0) {
+    return false
+  }
+  return data.members.some(e => e.userId === userInfo.value._id)
+})
+
 async function getIcons () {
   const res = await getProjectInfo(data._id, 'name icons groups')
   data.name = res.name
+  data.members = res.members
+  data.isPublic = res.isPublic
   if (res.groups instanceof Array) {
     data.groups = res.groups.sort((a, b) => b.num - a.num)
     res.groups.forEach(e => {
@@ -226,11 +245,19 @@ async function batchGroup() {
 }
 
 function updateIcon(eData: {
+  _id: string
   name?: string
   groupId?: string
   tags?: string[]
+  svg?: {
+    url: string
+  }
 }) {
-  Object.assign(data.detail.info, eData)
+  const icon = data.icons.find(e => e._id === eData._id)
+  if (!icon) {
+    return
+  }
+  Object.assign(icon, eData)
   if ('groupId' in eData) {
     getList()
   }
@@ -274,71 +301,143 @@ watch(() => data.keyword, () => {
 
 <template>
   <HeaderVue back="/home">
-    <div class="name">{{data.name}}</div>
-    <router-link :to="`/project/${data._id}/setting`" class="setting flex">
-      <span>{{t('setting')}}</span>
-      <i class="iconfont icon-setting-plain"></i>
+    <div class="name">
+      {{ data.name }}
+    </div>
+    <ElTooltip
+      effect="light"
+      :content="data.isPublic ? t('publicAccess') : t('privateAccess')"
+      placement="right"
+    >
+      <span
+        :class="`iconfont icon-${data.isPublic ? '' : 'un'}visible visibility`"
+      />
+    </ElTooltip>
+    <router-link
+      v-if="editable"
+      :to="`/project/${data._id}/setting`"
+      class="setting flex"
+    >
+      <i
+        class="iconfont icon-setting-plain"
+        :title="t('setting')"
+      />
     </router-link>
+    <a
+      class="iconfont icon-exhibition exhibition"
+      :href="`/exhibition/${data._id}`"
+      target="_blank"
+      :title="t('exhibition')"
+    />
   </HeaderVue>
   <UserVue />
-  <div class="main" ref="mainDom">
+  <div
+    ref="mainDom"
+    class="main"
+  >
     <div class="search flex center">
       <div class="input">
-        <i class="iconfont icon-search"></i>
-        <input type="text" :placeholder="t('search')" v-model="data.keyword">
+        <i class="iconfont icon-search" />
+        <input
+          v-model="data.keyword"
+          type="text"
+          :placeholder="t('search')"
+        >
       </div>
     </div>
     <div class="operate flex">
-      <router-link :to="`/icons/${data._id}/create`" class="operate-item flex">
-        <span>{{t('createIcons')}}</span>
-        <i class="iconfont icon-plus"></i>
+      <router-link
+        v-if="editable"
+        :to="`/icons/${data._id}/create`"
+        class="operate-item flex"
+      >
+        <span>{{ t('createIcons') }}</span>
+        <i class="iconfont icon-plus" />
       </router-link>
-      <div class="operate-item flex" @click="data.isBatching=!data.isBatching">
-        <span>{{t(data.isBatching ? 'cancelBatchOperation' : 'batchOperation')}}</span>
-        <i class="iconfont icon-batch"></i>
+      <div
+        class="operate-item flex"
+        @click="data.isBatching=!data.isBatching"
+      >
+        <span>{{ t(data.isBatching ? 'cancelBatchOperation' : 'batchOperation') }}</span>
+        <i class="iconfont icon-batch" />
       </div>
-      <router-link :to="`/icons/${data._id}/use`" class="operate-item flex">
-        <span>{{t('useCode')}}</span>
-        <i class="iconfont icon-code"></i>
+      <router-link
+        :to="`/icons/${data._id}/use`"
+        class="operate-item flex"
+      >
+        <span>{{ t('useCode') }}</span>
+        <i class="iconfont icon-code" />
       </router-link>
     </div>
-    <div class="operate-batch" v-if="data.isBatching">
-      <button class="btn" @click="batchDelete" :disabled="data.selectedIcons.size===0">
-        <span>{{t('batchDelete')}}</span>
-        <i class="iconfont icon-delete"></i>
+    <div
+      v-if="data.isBatching"
+      class="operate-batch"
+    >
+      <button
+        v-if="editable"
+        class="btn"
+        :disabled="data.selectedIcons.size===0"
+        @click="batchDelete"
+      >
+        <span>{{ t('batchDelete') }}</span>
+        <i class="iconfont icon-delete" />
       </button>
-      <button class="btn" @click="batchGroup" :disabled="data.selectedIcons.size===0">
-        <span>{{t('batchGroup')}}</span>
-        <i class="iconfont icon-group-open"></i>
+      <button
+        v-if="editable"
+        class="btn"
+        :disabled="data.selectedIcons.size===0"
+        @click="batchGroup"
+      >
+        <span>{{ t('batchGroup') }}</span>
+        <i class="iconfont icon-group-open" />
       </button>
-      <button class="btn" @click="batchDownload" :disabled="data.selectedIcons.size===0">
-        <span>{{t('batchDownload')}}</span>
-        <i class="iconfont icon-download"></i>
+      <button
+        class="btn"
+        :disabled="data.selectedIcons.size===0"
+        @click="batchDownload"
+      >
+        <span>{{ t('batchDownload') }}</span>
+        <i class="iconfont icon-download" />
       </button>
     </div>
-    <div class="list" ref="iconListDom">
-      <div class="group" v-for="item in data.list" :key="item._id">
+    <div
+      ref="iconListDom"
+      class="list"
+    >
+      <div
+        v-for="item in data.list"
+        :key="item._id"
+        class="group"
+      >
         <div
           class="group-title flex"
           :class="{pointer: data.isBatching}"
           @click="selectGroup(item)"
         >
-          <span>{{item.name}}</span>
-          <span v-if="data.isBatching" class="iconfont icon-select-all" :title="t('selectAll')"></span>
+          <span>{{ item.name }}</span>
+          <span
+            v-if="data.isBatching"
+            class="iconfont icon-select-all"
+            :title="t('selectAll')"
+          />
         </div>
         <div class="icons">
           <div
-            class="icon-item t-center"
-            :class="{selectable:data.isBatching, selected:data.selectedIcons.has(icon._id)}"
             v-for="icon in item.icons"
             :key="icon._id"
+            class="icon-item t-center"
+            :class="{selectable:data.isBatching, selected:data.selectedIcons.has(icon._id)}"
             @mouseenter="showDetail(icon, $event)"
             @mouseleave="hideDetail()"
             @click="selectIcon(icon, $event)"
           >
-            <IconVue :info="icon"/>
-            <div class="name">{{icon.name}}</div>
-            <div class="code">{{icon.code}}</div>
+            <IconVue :info="icon" />
+            <div class="name">
+              {{ icon.name }}
+            </div>
+            <div class="code">
+              {{ icon.code }}
+            </div>
           </div>
         </div>
       </div>
@@ -359,16 +458,21 @@ watch(() => data.keyword, () => {
     </div>
   </div>
   <!-- 批量分组 -->
-  <div class="group-select" ref="batchGroupFormDom">
-    <div class="label">{{t('batchSetGroup', { n: data.selectedIcons.size })}}</div>
+  <div
+    ref="batchGroupFormDom"
+    class="group-select"
+  >
+    <div class="label">
+      {{ t('batchSetGroup', { n: data.selectedIcons.size }) }}
+    </div>
     <Select
+      v-model="data.batchGroupId"
       :options="groupOptions"
       :addable="true"
       :placeholder="t('ungrouped')"
       size="default"
-      v-model="data.batchGroupId"
       @add="saveGroup"
-    ></Select>
+    />
   </div>
 </template>
 
@@ -379,25 +483,33 @@ watch(() => data.keyword, () => {
   .name {
     margin-left: 2.2rem;
   }
-  .setting {
-    color: #fff;
-    height: 3rem;
-    background-color: #cfd5e6;
-	  border-radius: 1.5rem;
-    padding: 0 1.5rem;
+  .exhibition {
+    font-size: 3rem;
     margin-left: 1.3rem;
     &:hover {
-      background: $color-main;
+      color: var(--color-main);
+    }
+  }
+  .visibility {
+    font-size: 2rem;
+    margin-left: 1rem;
+    color: #4d4d4d;
+  }
+  .setting {
+    margin-left: 1.5rem;
+    color: #4d4d4d;
+    &:hover {
+      color: var(--color-main);
     }
     .iconfont {
-      font-size: 1.5rem;
-      margin-left: 0.3rem;
+      font-size: 2.5rem;
     }
   }
 }
 .main {
   margin: 0 auto;
   width: 90%;
+  padding-bottom: 25rem;
 }
 .search {
   .input {
@@ -474,7 +586,7 @@ watch(() => data.keyword, () => {
       padding: 0 0.5rem;
     }
   }
-  :deep(.icon-svg) {
+  .icon {
     width: 3.8rem;
     height: 3.8rem;
     margin-bottom: 2.5rem;

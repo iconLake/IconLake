@@ -53,6 +53,22 @@ export const configs = {
  *      code: boolean\
  *      gitee: boolean\
  *      github: boolean\
+ *      keplr: boolean\
+ *    }\
+ *    blockchain: {\
+ *      public: {\
+ *        rpc: string\
+ *        lcd: string\
+ *        backendService: {\
+ *          initDROP: boolean\
+ *        }\
+ *      }\
+ *      private: {\
+ *        mnemonic: string\
+ *      }\
+ *    }\
+ *    admin: {\
+ *      userIds: string[]\
  *    }\
  *  }}
  */

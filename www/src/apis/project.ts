@@ -10,8 +10,15 @@ export interface BaseIcon {
   name: string
   code: string
   svg: {
-    viewBox: string
-    path: string
+    url: string
+    /**
+     * @deprecated replace with 'url'
+     */
+    viewBox?: string
+    /**
+     * @deprecated replace with 'url'
+     */
+    path?: string
   }
 }
 
@@ -21,7 +28,8 @@ export interface Icon extends BaseIcon {
   tags: string[]
   analyse?: {
     pageCount: number
-  }
+  },
+  txHash?: string
 }
 
 export interface IconPage {
@@ -72,12 +80,18 @@ export interface Files {
   js?: FileInfo[]
 }
 
+export interface Member {
+  isAdmin: boolean
+  userId: string
+}
+
 export interface Project {
   _id: string
   userId: string
   name: string
   files: Files
   desc: string
+  cover: string
   prefix: string
   class: string
   icons: Icon[]
@@ -85,6 +99,8 @@ export interface Project {
   groups: Group[]
   monitor: Monitor
   invite?: Invite
+  isPublic: boolean
+  members: [Member]
 }
 
 export interface Res {
@@ -99,9 +115,12 @@ export interface ListRes {
   list: Project[]
 }
 
-export function list() {
+export function list(fields?: string) {
   return <Promise<ListRes>>request({
     url: '/list',
+    params: {
+      fields
+    },
     baseURL
   })
 }
@@ -287,6 +306,10 @@ export function delIcon(projectId: string, _ids: string[]) {
 export function editIcon(projectId: string, _id: string, info: {
   name?: string
   groupId?: string
+  txHash?: string
+  svg?: {
+    url: string
+  }
 }) {
   return <Promise<Res>>request({
     method: 'POST',
@@ -377,5 +400,22 @@ export function setExpire(projectId: string, fileId: string, fileType: 'css'|'js
       fileType,
       expire
     },
+  })
+}
+
+export function uploadFile(projectId: string, _id: string, data: string | ArrayBuffer, dir?: string) {
+  return <Promise<{key: string, url: string}>>request({
+    method: 'POST',
+    url: '/file/upload',
+    baseURL,
+    headers: {
+      'Content-Type': typeof data === 'string' ? 'text/plain; charset=utf-8' : 'application/octet-stream'
+    },
+    params: {
+      projectId,
+      _id,
+      dir,
+    },
+    data
   })
 }

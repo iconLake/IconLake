@@ -1,0 +1,79 @@
+version: 1
+accounts:
+- name: iconlake
+  coins:
+  - 100000udrop
+  - 0ulake
+  mnemonic: icon lake ensure you own what you bring into exist any tiny
+- name: alice
+  coins:
+  - 200000000000000ulake
+  - 0udrop
+  mnemonic: maple cage treat zoo jaguar check lawn party boil orchard earn arrow immense win puppy mandate lion sport large total quit price found drip
+- name: bob
+  coins:
+  - 100000000000000ulake
+  - 1000000udrop
+  mnemonic: toddler strategy valid clown sure fame jelly rescue jewel empower among error merit uncle hour luggage only exotic coyote hedgehog mountain armed desert meat
+- name: faucet
+  coins:
+  - 100000000000000ulake
+  - 5000000000000udrop
+faucet:
+  name: faucet
+  coins:
+  - 1000000ulake
+  - 50000udrop
+  coins_max:
+  - 10000000ulake
+  - 50000udrop
+  rate_limit_window: 86400s
+client:
+  typescript:
+    path: ts-client
+  composables:
+    path: vue/src/composables
+  openapi:
+    path: docs/static/openapi.yml
+genesis:
+  chain_id: iconlake-testnet-1
+  app_state:
+    bank:
+      send_enabled:
+        - denom: udrop
+          enabled: false
+        - denom: ulake
+          enabled: true
+    crisis:
+      constant_fee:
+        amount: "1000"
+        denom: ulake
+    gov:
+      params:
+        min_deposit:
+        - amount: "10000000"
+          denom: ulake
+        voting_period: "300s"
+    mint:
+      minter:
+        inflation: "0.080000000000000000"
+      params:
+        goal_bonded: "0.670000000000000000"
+        inflation_max: "0.150000000000000000"
+        inflation_min: "0.060000000000000000"
+        inflation_rate_change: "0.090000000000000000"
+        mint_denom: ulake
+    staking:
+      params:
+        bond_denom: ulake
+    distribution:
+      params:
+        withdraw_addr_enabled: false
+    drop:
+      params:
+        init_amount: "80000"
+        min_amount_per_mint: "20000"
+        max_amount_per_mint: "880000"
+validators:
+- name: alice
+  bonded: 100000000000000ulake

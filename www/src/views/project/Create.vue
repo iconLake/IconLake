@@ -31,36 +31,69 @@ async function create () {
 </script>
 
 <template>
-  <HeaderVue back="/home" :white="true" />
+  <HeaderVue
+    back="/home"
+    :white="true"
+  />
   <div class="main flex stretch">
     <!-- form -->
     <div class="project bg-main grow flex center">
-      <div class="slogan-left">Make</div>
-      <form @submit.prevent="create" class="fm">
-        <h1>{{t('newProject')}}</h1>
-        <h2>{{t('fillProjectNameAndDescription')}}</h2>
+      <div class="slogan-left">
+        YOU CREATE,
+      </div>
+      <form
+        class="fm"
+        @submit.prevent="create"
+      >
+        <h1>{{ t('newProject') }}</h1>
+        <h2>{{ t('fillProjectNameAndDescription') }}</h2>
         <div class="item">
-          <label>{{t('projectName')}}</label>
+          <label>{{ t('projectName') }}</label>
           <div class="input flex">
-            <i class="iconfont icon-name"></i>
-            <input class="grow" autocomplete="off" autofocus maxlength="15" type="text" name="name" v-model="fmData.name">
+            <i class="iconfont icon-name" />
+            <input
+              v-model="fmData.name"
+              class="grow"
+              autocomplete="off"
+              autofocus
+              maxlength="15"
+              type="text"
+              name="name"
+            >
           </div>
         </div>
         <div class="item">
-          <label>{{t('projectDescription')}}</label>
+          <label>{{ t('projectDescription') }}</label>
           <div class="input textarea-input flex start">
-            <i class="iconfont icon-desc"></i>
-            <textarea class="grow" autocomplete="off" maxlength="300" v-model="fmData.desc" name="desc"></textarea>
+            <i class="iconfont icon-desc" />
+            <textarea
+              v-model="fmData.desc"
+              class="grow"
+              autocomplete="off"
+              maxlength="300"
+              name="desc"
+            />
           </div>
         </div>
-        <button class="bg-danger" type="submit" :disabled="!isChecked" >{{t('createNow')}}</button>
+        <button
+          class="bg-danger"
+          type="submit"
+          :disabled="!isChecked"
+        >
+          {{ t('createNow') }}
+        </button>
       </form>
     </div>
     <!-- illus -->
     <div class="illus flex">
-      <div class="slogan-right">icon in control</div>
+      <div class="slogan-right">
+        YOU OWN!
+      </div>
       <div class="img">
-        <img :src="'/imgs/illus-2.png'" alt="iconLake">
+        <img
+          :src="'/imgs/illus-2.png'"
+          alt="iconLake"
+        >
       </div>
     </div>
   </div>
@@ -91,6 +124,7 @@ async function create () {
   position: relative;
   .fm {
     width: 36rem;
+    padding-top: 10rem;
     h1 {
       font-size: 2.25rem;
       font-weight: bold;

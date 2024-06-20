@@ -86,19 +86,56 @@ const onArrowClick = () => {
 </script>
 
 <template>
-  <div class="select" :class="{active: isActive, 'size-default': size === 'default'}">
+  <div
+    class="select"
+    :class="{active: isActive, 'size-default': size === 'default'}"
+  >
     <div class="value">
-      <input ref="valueInputDom" class="text pointer flex start" :value="text" type="text" readonly @focus="onFocus" @blur="onBlur">
-      <i class="iconfont icon-back flex pointer" @click="onArrowClick"></i>
+      <input
+        ref="valueInputDom"
+        class="text pointer flex start"
+        :value="text"
+        type="text"
+        readonly
+        @focus="onFocus"
+        @blur="onBlur"
+      >
+      <i
+        class="iconfont icon-back flex pointer"
+        @click="onArrowClick"
+      />
     </div>
     <div class="dropdown">
-      <div v-for="item in props.options" :key="item.value" class="option pointer" @click="onSelect(item)">{{item.label || item.value}}</div>
-      <div v-if="addable && !isAdding" class="add pointer" @click="onAdd">
-        <i class="iconfont icon-plus"></i>
+      <div
+        v-for="item in props.options"
+        :key="item.value"
+        class="option pointer"
+        @click="onSelect(item)"
+      >
+        {{ item.label || item.value }}
       </div>
-      <div class="add-form" v-if="isAdding">
-        <input ref="addInputDom" v-model="addValue" type="text" @submit="onAddSubmit">
-        <i class="iconfont icon-checked flex pointer" :class="{active: !!addValue}" @click="onAddSubmit"></i>
+      <div
+        v-if="addable && !isAdding"
+        class="add pointer"
+        @click="onAdd"
+      >
+        <i class="iconfont icon-plus" />
+      </div>
+      <div
+        v-if="isAdding"
+        class="add-form"
+      >
+        <input
+          ref="addInputDom"
+          v-model="addValue"
+          type="text"
+          @submit="onAddSubmit"
+        >
+        <i
+          class="iconfont icon-checked flex pointer"
+          :class="{active: !!addValue}"
+          @click="onAddSubmit"
+        />
       </div>
     </div>
   </div>

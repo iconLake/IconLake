@@ -4,7 +4,7 @@ import { generateToken, setToken } from '../oauth/result.js'
 
 const refreshTokenMaxAge = TOKEN_MAX_AGE * 0.1
 
-export default async function middleware (req, res, next) {
+export async function middleware (req, res, next) {
   const result = await checkLogin(req)
   if (result.error) {
     res.json(result)
@@ -19,6 +19,8 @@ export default async function middleware (req, res, next) {
   next()
 }
 
+export default middleware
+
 /**
  * 检查登录
  * @param {Request} req
@@ -30,7 +32,7 @@ export async function checkLogin (req) {
       error: ERROR_CODE.USER_NOT_LOGIN
     }
   }
-  const i = req.cookies.token.indexOf('.')
+  const i = req.cookies.token.indexOf(':')
   if (i === -1 || i === req.cookies.token.length - 1) {
     return {
       error: ERROR_CODE.USER_NOT_LOGIN

@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package iconlake.icon;
+
+import "iconlake/icon/icon_data.proto";
+
+option go_package = "iconlake/x/icon/types";
+
+// Msg defines the Msg service.
+service Msg {
+  rpc Mint        (MsgMint       ) returns (MsgMintResponse       );
+  rpc UpdateClass (MsgUpdateClass) returns (MsgUpdateClassResponse);
+  rpc Burn        (MsgBurn       ) returns (MsgBurnResponse       );
+}
+
+message MsgMint {
+  string creator     = 1;
+  string class_id    = 2;
+  string id          = 3;
+  string name        = 4;
+  string description = 5;
+  string uri         = 6;
+  string uri_hash    = 7;
+  uint64 supply      = 8;
+}
+
+message MsgMintResponse {}
+
+message MsgUpdateClass {
+  string creator     = 1;
+  string id          = 2;
+  string name        = 3;
+  string symbol      = 4;
+  string description = 5;
+  string uri         = 6;
+  string uri_hash    = 7;
+}
+
+message MsgUpdateClassResponse {}
+
+message MsgBurn {
+  string creator = 1;
+  string classId = 2;
+  string id      = 3;
+}
+
+message MsgBurnResponse {}

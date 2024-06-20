@@ -20,6 +20,9 @@ export const UserSchema = new Schema({
   },
   code: {
     id: String
+  },
+  blockchain: {
+    id: String
   }
 })
 

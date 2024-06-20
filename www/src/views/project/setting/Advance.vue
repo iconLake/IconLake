@@ -33,15 +33,31 @@ async function clean() {
 <template>
   <div class="advance">
     <div class="warn">
-      <p>{{t('delProjectWarning')}}</p>
-      <p>{{t('inputForSafe')}}&nbsp;[<span class="name">{{project?.name}}</span>]&nbsp;。</p>
+      <p>{{ t('delProjectWarning') }}</p>
+      <p>{{ t('inputForSafe') }}&nbsp;[<span class="name">{{ project?.name }}</span>]&nbsp;。</p>
     </div>
     <p>
-      <input type="text" v-model="name" :placeholder="t('fillProjectName')">
+      <input
+        v-model="name"
+        type="text"
+        :placeholder="t('fillProjectName')"
+      >
     </p>
     <div class="flex center">
-      <button class="btn" :disabled="name !== project?.name" @click="clean">{{t('cleanProject')}}</button>
-      <button class="btn" :disabled="name !== project?.name" @click="del">{{t('deleteProject')}}</button>
+      <button
+        class="btn"
+        :disabled="name !== project?.name"
+        @click="clean"
+      >
+        {{ t('cleanProject') }}
+      </button>
+      <button
+        class="btn"
+        :disabled="name !== project?.name"
+        @click="del"
+      >
+        {{ t('deleteProject') }}
+      </button>
     </div>
   </div>
 </template>
@@ -71,7 +87,7 @@ input {
   width: 100%;
   margin: 2.2rem 0 3.5rem;
   border: solid 0.1rem #ccc;
-  padding: 0 4rem;
+  padding: 0 4rem !important;
   font-size: 1.4rem;
 }
 .btn {

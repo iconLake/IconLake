@@ -1,4 +1,5 @@
 import { locale, messages } from '../i18n'
+import { DROP_DENOM, DROP_DENOM_MINI, LAKE_DENOM, PUBLIC_PAGES } from './const'
 
 const toastContainer = document.createElement('div')
 toastContainer.className = 'toast-container'
@@ -89,4 +90,58 @@ export function copy (str: string) {
 export function formatTime(time: string) {
   const t = new Date(time)
   return `${t.getFullYear()}-${t.getMonth() + 1}-${t.getDate()}`
+}
+
+export function formatLakeAmount(lakeAmount: number, hasDenom = true) {
+  return `${(lakeAmount / 1000000).toFixed(6)}${hasDenom ? LAKE_DENOM : ''}`
+}
+
+export function formatDropAmount(dropAmount: number, hasDenom = true) {
+  return `${(dropAmount / 10000).toFixed(4)}${hasDenom ? DROP_DENOM : ''}`
+}
+
+export function parseDropAmount(dropAmount: string) {
+  const matches = dropAmount.match(new RegExp(`^(\d+)(${DROP_DENOM}|${DROP_DENOM_MINI})$`, 'i'))
+  if (!matches) {
+    return null
+  }
+  return {
+    denom: DROP_DENOM_MINI,
+    amount: matches[1].toUpperCase() === DROP_DENOM ? +matches[0] * 10000 : +matches[0]
+  }
+}
+
+export function waitFor(until: Function) {
+  return new Promise(resolve => {
+    if (until()) {
+      resolve(null)
+      return
+    }
+    const timer = setInterval(() => {
+      if (until()) {
+        clearInterval(timer)
+        resolve(null)
+      }
+    }, 100)
+  })
+}
+
+export function isPagePublic(path = location.pathname) {
+  return PUBLIC_PAGES.some(p => p.test(path))
+}
+
+export function getExt(name: string) {
+  const i = name.lastIndexOf('.')
+  return i === -1 ? '' : name.substring(i)
+}
+
+export function readFileAsText(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      resolve(reader.result as string)
+    }
+    reader.onerror = reject
+    reader.readAsText(file)
+  })
 }

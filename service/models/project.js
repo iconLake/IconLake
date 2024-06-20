@@ -12,18 +12,31 @@ const GroupSchema = new Schema({
 export const IconSchema = new Schema({
   groupId: Schema.Types.ObjectId,
   name: String,
+  desc: String,
   code: String,
   unicode: String,
   tags: [String],
   svg: {
+    url: String,
+    /**
+     * @deprecated replace with 'url'
+     */
     viewBox: String,
+    /**
+     * @deprecated replace with 'url'
+     */
     path: String
-  }
+  },
+  img: {
+    url: String
+  },
+  txHash: String
 })
 
 export const ProjectSchema = new Schema({
   name: String,
   desc: String,
+  cover: String,
   prefix: {
     type: String,
     default: 'icon-'
@@ -76,6 +89,10 @@ export const ProjectSchema = new Schema({
   invite: {
     code: String,
     expired: Date
+  },
+  isPublic: {
+    type: Boolean,
+    default: true
   }
 })
 

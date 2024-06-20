@@ -19,11 +19,23 @@ const backUrl = computed(() => {
 
 <template>
   <div :class="`header flex ${white ? 'white' : ''}`">
-    <router-link v-if="back" :to="backUrl" class="iconfont icon-back back" :title="t('back')"></router-link>
-    <a href="/" class="logo" title="iconLake, make icon in control.">
-      <img :src="`/imgs/logo${white ? '-white' : ''}.svg`" alt="logo">
+    <router-link
+      v-if="back"
+      :to="backUrl"
+      class="iconfont icon-back back flex center"
+      :title="t('back')"
+    />
+    <a
+      href="/"
+      class="logo"
+      title="iconLake - You Create, You Own!"
+    >
+      <img
+        :src="`/imgs/logo${white ? '-white' : ''}.svg`"
+        alt="logo"
+      >
     </a>
-    <slot></slot>
+    <slot />
   </div>
 </template>
 
@@ -31,11 +43,20 @@ const backUrl = computed(() => {
 .header {
   height: 6rem;
   justify-content: flex-start;
+  position: relative;
+  z-index: 99;
   &.white {
     color: #fff;
   }
   .back {
-    padding: 1.5rem;
+    height: 6rem;
+    width: 6rem;
+    transition: var(--transition);
+    border-bottom-right-radius: 1rem;
+    &:hover {
+      color: var(--color-main);
+      background: #fff;
+    }
   }
   .logo {
     align-self: flex-start;

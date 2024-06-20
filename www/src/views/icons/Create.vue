@@ -2,10 +2,11 @@
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
-import { addIcon, BaseIcon, info } from '../../apis/project'
+import { addIcon, BaseIcon, info, uploadFile } from '../../apis/project'
 import HeaderVue from '../../components/Header.vue'
 import UserVue from '../../components/User.vue'
-import { toast } from '../../utils'
+import { readFileAsText, toast } from '../../utils'
+import { MD5 } from 'crypto-js'
 
 const { t } = useI18n()
 
@@ -68,45 +69,27 @@ function updateIcons() {
 function onSVGChange(e: Event) {
   const files = (e.target as HTMLInputElement).files
   if (files && files.length > 0) {
-    Array.from(files).forEach(file => {
+    Array.from(files).forEach(async file => {
       if (file.type !== 'image/svg+xml') {
         return
       }
-      const reader = new FileReader()
-      reader.readAsText(file, 'utf-8')
-      reader.onload = () => {
-        try {
-          const parser = new DOMParser()
-          const doc = parser.parseFromString(reader.result as string, 'image/svg+xml')
-          const code = file.name.substring(0, file.name.lastIndexOf('.'))
-          let viewBox = doc.documentElement.getAttribute('viewBox')
-          if (!viewBox) {
-            const w = doc.documentElement.getAttribute('width')
-            const h = doc.documentElement.getAttribute('height')
-            if (w && h) {
-              viewBox = `0 0 ${w} ${h}`
-            } else {
-              viewBox = ''
-            }
+      const svgText = await readFileAsText(file)
+      const code = file.name.substring(0, file.name.lastIndexOf('.'))
+      const hash = MD5(svgText).toString()
+      uploadFile(data._id, `${hash}.svg`, svgText).then(res => {
+        const svg = {
+          code,
+          name: code,
+          svg: {
+            url: res.url,
           }
-          const svg = {
-            code,
-            name: code,
-            svg: {
-              viewBox,
-              path: Array.from(doc.documentElement.children).map(node => node.outerHTML).join('')
-            }
-          }
-          cachedIcons.set(code, svg)
-          updateIcons()
-        } catch (err) {
-          console.error(err)
-          toast.error(t('fileCouldNotBeParsed'))
         }
-      }
-      reader.onerror = () => {
-        toast.error(t('fileLoadFailed'))
-      }
+        cachedIcons.set(code, svg)
+        updateIcons()
+      }).catch((err) => {
+        console.error(err)
+        toast.error(t('fileUploadFailed'))
+      })
     })
   }
 }
@@ -194,80 +177,180 @@ async function save () {
 
 <template>
   <HeaderVue :back="`/icons/${data._id}`">
-    <div class="name">{{data.name}}</div>
+    <div class="name">
+      {{ data.name }}
+    </div>
   </HeaderVue>
   <UserVue />
   <div class="tab flex">
-    <div class="item" :class="getTabClass('svg')" @click="setTabActive('svg')">{{t('uploadSVG')}}</div>
-    <div class="item" :class="getTabClass('iconfont')" @click="setTabActive('iconfont')">{{t('importIconfont')}}</div>
-    <div class="item" :class="getTabClass('extension')" @click="setTabActive('extension')">{{t('collectSVG')}}</div>
+    <div
+      class="item"
+      :class="getTabClass('svg')"
+      @click="setTabActive('svg')"
+    >
+      {{ t('uploadSVG') }}
+    </div>
+    <div
+      class="item"
+      :class="getTabClass('iconfont')"
+      @click="setTabActive('iconfont')"
+    >
+      {{ t('importIconfont') }}
+    </div>
+    <div
+      class="item"
+      :class="getTabClass('extension')"
+      @click="setTabActive('extension')"
+    >
+      {{ t('collectSVG') }}
+    </div>
   </div>
   <div class="wrap">
-      <!-- icons -->
-    <div v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'" class="icons flex start">
-      <div v-for="item in data.icons" :key="item.code" class="item">
-        <svg :viewBox="item.svg?.viewBox" v-html="item.svg?.path"></svg>
-        <div v-if="item.code" class="name" :title="item.code">{{item.code}}</div>
-        <div v-if="item.name && item.code !== item.name" class="name" :title="item.name">{{item.name}}</div>
+    <!-- icons -->
+    <div
+      v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'"
+      class="icons flex start"
+    >
+      <div
+        v-for="item in data.icons"
+        :key="item.code"
+        class="item"
+      >
+        <img :src="item.svg?.url">
+        <div
+          v-if="item.code"
+          class="name"
+          :title="item.code"
+        >
+          {{ item.code }}
+        </div>
+        <div
+          v-if="item.name && item.code !== item.name"
+          class="name"
+          :title="item.name"
+        >
+          {{ item.name }}
+        </div>
       </div>
     </div>
-    <div v-if="data.activeTab === 'svg'" class="upload flex center">
+    <div
+      v-if="data.activeTab === 'svg'"
+      class="upload flex center"
+    >
       <label for="svg">
-        {{t('selectIconFile', {type: 'SVG'})}}
-        <input id="svg" type="file" @change="onSVGChange" accept="image/svg+xml" multiple/>
+        {{ t('selectIconFile', {type: 'SVG'}) }}
+        <input
+          id="svg"
+          type="file"
+          accept="image/svg+xml"
+          multiple
+          @change="onSVGChange"
+        >
       </label>
     </div>
-    <div v-if="data.activeTab === 'iconfont'"  class="upload flex center">
+    <div
+      v-if="data.activeTab === 'iconfont'"
+      class="upload flex center"
+    >
       <label for="javascript">
-         {{t('selectIconFile', {type: 'iconfont.js'})}}
-        <input id="javascript" type="file" @change="onIconfontJSChange" accept="text/javascript"/>
+        {{ t('selectIconFile', {type: 'iconfont.js'}) }}
+        <input
+          id="javascript"
+          type="file"
+          accept="text/javascript"
+          @change="onIconfontJSChange"
+        >
       </label>
     </div>
-    <div v-if="data.activeTab === 'iconfont'"  class="upload flex center m-top">
+    <div
+      v-if="data.activeTab === 'iconfont'"
+      class="upload flex center m-top"
+    >
       <label>
-         {{t('selectIconFile', {type: 'iconfont.json'})}}
-        <input type="file" @change="onIconfontJSONChange" accept="application/json">
+        {{ t('selectIconFile', {type: 'iconfont.json'}) }}
+        <input
+          type="file"
+          accept="application/json"
+          @change="onIconfontJSONChange"
+        >
       </label>
     </div>
-    <div v-if="data.activeTab === 'extension'" class="extension t-center">
-      <h1>{{t('iconlakeExtension')}}</h1>
-      <h2>{{t('collectAnySVG')}}</h2>
+    <div
+      v-if="data.activeTab === 'extension'"
+      class="extension t-center"
+    >
+      <h1>{{ t('iconlakeExtension') }}</h1>
+      <h2>{{ t('collectAnySVG') }}</h2>
       <div class="flex center download">
         <div class="item">
           <h3>
-            <img class="browser" :src="'/imgs/chrome.svg'" />
+            <img
+              class="browser"
+              :src="'/imgs/chrome.svg'"
+            >
           </h3>
           <p>
-            <a class="store" href="https://chrome.google.com/webstore/detail/iconlake/lfjdnkcfpebmhjbeihnebpdalolhcmmb" target="_blank">{{t('webStore')}}</a>
+            <a
+              class="store"
+              href="https://chrome.google.com/webstore/detail/iconlake/lfjdnkcfpebmhjbeihnebpdalolhcmmb"
+              target="_blank"
+            >{{ t('webStore') }}</a>
           </p>
           <p>
-            <a class="file" :href="'/exts/chrome.crx'" target="_blank">{{t('downloadFile')}}</a>
+            <a
+              class="file"
+              :href="'/exts/chrome.crx'"
+              target="_blank"
+            >{{ t('downloadFile') }}</a>
           </p>
         </div>
         <div class="item">
           <h3>
-            <img class="browser" :src="'/imgs/firefox.svg'" />
+            <img
+              class="browser"
+              :src="'/imgs/firefox.svg'"
+            >
           </h3>
           <p>
-            <a class="store" href="https://addons.mozilla.org/zh-CN/firefox/addon/iconlake/" target="_blank">{{t('webStore')}}</a>
+            <a
+              class="store"
+              href="https://addons.mozilla.org/zh-CN/firefox/addon/iconlake/"
+              target="_blank"
+            >{{ t('webStore') }}</a>
           </p>
         </div>
         <div class="item">
           <h3>
-            <img class="browser" :src="'/imgs/edge.svg'" />
+            <img
+              class="browser"
+              :src="'/imgs/edge.svg'"
+            >
           </h3>
           <p>
-            <a class="store" href="https://microsoftedge.microsoft.com/addons/detail/iconlake/ilkiempcnikelnciijanjlgmchleamjh" target="_blank">{{t('webStore')}}</a>
+            <a
+              class="store"
+              href="https://microsoftedge.microsoft.com/addons/detail/iconlake/ilkiempcnikelnciijanjlgmchleamjh"
+              target="_blank"
+            >{{ t('webStore') }}</a>
           </p>
         </div>
       </div>
     </div>
     <!-- button -->
-    <div v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'" class="flex center">
-      <button class="btn danger" :disabled="data.icons.length === 0" @click="save">{{t('save')}}</button>
+    <div
+      v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'"
+      class="flex center"
+    >
+      <button
+        class="btn danger"
+        :disabled="data.icons.length === 0"
+        @click="save"
+      >
+        {{ t('save') }}
+      </button>
     </div>
   </div>
-  <div class="footer"></div>
+  <div class="footer" />
 </template>
 
 <style lang="scss" scoped>
@@ -310,7 +393,7 @@ async function save () {
       margin-bottom: 5rem;
     }
 
-    svg {
+    img {
       height: 2rem;
     }
 
@@ -330,10 +413,16 @@ async function save () {
     font-size: 1rem;
     letter-spacing: 0rem;
     color: #476de8;
-    height: 2rem;
 
     label {
+      display: block;
       cursor: pointer;
+      height: 4rem;
+      width: 100%;
+      line-height: 4rem;
+      border: var(--color-main) 2px dashed;
+      border-radius: 1rem;
+      text-align: center;
     }
 
     +div:not(.upload) {

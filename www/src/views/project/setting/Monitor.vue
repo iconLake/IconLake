@@ -48,20 +48,31 @@ async function saveSpider() {
 <template>
   <div class="monitor">
     <div>
-      <div class="switch" :class="{off: !monitor.isOn}" @click="switchStatus"></div>
+      <div
+        class="switch"
+        :class="{off: !monitor.isOn}"
+        @click="switchStatus"
+      />
     </div>
-    <p>{{t('monitorUsingGuide')}}</p>
-    <div class="file flex section" @click="copyJS">
-      <span>{{jsSRC}}</span>
-      <i class="iconfont icon-copy"></i>
+    <p>{{ t('monitorUsingGuide') }}</p>
+    <div
+      class="file flex section"
+      @click="copyJS"
+    >
+      <span>{{ jsSRC }}</span>
+      <i class="iconfont icon-copy" />
     </div>
-    <p>{{t('iconFindFunction')}}</p>
+    <p>{{ t('iconFindFunction') }}</p>
     <div class="function section">
       <div>
-        <p>funcation  spider（）{</p>
+        <p>funcation  spider() {</p>
         <p>const  list=[]</p>
         <p class="flex">
-          <textarea class="m-right" placeholder="不填则使用默认的抓取方法" v-model="monitor.spider"></textarea>
+          <textarea
+            v-model="monitor.spider"
+            class="m-right"
+            placeholder="不填则使用默认的抓取方法"
+          />
           <textarea readonly>
 /** 
  * 注：以下代码为默认抓取方法。
@@ -92,7 +103,12 @@ document.body.querySelectorAll(`.${className}`).forEach(elem => {
         <p>}</p>
       </div>
       <div class="operate flex center">
-        <button class="btn" @click="saveSpider">{{t('save')}}</button>
+        <button
+          class="btn"
+          @click="saveSpider"
+        >
+          {{ t('save') }}
+        </button>
       </div>
     </div>
   </div>

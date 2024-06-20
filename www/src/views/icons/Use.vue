@@ -1,18 +1,25 @@
 <script setup lang="ts">
-import { computed, reactive, watchPostEffect } from 'vue'
+import { computed, reactive, ref, watchPostEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import { info, Files, genIcon, FileInfo, setExpire } from '@/apis/project'
+import { info, Files, genIcon, FileInfo, setExpire, Member } from '@/apis/project'
 import HeaderVue from '@/components/Header.vue'
 import UserVue from '@/components/User.vue'
 import { copy, toast } from '@/utils'
 import { PERMANENT_FILE_EXPIRE, TEMPORARY_FILE_EXPIRE, ONE_DAY_SECONDS } from '@/utils/const'
 import { ElSwitch } from 'element-plus'
+import * as user from '@/apis/user'
 
 const { t } = useI18n()
 const $route = useRoute()
 
 type Tab = 'css'|'js'|'vue'|'react'
+
+const userInfo = ref({} as user.UserInfo)
+
+user.info().then(u => {
+  userInfo.value = u
+})
 
 const data = reactive({
   _id: $route.params.id as string,
@@ -24,7 +31,15 @@ const data = reactive({
   icons: [],
   activeTab: 'css' as Tab,
   src: '',
-  generating: new Set()
+  generating: new Set(),
+  members: [] as Member[]
+})
+
+const editable = computed(() => {
+  if (data.members.length === 0) {
+    return false
+  }
+  return data.members.some(e => e.userId === userInfo.value._id)
 })
 
 const getLatestFile = (arr: FileInfo[] | undefined): FileInfo | undefined => {
@@ -157,78 +172,171 @@ async function onSetExpire(id: string, value: number) {
 
 <template>
   <HeaderVue :back="`/icons/${data._id}`">
-    <div class="name">{{data.name}}</div>
+    <div class="name">
+      {{ data.name }}
+    </div>
   </HeaderVue>
   <UserVue />
   <div class="tab flex">
-    <div class="item" :class="getTabClass('css')" @click="setTabActive('css')">
+    <div
+      class="item"
+      :class="getTabClass('css')"
+      @click="setTabActive('css')"
+    >
       <span>CSS</span>
-      <span v-if="cssUpgradable" class="alert" :title="t('upgradable')"></span>
+      <span
+        v-if="cssUpgradable"
+        class="alert"
+        :title="t('upgradable')"
+      />
     </div>
-    <div class="item" :class="getTabClass('js')" @click="setTabActive('js')">
+    <div
+      class="item"
+      :class="getTabClass('js')"
+      @click="setTabActive('js')"
+    >
       <span>Javascript</span>
-      <span v-if="jsUpgradable" class="alert" :title="t('upgradable')"></span>
+      <span
+        v-if="jsUpgradable"
+        class="alert"
+        :title="t('upgradable')"
+      />
     </div>
-    <div class="item" :class="getTabClass('vue')" @click="setTabActive('vue')">Vue</div>
-    <div class="item" :class="getTabClass('react')" @click="setTabActive('react')">React</div>
+    <div
+      class="item"
+      :class="getTabClass('vue')"
+      @click="setTabActive('vue')"
+    >
+      Vue
+    </div>
+    <div
+      class="item"
+      :class="getTabClass('react')"
+      @click="setTabActive('react')"
+    >
+      React
+    </div>
   </div>
   <!-- css -->
-  <div v-if="data.activeTab === 'css'" class="content use-css">
-    <h2 class="t-center">{{t('useWithType', {type: 'CSS'})}}</h2>
-    <p>{{t('includeType', {type: 'CSS'})}}{{t('colon')}}</p>
-    <div class="code flex" @click="copyContent(cssLink)" :title="t('copy')">
-      <span>{{cssLink}}</span>
-      <i class="iconfont icon-copy"></i>
+  <div
+    v-if="data.activeTab === 'css'"
+    class="content use-css"
+  >
+    <h2 class="t-center">
+      {{ t('useWithType', {type: 'CSS'}) }}
+    </h2>
+    <p>{{ t('includeType', {type: 'CSS'}) }}{{ t('colon') }}</p>
+    <div
+      class="code flex"
+      :title="t('copy')"
+      @click="copyContent(cssLink)"
+    >
+      <span>{{ cssLink }}</span>
+      <i class="iconfont icon-copy" />
     </div>
-    <p>{{t('displayIcon')}}{{t('colon')}}</p>
-    <div class="code flex" @click="copyContent(cssExample)" :title="t('copy')">
-      <span>{{cssExample}}</span>
-      <i class="iconfont icon-copy"></i>
+    <p>{{ t('displayIcon') }}{{ t('colon') }}</p>
+    <div
+      class="code flex"
+      :title="t('copy')"
+      @click="copyContent(cssExample)"
+    >
+      <span>{{ cssExample }}</span>
+      <i class="iconfont icon-copy" />
     </div>
     <div class="t-center operate">
-      <button class="btn" @click="generate" :disabled="data.icons.length === 0">{{t(data.generating.has('css') ? 'generating' : 'regenerate')}}</button>
+      <button
+        v-if="editable"
+        class="btn"
+        :disabled="data.icons.length === 0"
+        @click="generate"
+      >
+        {{ t(data.generating.has('css') ? 'generating' : 'regenerate') }}
+      </button>
     </div>
   </div>
   <!-- js -->
-  <div v-else-if="data.activeTab === 'js'" class="content use-js">
-    <h2 class="t-center">{{t('useWithType', {type: 'Javascript'})}}</h2>
-    <p>{{t('includeType', {type: 'Javascript'})}}{{t('colon')}}</p>
-    <div class="code flex" @click="copyContent(jsLink)" :title="t('copy')">
-      <span>{{jsLink}}</span>
-      <i class="iconfont icon-copy"></i>
+  <div
+    v-else-if="data.activeTab === 'js'"
+    class="content use-js"
+  >
+    <h2 class="t-center">
+      {{ t('useWithType', {type: 'Javascript'}) }}
+    </h2>
+    <p>{{ t('includeType', {type: 'Javascript'}) }}{{ t('colon') }}</p>
+    <div
+      class="code flex"
+      :title="t('copy')"
+      @click="copyContent(jsLink)"
+    >
+      <span>{{ jsLink }}</span>
+      <i class="iconfont icon-copy" />
     </div>
-    <p>{{t('displayIcon')}}{{t('colon')}}</p>
-    <div class="code flex" @click="copyContent(jsExample)" :title="t('copy')">
-      <span>{{jsExample}}</span>
-      <i class="iconfont icon-copy"></i>
+    <p>{{ t('displayIcon') }}{{ t('colon') }}</p>
+    <div
+      class="code flex"
+      :title="t('copy')"
+      @click="copyContent(jsExample)"
+    >
+      <span>{{ jsExample }}</span>
+      <i class="iconfont icon-copy" />
     </div>
     <div class="t-center operate">
-      <button class="btn" @click="generate" :disabled="data.icons.length === 0">{{t(data.generating.has('js') ? 'generating' : 'regenerate')}}</button>
+      <button
+        v-if="editable"
+        class="btn"
+        :disabled="data.icons.length === 0"
+        @click="generate"
+      >
+        {{ t(data.generating.has('js') ? 'generating' : 'regenerate') }}
+      </button>
     </div>
   </div>
   <!-- vue -->
-  <div v-else-if="data.activeTab === 'vue'" class="content use-vue">
-    <h2 class="t-center">{{t('useWithType', {type: t('vueComponent')})}}</h2>
-    <p>{{t('componentFile')}}{{t('colon')}}</p>
-    <div class="code vue flex" @click="copyContent(data.src)" :title="t('copy')">
-      <pre>{{data.src}}</pre>
-      <i class="iconfont icon-copy"></i>
+  <div
+    v-else-if="data.activeTab === 'vue'"
+    class="content use-vue"
+  >
+    <h2 class="t-center">
+      {{ t('useWithType', {type: t('vueComponent')}) }}
+    </h2>
+    <p>{{ t('componentFile') }}{{ t('colon') }}</p>
+    <div
+      class="code vue flex"
+      :title="t('copy')"
+      @click="copyContent(data.src)"
+    >
+      <pre>{{ data.src }}</pre>
+      <i class="iconfont icon-copy" />
     </div>
   </div>
   <!-- react -->
-  <div v-else-if="data.activeTab === 'react'" class="content use-vue">
-    <h2 class="t-center">{{t('useWithType', {type: t('reactComponent')})}}</h2>
-    <p>{{t('componentFile')}}{{t('colon')}}</p>
-    <div class="code vue flex" @click="copyContent(data.src)" :title="t('copy')">
-      <pre>{{data.src}}</pre>
-      <i class="iconfont icon-copy"></i>
+  <div
+    v-else-if="data.activeTab === 'react'"
+    class="content use-vue"
+  >
+    <h2 class="t-center">
+      {{ t('useWithType', {type: t('reactComponent')}) }}
+    </h2>
+    <p>{{ t('componentFile') }}{{ t('colon') }}</p>
+    <div
+      class="code vue flex"
+      :title="t('copy')"
+      @click="copyContent(data.src)"
+    >
+      <pre>{{ data.src }}</pre>
+      <i class="iconfont icon-copy" />
     </div>
   </div>
   <!-- files -->
-  <div v-if="isFileListShow" class="content files">
+  <div
+    v-if="isFileListShow"
+    class="content files"
+  >
     <div class="flex">
-      <p>{{t('generatedFileLinks')}}</p>
-      <div class="help">{{t('generationNote', {n: data.files.permamentMaxNum})}}</div>
+      <p>{{ t('generatedFileLinks') }}</p>
+      <div class="help">
+        {{ t('generationNote', {n: data.files.permamentMaxNum}) }}
+      </div>
     </div>
     <div
       v-for="file in data.files[data.activeTab as 'js'|'css']"
@@ -238,11 +346,12 @@ async function onSetExpire(id: string, value: number) {
       @click="copyContent(genFileLink(file.hash, data.activeTab as 'css'|'js'))"
     >
       <div>
-        <span>{{genFileLink(file.hash, data.activeTab as 'js'|'css')}}</span>
-        <i class="iconfont icon-copy"></i>
+        <span>{{ genFileLink(file.hash, data.activeTab as 'js'|'css') }}</span>
+        <i class="iconfont icon-copy" />
       </div>
       <div class="expire">
         <ElSwitch
+          v-if="editable"
           v-model="file.expire"
           :title="t('validity')"
           :active-value="PERMANENT_FILE_EXPIRE"
@@ -253,8 +362,13 @@ async function onSetExpire(id: string, value: number) {
           :before-change="() => onBeforeSetExpire(file)"
           @click.stop="() => false"
           @change="onSetExpire(file._id, $event as number)"
-        ></ElSwitch>
-        <div v-if="!isPermanent(file.expire)" class="days">{{t('nDaysExpire', {n: getExpireTime(file)})}}</div>
+        />
+        <div
+          v-if="!isPermanent(file.expire)"
+          class="days"
+        >
+          {{ t('nDaysExpire', {n: getExpireTime(file)}) }}
+        </div>
       </div>
     </div>
   </div>
@@ -347,17 +461,15 @@ async function onSetExpire(id: string, value: number) {
   }
   .expire {
     position: relative;
+    min-width: 3rem;
     .el-switch {
-      height: 20px;
+      height: 2rem;
+      margin-bottom: 0.3rem;
     }
     .days {
-      position: absolute;
       font-size: 1rem;
-      bottom: -1.35rem;
-      left: -50%;
-      right: -50%;
       text-align: center;
-      transform: scale(0.6);
+      transform: scale(0.8);
       white-space: nowrap;
       color: #aaa;
     }

@@ -3,9 +3,10 @@ import { reactive, ref } from 'vue'
 import Cookies from 'js-cookie'
 import { logout, info, UserInfo } from '../apis/user'
 import { useI18n } from 'vue-i18n'
+import { updateEncryptKey } from '@/utils/storage';
 const { t } = useI18n()
 
-let locale = ref(Cookies.get('locale') || 'zh-cn')
+const locale = ref(Cookies.get('locale') || 'zh-cn')
 const language = {
   'en-us': {
     label: '语言',
@@ -17,15 +18,22 @@ const language = {
   },
 }[locale.value]
 
-let isPopShow = ref(false)
+const isPopShow = ref(false)
 let popTimer: NodeJS.Timeout
 const userInfo = reactive({} as UserInfo)
+const isLoggedIn = ref(false)
 
 async function getUserInfo () {
   Object.assign(userInfo, await info())
+  isLoggedIn.value = true
+  updateEncryptKey(userInfo._id)
 }
 
-getUserInfo()
+getUserInfo().catch(e => {
+  if (e.error === 'userNotLogin') {
+    isLoggedIn.value = false
+  }
+})
 
 function setLocale (v:string) {
   locale.value = v
@@ -54,27 +62,82 @@ function showPop (isShow: boolean) {
 
 async function userLogout() {
   await logout()
+  gotoLogin()
+}
+
+async function gotoLogin() {
   location.href = '/login'
 }
 </script>
 
 <template>
-  <div class="user" @mouseenter="showPop(true)" @mouseleave="showPop(false)">
-    <div v-if="userInfo.avatar" class="avatar img">
-      <img :src="userInfo.avatar" :alt="userInfo.name">
+  <div
+    class="user"
+    @mouseenter="showPop(true)"
+    @mouseleave="showPop(false)"
+  >
+    <div
+      v-if="userInfo.avatar"
+      class="avatar img"
+    >
+      <img
+        :src="userInfo.avatar"
+        :alt="userInfo.name"
+      >
     </div>
-    <div v-else class="avatar bg-main text flex center">
-      <span>{{userInfo.name ? userInfo.name[0] : 'U'}}</span>
+    <div
+      v-else
+      class="avatar bg-main text flex center"
+    >
+      <span v-if="userInfo.name">{{ userInfo.name[0] }}</span>
+      <i
+        v-else
+        class="iconfont icon-user"
+      />
     </div>
-    <div class="pop" :class="{active: isPopShow}">
-      <div class="item flex" @click="toggleLocale">
-        <span>{{language?.label}}</span>
-        <span>{{language?.value}}</span>
+    <div
+      class="pop"
+      :class="{active: isPopShow}"
+    >
+      <RouterLink
+        class="item flex"
+        to="/user/assets"
+      >
+        {{ t('myAssets') }}
+      </RouterLink>
+      <RouterLink
+        class="item flex"
+        to="/home"
+      >
+        {{ t('myProjects') }}
+      </RouterLink>
+      <div
+        class="item flex"
+        @click="toggleLocale"
+      >
+        <span>{{ language?.label }}</span>
+        <span>{{ language?.value }}</span>
       </div>
-      <a href="https://support.qq.com/product/370032" target="_blank" class="item flex">{{t('feedback')}}</a>
-      <div class="item flex" @click="userLogout">
-        <span>{{t('logout')}}</span>
-        <i class="iconfont icon-out"></i>
+      <a
+        href="https://support.qq.com/product/370032"
+        target="_blank"
+        class="item flex"
+      >{{ t('feedback') }}</a>
+      <div
+        v-if="isLoggedIn"
+        class="item flex"
+        @click="userLogout"
+      >
+        <span>{{ t('logout') }}</span>
+        <i class="iconfont icon-out" />
+      </div>
+      <div
+        v-else
+        class="item flex"
+        @click="gotoLogin"
+      >
+        <span>{{ t('login') }}</span>
+        <i class="iconfont icon-in" />
       </div>
     </div>
   </div>
@@ -85,6 +148,7 @@ async function userLogout() {
   position: absolute;
   top: 1.9rem;
   right: 2.5rem;
+  z-index: 99;
   .avatar {
     width: 4rem;
     height: 4rem;
@@ -103,6 +167,9 @@ async function userLogout() {
       height: 100%;
     }
   }
+  .icon-user {
+    font-size: 2.5rem;
+  }
   .pop {
     position: absolute;
     top: 5rem;
@@ -114,6 +181,7 @@ async function userLogout() {
     font-size: 1.4rem;
     box-shadow: 0rem 0.4rem 1.02rem 0.08rem rgba(0, 0, 0, 0.08);
     padding: 1.8rem 0;
+    z-index: 999;
     &.active {
       display: block;
     }

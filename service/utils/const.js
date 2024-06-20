@@ -38,6 +38,11 @@ export const ROOT = process.cwd()
 export const AVATAR_PATH = 'avatar/'
 
 /**
+ * 图标路径
+ */
+export const ICON_PATH = 'icon/'
+
+/**
  * 资源缓存时长
  */
 export const RESOURCE_MAX_AGE = (NODE_ENV === ENV.PRODUCTION) ? 7 * 24 * 3600 * 1000 : 0
@@ -49,7 +54,11 @@ export const ERROR_CODE = {
   ARGS_ERROR: 'argsError',
   FAIL: 'fail',
   USER_NOT_LOGIN: 'userNotLogin',
-  TOKEN_EXPIRED: 'tokenExpired'
+  TOKEN_EXPIRED: 'tokenExpired',
+  PERMISSION_DENIED: 'permissionDenied',
+  NOT_EXIST: 'notExist',
+  INTERNAL_ERROR: 'internalError',
+  NOT_ENABLED: 'notEnabled'
 }
 
 /**
@@ -73,3 +82,11 @@ export const TEMPORARY_FILE_EXPIRE = 30
 export const CLOUD_TYPE = {
   TENCENT: 'tencent'
 }
+
+export const DROP_DENOM = 'DROP'
+export const DROP_DENOM_MINI = 'udrop'
+
+export const LAKE_DENOM = 'LAKE'
+export const LAKE_DENOM_MINI = 'ulake'
+
+export const ADDRESS_PREFIX = 'iconlake'

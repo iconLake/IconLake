@@ -67,7 +67,7 @@
         height: 1.938rem;
       }
       span {
-        font-size: 0.875rem;
+        font-size: 1.2rem;
       }
       &.active {
         visibility: visible;
@@ -89,5 +89,21 @@
       left: 0;
       width: 111.25rem;
     }
+  }
+}
+
+.keplr {
+  &.uninstall {
+    &:hover {
+      .label {
+        display: none;
+      }
+      .label-uninstall {
+        display: inline;
+      }
+    }
+  }
+  .label-uninstall {
+    display: none;
   }
 }

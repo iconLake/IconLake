@@ -3,6 +3,7 @@ import { Project } from '../../models/project.js'
 import { center as fetchCenter } from '../../utils/fetch.js'
 import { analyseProject } from './analyse.js'
 import { clearExpiredFiles } from './clear.js'
+import { migrate } from './migrate.js'
 
 const job = new CronJob('0 0 3 * * *', () => {
   start()
@@ -10,6 +11,8 @@ const job = new CronJob('0 0 3 * * *', () => {
 
 export function init () {
   job.start()
+  // start job when app start
+  start()
 }
 
 let startTime = Date.now()
@@ -36,6 +39,7 @@ async function getList (doneCB) {
     const project = await Project.findById(list[i])
     await analyseProject(project)
     await clearExpiredFiles(project)
+    await migrate(project)
   }
   if (task.isEnd) {
     doneCB()

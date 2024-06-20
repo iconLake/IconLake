@@ -1,5 +1,6 @@
 import { Project } from '../../models/project.js'
 import { User } from '../../models/user.js'
+import { ERROR_CODE } from '../../utils/const.js'
 
 /**
  * @api {get} /project/member/list 成员列表
@@ -15,6 +16,12 @@ export async function list (req, res) {
     _id: req.query._id,
     'members.userId': req.user._id
   }, 'members')
+  if (!data) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
   const list = await Promise.all(data.members.map(async (e) => {
     const info = e.toJSON()
     const user = await User.findById(info.userId, 'name avatar')
@@ -53,5 +60,11 @@ export async function del (req, res) {
       }
     }
   })
+  if (result.matchedCount === 0) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
   res.json(result.modifiedCount === 1 ? {} : { error: 'delFail' })
 }

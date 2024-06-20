@@ -1,53 +1,72 @@
-<template>
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    version="1.1"
-    v-on="$listeners"
-    :width="width"
-    :height="height"
-    :viewBox="viewBox"
-    v-html="path"
-  ></svg>
-</template>
+<script setup lang="ts">
+import { computed, watch, ref, onMounted } from "vue";
 
-<script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
+const props = defineProps({
+  name: String,
+  width: String,
+  height: String,
+  pure: Boolean,
+});
 
-const data = ['__DATA__']
-const iconMap = {}
+const rootDom = ref();
+
+const data = ["__DATA__"];
+const iconMap = {};
 data.forEach(function (e) {
   iconMap[e[0]] = {
-    viewBox: e[1],
-    path: e[2]
-  }
-})
+    content: e[1],
+  };
+});
 
-const Props = Vue.extend({
-  props: {
-    name: String,
-    width: String,
-    height: String,
-    pure: Boolean // 纯色化
+const content = computed(() => {
+  let content = "";
+  if (props.name in iconMap) {
+    content = props.pure
+      ? iconMap[props.name].content
+          .replace(/fill=".*?"/gi, "")
+          .replace(/stroke=".*?"/gi, "")
+      : iconMap[props.name].content;
   }
-})
+  return content;
+});
 
-@Component
-export default class IconSvg extends Props {
-  get version () {
-    return '__HASH__'
-  }
+const updateStyle = (type: "width" | "height") => {
+  const dom = rootDom.value.querySelector("svg");
+  dom && dom.setAttribute(type, props[type] || "18px");
+};
 
-  get viewBox () {
-    return this.name in iconMap ? iconMap[this.name].viewBox : '0 0 0 0'
-  }
+watch(
+  () => props.width,
+  () => {
+    updateStyle("width");
+  },
+);
 
-  get path () {
-    let path = ''
-    if (this.name in iconMap) {
-      path = this.pure ? iconMap[this.name].path.replace(/fill=".*?"/ig, '').replace(/stroke=".*?"/ig, '') : iconMap[this.name].path
-    }
-    return path
-  }
-}
+watch(
+  () => props.height,
+  () => {
+    updateStyle("height");
+  },
+);
+
+watch(
+  () => content,
+  () => {
+    updateStyle("width");
+    updateStyle("height");
+  },
+);
+
+onMounted(() => {
+  updateStyle("width");
+  updateStyle("height");
+});
 </script>
+
+<template>
+  <span
+    data-icon-version="__HASH__"
+    v-html="content"
+    ref="rootDom"
+  ></span>
+</template>

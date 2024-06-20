@@ -1,0 +1,54 @@
+{
+  "name": "@iconlake/client",
+  "version": "0.6.0",
+  "description": "iconLake Typescript Client",
+  "author": "iconLake",
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "files": ["./dist", "./types", "./types.d.ts"],
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.mjs",
+  "types": "./types/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build-ts": "rm -rf ./types && export NODE_OPTIONS=--max-old-space-size=8192 && tsc",
+    "build-js": "vite build",
+    "build": "pnpm run build-ts && pnpm run build-js"
+  },
+  "packageManager": "pnpm@8.15.4",
+  "dependencies": {
+    "axios": "^0.21.4",
+    "buffer": "^6.0.3",
+    "events": "^3.3.0",
+    "long": "^5.2.3",
+    "protobufjs": "^7.2.4"
+  },
+  "peerDependencies": {
+    "@cosmjs/launchpad": "0.27.1",
+    "@cosmjs/proto-signing": "0.31.1",
+    "@cosmjs/stargate": "0.31.1"
+  },
+  "devDependencies": {
+    "@keplr-wallet/types": "^0.11.3",
+    "@types/events": "^3.0.0",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.6"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.umd.js"
+    },
+    "./mjs": "./dist/index.mjs",
+    "./umd": "./dist/index.umd.js",
+    "./cjs": "./dist/index.js",
+    "./iife": "./dist/index.iife.js"
+  }
+}

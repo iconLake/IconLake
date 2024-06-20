@@ -21,11 +21,23 @@ export default defineConfig({
       '/imgs': proxyDomain,
       '/exts': proxyDomain,
       '/avatar': proxyDomain,
+      '/icon': proxyDomain,
+      '/exhibition': proxyDomain,
+      '/admin': proxyDomain,
+      '/themes': proxyDomain,
+      '/libs': proxyDomain,
     }
   },
   build: {
     outDir: '../service/public/manage',
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          '@iconlake/client': ['@iconlake/client']
+        }
+      }
+    }
   },
   resolve: {
     alias: {

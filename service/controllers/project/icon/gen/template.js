@@ -7,8 +7,7 @@
   const iconMap = {}
   data.forEach(function (e) {
     iconMap[e[0]] = {
-      viewBox: e[1],
-      path: e[2]
+      content: e[1]
     }
   })
   // web component
@@ -19,14 +18,6 @@
         this.root = this.attachShadow({
           mode: 'open'
         })
-        // svg
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-        svg.version = '1.1'
-        svg.style.fill = 'currentColor'
-        this.svg = svg
-        this.setWidth('100%')
-        this.setHeight('100%')
-        this.root.append(svg)
       }
 
       static get version () {
@@ -35,34 +26,36 @@
 
       setName (name) {
         const info = iconMap[name] || {
-          viewBox: '0 0 0 0',
-          path: ''
+          content: ''
         }
-        this.svg.setAttribute('viewBox', info.viewBox)
-        this.svg.innerHTML = info.path
+        this.root.innerHTML = info.content
+        this.setWidth('100%')
+        this.setHeight('100%')
       }
 
       setWidth (width) {
+        const svg = this.root.querySelector('svg')
         if (width) {
-          this.svg.setAttribute('width', width)
+          svg.setAttribute('width', width)
         } else {
-          this.svg.removeAttribute('width')
+          svg.removeAttribute('width')
         }
       }
 
       setHeight (height) {
+        const svg = this.root.querySelector('svg')
         if (height) {
-          this.svg.setAttribute('height', height)
+          svg.setAttribute('height', height)
         } else {
-          this.svg.removeAttribute('height')
+          svg.removeAttribute('height')
         }
       }
 
       setPure (pure) {
         const info = iconMap[this.getAttribute('name')] || {
-          path: ''
+          content: ''
         }
-        this.svg.innerHTML = (pure === null) ? info.path : info.path.replace(/fill=".*?"/ig, '')
+        this.root.innerHTML = (pure === null) ? info.content : info.content.replace(/fill=".*?"/ig, '')
       }
 
       static get observedAttributes () {

@@ -5,6 +5,7 @@ import gulpSASS from 'gulp-sass'
 import cssmin from 'gulp-clean-css'
 import typescript from 'gulp-typescript'
 import uglify from 'gulp-uglify'
+import jsonMinify from 'gulp-json-minify'
 import htmlmin from 'gulp-htmlmin'
 import replace from 'gulp-replace'
 import rename from 'gulp-rename'
@@ -20,7 +21,9 @@ const srcPath = './assets/'
 const destPath = './public/'
 const scssFiles = `${srcPath}**/*.scss`
 const tsFiles = `${srcPath}**/*.ts`
-const htmlFiles = `${srcPath}**/*.html`
+const jsonFiles = `${srcPath}**/*.json`
+const i18nHtmlFiles = [`${srcPath}**/*.html`, `!${srcPath}exhibition/*.html`]
+const htmlFiles = `${srcPath}exhibition/*.html`
 
 let isChanged = false
 const srcOptions = {
@@ -41,13 +44,22 @@ export function css () {
 
 export function js () {
   return gulp.src(tsFiles, srcOptions)
-    .pipe(typescript())
+    .pipe(typescript({
+      module: 'esnext',
+      target: 'es6'
+    }))
     .pipe(uglify())
     .pipe(gulp.dest(destPath))
 }
 
+export function json () {
+  return gulp.src(jsonFiles, srcOptions)
+    .pipe(jsonMinify())
+    .pipe(gulp.dest(destPath))
+}
+
 function htmlZh () {
-  return gulp.src(htmlFiles, srcOptions)
+  return gulp.src(i18nHtmlFiles, srcOptions)
     .pipe(replace(/\$\{(.+)\}/g, (match, param) => {
       return i18n.zh[param]
     }))
@@ -59,7 +71,7 @@ function htmlZh () {
 }
 
 function htmlEn () {
-  return gulp.src(htmlFiles, srcOptions)
+  return gulp.src(i18nHtmlFiles, srcOptions)
     .pipe(replace(/\$\{(.+)\}/g, (match, param) => {
       return i18n.en[param]
     }))
@@ -70,15 +82,26 @@ function htmlEn () {
     .pipe(gulp.dest(destPath))
 }
 
-const html = gulp.parallel(htmlZh, htmlEn)
+const i18nHtml = gulp.parallel(htmlZh, htmlEn)
+
+function html () {
+  return gulp.src(htmlFiles, {
+    ...srcOptions,
+    base: srcPath
+  })
+    .pipe(htmlmin({ collapseWhitespace: true }))
+    .pipe(gulp.dest(destPath))
+}
 
 function watch (cb) {
   gulp.watch(scssFiles, gulp.series(change, css))
   gulp.watch(tsFiles, gulp.series(change, js))
+  gulp.watch(jsonFiles, gulp.series(change, json))
+  gulp.watch(i18nHtmlFiles, gulp.series(change, i18nHtml))
   gulp.watch(htmlFiles, gulp.series(change, html))
   cb()
 }
 
-export const init = gulp.parallel(css, js, html)
+export const build = gulp.parallel(css, js, json, i18nHtml, html)
 
-export default gulp.series(init, watch)
+export default gulp.series(build, watch)

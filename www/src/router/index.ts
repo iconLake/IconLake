@@ -66,6 +66,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/icons/Use.vue')
   },
   {
+    path: '/icons/:projectId/protect/:id',
+    name: 'iconsProtect',
+    component: () => import('../views/icons/Protect.vue')
+  },
+  {
     path: '/project/:id/invite',
     name: 'projectInvite',
     component: () => import('../views/project/Invite.vue')
@@ -74,6 +79,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/analyse/icon/:projectId/:id',
     name: 'analyseIcon',
     component: () => import('../views/analyse/Icon.vue')
+  },
+  {
+    path: '/user/assets',
+    name: 'userAssets',
+    component: () => import('../views/user/Assets.vue')
+  },
+  {
+    path: '/user/assets/drop/init',
+    name: 'initDROP',
+    component: () => import('../views/user/assets/drop/Init.vue')
   }
 ]
 

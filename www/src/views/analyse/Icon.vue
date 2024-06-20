@@ -33,7 +33,9 @@ async function getInfo() {
 async function getList() {
   const data = await getIconPages(projectId, _id)
   pageList.value = data.pages
-  updateTime.value = formatTime(data.updateTime)
+  if (data.updateTime) {
+    updateTime.value = formatTime(data.updateTime)
+  }
 }
 
 getInfo()
@@ -48,33 +50,43 @@ getList()
       <IconVue :info="icon.info" />
       <div class="flex column info">
         <div>
-          <span class="label">{{t('name')}}</span>
-          <span class="value">{{icon.info.name}}</span>
+          <span class="label">{{ t('name') }}</span>
+          <span class="value">{{ icon.info.name }}</span>
         </div>
         <div>
           <div>
-            <span class="label">{{t('updateTime')}}</span>
-            <span class="value">{{updateTime}}</span>
+            <span class="label">{{ t('updateTime') }}</span>
+            <span class="value">{{ updateTime }}</span>
           </div>
           <div class="m-top">
-            <span class="label">{{t('statPeriod')}}</span>
-            <span class="value">{{t('last30d')}}</span>
+            <span class="label">{{ t('statPeriod') }}</span>
+            <span class="value">{{ t('last30d') }}</span>
           </div>
         </div>
       </div>
     </div>
-    <div class="title">{{t('refererPageLink')}}</div>
+    <div class="title">
+      {{ t('refererPageLink') }}
+    </div>
     <div class="list">
-      <div class="item flex" v-for="item in pageList" :key="item.url">
-        <a :href="item.url" target="_blank" rel="noopener noreferrer">{{item.url}}</a>
+      <div
+        v-for="item in pageList"
+        :key="item.url"
+        class="item flex"
+      >
+        <a
+          :href="item.url"
+          target="_blank"
+          rel="noopener noreferrer"
+        >{{ item.url }}</a>
         <div>
-          <span>{{t('refererCount')}}：</span>
-          <span class="num">{{item.count}}</span>
+          <span>{{ t('refererCount') }}：</span>
+          <span class="num">{{ item.count }}</span>
         </div>
       </div>
     </div>
   </div>
-  <div class="footer"></div>
+  <div class="footer" />
 </template>
 
 <style lang="scss" scoped>
@@ -87,10 +99,8 @@ getList()
   border-radius: 0.4rem;
   padding: 5rem;
   .icon {
-    :deep(.icon-svg) {
-      width: 21.5rem;
-      height: 21.5rem;
-    }
+    width: 21.5rem;
+    height: 21.5rem;
   }
   .info {
     font-size: 1.4rem;

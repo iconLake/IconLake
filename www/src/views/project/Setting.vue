@@ -4,7 +4,11 @@ import { useRoute } from 'vue-router'
 import UserVue from '../../components/User.vue'
 import HeaderVue from '../../components/Header.vue'
 import { useI18n } from 'vue-i18n'
-import { info } from '../../apis/project';
+import { info } from '@/apis/project';
+import { info as userInfo } from '@/apis/user';
+import { getHash, updateClass, getNftClass } from '@/apis/blockchain'
+import Loading from '@/components/Loading.vue'
+import { toast } from '@/utils'
 
 const { t } = useI18n()
 
@@ -12,12 +16,66 @@ const $route = useRoute()
 const projectId = $route.params.id as string
 const project = ref({
   name: '',
-  desc: ''
+  desc: '',
+  cover: '',
+  class: '',
 })
 const isInfoEditing = computed(() => /\/info$/i.test($route.path))
+const isUpdatingChain = ref(false)
+const isDiffFromChain = ref(false)
 
 async function getProject() {
-  project.value = await info(projectId, 'name desc')
+  project.value = await info(projectId, 'name desc cover class')
+  getChainProject()
+}
+
+async function getChainProject() {
+  const info = await getNftClass(projectId).catch(() => {})
+  isDiffFromChain.value = !info
+    || !info.class
+    || info.class.name !== project.value.name
+    || info.class.description !== project.value.desc
+    || info.class.symbol !== project.value.class
+    || info.class.uri !== project.value.cover
+}
+
+async function updateChain(e: Event) {
+  e.preventDefault()
+  const uri = project.value.cover
+  if (!uri) {
+    toast(t('setCoverFirst'))
+    return
+  }
+  if (isUpdatingChain.value) {
+    return
+  }
+  isUpdatingChain.value = true
+  const hash = await getHash(uri)
+  const user = await userInfo()
+  if (!user.blockchain?.id) {
+    return
+  }
+  const res = await updateClass({
+    creator: user.blockchain?.id,
+    id: projectId,
+    name: project.value.name,
+    description: project.value.desc,
+    symbol: project.value.class,
+    uri,
+    uriHash: hash.file_hash ?? '',
+  }).catch((err) => {
+    console.error(err)
+    toast(err.message ?? t('updateFailed'))
+  })
+  if (res) {
+    if (res?.code === 0) {
+      toast(t('updateCompleted'))
+      isDiffFromChain.value = false
+    } else {
+      toast(res?.rawLog ?? t('updateFailed'))
+    }
+  }
+  isUpdatingChain.value = false
 }
 
 getProject()
@@ -28,42 +86,84 @@ getProject()
   <UserVue />
   <div class="flex start main">
     <div class="menu">
-      <router-link class="item" active-class="active" to="./info">
-        <i class="iconfont icon-info"></i>
-        <span>{{t('projectInfo')}}</span>
+      <router-link
+        class="item"
+        active-class="active"
+        to="./info"
+      >
+        <i class="iconfont icon-info" />
+        <span>{{ t('projectInfo') }}</span>
       </router-link>
-      <router-link class="item" active-class="active" to="./group">
-        <i class="iconfont icon-group"></i>
-        <span>{{t('iconGroup')}}</span>
+      <router-link
+        class="item"
+        active-class="active"
+        to="./group"
+      >
+        <i class="iconfont icon-group" />
+        <span>{{ t('iconGroup') }}</span>
       </router-link>
-      <router-link class="item" active-class="active" to="./member">
-        <i class="iconfont icon-member"></i>
-        <span>{{t('projectMember')}}</span>
+      <router-link
+        class="item"
+        active-class="active"
+        to="./member"
+      >
+        <i class="iconfont icon-member" />
+        <span>{{ t('projectMember') }}</span>
       </router-link>
-      <router-link class="item" active-class="active" to="./monitor">
-        <i class="iconfont icon-monitor"></i>
-        <span>{{t('monitor')}}</span>
+      <router-link
+        class="item"
+        active-class="active"
+        to="./monitor"
+      >
+        <i class="iconfont icon-monitor" />
+        <span>{{ t('monitor') }}</span>
       </router-link>
-      <router-link class="item" active-class="active" to="./advance">
-        <i class="iconfont icon-setting"></i>
-        <span>{{t('advance')}}</span>
+      <router-link
+        class="item"
+        active-class="active"
+        to="./advance"
+      >
+        <i class="iconfont icon-setting" />
+        <span>{{ t('advance') }}</span>
       </router-link>
     </div>
     <div class="content grow">
-      <router-link to="./info" class="flex info">
+      <router-link
+        to="./info"
+        class="flex info"
+        :style="{
+          'background-image': `url(${project.cover})`
+        }"
+      >
         <div class="grow">
           <div class="flex">
-            <div class="title">{{project.name}}</div>
-            <i v-if="!isInfoEditing" class="iconfont icon-edit"></i>
+            <div class="title">
+              {{ project.name }}
+            </div>
+            <i
+              v-if="!isInfoEditing"
+              class="iconfont icon-edit"
+            />
           </div>
-          <div class="desc">{{project.desc}}</div>
+          <div class="desc">
+            {{ project.desc }}
+          </div>
         </div>
-        <div class="icon"></div>
+        <div
+          v-if="isDiffFromChain"
+          class="btn update-chain"
+          @click="updateChain"
+        >
+          <Loading v-if="isUpdatingChain" />
+          <span v-else>
+            {{ t('UpdateOnchainInformation') }}
+          </span>
+        </div>
       </router-link>
-      <router-view></router-view>
+      <router-view />
     </div>
   </div>
-  <div class="footer"></div>
+  <div class="footer" />
 </template>
 
 <style lang="scss" scoped>
@@ -104,6 +204,9 @@ getProject()
   background: #fff;
   border-radius: 0.4rem;
   margin-bottom: 2.2rem;
+  background-size: cover;
+  background-position: center;
+  position: relative;
   .title {
     font-size: 1.8rem;
     font-weight: bold;
@@ -117,6 +220,12 @@ getProject()
     line-height: 2rem;
     margin-top: 1.5rem;
     word-break: break-all;
+  }
+  .update-chain {
+    box-shadow: 0.075rem 0.369rem 0.413rem 0.025rem rgba(0, 0, 0, 0.2);
+    position: absolute;
+    right: 1.125rem;
+    bottom: 1.125rem;
   }
 }
 </style>
