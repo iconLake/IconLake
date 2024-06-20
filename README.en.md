@@ -2,6 +2,12 @@
 
 iconLake - You Create, You Own!
 
+## Stay tuned
+
+iconLake 2.0 will be launched soon!
+
+Be the first to experience the test version: [https://test.iconlake.com/](https://test.iconlake.com/) (Test version data may be cleared at any time, for experience only!)
+
 ## Goal
 
 Build a full life cycle management tool for creation in the web3.0 era.
@@ -44,7 +50,7 @@ Let us participate in the "infinite game" of iconLake and inject infinite possib
 Whether you are a development engineer, designer, product manager, operator, operation and maintenance, tester, user... iconLake needs you.
 
 <p align="center">
-   <img src="./manage/resources/wxgroup.jpg" alt="Join us" width="300" />
+   <img src="./documents/resources/wxgroup.jpg" alt="Join us" width="300" />
 </p>
 
 ## Q&A

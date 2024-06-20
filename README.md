@@ -2,6 +2,12 @@
 
 iconLake - You Create, You Own!
 
+## 敬请期待
+
+iconLake 2.0 将于近期上线！
+
+测试版抢先体验：[https://test.iconlake.com/](https://test.iconlake.com/) （测试版数据随时会被清空，仅可用于体验！）
+
 ## 目标
 
 构建web3.0时代的创作全生命周期管理工具。
