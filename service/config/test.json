@@ -39,8 +39,8 @@
   },
   "blockchain": {
     "public": {
-      "rpc": "https://node.test.iconlake.com:26657",
-      "lcd": "https://node.test.iconlake.com:1317",
+      "rpc": "https://rpc.testnet.iconlake.com",
+      "lcd": "https://lcd.testnet.iconlake.com",
       "backendService": {
         "initDROP": false
       }
