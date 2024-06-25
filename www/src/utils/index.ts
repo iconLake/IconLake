@@ -1,6 +1,16 @@
 import { locale, messages } from '../i18n'
 import { DROP_DENOM, DROP_DENOM_MINI, LAKE_DENOM, PUBLIC_PAGES } from './const'
 
+const toastList: {
+  params: {
+    msg: string
+    type?: 'success'|'warn'|'error'
+  }
+  timer: NodeJS.Timeout
+  dom: Element
+  createTime: number
+}[] = []
+
 const toastContainer = document.createElement('div')
 toastContainer.className = 'toast-container'
 document.body.appendChild(toastContainer)
@@ -9,6 +19,12 @@ document.body.appendChild(toastContainer)
  * 提示消息
  */
 export function toast (msg: string, type?: 'success'|'warn'|'error') {
+  if (toastList.length > 0) {
+    const lastToast = toastList[toastList.length - 1]
+    if (lastToast.params.msg === msg && lastToast.params.type === type && Date.now() - lastToast.createTime < 500) {
+      return
+    }
+  }
   const dom = document.createElement('div')
   dom.className = `toast ${type || ''}`
   dom.innerText = msg
@@ -23,6 +39,15 @@ export function toast (msg: string, type?: 'success'|'warn'|'error') {
     timer = setTimeout(() => {
       toastContainer.removeChild(dom)
     }, 500)
+  })
+  toastList.push({
+    params: {
+      msg,
+      type
+    },
+    timer,
+    dom,
+    createTime: Date.now()
   })
 }
 

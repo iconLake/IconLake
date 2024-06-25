@@ -1,9 +1,14 @@
 {
-  "rpc": "https://rpc.mainnet.iconlake.com",
-  "rest": "https://lcd.mainnet.iconlake.com",
+  "rpc": "https://rpc.iconlake.com",
+  "rest": "https://lcd.iconlake.com",
+  "nodeProvider": {
+    "name": "iconLake",
+    "email": "support@iconlake.com",
+    "website": "https://iconlake.com/"
+  },
   "chainId": "iconlake-1",
   "chainName": "iconLake",
-  "chainSymbolImageUrl": "https://iconlake.com/imgs/logo.svg",
+  "chainSymbolImageUrl": "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/iconlake/logo.png",
   "bip44": {
     "coinType": 1009
   },
@@ -24,20 +29,20 @@
     "coinDenom": "LAKE",
     "coinMinimalDenom": "ulake",
     "coinDecimals": 6,
-    "coinImageUrl": "https://iconlake.com/imgs/logo.svg"
+    "coinImageUrl": "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/iconlake/ulake.png"
   },
   "currencies": [
     {
       "coinDenom": "LAKE",
       "coinMinimalDenom": "ulake",
       "coinDecimals": 6,
-      "coinImageUrl": "https://iconlake.com/imgs/logo.svg"
+      "coinImageUrl": "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/iconlake/ulake.png"
     },
     {
       "coinDenom": "DROP",
       "coinMinimalDenom": "udrop",
       "coinDecimals": 4,
-      "coinImageUrl": "https://iconlake.com/imgs/logo.svg"
+      "coinImageUrl": "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/iconlake/udrop.png"
     }
   ],
   "feeCurrencies": [
@@ -45,18 +50,18 @@
       "coinDenom": "DROP",
       "coinMinimalDenom": "udrop",
       "coinDecimals": 4,
-      "coinImageUrl": "https://iconlake.com/imgs/logo.svg",
+      "coinImageUrl": "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/iconlake/udrop.png",
       "gasPriceStep": {
-        "low": 0.01,
-        "average": 0.05,
-        "high": 0.1
+        "low": 0.1,
+        "average": 0.5,
+        "high": 1
       }
     },
     {
       "coinDenom": "LAKE",
       "coinMinimalDenom": "ulake",
       "coinDecimals": 6,
-      "coinImageUrl": "https://iconlake.com/imgs/logo.svg",
+      "coinImageUrl": "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/iconlake/ulake.png",
       "gasPriceStep": {
         "low": 0.01,
         "average": 0.025,

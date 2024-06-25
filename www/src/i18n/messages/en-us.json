@@ -166,5 +166,8 @@
   "blockchainConfirmationFailed": "Blockchain confirmation failed",
   "burnIcon": "Destroy on-chain certificate",
   "burnDone": "Destroyed successfully",
-  "burnFailed": "Destruction failed"
+  "burnFailed": "Destruction failed",
+  "beianHtml": "",
+  "chooseIconfontJSFirst": "Please upload iconfont.js first",
+  "waitForUploadFinish": "Please wait for the upload to finish"
 }
