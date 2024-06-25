@@ -10,8 +10,8 @@ import i18n from '@/i18n'
 
 const baseURL = '/api/blockchain/'
 
-const apiURL = IS_PRODUCTION ? 'https://lcd.mainnet.iconlake.com' : 'https://lcd.testnet.iconlake.com'
-const rpcURL = IS_PRODUCTION ? 'https://rpc.mainnet.iconlake.com' : 'https://rpc.testnet.iconlake.com'
+const apiURL = IS_PRODUCTION ? 'https://lcd.iconlake.com' : 'https://lcd.testnet.iconlake.com'
+const rpcURL = IS_PRODUCTION ? 'https://rpc.iconlake.com' : 'https://rpc.testnet.iconlake.com'
 const prefix = 'iconlake'
 
 const { t } = i18n.global
