@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { onBeforeMount, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { addIcon, BaseIcon, info, uploadFile } from '../../apis/project'
@@ -29,6 +29,12 @@ const data = reactive({
 
 const oldIcons: {[propName: string]: any} = {}
 
+const uploading = reactive({
+  success: 0,
+  fail: 0,
+  total: 0
+})
+
 async function getInfo () {
   const res = await info(data._id, 'name icons')
   data.name = res.name
@@ -37,7 +43,9 @@ async function getInfo () {
   })
 }
 
-getInfo()
+onBeforeMount(() => {
+  getInfo()
+})
 
 function getTabClass(type: Tab) {
   return data.activeTab === type ? 'active' : ''
@@ -66,6 +74,36 @@ function updateIcons() {
   data.icons = icons
 }
 
+function uploadSVG(code: string, content: string) {
+  return new Promise((resolve, reject) => {
+    const hash = MD5(content).toString()
+    uploadFile(data._id, `${hash}.svg`, content).then(res => {
+      if (cachedIcons.has(code)) {
+        Object.assign(cachedIcons.get(code) as Icon, {
+        code,
+        svg: {
+          url: res.url,
+        }
+      })
+      } else {
+        cachedIcons.set(code, {
+        code,
+        name: code,
+        svg: {
+          url: res.url,
+        }
+      })
+      }
+      updateIcons()
+      resolve(cachedIcons.get(code))
+    }).catch((err) => {
+      console.error(err)
+      toast.error(t('fileUploadFailed'))
+      reject(err)
+    })
+  })
+}
+
 function onSVGChange(e: Event) {
   const files = (e.target as HTMLInputElement).files
   if (files && files.length > 0) {
@@ -75,21 +113,7 @@ function onSVGChange(e: Event) {
       }
       const svgText = await readFileAsText(file)
       const code = file.name.substring(0, file.name.lastIndexOf('.'))
-      const hash = MD5(svgText).toString()
-      uploadFile(data._id, `${hash}.svg`, svgText).then(res => {
-        const svg = {
-          code,
-          name: code,
-          svg: {
-            url: res.url,
-          }
-        }
-        cachedIcons.set(code, svg)
-        updateIcons()
-      }).catch((err) => {
-        console.error(err)
-        toast.error(t('fileUploadFailed'))
-      })
+      uploadSVG(code, svgText)
     })
   }
 }
@@ -109,21 +133,15 @@ function onIconfontJSChange(e: Event) {
         symbols.forEach(symbol => {
           const props = symbol.match(/^<symbol.*?id="(.*?)".*?viewBox="(.*?)">(.*?)<\/symbol>$/i)
           if (props) {
-            const svg = {
-              id: props[1],
-              code: props[1],
-              svg: {
-                viewBox: props[2],
-                path: props[3]
-              }
-            }
-            if (!cachedIcons.has(svg.id)) {
-              cachedIcons.set(svg.id, {} as Icon)
-            }
-            Object.assign(cachedIcons.get(svg.id) as Icon, svg)
+            const svgText = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="${props[2]}">${props[3]}</svg>`
+            uploading.total++
+            uploadSVG(props[1], svgText).then(() => {
+              uploading.success++
+            }).catch(() => {
+              uploading.fail++
+            })
           }
         })
-        updateIcons()
       }
     }
     reader.onerror = () => {
@@ -152,6 +170,7 @@ function onIconfontJSONChange(e: Event) {
               cachedIcons.set(id, {} as Icon)
             }
             Object.assign(cachedIcons.get(id) as Icon, {
+              id,
               name: icon.name,
               prefix
             })
@@ -169,6 +188,10 @@ function onIconfontJSONChange(e: Event) {
 }
 
 async function save () {
+  if (uploading.success + uploading.fail < uploading.total) {
+    toast.error(t('waitForUploadFinish'))
+    return
+  }
   await addIcon(data._id, data.icons)
   toast.success(t('saveDone'))
   $router.replace(`/icons/${data._id}`)
