@@ -12,7 +12,7 @@ app.use('/task', taskRouter)
 app.use('/', indexRouter)
 
 app.listen(config.http.port, () => {
-  console.log(`[${new Date()}]`, `Service[${env}] listening at http://127.0.0.1:${config.http.port}`)
+  console.log(`Service[${env}] listening at http://127.0.0.1:${config.http.port}`)
 })
 
 /**

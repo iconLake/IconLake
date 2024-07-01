@@ -3,12 +3,17 @@ import { getConfig } from '../config/index.js'
 
 const config = getConfig()
 
+mongoose.set('strictQuery', false)
+
 async function main () {
   await mongoose.connect(config.mongodb.uri)
 }
 
-export function init () {
-  main().then(() => {
-    console.log(`[${new Date()}]`, 'DB is ready.')
-  }).catch(console.error)
+export async function init () {
+  try {
+    await main()
+    console.log('DB is ready.')
+  } catch (err) {
+    console.error(err)
+  }
 }
