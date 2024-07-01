@@ -29,7 +29,7 @@ export function start () {
     endTime = Date.now()
     const milliseconds = endTime - startTime
     const hours = Math.floor(milliseconds / 3600000)
-    const minutes = Math.floor(milliseconds / 60000)
+    const minutes = Math.floor(milliseconds % 3600000 / 60000)
     const seconds = Math.floor((milliseconds % 60000) / 1000)
     const remainingMilliseconds = milliseconds % 1000
     console.log(`finish project tasks ${moment(endTime).format()}, cost ${hours}h ${minutes}m ${seconds}s ${remainingMilliseconds}ms`)
