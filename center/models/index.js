@@ -3,6 +3,8 @@ import { getConfig } from '../config/index.js'
 
 const config = getConfig()
 
+mongoose.set('strictQuery', false)
+
 async function main () {
   await mongoose.connect(config.mongodb.uri)
 }
