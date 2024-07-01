@@ -14,6 +14,32 @@ const cos = isActive
   : null
 
 /**
+ * 检查对象是否存在
+ * @param {string} key
+ */
+function tencentHasObject (key) {
+  return new Promise((resolve) => {
+    cos.headObject({
+      Bucket: config.bucket,
+      Region: config.region,
+      Key: key
+    }, (_err, data) => {
+      if (data) {
+        resolve(true)
+      } else {
+        resolve(false)
+      }
+    })
+  })
+}
+
+export const hasObject = isActive
+  ? {
+      [CLOUD_TYPE.TENCENT]: tencentHasObject
+    }[config.type]
+  : () => {}
+
+/**
  * 上传对象
  * @param {string} key
  * @param {Buffer} body

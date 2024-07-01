@@ -51,6 +51,7 @@ module.exports = {
     instances,
     exec_mode: 'cluster',
     watch,
-    max_memory_restart: '4G'
+    max_memory_restart: '4G',
+    log_date_format: 'YYYY-MM-DD HH:mm:ss'
   }]
 }

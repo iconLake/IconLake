@@ -48,7 +48,7 @@ app.use('/visit', visitRouter)
 
 if (config.http && config.http.port) {
   http.createServer(app).listen(config.http.port, () => {
-    console.log(`[${new Date()}]`, `Service[${env}] listening at http://127.0.0.1:${config.http.port}`)
+    console.log(`Service[${env}] listening at http://127.0.0.1:${config.http.port}`)
   })
 }
 
@@ -58,16 +58,16 @@ if (config.https && config.https.port) {
     key: fs.readFileSync(config.https.key),
     cert: fs.readFileSync(config.https.cert)
   }, app).listen(config.https.port, () => {
-    console.log(`[${new Date()}]`, `Service[${env}] listening at https://127.0.0.1:${config.https.port}`)
+    console.log(`Service[${env}] listening at https://127.0.0.1:${config.https.port}`)
   })
 }
 
 /**
  * 初始化数据库
  */
-initDB()
-
-/**
- * 初始化定时任务
- */
-initCron()
+initDB().then(() => {
+  /**
+   * 初始化定时任务
+   */
+  initCron()
+})
