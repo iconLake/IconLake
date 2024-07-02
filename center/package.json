@@ -19,7 +19,7 @@
   "license": "AGPLv3",
   "dependencies": {
     "express": "^4.18.2",
-    "mongoose": "^6.6.5"
+    "mongoose": "^8.4.4"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
