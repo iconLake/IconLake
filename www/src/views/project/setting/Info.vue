@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { editInfo, info, uploadFile } from '../../../apis/project'
@@ -7,8 +7,10 @@ import { getExt, toast } from '../../../utils'
 import { ElSwitch, ElUpload } from 'element-plus'
 import type { UploadFile } from 'element-plus'
 import { UPLOAD_DIR } from '@/utils/const'
+import { usePageLoading } from '@/hooks/router'
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
 
 const $route = useRoute()
 
@@ -51,7 +53,11 @@ async function handleUpload(file: UploadFile) {
   project.value.cover = res.url
 }
 
-getProject()
+onMounted(() => {
+  getProject().finally(() => {
+    pageLoading.end()
+  })
+})
 </script>
 
 <template>

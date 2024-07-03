@@ -169,5 +169,6 @@
   "burnFailed": "Destruction failed",
   "beianHtml": "",
   "chooseIconfontJSFirst": "Please upload iconfont.js first",
-  "waitForUploadFinish": "Please wait for the upload to finish"
+  "waitForUploadFinish": "Please wait for the upload to finish",
+  "invalidParams": "Invalid Parameters"
 }

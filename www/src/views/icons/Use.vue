@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watchPostEffect } from 'vue'
+import { computed, onMounted, reactive, ref, watchPostEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { info, Files, genIcon, FileInfo, setExpire, Member } from '@/apis/project'
@@ -9,8 +9,11 @@ import { copy, toast } from '@/utils'
 import { PERMANENT_FILE_EXPIRE, TEMPORARY_FILE_EXPIRE, ONE_DAY_SECONDS } from '@/utils/const'
 import { ElSwitch } from 'element-plus'
 import * as user from '@/apis/user'
+import { usePageLoading } from '@/hooks/router'
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
+
 const $route = useRoute()
 
 type Tab = 'css'|'js'|'vue'|'react'
@@ -103,7 +106,11 @@ async function getInfo () {
   Object.assign(data, res)
 }
 
-getInfo()
+onMounted(() => {
+  getInfo().finally(() => {
+    pageLoading.end()
+  })
+})
 
 function getTabClass(type: Tab) {
   return data.activeTab === type ? 'active' : ''

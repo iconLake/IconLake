@@ -1,22 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useRouter } from 'vue-router'
+import { usePageLoading } from './hooks/router';
 
 const $router = useRouter()
-const routeStatus = ref(0)
+
+const pageLoading = usePageLoading()
 
 $router.beforeEach((to, from) => {
-  routeStatus.value = 0
-  setTimeout(() => {
-    routeStatus.value = 1
-  })
+  pageLoading.start()
   to.meta.referer = from.fullPath
-})
-
-$router.afterEach(() => {
-  setTimeout(() => {
-    routeStatus.value = 2
-  })
 })
 </script>
 
@@ -24,7 +16,7 @@ $router.afterEach(() => {
   <div class="progress">
     <div
       class="progress-bar"
-      :class="['', 'routing', 'done'][routeStatus]"
+      :class="['', 'routing', 'done'][pageLoading.status.value]"
     />
   </div>
   <router-view />
@@ -44,7 +36,7 @@ $router.afterEach(() => {
     width: 0%;
     &.routing {
       width: 90%;
-      transition: all 3s ease-out;
+      transition: all 10s ease-out;
     }
     &.done {
       opacity: 0;

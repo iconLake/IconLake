@@ -11,8 +11,10 @@ import { getSignMsg } from '@/utils/blockchain'
 import { DROP_DENOM_MINI, LAKE_DENOM_MINI, LAKE_DENOM, DROP_DENOM, MINT_DROP_AMOUNT_MAX, MINT_DROP_AMOUNT_MIN } from '@/utils/const'
 import type { IconlakeiconClass } from '@iconlake/client/types/iconlake.icon/rest'
 import { useI18n } from 'vue-i18n'
+import { usePageLoading } from '@/hooks/router'
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
 
 type ClassInfo = IconlakeiconClass & {
   url?: string
@@ -219,11 +221,12 @@ function copyShareMsg() {
   toast(t('copyDone'))
 }
 
-getBlockchainInfo()
 onMounted(async () => {
+  getBlockchainInfo()
   userInfo.value = await info()
-  getAssets()
-  getNftClasses()
+  Promise.all([getAssets(), getNftClasses()]).finally(() => {
+    pageLoading.end()
+  })
 })
 </script>
 

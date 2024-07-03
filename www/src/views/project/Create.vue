@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import HeaderVue from '../../components/Header.vue'
-import { computed, reactive } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { create as createProject } from "../../apis/project";
 import { toast } from "../../utils";
 import router from "../../router";
 import { useI18n } from 'vue-i18n'
+import { usePageLoading } from '@/hooks/router';
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
 
 const fmData = reactive({
   _id: '',
@@ -14,11 +16,17 @@ const fmData = reactive({
   desc: ''
 })
 
+const isLoading = ref(false)
+
 const isChecked = computed(() => {
   return fmData.name
 })
 
 async function create () {
+  if (isLoading.value) {
+    return
+  }
+  isLoading.value = true
   const data = await createProject({
     name: fmData.name,
     desc: fmData.desc
@@ -28,6 +36,9 @@ async function create () {
   toast.success(t('creatingProjectDone'))
 }
 
+onMounted(() => {
+  pageLoading.end()
+})
 </script>
 
 <template>

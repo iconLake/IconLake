@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { delMember, getMembers, info, Member, updateInviteCode } from '../../../apis/project';
 import { confirm, copy, toast } from '../../../utils';
 import { useI18n } from 'vue-i18n'
+import { usePageLoading } from '@/hooks/router';
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
 
 const route = useRoute()
 const projectId = route.params.id as string
@@ -30,13 +32,15 @@ async function getProject() {
   }
 }
 
-getProject()
-
 async function getList() {
   members.value = await getMembers(projectId)
 }
 
-getList()
+onMounted(() => {
+  Promise.all([getProject(), getList()]).finally(() => {
+    pageLoading.end()
+  })
+})
 
 async function updateCode() {
   const data = await updateInviteCode(projectId)

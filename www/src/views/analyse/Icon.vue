@@ -4,11 +4,13 @@ import IconVue from '../../components/Icon.vue'
 import HeaderVue from '../../components/Header.vue'
 import { useRoute } from 'vue-router'
 import { getIcon, getIconPages, Icon } from '../../apis/project'
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { formatTime } from '../../utils'
+import { usePageLoading } from '@/hooks/router'
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
 
 const $route = useRoute()
 
@@ -38,8 +40,11 @@ async function getList() {
   }
 }
 
-getInfo()
-getList()
+onMounted(() => {
+  Promise.all([getInfo(), getList()]).finally(() => {
+    pageLoading.end()
+  })
+})
 </script>
 
 <template>
