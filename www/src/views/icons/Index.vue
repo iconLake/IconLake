@@ -13,8 +13,10 @@ import { useI18n } from 'vue-i18n'
 import Select from '@/components/Select.vue'
 import * as user from '@/apis/user'
 import { ElTooltip } from 'element-plus'
+import { usePageLoading } from '@/hooks/router'
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
 
 const $route = useRoute()
 
@@ -119,8 +121,6 @@ function groupFilter (group: Group) {
   return data.keyword ? group.icons.length > 0 : true
 }
 
-getIcons()
-
 const mainDom = ref<HTMLElement>()
 const iconListDom = ref<Element>()
 const detailDom = ref<{ root: Element }>()
@@ -175,6 +175,9 @@ function updateMainWidth () {
 
 onMounted(() => {
   detailWidth = detailDom.value?.root.getBoundingClientRect().width || 200
+  getIcons().finally(() => {
+    pageLoading.end()
+  })
 })
 
 function selectIcon(icon:Icon, e:MouseEvent) {

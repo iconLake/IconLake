@@ -4,7 +4,7 @@ import { getHash, mintIcon, getAccount, getTx, getChainAccount, burnIcon } from 
 import Header from '@/components/Header.vue'
 import Icon from '@/components/Icon.vue'
 import User from '@/components/User.vue'
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { toast } from '@/utils'
 import { info } from '@/apis/user'
@@ -12,8 +12,11 @@ import type { UserInfo } from '@/apis/user'
 import LoadingVue from '@/components/Loading.vue'
 import { useI18n } from 'vue-i18n'
 import { IS_PRODUCTION } from '@/utils/const'
+import { usePageLoading } from '@/hooks/router'
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
+
 const $route = useRoute()
 const projectId = ref($route.params.projectId as string)
 const id = ref($route.params.id as string)
@@ -136,8 +139,11 @@ async function onBurnIcon() {
   }
 }
 
-getIconInfo()
-checkChainAccount()
+onMounted(() => {
+  Promise.all([getIconInfo(), checkChainAccount()]).finally(() => {
+    pageLoading.end()
+  })
+})
 </script>
 
 <template>

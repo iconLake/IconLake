@@ -3,15 +3,17 @@ import { useRoute } from 'vue-router'
 import HeaderVue from '@/components/Header.vue'
 import UserVue from '@/components/User.vue'
 import LoadingVue from '@/components/Loading.vue'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { info } from '@/apis/user'
 import { getBalance, getDropInfo, initDrop } from '@/apis/blockchain'
 import { LAKE_DENOM_MINI } from '@/utils/const'
 import { toast } from '@/utils'
 import { useI18n } from 'vue-i18n'
 import { fromBech32 } from '@cosmjs/encoding'
+import { usePageLoading } from '@/hooks/router'
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
 
 const $route = useRoute()
 
@@ -61,19 +63,25 @@ async function getInfo() {
   if (!userInfo.value.blockchain?.id) {
     return
   }
-  getBalance(userInfo.value.blockchain.id, LAKE_DENOM_MINI).then(res => {
-    if (res?.amount) {
-      lakeAmount.value = +res?.amount
-    }
-  })
-  getDropInfo(addr.value).then(dropInfo => {
-    if (dropInfo.info?.last_mint_time) {
-      lastMintTime.value = +dropInfo.info?.last_mint_time
-    }
-  })
+  await Promise.all([
+    getBalance(userInfo.value.blockchain.id, LAKE_DENOM_MINI).then(res => {
+      if (res?.amount) {
+        lakeAmount.value = +res?.amount
+      }
+    }),
+    getDropInfo(addr.value).then(dropInfo => {
+      if (dropInfo.info?.last_mint_time) {
+        lastMintTime.value = +dropInfo.info?.last_mint_time
+      }
+    })
+  ])
 }
 
-getInfo()
+onMounted(() => {
+  getInfo().finally(() => {
+    pageLoading.end()
+  })
+})
 </script>
 
 <template>

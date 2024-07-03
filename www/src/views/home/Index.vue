@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { onMounted, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { list as getProjects, Project } from '../../apis/project'
 import IconVue from '../../components/Icon.vue'
 import UserVue from '../../components/User.vue'
+import { usePageLoading } from '@/hooks/router'
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
 
 const data = reactive({
   projects: [] as Project[],
   isLoading: true
 })
 
-getProjects().then(res => {
+onMounted(async () => {
+  const res = await getProjects().finally(() => {
+    data.isLoading = false
+    pageLoading.end()
+  })
   data.projects = res.list
-  data.isLoading = false
 })
 </script>
 

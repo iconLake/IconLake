@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import UserVue from '../../components/User.vue'
 import HeaderVue from '../../components/Header.vue'
@@ -9,8 +9,10 @@ import { info as userInfo } from '@/apis/user';
 import { getHash, updateClass, getNftClass } from '@/apis/blockchain'
 import Loading from '@/components/Loading.vue'
 import { toast } from '@/utils'
+import { usePageLoading } from '@/hooks/router'
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
 
 const $route = useRoute()
 const projectId = $route.params.id as string
@@ -78,7 +80,11 @@ async function updateChain(e: Event) {
   isUpdatingChain.value = false
 }
 
-getProject()
+onMounted(() => {
+  getProject().finally(() => {
+    pageLoading.end()
+  })
+})
 </script>
 
 <template>

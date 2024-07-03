@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { confirm } from '../../../utils'
 import { delGroup, editGroup, Group, info as getProjectInfo } from '../../../apis/project'
 import { useI18n } from 'vue-i18n'
+import { usePageLoading } from '@/hooks/router'
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
 
 const route = useRoute()
 
@@ -23,7 +25,11 @@ async function getList() {
   list.value = res.groups.sort((a, b) => b.num - a.num)
 }
 
-getList()
+onMounted(() => {
+  getList().finally(() => {
+    pageLoading.end()
+  })
+})
 
 function add () {
   const g:Group = {

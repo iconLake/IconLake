@@ -2,6 +2,10 @@
 import { useRoute, useRouter } from 'vue-router'
 import { acceptInvite } from '../../apis/project'
 import { toast } from '../../utils'
+import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n()
 
 const $route = useRoute()
 const router = useRouter()
@@ -13,10 +17,14 @@ async function accept() {
   router.replace(`/icons/${projectId}`)
 }
 
-if (projectId && code) {
-  accept()
-} else {
-  toast('参数错误')
-  router.replace('/home')
-}
+onMounted(async () => {
+  if (projectId && code) {
+    await accept().catch(() => {
+      router.replace('/home')
+    })
+  } else {
+    toast(t('invalidParams'))
+    router.replace('/home')
+  }
+})
 </script>

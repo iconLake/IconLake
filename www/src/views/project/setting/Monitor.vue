@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router';
 import { editMonitor, info, Monitor } from '../../../apis/project'
 import { copy, toast } from '../../../utils'
 import { useI18n } from 'vue-i18n'
+import { usePageLoading } from '@/hooks/router';
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
 
 const route = useRoute()
 const projectId = route.params.id as string
@@ -22,7 +24,11 @@ async function getProject() {
   monitor.value = res.monitor
 }
 
-getProject()
+onMounted(() => {
+  getProject().finally(() => {
+    pageLoading.end()
+  })
+})
 
 async function switchStatus() {
   monitor.value.isOn = !monitor.value.isOn

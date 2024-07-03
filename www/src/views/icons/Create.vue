@@ -7,8 +7,10 @@ import HeaderVue from '../../components/Header.vue'
 import UserVue from '../../components/User.vue'
 import { readFileAsText, toast } from '../../utils'
 import { MD5 } from 'crypto-js'
+import { usePageLoading } from '@/hooks/router'
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
 
 interface Icon extends BaseIcon {
   id?: string
@@ -44,7 +46,9 @@ async function getInfo () {
 }
 
 onBeforeMount(() => {
-  getInfo()
+  getInfo().finally(() => {
+    pageLoading.end()
+  })
 })
 
 function getTabClass(type: Tab) {

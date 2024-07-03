@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import { del as delProject, clean as cleanProject, info, Project } from '../../../apis/project'
 import { toast } from '../../../utils';
 import { useI18n } from 'vue-i18n'
+import { usePageLoading } from '@/hooks/router';
 
 const { t } = useI18n()
+const pageLoading = usePageLoading()
 
 const route = useRoute()
 const router = useRouter()
@@ -17,7 +19,11 @@ async function getProject() {
   project.value = await info(projectId, 'name desc')
 }
 
-getProject()
+onMounted(() => {
+  getProject().finally(() => {
+    pageLoading.end()
+  })
+})
 
 async function del() {
   await delProject(projectId, name.value)
