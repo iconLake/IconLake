@@ -20,7 +20,8 @@
   "projectMember": "项目成员",
   "monitor": "监控",
   "advance": "高级",
-  "feedback": "反馈",
+  "feedback": "反馈问题、提需求",
+  "feedbackUrl": "https://gitee.com/iconLake/IconLake/issues",
   "logout": "退出登录",
   "setting": "设置",
   "sync": "同步",
@@ -170,5 +171,7 @@
   "beianHtml": "<a href=\"https://beian.miit.gov.cn/\" target=\"_blank\">陕ICP备2020018382号-4</a>",
   "chooseIconfontJSFirst": "请先选择iconfont.js文件",
   "waitForUploadFinish": "请耐心等待上传完成",
-  "invalidParams": "参数错误"
+  "invalidParams": "参数错误",
+  "clearCachedData": "清除缓存的数据",
+  "clearCacheDone&Reload": "清除缓存成功，页面即将刷新"
 }

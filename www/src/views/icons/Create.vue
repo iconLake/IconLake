@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { onBeforeMount, reactive } from 'vue'
+import { onMounted, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
-import { addIcon, BaseIcon, info, uploadFile } from '../../apis/project'
+import { addIcon, BaseIcon, projectApis, uploadFile } from '../../apis/project'
 import HeaderVue from '../../components/Header.vue'
 import UserVue from '../../components/User.vue'
 import { readFileAsText, toast } from '../../utils'
@@ -38,14 +38,15 @@ const uploading = reactive({
 })
 
 async function getInfo () {
-  const res = await info(data._id, 'name icons')
-  data.name = res.name
-  res.icons.forEach(e => {
-    oldIcons[e.code] = e
+  projectApis.info(data._id, 'name icons').onUpdate(async (res) => {
+    data.name = res.name
+    res.icons.forEach(e => {
+      oldIcons[e.code] = e
+    })
   })
 }
 
-onBeforeMount(() => {
+onMounted(() => {
   getInfo().finally(() => {
     pageLoading.end()
   })

@@ -1,3 +1,4 @@
+import { cache } from '@/utils/cache'
 import request from '../utils/request'
 
 const baseURL = '/api/project/'
@@ -115,7 +116,44 @@ export interface ListRes {
   list: Project[]
 }
 
-export function list(fields?: string) {
+export const projectApis = {
+  get list() {
+    return cache.project.enable({
+      code: 'list',
+      executor: list
+    })
+  },
+  get info() {
+    return cache.project.enable({
+      code: (args) => args[0],
+      parents: ['list'],
+      executor: info
+    })
+  },
+  get getMembers() {
+    return cache.project.enable({
+      code: (args) => `${args[0]}-members`,
+      parents: (args) => [args[0], 'list'],
+      executor: getMembers
+    })
+  },
+  get getIcon() {
+    return cache.project.enable({
+      code: (args) => `${args[0]}-icon`,
+      parents: (args) => [args[0], 'list'],
+      executor: getIcon
+    })
+  },
+  get getIconPages() {
+    return cache.project.enable({
+      code: (args) => `${args[0]}-icon-pages`,
+      parents: (args) => [args[0], 'list'],
+      executor: getIconPages
+    })
+  },
+}
+
+function list(fields?: string) {
   return <Promise<ListRes>>request({
     url: '/list',
     params: {
@@ -126,6 +164,10 @@ export function list(fields?: string) {
 }
 
 export function create(data: any) {
+  cache.project.trigger({
+    code: 'create',
+    parents: ['list'],
+  })
   return <Promise<IdRes>>request({
     method: 'POST',
     url: '/info/edit',
@@ -135,6 +177,10 @@ export function create(data: any) {
 }
 
 export function del(_id: string, name: string) {
+  cache.project.trigger({
+    code: 'del',
+    parents: [_id, 'list'],
+  })
   return <Promise<Res>>request({
     method: 'POST',
     url: '/del',
@@ -147,6 +193,10 @@ export function del(_id: string, name: string) {
 }
 
 export function clean(_id: string, name: string) {
+  cache.project.trigger({
+    code: 'clean',
+    parents: [_id, 'list'],
+  })
   return <Promise<Res>>request({
     method: 'POST',
     url: '/clean',
@@ -158,7 +208,7 @@ export function clean(_id: string, name: string) {
   })
 }
 
-export function info(id: string, fields: string) {
+function info(id: string, fields: string) {
   return <Promise<Project>>request({
     url: `/info/${id}`,
     params: {
@@ -172,6 +222,10 @@ export function editInfo(_id: string, info: {
   name?: string
   desc?: string
 }) {
+  cache.project.trigger({
+    code: 'editInfo',
+    parents: [_id, 'list'],
+  })
   return <Promise<Res>>request({
     method: 'POST',
     url: '/info/edit',
@@ -184,6 +238,10 @@ export function editInfo(_id: string, info: {
 }
 
 export function editGroup(projectId: string, group: Group) {
+  cache.project.trigger({
+    code: 'editGroup',
+    parents: [projectId],
+  })
   return <Promise<IdRes>>request({
     method: 'POST',
     url: '/group/edit',
@@ -196,6 +254,10 @@ export function editGroup(projectId: string, group: Group) {
 }
 
 export function delGroup(projectId: string, _id: string) {
+  cache.project.trigger({
+    code: 'delGroup',
+    parents: [projectId],
+  })
   return <Promise<Res>>request({
     method: 'POST',
     url: '/group/del',
@@ -208,6 +270,10 @@ export function delGroup(projectId: string, _id: string) {
 }
 
 export function editMonitor(projectId: string, monitor: Monitor) {
+  cache.project.trigger({
+    code: 'editMonitor',
+    parents: [projectId],
+  })
   return <Promise<Res>>request({
     method: 'POST',
     url: '/monitor/edit',
@@ -219,7 +285,7 @@ export function editMonitor(projectId: string, monitor: Monitor) {
   })
 }
 
-export function getMembers(_id: string) {
+function getMembers(_id: string) {
   return <Promise<Member[]>>request({
     method: 'GET',
     url: '/member/list',
@@ -231,6 +297,10 @@ export function getMembers(_id: string) {
 }
 
 export function delMember(projectId: string, _id: string) {
+  cache.project.trigger({
+    code: 'delMember',
+    parents: [`${projectId}-members`, _id],
+  })
   return <Promise<Res>>request({
     method: 'POST',
     url: '/member/del',
@@ -243,6 +313,10 @@ export function delMember(projectId: string, _id: string) {
 }
 
 export function updateInviteCode(_id: string) {
+  cache.project.trigger({
+    code: 'updateInviteCode',
+    parents: [`${_id}-members`, _id],
+  })
   return <Promise<Invite>>request({
     method: 'POST',
     url: '/invite/updateCode',
@@ -254,6 +328,10 @@ export function updateInviteCode(_id: string) {
 }
 
 export function acceptInvite(_id: string, code: string) {
+  cache.project.trigger({
+    code: 'acceptInvite',
+    parents: [`${_id}-members`, _id, 'list'],
+  })
   return <Promise<Res>>request({
     method: 'POST',
     url: '/invite/accept',
@@ -265,7 +343,7 @@ export function acceptInvite(_id: string, code: string) {
   })
 }
 
-export function getIcon(projectId: string, _id: string) {
+function getIcon(projectId: string, _id: string) {
   return <Promise<{
     info: Icon
   }>>request({
@@ -280,6 +358,10 @@ export function getIcon(projectId: string, _id: string) {
 }
 
 export function addIcon(projectId: string, icons: BaseIcon[]) {
+  cache.project.trigger({
+    code: 'addIcon',
+    parents: [`${projectId}-icon`, projectId, 'list'],
+  })
   return <Promise<Res>>request({
     method: 'POST',
     url: '/icon/add',
@@ -292,6 +374,10 @@ export function addIcon(projectId: string, icons: BaseIcon[]) {
 }
 
 export function delIcon(projectId: string, _ids: string[]) {
+  cache.project.trigger({
+    code: 'delIcon',
+    parents: [`${projectId}-icon`, projectId, 'list'],
+  })
   return <Promise<Res>>request({
     method: 'POST',
     url: '/icon/del',
@@ -311,6 +397,10 @@ export function editIcon(projectId: string, _id: string, info: {
     url: string
   }
 }) {
+  cache.project.trigger({
+    code: 'editIcon',
+    parents: [`${projectId}-icon`, projectId, 'list'],
+  })
   return <Promise<Res>>request({
     method: 'POST',
     url: '/icon/edit',
@@ -324,6 +414,10 @@ export function editIcon(projectId: string, _id: string, info: {
 }
 
 export function addTag(projectId: string, _id: string, tag: string) {
+  cache.project.trigger({
+    code: 'addTag',
+    parents: [`${projectId}-icon`, projectId],
+  })
   return <Promise<Res>>request({
     method: 'POST',
     url: '/icon/addTag',
@@ -337,6 +431,10 @@ export function addTag(projectId: string, _id: string, tag: string) {
 }
 
 export function delTag(projectId: string, _id: string, tag: string) {
+  cache.project.trigger({
+    code: 'delTag',
+    parents: [`${projectId}-icon`, projectId],
+  })
   return <Promise<Res>>request({
     method: 'POST',
     url: '/icon/delTag',
@@ -349,7 +447,7 @@ export function delTag(projectId: string, _id: string, tag: string) {
   })
 }
 
-export function getIconPages(projectId: string, _id: string) {
+function getIconPages(projectId: string, _id: string) {
   return <Promise<{
     pages: IconPage[]
     updateTime: string
@@ -365,6 +463,10 @@ export function getIconPages(projectId: string, _id: string) {
 }
 
 export function batchGroupIcon(projectId: string, _ids: string[], groupId: string) {
+  cache.project.trigger({
+    code: 'batchGroupIcon',
+    parents: [`${projectId}-icon`, projectId],
+  })
   return <Promise<Res>>request({
     method: 'POST',
     url: '/icon/batchGroup',
@@ -378,6 +480,10 @@ export function batchGroupIcon(projectId: string, _ids: string[], groupId: strin
 }
 
 export function genIcon(projectId: string, type: 'css'|'js'|'vue'|'react') {
+  cache.project.trigger({
+    code: 'genIcon',
+    parents: [projectId],
+  })
   return <Promise<FileInfo>>request({
     method: 'POST',
     url: '/icon/gen',
@@ -390,6 +496,10 @@ export function genIcon(projectId: string, type: 'css'|'js'|'vue'|'react') {
 }
 
 export function setExpire(projectId: string, fileId: string, fileType: 'css'|'js', expire: number) {
+  cache.project.trigger({
+    code: 'setExpire',
+    parents: [projectId],
+  })
   return <Promise<FileInfo>>request({
     method: 'POST',
     url: '/icon/setExpire',

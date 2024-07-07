@@ -3,7 +3,7 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
-import { Group, Icon, info as getProjectInfo, delIcon, batchGroupIcon, editGroup, Member } from '../../apis/project'
+import { Group, Icon, projectApis, delIcon, batchGroupIcon, editGroup, Member } from '../../apis/project'
 import IconVue from '../../components/Icon.vue'
 import { confirm, toast } from '../../utils'
 import Detail from './Detail.vue'
@@ -62,21 +62,22 @@ const editable = computed(() => {
 })
 
 async function getIcons () {
-  const res = await getProjectInfo(data._id, 'name icons groups')
-  data.name = res.name
-  data.members = res.members
-  data.isPublic = res.isPublic
-  if (res.groups instanceof Array) {
-    data.groups = res.groups.sort((a, b) => b.num - a.num)
-    res.groups.forEach(e => {
-      data.groupMap[e._id] = e
-    })
-  }
-  if (res.icons instanceof Array) {
-    data.icons = res.icons.reverse()
-    getList()
-    nextTick(updateMainWidth)
-  }
+  projectApis.info(data._id, 'name icons groups').onUpdate(async res => {
+    data.name = res.name
+    data.members = res.members
+    data.isPublic = res.isPublic
+    if (res.groups instanceof Array) {
+      data.groups = res.groups.sort((a, b) => b.num - a.num)
+      res.groups.forEach(e => {
+        data.groupMap[e._id] = e
+      })
+    }
+    if (res.icons instanceof Array) {
+      data.icons = res.icons.reverse()
+      getList()
+      nextTick(updateMainWidth)
+    }
+  })
 }
 
 function getList () {

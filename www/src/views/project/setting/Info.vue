@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { editInfo, info, uploadFile } from '../../../apis/project'
+import { editInfo, projectApis, uploadFile } from '../../../apis/project'
 import { getExt, toast } from '../../../utils'
 import { ElSwitch, ElUpload } from 'element-plus'
 import type { UploadFile } from 'element-plus'
@@ -25,7 +25,9 @@ const project = ref({
 })
 
 async function getProject() {
-  project.value = await info(projectId, 'name desc cover class prefix')
+  projectApis.info(projectId, 'name desc cover class prefix').onUpdate(async res => {
+    project.value = res
+  })
 }
 
 async function save() {

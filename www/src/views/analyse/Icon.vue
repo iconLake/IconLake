@@ -3,7 +3,7 @@ import UserVue from '../../components/User.vue'
 import IconVue from '../../components/Icon.vue'
 import HeaderVue from '../../components/Header.vue'
 import { useRoute } from 'vue-router'
-import { getIcon, getIconPages, Icon } from '../../apis/project'
+import { projectApis, Icon } from '../../apis/project'
 import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { formatTime } from '../../utils'
@@ -28,16 +28,18 @@ const pageList = ref<Page[]>([])
 const updateTime = ref('--')
 
 async function getInfo() {
-  const data = await getIcon(projectId, _id)
-  Object.assign(icon, data)
+  projectApis.getIcon(projectId, _id).onUpdate(async data => {
+    Object.assign(icon, data)
+  })
 }
 
 async function getList() {
-  const data = await getIconPages(projectId, _id)
-  pageList.value = data.pages
-  if (data.updateTime) {
-    updateTime.value = formatTime(data.updateTime)
-  }
+  projectApis.getIconPages(projectId, _id).onUpdate(async data => {
+    pageList.value = data.pages
+    if (data.updateTime) {
+      updateTime.value = formatTime(data.updateTime)
+    }
+  })
 }
 
 onMounted(() => {

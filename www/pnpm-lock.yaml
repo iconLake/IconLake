@@ -20,6 +20,9 @@ importers:
       crypto-js:
         specifier: ^4.1.1
         version: 4.1.1
+      dexie:
+        specifier: ^4.0.7
+        version: 4.0.7
       element-plus:
         specifier: ^2.3.7
         version: 2.3.7(vue@3.3.4)
@@ -62,10 +65,10 @@ importers:
         version: 18.16.19
       '@vitejs/plugin-vue':
         specifier: ^3.2.0
-        version: 3.2.0(vite@3.2.7)(vue@3.3.4)
+        version: 3.2.0(vite@3.2.7(@types/node@18.16.19)(sass@1.63.6))(vue@3.3.4)
       '@vue/eslint-config-typescript':
         specifier: ^11.0.3
-        version: 11.0.3(eslint-plugin-vue@9.15.1)(eslint@8.44.0)(typescript@5.1.6)
+        version: 11.0.3(eslint-plugin-vue@9.15.1(eslint@8.44.0))(eslint@8.44.0)(typescript@5.1.6)
       '@vue/tsconfig':
         specifier: ^0.1.3
         version: 0.1.3(@types/node@18.16.19)
@@ -86,7 +89,7 @@ importers:
         version: 5.1.6
       unplugin-element-plus:
         specifier: ^0.4.1
-        version: 0.4.1(vite@3.2.7)
+        version: 0.4.1(esbuild@0.15.11)(rollup@2.79.1)(vite@3.2.7(@types/node@18.16.19)(sass@1.63.6))
       vite:
         specifier: ^3.2.7
         version: 3.2.7(@types/node@18.16.19)(sass@1.63.6)
@@ -684,6 +687,9 @@ packages:
   delayed-stream@1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
+
+  dexie@4.0.7:
+    resolution: {integrity: sha512-M+Lo6rk4pekIfrc2T0o2tvVJwL6EAAM/B78DNfb8aaxFVoI1f8/rz5KTxuAnApkwqTSuxx7T5t0RKH7qprapGg==}
 
   dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
@@ -2129,7 +2135,7 @@ snapshots:
 
   '@types/web-bluetooth@0.0.16': {}
 
-  '@typescript-eslint/eslint-plugin@5.60.1(@typescript-eslint/parser@5.60.1)(eslint@8.44.0)(typescript@5.1.6)':
+  '@typescript-eslint/eslint-plugin@5.60.1(@typescript-eslint/parser@5.60.1(eslint@8.44.0)(typescript@5.1.6))(eslint@8.44.0)(typescript@5.1.6)':
     dependencies:
       '@eslint-community/regexpp': 4.5.1
       '@typescript-eslint/parser': 5.60.1(eslint@8.44.0)(typescript@5.1.6)
@@ -2143,6 +2149,7 @@ snapshots:
       natural-compare-lite: 1.4.0
       semver: 7.5.3
       tsutils: 3.21.0(typescript@5.1.6)
+    optionalDependencies:
       typescript: 5.1.6
     transitivePeerDependencies:
       - supports-color
@@ -2154,6 +2161,7 @@ snapshots:
       '@typescript-eslint/typescript-estree': 5.60.1(typescript@5.1.6)
       debug: 4.3.4
       eslint: 8.44.0
+    optionalDependencies:
       typescript: 5.1.6
     transitivePeerDependencies:
       - supports-color
@@ -2170,6 +2178,7 @@ snapshots:
       debug: 4.3.4
       eslint: 8.44.0
       tsutils: 3.21.0(typescript@5.1.6)
+    optionalDependencies:
       typescript: 5.1.6
     transitivePeerDependencies:
       - supports-color
@@ -2185,6 +2194,7 @@ snapshots:
       is-glob: 4.0.3
       semver: 7.5.3
       tsutils: 3.21.0(typescript@5.1.6)
+    optionalDependencies:
       typescript: 5.1.6
     transitivePeerDependencies:
       - supports-color
@@ -2209,7 +2219,7 @@ snapshots:
       '@typescript-eslint/types': 5.60.1
       eslint-visitor-keys: 3.4.1
 
-  '@vitejs/plugin-vue@3.2.0(vite@3.2.7)(vue@3.3.4)':
+  '@vitejs/plugin-vue@3.2.0(vite@3.2.7(@types/node@18.16.19)(sass@1.63.6))(vue@3.3.4)':
     dependencies:
       vite: 3.2.7(@types/node@18.16.19)(sass@1.63.6)
       vue: 3.3.4
@@ -2260,14 +2270,15 @@ snapshots:
 
   '@vue/devtools-api@6.5.0': {}
 
-  '@vue/eslint-config-typescript@11.0.3(eslint-plugin-vue@9.15.1)(eslint@8.44.0)(typescript@5.1.6)':
+  '@vue/eslint-config-typescript@11.0.3(eslint-plugin-vue@9.15.1(eslint@8.44.0))(eslint@8.44.0)(typescript@5.1.6)':
     dependencies:
-      '@typescript-eslint/eslint-plugin': 5.60.1(@typescript-eslint/parser@5.60.1)(eslint@8.44.0)(typescript@5.1.6)
+      '@typescript-eslint/eslint-plugin': 5.60.1(@typescript-eslint/parser@5.60.1(eslint@8.44.0)(typescript@5.1.6))(eslint@8.44.0)(typescript@5.1.6)
       '@typescript-eslint/parser': 5.60.1(eslint@8.44.0)(typescript@5.1.6)
       eslint: 8.44.0
       eslint-plugin-vue: 9.15.1(eslint@8.44.0)
-      typescript: 5.1.6
       vue-eslint-parser: 9.3.1(eslint@8.44.0)
+    optionalDependencies:
+      typescript: 5.1.6
     transitivePeerDependencies:
       - supports-color
 
@@ -2280,8 +2291,9 @@ snapshots:
       '@vue/shared': 3.3.4
       minimatch: 9.0.2
       muggle-string: 0.3.1
-      typescript: 5.1.6
       vue-template-compiler: 2.7.14
+    optionalDependencies:
+      typescript: 5.1.6
 
   '@vue/reactivity-transform@3.3.4':
     dependencies:
@@ -2315,7 +2327,7 @@ snapshots:
   '@vue/shared@3.3.4': {}
 
   '@vue/tsconfig@0.1.3(@types/node@18.16.19)':
-    dependencies:
+    optionalDependencies:
       '@types/node': 18.16.19
 
   '@vue/typescript@1.8.3(typescript@5.1.6)':
@@ -2529,6 +2541,8 @@ snapshots:
       object-keys: 1.1.1
 
   delayed-stream@1.0.0: {}
+
+  dexie@4.0.7: {}
 
   dir-glob@3.0.1:
     dependencies:
@@ -3531,25 +3545,28 @@ snapshots:
       has-symbols: 1.0.3
       which-boxed-primitive: 1.0.2
 
-  unplugin-element-plus@0.4.1(vite@3.2.7):
+  unplugin-element-plus@0.4.1(esbuild@0.15.11)(rollup@2.79.1)(vite@3.2.7(@types/node@18.16.19)(sass@1.63.6)):
     dependencies:
       '@rollup/pluginutils': 4.2.1
       es-module-lexer: 0.10.5
       magic-string: 0.26.7
-      unplugin: 0.7.2(vite@3.2.7)
+      unplugin: 0.7.2(esbuild@0.15.11)(rollup@2.79.1)(vite@3.2.7(@types/node@18.16.19)(sass@1.63.6))
     transitivePeerDependencies:
       - esbuild
       - rollup
       - vite
       - webpack
 
-  unplugin@0.7.2(vite@3.2.7):
+  unplugin@0.7.2(esbuild@0.15.11)(rollup@2.79.1)(vite@3.2.7(@types/node@18.16.19)(sass@1.63.6)):
     dependencies:
       acorn: 8.8.0
       chokidar: 3.5.3
-      vite: 3.2.7(@types/node@18.16.19)(sass@1.63.6)
       webpack-sources: 3.2.3
       webpack-virtual-modules: 0.4.5
+    optionalDependencies:
+      esbuild: 0.15.11
+      rollup: 2.79.1
+      vite: 3.2.7(@types/node@18.16.19)(sass@1.63.6)
 
   uri-js@4.4.1:
     dependencies:
@@ -3564,14 +3581,14 @@ snapshots:
 
   vite@3.2.7(@types/node@18.16.19)(sass@1.63.6):
     dependencies:
-      '@types/node': 18.16.19
       esbuild: 0.15.11
       postcss: 8.4.19
       resolve: 1.22.1
       rollup: 2.79.1
-      sass: 1.63.6
     optionalDependencies:
+      '@types/node': 18.16.19
       fsevents: 2.3.2
+      sass: 1.63.6
 
   vue-demi@0.13.11(vue@3.3.4):
     dependencies:

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
-import { del as delProject, clean as cleanProject, info, Project } from '../../../apis/project'
+import { del as delProject, clean as cleanProject, projectApis, Project } from '../../../apis/project'
 import { toast } from '../../../utils';
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router';
@@ -16,7 +16,9 @@ const name = ref('')
 const project = ref<Project>()
 
 async function getProject() {
-  project.value = await info(projectId, 'name desc')
+  projectApis.info(projectId, 'name desc').onUpdate(async res => {
+    project.value = res
+  })
 }
 
 onMounted(() => {

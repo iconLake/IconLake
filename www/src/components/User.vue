@@ -3,7 +3,8 @@ import { reactive, ref } from 'vue'
 import Cookies from 'js-cookie'
 import { logout, info, UserInfo } from '../apis/user'
 import { useI18n } from 'vue-i18n'
-import { updateEncryptKey } from '@/utils/storage';
+import { clearCache } from '@/utils/cache';
+import { toast } from '@/utils';
 const { t } = useI18n()
 
 const locale = ref(Cookies.get('locale') || 'zh-cn')
@@ -26,7 +27,6 @@ const isLoggedIn = ref(false)
 async function getUserInfo () {
   Object.assign(userInfo, await info())
   isLoggedIn.value = true
-  updateEncryptKey(userInfo._id)
 }
 
 getUserInfo().catch(e => {
@@ -61,12 +61,22 @@ function showPop (isShow: boolean) {
 }
 
 async function userLogout() {
+  showPop(false)
   await logout()
+  clearCache()
   gotoLogin()
 }
 
 async function gotoLogin() {
   location.href = '/login'
+}
+
+function clearCachedData() {
+  clearCache()
+  toast(t('clearCacheDone&Reload'))
+  setTimeout(() => {
+    location.reload()
+  }, 1000)
 }
 </script>
 
@@ -118,11 +128,21 @@ async function gotoLogin() {
         <span>{{ language?.label }}</span>
         <span>{{ language?.value }}</span>
       </div>
+      <div
+        class="item flex"
+        @click="clearCachedData"
+      >
+        <span>{{ t('clearCachedData') }}</span>
+        <i class="iconfont icon-clean" />
+      </div>
       <a
-        href="https://support.qq.com/product/370032"
+        :href="t('feedbackUrl')"
         target="_blank"
         class="item flex"
-      >{{ t('feedback') }}</a>
+      >
+        <span>{{ t('feedback') }}</span>
+        <i class="iconfont icon-desc" />
+      </a>
       <div
         v-if="isLoggedIn"
         class="item flex"
