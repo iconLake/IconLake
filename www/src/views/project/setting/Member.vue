@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { delMember, getMembers, info, Member, updateInviteCode } from '../../../apis/project';
+import { delMember, projectApis, Member, updateInviteCode } from '../../../apis/project';
 import { confirm, copy, toast } from '../../../utils';
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router';
@@ -18,22 +18,25 @@ const members = ref<Member[]>([])
 const inviteLink = computed(() => `${location.origin}/manage/project/${projectId}/invite?code=${inviteCode.value}`)
 
 async function getProject() {
-  const data = await info(projectId, 'userId invite')
-  projectUserId.value = data.userId
-  if (!data.invite) {
-    updateCode()
-  } else {
-    const t = +new Date(data.invite.expired)
-    if (t - Date.now() < 60 * 1000) {
+  projectApis.info(projectId, 'userId invite').onUpdate(async data => {
+    projectUserId.value = data.userId
+    if (!data.invite) {
       updateCode()
     } else {
-      inviteCode.value = data.invite.code
+      const t = +new Date(data.invite.expired)
+      if (t - Date.now() < 60 * 1000) {
+        updateCode()
+      } else {
+        inviteCode.value = data.invite.code
+      }
     }
-  }
+  })
 }
 
 async function getList() {
-  members.value = await getMembers(projectId)
+  projectApis.getMembers(projectId).onUpdate(async data => {
+    members.value = data
+  })
 }
 
 onMounted(() => {

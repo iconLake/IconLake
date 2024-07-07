@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { list as getProjects, Project } from '../../apis/project'
+import { projectApis, Project } from '../../apis/project'
 import IconVue from '../../components/Icon.vue'
 import UserVue from '../../components/User.vue'
 import { usePageLoading } from '@/hooks/router'
@@ -14,12 +14,13 @@ const data = reactive({
   isLoading: true
 })
 
-onMounted(async () => {
-  const res = await getProjects().finally(() => {
+onMounted(() => {
+  projectApis.list().onUpdate(async function (res) {
+    data.projects = res.list
+  }).finally(() => {
     data.isLoading = false
     pageLoading.end()
   })
-  data.projects = res.list
 })
 </script>
 

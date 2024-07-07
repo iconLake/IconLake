@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { confirm } from '../../../utils'
-import { delGroup, editGroup, Group, info as getProjectInfo } from '../../../apis/project'
+import { delGroup, editGroup, Group, projectApis } from '../../../apis/project'
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router'
 
@@ -21,8 +21,9 @@ let isMoving = false
 let itemHeight = 0
 
 async function getList() {
-  const res = await getProjectInfo(projectId, 'groups')
-  list.value = res.groups.sort((a, b) => b.num - a.num)
+  projectApis.info(projectId, 'groups').onUpdate(async res => {
+    list.value = res.groups.sort((a, b) => b.num - a.num)
+  })
 }
 
 onMounted(() => {

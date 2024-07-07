@@ -1,6 +1,7 @@
 export const IS_PRODUCTION = !/test|debug|dev|localhost|127\.0\.0\.1/i.test(location.href)
 
 export const ONE_DAY_SECONDS = 24 * 3600 * 1000
+export const CACHE_MAX_AGE = 10 * 60 * 1000
 
 export const PERMANENT_FILE_EXPIRE = 9999
 export const TEMPORARY_FILE_EXPIRE = 30

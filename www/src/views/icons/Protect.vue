@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { editIcon, getIcon, Icon as IconType, uploadFile } from '@/apis/project'
+import { editIcon, projectApis, Icon as IconType, uploadFile } from '@/apis/project'
 import { getHash, mintIcon, getAccount, getTx, getChainAccount, burnIcon } from '@/apis/blockchain'
 import Header from '@/components/Header.vue'
 import Icon from '@/components/Icon.vue'
@@ -40,13 +40,14 @@ const txUrl = computed(() => {
 })
 
 async function getIconInfo() {
-  const icon = await getIcon(projectId.value, id.value)
-  Object.assign(iconInfo, icon.info)
-  if (icon.info.txHash) {
-    await getTx(icon.info.txHash).catch(() => {
-      iconInfo.txHash = undefined
-    })
-  }
+  projectApis.getIcon(projectId.value, id.value).onUpdate(async (icon) => {
+    Object.assign(iconInfo, icon.info)
+    if (icon.info.txHash) {
+      await getTx(icon.info.txHash).catch(() => {
+        iconInfo.txHash = undefined
+      })
+    }
+  })
 }
 
 async function publish() {

@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import UserVue from '../../components/User.vue'
 import HeaderVue from '../../components/Header.vue'
 import { useI18n } from 'vue-i18n'
-import { info } from '@/apis/project';
+import { projectApis } from '@/apis/project';
 import { info as userInfo } from '@/apis/user';
 import { getHash, updateClass, getNftClass } from '@/apis/blockchain'
 import Loading from '@/components/Loading.vue'
@@ -27,7 +27,9 @@ const isUpdatingChain = ref(false)
 const isDiffFromChain = ref(false)
 
 async function getProject() {
-  project.value = await info(projectId, 'name desc cover class')
+  await projectApis.info(projectId, 'name desc cover class').onUpdate(async (res) => {
+    project.value = res
+  })
   getChainProject()
 }
 

@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <script lang="ts" setup>
 import { computed, nextTick, reactive, ref, watch, watchEffect } from 'vue'
-import { addTag, delTag, editGroup, editIcon, getIconPages, Group, Icon, uploadFile } from '../../apis/project'
+import { addTag, delTag, editGroup, editIcon, projectApis, Group, Icon, uploadFile } from '../../apis/project'
 import IconComponent from '../../components/Icon.vue'
 import { copy, readFileAsText, toast } from '../../utils'
 import { useI18n } from 'vue-i18n'
@@ -155,13 +155,14 @@ async function getPageCount() {
     return
   }
   const id = props.info._id
-  const data = await getIconPages(props.projectId, id)
-  if (id !== props.info._id) {
-    return
-  }
-  props.info.analyse = {
-    pageCount: data.pages.length
-  }
+  projectApis.getIconPages(props.projectId, id).onUpdate(async data => {
+    if (id !== props.info._id) {
+      return
+    }
+    props.info.analyse = {
+      pageCount: data.pages.length
+    }
+  })
 }
 
 let idChangeTimer: NodeJS.Timeout

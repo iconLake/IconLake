@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref, watchPostEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import { info, Files, genIcon, FileInfo, setExpire, Member } from '@/apis/project'
+import { projectApis, Files, genIcon, FileInfo, setExpire, Member } from '@/apis/project'
 import HeaderVue from '@/components/Header.vue'
 import UserVue from '@/components/User.vue'
 import { copy, toast } from '@/utils'
@@ -96,14 +96,15 @@ watchPostEffect(() => {
 })
 
 async function getInfo () {
-  const res = await info(data._id, 'name files iconUpdateTime class prefix icons.length')
-  if (res.files.css) {
-    res.files.css.reverse()
-  }
-  if (res.files.js) {
-    res.files.js.reverse()
-  }
-  Object.assign(data, res)
+  projectApis.info(data._id, 'name files iconUpdateTime class prefix icons.length').onUpdate(async res => {
+    if (res.files.css) {
+      res.files.css.reverse()
+    }
+    if (res.files.js) {
+      res.files.js.reverse()
+    }
+    Object.assign(data, res)
+  })
 }
 
 onMounted(() => {
