@@ -58,7 +58,7 @@ const editable = computed(() => {
 })
 
 async function getIcons () {
-  projectApis.info(data._id, 'name icons groups').onUpdate(async res => {
+  await projectApis.info(data._id, 'name icons groups').onUpdate(async res => {
     data.name = res.name
     data.members = res.members
     data.isPublic = res.isPublic
