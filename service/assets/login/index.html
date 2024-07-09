@@ -8,6 +8,7 @@
   <title>${login} | iconLake - You Create, You Own!</title>
   <meta name="description" content="iconLake - You Create, You Own! Creation lifecycle management tool in web3.0">
   <link rel="icon" href="/imgs/favicon.ico" />
+  <link rel="stylesheet" href="https://cdn.iconlake.com/src/62baa706165a501ea7a68e00/fed7e3e397dcda3ac5080a9a520f63f1/iconlake.css">
   <link rel="stylesheet" href="/common/index.css">
   <link rel="stylesheet" href="/login/index.css">
 </head>
@@ -29,7 +30,10 @@
           <div class="t-center security">
             <img src="/imgs/login-security.png" alt="iconLake security">
           </div>
-          <div class="items">
+          <div id="loading" class="flex center">
+            <span class="loading iconfont icon-loading c-main" />
+          </div>
+          <div id="items" class="items hide">
             <div class="item keplr flex">
               <img src="/imgs/keplr.svg" alt="iconLake login with keplr">
               <span class="label">${auth}</span>
