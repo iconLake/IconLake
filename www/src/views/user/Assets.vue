@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getBalance, getDropInfo, initDrop, mintDrop, signMsg, getNftClass, verifyUriHash, getInfo, getNFTs } from '@/apis/blockchain'
 import type { BlockchainInfo } from '@/apis/blockchain'
-import { UserInfo, info, loginByBlockchain } from '@/apis/user'
+import { UserInfo, userApis, loginByBlockchain } from '@/apis/user'
 import { ref, onBeforeUnmount, reactive, computed, onMounted } from 'vue'
 import UserVue from '@/components/User.vue'
 import { formatDropAmount, formatLakeAmount, toast, copy } from '@/utils'
@@ -97,8 +97,10 @@ async function confirmAssets() {
   if (isConfirming.value) {
     return
   }
-  userInfo.value = await info()
-  if (!userInfo.value.blockchain) {
+  await userApis.info().onUpdate(async info => {
+    userInfo.value = info
+  })
+  if (!userInfo.value?.blockchain) {
     toast(t('bindBlockchainAccount'))
     return
   }
@@ -144,14 +146,21 @@ async function bindBlockchain() {
   if (!res) {
     return
   }
-  if (res.userId && res.userId !== (await info())._id) {
+  let uid
+  await userApis.info().onUpdate(async info => {
+    uid = info._id
+  })
+  if (res.userId && res.userId !== uid) {
     toast(t('alreadyBoundAndSwitch'))
     setTimeout(() => {
       location.reload()
     }, 2000)
   } else {
     toast(t('boundAndLoadAssets'))
-    userInfo.value = await info(true)
+    await userApis.clearCache()
+    await userApis.info().onUpdate(async info => {
+      userInfo.value = info
+    })
     await getAssets()
     isBinding.value = false
   }
@@ -223,7 +232,9 @@ function copyShareMsg() {
 
 onMounted(async () => {
   getBlockchainInfo()
-  userInfo.value = await info()
+  await userApis.info().onUpdate(async info => {
+    userInfo.value = info
+  })
   Promise.all([getAssets(), getNftClasses()]).finally(() => {
     pageLoading.end()
   })
@@ -324,7 +335,7 @@ onMounted(async () => {
     </button>
   </div>
   <div
-    v-if="isLoaded && userInfo?.blockchain?.id && !canInitDROP"
+    v-if="isLoaded && userInfo?.blockchain?.id && !canInitDROP && lastMintTime <= 0"
     class="help-init"
   >
     <p>{{ t('notEnoughLAKEToInitMintingDROP') }}</p>

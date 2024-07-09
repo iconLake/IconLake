@@ -8,7 +8,7 @@ import UserVue from '@/components/User.vue'
 import { copy, toast } from '@/utils'
 import { PERMANENT_FILE_EXPIRE, TEMPORARY_FILE_EXPIRE, ONE_DAY_SECONDS } from '@/utils/const'
 import { ElSwitch } from 'element-plus'
-import * as user from '@/apis/user'
+import { userApis, UserInfo } from '@/apis/user'
 import { usePageLoading } from '@/hooks/router'
 
 const { t } = useI18n()
@@ -18,11 +18,7 @@ const $route = useRoute()
 
 type Tab = 'css'|'js'|'vue'|'react'
 
-const userInfo = ref({} as user.UserInfo)
-
-user.info().then(u => {
-  userInfo.value = u
-})
+const userInfo = ref({} as UserInfo)
 
 const data = reactive({
   _id: $route.params.id as string,
@@ -108,6 +104,9 @@ async function getInfo () {
 }
 
 onMounted(() => {
+  userApis.info().onUpdate(async u => {
+    userInfo.value = u
+  })
   getInfo().finally(() => {
     pageLoading.end()
   })

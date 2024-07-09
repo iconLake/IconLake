@@ -11,7 +11,7 @@ import HeaderVue from '../../components/Header.vue'
 import UserVue from '../../components/User.vue'
 import { useI18n } from 'vue-i18n'
 import Select from '@/components/Select.vue'
-import * as user from '@/apis/user'
+import { userApis, UserInfo } from '@/apis/user'
 import { ElTooltip } from 'element-plus'
 import { usePageLoading } from '@/hooks/router'
 
@@ -20,11 +20,7 @@ const pageLoading = usePageLoading()
 
 const $route = useRoute()
 
-const userInfo = ref({} as user.UserInfo)
-
-user.info().then(u => {
-  userInfo.value = u
-})
+const userInfo = ref({} as UserInfo)
 
 const data = reactive({
   _id: $route.params.id as string,
@@ -176,6 +172,9 @@ function updateMainWidth () {
 
 onMounted(() => {
   detailWidth = detailDom.value?.root.getBoundingClientRect().width || 200
+  userApis.info().onUpdate(async u => {
+    userInfo.value = u
+  })
   getIcons().finally(() => {
     pageLoading.end()
   })

@@ -8,20 +8,28 @@ export interface UserInfo {
   }
 }
 
+import { cache } from '@/utils/cache'
 import request from '../utils/request'
 
 const baseURL = '/api/user/'
 
-let userInfo: UserInfo
+export const userApis = {
+  get info() {
+    return cache.user.enable({
+      code: 'info',
+      executor: info
+    })
+  },
+  get clearCache() {
+    return clearUserCache
+  }
+}
 
 /**
  * 获取用户信息
  */
-export async function info(isRefresh?: boolean) {
-  if (userInfo && !isRefresh) {
-    return userInfo
-  }
-  userInfo = await request({
+async function info() {
+  const userInfo = await request({
     url: '/info',
     baseURL
   }) as UserInfo
@@ -29,6 +37,12 @@ export async function info(isRefresh?: boolean) {
     userInfo.tokenExpire = new Date(userInfo.tokenExpire)
   }
   return userInfo
+}
+
+export async function clearUserCache() {
+  await cache.user.trigger({
+    code: 'info',
+  })
 }
 
 /**

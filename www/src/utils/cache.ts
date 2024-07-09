@@ -12,6 +12,7 @@ Dexie.debug = import.meta.env.DEV
 
 export enum ECacheModule {
   Project = 'project',
+  User = 'user',
 }
 
 interface ICacheModule {
@@ -139,7 +140,11 @@ export const cache = {
   project: {
     enable: <T>(props: IEnableProps<T>) => enableCache({...props, module: ECacheModule.Project}),
     trigger: (props: ITriggerProps) => triggerEffect({...props, module: ECacheModule.Project}),
-  }
+  },
+  user: {
+    enable: <T>(props: IEnableProps<T>) => enableCache({...props, module: ECacheModule.User}),
+    trigger: (props: ITriggerProps) => triggerEffect({...props, module: ECacheModule.User}),
+  },
 }
 
 export async function clearCache() {
