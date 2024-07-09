@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import Cookies from 'js-cookie'
-import { logout, info, UserInfo } from '../apis/user'
+import { logout, userApis, UserInfo } from '../apis/user'
 import { useI18n } from 'vue-i18n'
 import { clearCache } from '@/utils/cache';
 import { toast } from '@/utils';
@@ -25,14 +25,18 @@ const userInfo = reactive({} as UserInfo)
 const isLoggedIn = ref(false)
 
 async function getUserInfo () {
-  Object.assign(userInfo, await info())
-  isLoggedIn.value = true
+  userApis.info().onUpdate(async info => {
+    Object.assign(userInfo, info)
+    isLoggedIn.value = true
+  })
 }
 
-getUserInfo().catch(e => {
-  if (e.error === 'userNotLogin') {
-    isLoggedIn.value = false
-  }
+onMounted(() => {
+  getUserInfo().catch(e => {
+    if (e.error === 'userNotLogin') {
+      isLoggedIn.value = false
+    }
+  })
 })
 
 function setLocale (v:string) {
@@ -62,6 +66,7 @@ function showPop (isShow: boolean) {
 
 async function userLogout() {
   showPop(false)
+  toast(t('loggingOut'))
   await logout()
   clearCache()
   gotoLogin()

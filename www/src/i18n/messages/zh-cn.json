@@ -173,5 +173,6 @@
   "waitForUploadFinish": "请耐心等待上传完成",
   "invalidParams": "参数错误",
   "clearCachedData": "清除缓存的数据",
-  "clearCacheDone&Reload": "清除缓存成功，页面即将刷新"
+  "clearCacheDone&Reload": "清除缓存成功，页面即将刷新",
+  "loggingOut": "正在清理数据并退出登录，请稍等片刻"
 }

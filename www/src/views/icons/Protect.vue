@@ -7,7 +7,7 @@ import User from '@/components/User.vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { toast } from '@/utils'
-import { info } from '@/apis/user'
+import { userApis } from '@/apis/user'
 import type { UserInfo } from '@/apis/user'
 import LoadingVue from '@/components/Loading.vue'
 import { useI18n } from 'vue-i18n'
@@ -91,8 +91,10 @@ async function publish() {
 }
 
 async function checkChainAccount() {
-  userInfo.value = await info()
-  if (!userInfo.value.blockchain?.id) {
+  await userApis.info().onUpdate(async info => {
+    userInfo.value = info
+  })
+  if (!userInfo.value?.blockchain?.id) {
     return
   }
   const account = await getChainAccount(userInfo.value.blockchain?.id).catch(console.error)

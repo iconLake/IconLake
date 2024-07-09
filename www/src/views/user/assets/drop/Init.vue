@@ -4,7 +4,7 @@ import HeaderVue from '@/components/Header.vue'
 import UserVue from '@/components/User.vue'
 import LoadingVue from '@/components/Loading.vue'
 import { computed, onMounted, ref } from 'vue'
-import { info } from '@/apis/user'
+import { userApis } from '@/apis/user'
 import { getBalance, getDropInfo, initDrop } from '@/apis/blockchain'
 import { LAKE_DENOM_MINI } from '@/utils/const'
 import { toast } from '@/utils'
@@ -22,13 +22,6 @@ const lakeAmount = ref(0)
 const lastMintTime = ref(0)
 const addr = ref('')
 const isIniting = ref(false)
-
-if (typeof $route.query.addr === 'string') {
-  try {
-    fromBech32($route.query.addr)
-    addr.value = $route.query.addr
-  } catch {}
-}
 
 const helpMsg = computed(() => {
   if (lastMintTime.value > 0) {
@@ -51,6 +44,7 @@ async function init() {
     false,
   ).then(() => {
     toast(t('alreadyMinting'))
+    lastMintTime.value = Date.now()
   }).catch((err) => {
     toast(err.message ?? t('fail'))
   }).finally(() => {
@@ -59,7 +53,9 @@ async function init() {
 }
 
 async function getInfo() {
-  userInfo.value = await info()
+  await userApis.info().onUpdate(async info => {
+    userInfo.value = info
+  })
   if (!userInfo.value.blockchain?.id) {
     return
   }
@@ -69,15 +65,22 @@ async function getInfo() {
         lakeAmount.value = +res?.amount
       }
     }),
-    getDropInfo(addr.value).then(dropInfo => {
+    addr.value ? getDropInfo(addr.value).then(dropInfo => {
       if (dropInfo.info?.last_mint_time) {
         lastMintTime.value = +dropInfo.info?.last_mint_time
       }
-    })
+    }) : false
   ])
 }
 
 onMounted(() => {
+  if (typeof $route.query.addr === 'string') {
+    try {
+      fromBech32($route.query.addr)
+      addr.value = $route.query.addr
+    } catch {}
+  }
+
   getInfo().finally(() => {
     pageLoading.end()
   })

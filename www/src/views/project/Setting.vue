@@ -5,7 +5,7 @@ import UserVue from '../../components/User.vue'
 import HeaderVue from '../../components/Header.vue'
 import { useI18n } from 'vue-i18n'
 import { projectApis } from '@/apis/project';
-import { info as userInfo } from '@/apis/user';
+import { userApis, UserInfo } from '@/apis/user';
 import { getHash, updateClass, getNftClass } from '@/apis/blockchain'
 import Loading from '@/components/Loading.vue'
 import { toast } from '@/utils'
@@ -55,8 +55,11 @@ async function updateChain(e: Event) {
   }
   isUpdatingChain.value = true
   const hash = await getHash(uri)
-  const user = await userInfo()
-  if (!user.blockchain?.id) {
+  let user: UserInfo|undefined
+  await userApis.info().onUpdate(async (info) => {
+    user = info
+  })
+  if (!user?.blockchain?.id) {
     return
   }
   const res = await updateClass({
