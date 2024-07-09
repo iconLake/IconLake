@@ -89,6 +89,7 @@
         const accounts = await offlineSigner.getAccounts()
         const msg = `Login iconLake\n${new Date().toISOString()}\n${accounts[0].address}`
         const sig = await keplr.signArbitrary(chainId, accounts[0].address, msg)
+        setIsLoading(true)
         fetch('/api/oauth/blockchain', {
           method: 'POST',
           headers: {
@@ -101,6 +102,7 @@
           })
         }).then(res => res.json()).then(res => {
           if (res.error) {
+            setIsLoading(false)
             alert(res.error)
           } else {
             window.location.href = res.redirect
@@ -114,10 +116,27 @@
     codeDom.style.display = 'none'
   }
 
-  // check login
-  fetch('/api/user/info').then(res => res.json()).then(res => {
-    if (!res.error) {
-      location.href = '/manage/home'
+  const loadingDom = document.querySelector('#loading') as HTMLDivElement
+  const itemsDom = document.querySelector('#items') as HTMLDivElement
+  function setIsLoading (isLoading: boolean) {
+    if (isLoading) {
+      loadingDom.classList.remove('hide')
+      itemsDom.classList.add('hide')
+    } else {
+      loadingDom.classList.add('hide')
+      itemsDom.classList.remove('hide')
     }
+  }
+
+  // check login
+  const startTime = Date.now()
+  fetch('/api/user/info').then(res => res.json()).then(res => {
+    setTimeout(() => {
+      if (!res.error) {
+        location.href = '/manage/home'
+      } else {
+        setIsLoading(false)
+      }
+    }, 1000 - (Date.now() - startTime))
   })
 })()
