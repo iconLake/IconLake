@@ -2,12 +2,6 @@
 
 iconLake - You Create, You Own!
 
-## Stay tuned
-
-iconLake 2.0 will be launched soon!
-
-Be the first to experience the test version: [https://test.iconlake.com/](https://test.iconlake.com/) (Test version data may be cleared at any time, for experience only!)
-
 ## Goal
 
 Build a full life cycle management tool for creation in the web3.0 era.
@@ -71,7 +65,7 @@ DROP is the fee that needs to be paid to save information on the chain, but this
 
 ### Methods
 
-1. Submit bugs, comments, suggestions, ideas, etc., and participate in product shaping; ([Forum](https://support.qq.com/products/370032/))
+1. Submit bugs, comments, suggestions, ideas, etc., and participate in product shaping; ([Github](https://github.com/iconLake/IconLake/issues))
 2. Submit code, design drafts, test cases, etc., and participate in development;
 3. Publish content about iconLake and participate in operation promotion;
 4. Contribution methods are not limited to the above three categories, as long as they can play a positive role in the development of iconLake, they will be recognized.

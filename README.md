@@ -2,12 +2,6 @@
 
 iconLake - You Create, You Own!
 
-## 敬请期待
-
-iconLake 2.0 将于近期上线！
-
-测试版抢先体验：[https://test.iconlake.com/](https://test.iconlake.com/) （测试版数据随时会被清空，仅可用于体验！）
-
 ## 目标
 
 构建web3.0时代的创作全生命周期管理工具。
@@ -71,7 +65,7 @@ DROP是为了让信息保存到链上所需支付的费用，但是这个费用�
 
 ### 方式
 
-1. 提bug、意见、建议、想法等，参与产品塑造；（[论坛](https://support.qq.com/products/370032/)）
+1. 提bug、意见、建议、想法等，参与产品塑造；（[Gitee](https://gitee.com/iconLake/IconLake/issues)）
 2. 提交代码、设计稿、测试用例等，参与开发；
 3. 发布有关iconLake的内容，参与运营推广；
 4. 贡献方式不限于以上三类，只要能够对iconLake的发展起到积极作用均可获得认可。
