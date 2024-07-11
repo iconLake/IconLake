@@ -7,6 +7,8 @@ import { fail, success } from './result.js'
 
 const config = getConfig()
 
+const EXPIRE_TIME = 3 * 60 * 1000
+
 /**
  * @api {post} /oauth/blockchain 通过区块链签名登录
  * @apiQuery {string} msg
@@ -27,7 +29,7 @@ export async function login (req, res) {
     typeof req.body.pubkey.value === 'string'
   ) {
     const time = Date.now() - (+new Date(req.body.msg.split('\n')[1]))
-    if (time > 300 && time < 5 * 60 * 1000) {
+    if (time > -EXPIRE_TIME && time < EXPIRE_TIME) {
       const signer = pubkeyToAddress(req.body.pubkey, 'iconlake')
       const sig = Secp256k1Signature.fromFixedLength(fromBase64(req.body.sig))
       const msgHash = sha256(serializeSignDoc(makeADR36AminoSignDoc(signer, req.body.msg)))
