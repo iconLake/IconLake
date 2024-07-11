@@ -46,7 +46,7 @@ router.post('/project/invite/updateCode', userMiddleware, projectInvite.updateCo
 router.post('/project/invite/accept', userMiddleware, projectInvite.accept)
 router.get('/project/member/list', userMiddleware, projectMember.list)
 router.post('/project/member/del', userMiddleware, projectMember.del)
-router.get('/project/icon/info', userMiddleware, projectIcon.info)
+router.get('/project/icon/info', projectIcon.info)
 router.post('/project/icon/del', userMiddleware, projectIcon.del)
 router.post('/project/icon/add', userMiddleware, projectIcon.add)
 router.post('/project/icon/edit', userMiddleware, projectIcon.edit)

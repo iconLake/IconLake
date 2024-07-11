@@ -66,5 +66,5 @@ export async function del (req, res) {
     })
     return
   }
-  res.json(result.modifiedCount === 1 ? {} : { error: 'delFail' })
+  res.json(result.modifiedCount === 1 ? {} : { error: ERROR_CODE.FAIL })
 }

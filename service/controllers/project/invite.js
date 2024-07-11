@@ -1,6 +1,6 @@
-import mongoose from 'mongoose'
 import { nanoid } from 'nanoid'
 import { Project } from '../../models/project.js'
+import { ERROR_CODE } from '../../utils/const.js'
 
 /**
  * @api {post} /project/invite/updateCode 邀请码
@@ -44,7 +44,7 @@ export async function accept (req, res) {
     return
   }
   const result = await Project.updateOne({
-    _id: new mongoose.Types.ObjectId(req.body._id),
+    _id: req.body._id,
     'invite.code': req.body.code,
     'invite.expired': {
       $gt: new Date()
@@ -61,7 +61,7 @@ export async function accept (req, res) {
   })
   if (result.matchedCount === 0) {
     const resultQ = await Project.findOne({
-      _id: new mongoose.Types.ObjectId(req.body._id),
+      _id: req.body._id,
       'invite.code': req.body.code,
       'invite.expired': {
         $gt: new Date()
@@ -73,5 +73,5 @@ export async function accept (req, res) {
       return
     }
   }
-  res.json(result.matchedCount === 1 ? {} : { error: 'acceptFail' })
+  res.json(result.matchedCount === 1 ? {} : { error: ERROR_CODE.FAIL })
 }

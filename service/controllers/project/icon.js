@@ -4,6 +4,7 @@ import { Project } from '../../models/project.js'
 import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM, PERMANENT_FILE_EXPIRE } from '../../utils/const.js'
 import { completeURL, slimURL } from '../../utils/file.js'
 import { genCSS, genJS, genReact, genVUE } from './icon/gen/index.js'
+import { middleware as userMiddleware } from '../user/middleware.js'
 
 /**
  * @api {get} /project/icon/info 获取图标信息
@@ -16,15 +17,27 @@ export async function info (req, res) {
     })
     return
   }
-  const project = await Project.findOne({
-    _id: req.query.projectId,
-    'members.userId': req.user._id
-  }, 'icons')
+  let project = await Project.findOne({
+    _id: req.query.projectId
+  }, 'icons isPublic')
   if (!project) {
     res.json({
       error: ERROR_CODE.ARGS_ERROR
     })
     return
+  }
+  if (!project.isPublic) {
+    await userMiddleware(req, res, () => {})
+    project = await Project.findOne({
+      _id: req.query.projectId,
+      'members.userId': req.user._id
+    }, 'icons')
+    if (!project) {
+      res.json({
+        error: ERROR_CODE.PERMISSION_DENIED
+      })
+      return
+    }
   }
   const info = project.icons.id(req.query._id)
   if (info && info.svg && info.svg.url) {
@@ -55,8 +68,14 @@ export async function add (req, res) {
       e.svg.url = slimURL(e.svg.url)
     }
   })
-  await Project.updateOne({
-    _id
+  const result = await Project.updateOne({
+    _id,
+    members: {
+      $elemMatch: {
+        userId: req.user._id,
+        isAdmin: true
+      }
+    }
   }, {
     $push: {
       icons: {
@@ -70,7 +89,7 @@ export async function add (req, res) {
       iconUpdateTime: new Date()
     }
   })
-  res.json({})
+  res.json(result.matchedCount > 0 ? {} : ERROR_CODE.PERMISSION_DENIED)
 }
 
 /**
@@ -93,8 +112,14 @@ export async function del (req, res) {
     })
     return
   }
-  await Project.updateOne({
-    _id: projectId
+  const result = await Project.updateOne({
+    _id: projectId,
+    members: {
+      $elemMatch: {
+        userId: req.user._id,
+        isAdmin: true
+      }
+    }
   }, {
     $pull: {
       icons: {
@@ -107,6 +132,12 @@ export async function del (req, res) {
       iconUpdateTime: new Date()
     }
   })
+  if (result.matchedCount === 0) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
   // 记录历史
   const icons = []
   _ids.forEach(e => {
@@ -175,7 +206,7 @@ export async function edit (req, res) {
   }, {
     $set
   })
-  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.ARGS_ERROR })
+  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.PERMISSION_DENIED })
 }
 
 /**
@@ -204,7 +235,7 @@ export async function addTag (req, res) {
       'icons.$.tags': req.body.tag
     }
   })
-  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.ARGS_ERROR })
+  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.PERMISSION_DENIED })
 }
 
 /**
@@ -233,7 +264,7 @@ export async function delTag (req, res) {
       'icons.$.tags': req.body.tag
     }
   })
-  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.ARGS_ERROR })
+  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.PERMISSION_DENIED })
 }
 
 /**
@@ -252,8 +283,17 @@ export async function pages (req, res) {
     'members.userId': req.user._id
   }, '_id')
   if (!project) {
+    const project = await Project.findOne({
+      _id: req.query.projectId
+    }, 'isPublic')
+    if (project && project.isPublic) {
+      res.json({
+        pages: []
+      })
+      return
+    }
     res.json({
-      error: ERROR_CODE.ARGS_ERROR
+      error: ERROR_CODE.PERMISSION_DENIED
     })
     return
   }
@@ -300,7 +340,7 @@ export async function batchGroup (req, res) {
       }
     ]
   })
-  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.ARGS_ERROR })
+  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.PERMISSION_DENIED })
 }
 
 /**
@@ -314,10 +354,18 @@ export async function gen (req, res) {
     })
     return
   }
-  const project = await Project.findById(projectId, 'class prefix icons files')
+  const project = await Project.findOne({
+    _id: projectId,
+    members: {
+      $elemMatch: {
+        userId: req.user._id,
+        isAdmin: true
+      }
+    }
+  }, 'class prefix icons files')
   if (!project) {
     res.json({
-      error: ERROR_CODE.ARGS_ERROR
+      error: ERROR_CODE.PERMISSION_DENIED
     })
     return
   }
@@ -369,5 +417,5 @@ export async function setExpire (req, res) {
       [`files.${fileType}.$.expire`]: expire
     }
   })
-  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.FAIL })
+  res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.PERMISSION_DENIED })
 }
