@@ -147,13 +147,13 @@ export async function del (req, res) {
       }
     }
   })
-  if (result.matchedCount === 0) {
+  if (result.deletedCount === 0) {
     res.json({
       error: ERROR_CODE.PERMISSION_DENIED
     })
     return
   }
-  res.json(result.deletedCount === 1 ? {} : { error: ERROR_CODE.FAIL })
+  res.json({})
   deleteProjectDir(req.body._id)
 }
 
