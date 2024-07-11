@@ -174,5 +174,6 @@
   "invalidParams": "Invalid Parameters",
   "clearCachedData": "Clear Cached Data",
   "clearCacheDone&Reload": "Cache has been cleared, the page will be reloaded soon",
-  "loggingOut": "Cleaning up data and logging out, please wait a moment"
+  "loggingOut": "Cleaning up data and logging out, please wait a moment",
+  "userAuthError": "Your login information is incorrect, please log in again"
 }

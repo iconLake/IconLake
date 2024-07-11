@@ -174,5 +174,6 @@
   "invalidParams": "参数错误",
   "clearCachedData": "清除缓存的数据",
   "clearCacheDone&Reload": "清除缓存成功，页面即将刷新",
-  "loggingOut": "正在清理数据并退出登录，请稍等片刻"
+  "loggingOut": "正在清理数据并退出登录，请稍等片刻",
+  "userAuthError": "你的登录信息有误，请重新登录！"
 }

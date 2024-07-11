@@ -1,6 +1,7 @@
 import i18n from '@/i18n'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { isPagePublic, toast } from './index'
+import { clearCache } from './cache'
 
 function showErrorMsg (res: any) {
   const redirectError = {
@@ -9,6 +10,7 @@ function showErrorMsg (res: any) {
   }
   if (res.error in redirectError) {
     if (!isPagePublic()) {
+      clearCache()
       location.href = `/login?referer=${encodeURIComponent(location.href.replace(location.origin, ''))}`
     }
     return

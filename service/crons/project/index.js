@@ -41,19 +41,26 @@ export function start () {
  * @param {function} doneCB 完成后的回调
  */
 async function getList (doneCB) {
-  const task = await fetchCenter('/task/pull')
-  const list = task.ids
-  for (let i = 0, len = list.length; i < len; ++i) {
-    const project = await Project.findById(list[i])
-    await analyseProject(project)
-    await clearExpiredFiles(project)
-    await migrate(project)
-  }
-  if (task.isEnd) {
-    doneCB()
-  } else {
+  try {
+    const task = await fetchCenter('/task/pull')
+    const list = task.ids
+    for (let i = 0, len = list.length; i < len; ++i) {
+      const project = await Project.findById(list[i])
+      await analyseProject(project)
+      await clearExpiredFiles(project)
+      await migrate(project)
+    }
+    if (task.isEnd) {
+      doneCB()
+    } else {
+      setTimeout(() => {
+        getList(doneCB)
+      })
+    }
+  } catch (e) {
+    console.error(e)
     setTimeout(() => {
       getList(doneCB)
-    })
+    }, 10 * 60 * 1000)
   }
 }
