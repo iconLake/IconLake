@@ -2,7 +2,7 @@ import crypto from 'crypto'
 import { createReadStream, rm } from 'fs'
 import { nanoid } from 'nanoid'
 import { User } from '../../models/user.js'
-import { AVATAR_PATH, TOKEN_MAX_AGE } from '../../utils/const.js'
+import { AVATAR_PATH, ERROR_CODE, TOKEN_MAX_AGE } from '../../utils/const.js'
 import { download, save as saveFile } from '../../utils/file.js'
 import { checkLogin } from '../user/middleware.js'
 
@@ -48,7 +48,7 @@ export async function saveAvatar (uid, url, oldAvatar) {
     await saveFile(name, createReadStream(file), path)
     rm(file, err => {
       if (err) {
-        console.error('Remove Avatar Tmp Error:', err)
+        console.error('remove avatar error', err)
       }
     })
   }
@@ -100,8 +100,9 @@ export async function success (userInfo, req, res) {
       res.redirect(referer)
     }
   } else {
+    console.error('user info error', userInfo)
     fail({
-      error: 'userAuthError'
+      error: ERROR_CODE.FAIL
     }, req, res)
   }
 }

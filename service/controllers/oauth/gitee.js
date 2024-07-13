@@ -1,6 +1,7 @@
 import fetch from 'node-fetch'
 import { success, fail } from './result.js'
 import { getConfig } from '../../config/index.js'
+import { ERROR_CODE } from '../../utils/const.js'
 
 /**
  * OAUTH文档
@@ -14,11 +15,17 @@ const config = getConfig()
 export async function login (req, res) {
   if (!config.login.gitee) {
     res.json({
-      error: 'giteeLoginNotAvailable'
+      error: ERROR_CODE.NOT_ENABLED
     })
     return
   }
-  if (req.query.code) {
+  if (!req.query.code) {
+    res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+    return
+  }
+  try {
     const query = (new URLSearchParams({
       grant_type: 'authorization_code',
       client_id: config.gitee.clientId,
@@ -45,11 +52,17 @@ export async function login (req, res) {
       user.from = 'gitee'
       user.avatar = user.avatar_url
       success(user, req, res)
-    } else {
-      fail({
-        error: data.error,
-        message: data.error_description
-      }, req, res)
+      return
     }
+    console.error('gitee login data error', data)
+    fail({
+      error: data.error,
+      message: data.error_description
+    }, req, res)
+  } catch (e) {
+    console.error('gitee login error', e)
+    fail({
+      error: ERROR_CODE.FAIL
+    }, req, res)
   }
 }

@@ -1,4 +1,5 @@
 import { getConfig } from '../../config/index.js'
+import { ERROR_CODE } from '../../utils/const.js'
 import { fail, success } from './result.js'
 
 const config = getConfig()
@@ -10,7 +11,7 @@ const config = getConfig()
 export async function login (req, res) {
   if (!config.login.code) {
     res.json({
-      error: 'codeLoginNotAvailable'
+      error: ERROR_CODE.NOT_ENABLED
     })
     return
   }
@@ -20,8 +21,9 @@ export async function login (req, res) {
       from: 'code'
     }, req, res)
   } else {
+    console.error('code login fail', req.query)
     fail({
-      error: 'userAuthError'
+      error: ERROR_CODE.FAIL
     }, req, res)
   }
 }

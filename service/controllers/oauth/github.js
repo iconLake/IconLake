@@ -1,6 +1,7 @@
 import fetch from 'node-fetch'
 import { success, fail } from './result.js'
 import { getConfig } from '../../config/index.js'
+import { ERROR_CODE } from '../../utils/const.js'
 
 /**
  * OAUTH文档
@@ -14,11 +15,17 @@ const config = getConfig()
 export async function login (req, res) {
   if (!config.login.github) {
     res.json({
-      error: 'githubLoginNotAvailable'
+      error: ERROR_CODE.NOT_ENABLED
     })
     return
   }
-  if (req.query.code) {
+  if (!req.query.code) {
+    res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+    return
+  }
+  try {
     const query = (new URLSearchParams({
       client_id: config.github.clientId,
       client_secret: config.github.clientSecret,
@@ -42,11 +49,16 @@ export async function login (req, res) {
       user.from = 'github'
       user.avatar = user.avatar_url
       success(user, req, res)
-    } else {
-      console.error(data)
-      fail({
-        error: data.error
-      }, req, res)
+      return
     }
+    console.error('github login data error', data)
+    fail({
+      error: data.error
+    }, req, res)
+  } catch (e) {
+    console.error('github login error', e)
+    fail({
+      error: ERROR_CODE.FAIL
+    }, req, res)
   }
 }

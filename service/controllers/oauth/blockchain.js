@@ -4,6 +4,7 @@ import { pubkeyToAddress } from '@cosmjs/amino'
 import { makeADR36AminoSignDoc, serializeSignDoc } from '@keplr-wallet/cosmos'
 import { getConfig } from '../../config/index.js'
 import { fail, success } from './result.js'
+import { ERROR_CODE } from '../../utils/const.js'
 
 const config = getConfig()
 
@@ -17,7 +18,7 @@ const EXPIRE_TIME = 3 * 60 * 1000
 export async function login (req, res) {
   if (!config.login.keplr) {
     res.json({
-      error: 'signatureLoginNotAvailable'
+      error: ERROR_CODE.NOT_ENABLED
     })
     return
   }
@@ -44,7 +45,8 @@ export async function login (req, res) {
       }
     }
   }
+  console.error('blockchain login fail', req.body)
   fail({
-    error: 'userAuthError'
+    error: ERROR_CODE.FAIL
   }, req, res)
 }

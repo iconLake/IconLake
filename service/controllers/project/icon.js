@@ -108,7 +108,7 @@ export async function del (req, res) {
   const uid = req.user.id
   if (!project || !project.members.some(e => e.isAdmin && e.userId.toString() === uid)) {
     res.json({
-      error: 'noPermission'
+      error: ERROR_CODE.PERMISSION_DENIED
     })
     return
   }

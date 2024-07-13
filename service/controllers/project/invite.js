@@ -16,7 +16,7 @@ export async function updateCode (req, res) {
     code: nanoid(16),
     expired: new Date(Date.now() + 24 * 3600 * 1000)
   }
-  await Project.updateOne({
+  const result = await Project.updateOne({
     _id: req.body._id,
     members: {
       $elemMatch: {
@@ -29,7 +29,7 @@ export async function updateCode (req, res) {
       invite
     }
   })
-  res.json(invite)
+  res.json(result.matchedCount === 0 ? { error: ERROR_CODE.PERMISSION_DENIED } : invite)
 }
 
 /**
@@ -39,7 +39,7 @@ export async function accept (req, res) {
   if (typeof req.body._id !== 'string' || req.body._id.length === 0 ||
   typeof req.body.code !== 'string' || req.body.code.length === 0) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -73,5 +73,5 @@ export async function accept (req, res) {
       return
     }
   }
-  res.json(result.matchedCount === 1 ? {} : { error: ERROR_CODE.FAIL })
+  res.json(result.matchedCount === 0 ? { error: ERROR_CODE.FAIL } : {})
 }
