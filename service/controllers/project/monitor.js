@@ -31,7 +31,9 @@ export async function edit (req, res) {
       monitor
     }
   })
-  res.json({
-    error: result.matchedCount > 0 ? null : ERROR_CODE.PERMISSION_DENIED
-  })
+  res.json(result.matchedCount === 0
+    ? {
+        error: ERROR_CODE.PERMISSION_DENIED
+      }
+    : {})
 }

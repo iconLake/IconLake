@@ -1,4 +1,5 @@
 import { Project } from '../../models/project.js'
+import { ERROR_CODE } from '../../utils/const.js'
 
 /**
  * @api {post} /icon/info/edit 编辑图标信息
@@ -6,7 +7,7 @@ import { Project } from '../../models/project.js'
 export async function edit (req, res) {
   if (typeof req.body._id !== 'string' || typeof req.body.projectId !== 'string') {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }
@@ -27,5 +28,5 @@ export async function edit (req, res) {
   }, {
     $set: data
   })
-  res.json(result.matchedCount === 0 ? { error: 'iconNotExist' } : { _id: req.body._id })
+  res.json(result.matchedCount === 0 ? { error: ERROR_CODE.NOT_EXIST } : { _id: req.body._id })
 }

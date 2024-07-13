@@ -1,9 +1,17 @@
 import { getConfig } from '../../config/index.js'
 
-const adminList = getConfig().admin.userIds
+const adminUsers = {}
+
+getConfig().admin.userIds.forEach(e => {
+  adminUsers[e] = true
+})
+
+export async function isAdmin (uid) {
+  return adminUsers[uid]
+}
 
 export async function verify (req, res) {
   res.json({
-    isAdmin: adminList.includes(req.user._id.toString())
+    isAdmin: await isAdmin(req.user._id.toString())
   })
 }

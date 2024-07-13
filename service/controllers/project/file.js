@@ -1,3 +1,4 @@
+import { ERROR_CODE } from '../../utils/const.js'
 import { completeURL, save } from '../../utils/file.js'
 
 /**
@@ -6,7 +7,7 @@ import { completeURL, save } from '../../utils/file.js'
 export async function upload (req, res) {
   if (!req.query.projectId || !req.query._id) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
   }
   const projectId = req.query.projectId

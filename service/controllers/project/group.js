@@ -1,6 +1,7 @@
 import { includeKeys } from 'filter-obj'
 import mongoose from 'mongoose'
 import { Project } from '../../models/project.js'
+import { ERROR_CODE } from '../../utils/const.js'
 
 /**
  * @api {post} /project/group/edit 编辑分组信息
@@ -10,7 +11,7 @@ export async function edit (req, res) {
   const projectId = req.body.projectId
   if (!projectId) {
     res.json({
-      error: 'argsError'
+      error: ERROR_CODE.ARGS_ERROR
     })
     return
   }

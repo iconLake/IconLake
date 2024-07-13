@@ -21,7 +21,7 @@ const client = new Client({
 
 async function setSigner () {
   const signer = await DirectSecp256k1HdWallet.fromMnemonic(
-    'icon lake ensure you own what you bring into exist any tiny',
+    config.blockchain.private.mnemonic,
     {
       hdPaths: [stringToPath("m/44'/1009'/0'/0/0")],
       prefix: ADDRESS_PREFIX
