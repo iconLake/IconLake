@@ -522,3 +522,81 @@ if (_m0.util.Long !== Long) {
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
 }
+
+export function createIconAminoConverters() {
+  return {
+    '/iconlake.icon.MsgMint': {
+      aminoType: 'icon/Mint',
+  
+      fromAmino(object: any): MsgMint {
+        return MsgMint.fromPartial({
+          creator: object.creator,
+          classId: object.class_id,
+          id: object.id,
+          name: object.name,
+          description: object.description,
+          uri: object.uri,
+          uriHash: object.uri_hash,
+          supply: object.supply,
+        });
+      },
+  
+      toAmino(message: MsgMint): unknown {
+        const obj: any = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.classId !== undefined && (obj.class_id = message.classId);
+        message.id !== undefined && (obj.id = message.id);
+        message.name !== undefined && (obj.name = message.name);
+        message.description !== undefined && (obj.description = message.description);
+        message.uri !== undefined && (obj.uri = message.uri);
+        message.uriHash !== undefined && (obj.uri_hash = message.uriHash);
+        message.supply !== undefined && (obj.supply = Math.round(message.supply));
+        return obj;
+      },
+    },
+    '/iconlake.icon.MsgBurn': {
+      aminoType: 'icon/Burn',
+  
+      fromAmino(object: any): MsgBurn {
+        return MsgBurn.fromPartial({
+          creator: object.creator,
+          classId: object.class_id,
+          id: object.id,
+        });
+      },
+  
+      toAmino(message: MsgBurn): unknown {
+        const obj: any = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.classId !== undefined && (obj.class_id = message.classId);
+        message.id !== undefined && (obj.id = message.id);
+        return obj;
+      },
+    },
+    '/iconlake.icon.MsgUpdateClass': {
+      aminoType: 'icon/UpdateClass',
+  
+      fromAmino(object: any): MsgUpdateClass {
+        return MsgUpdateClass.fromPartial({
+          creator: object.creator,
+          id: object.id,
+          name: object.name,
+          description: object.description,
+          uri: object.uri,
+          uriHash: object.uri_hash,
+        });
+      },
+  
+      toAmino(message: MsgUpdateClass): unknown {
+        const obj: any = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.id !== undefined && (obj.id = message.id);
+        message.name !== undefined && (obj.name = message.name);
+        message.description !== undefined && (obj.description = message.description);
+        message.uri !== undefined && (obj.uri = message.uri);
+        message.uriHash !== undefined && (obj.uri_hash = message.uriHash);
+        return obj;
+      },
+    },
+  }
+}
