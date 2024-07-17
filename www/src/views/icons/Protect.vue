@@ -106,15 +106,15 @@ async function checkChainAccount() {
 async function onBurnIcon() {
   if (iconInfo.txHash && userInfo.value?.blockchain?.id) {
     isPending.value = true
-    const txRes = await getTx(iconInfo.txHash).catch(err => {
+    const tx = await getTx(iconInfo.txHash).catch(err => {
       console.error(err)
       toast(err.message)
       isPending.value = false
     })
-    if (!txRes) {
+    if (!tx) {
       return
     }
-    const msg = txRes.tx?.body?.messages![0] as any
+    const msg = tx?.body?.messages![0] as any
     const res = await burnIcon({
       creator: userInfo.value.blockchain?.id,
       classId: msg.class_id,

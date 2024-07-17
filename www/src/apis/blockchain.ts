@@ -1,7 +1,6 @@
 import { CHAIN_ID, DROP_DENOM_MINI, IS_PRODUCTION } from '@/utils/const'
 import request, { handleResponse } from '@/utils/request'
 import { Client } from '@iconlake/client'
-import type { V1Beta1GetTxResponse } from '@iconlake/client/types/cosmos.tx.v1beta1/rest'
 import type { DropQueryGetInfoResponse } from '@iconlake/client/types/iconlake.drop/rest'
 import type { MsgMint as MsgMintIcon, MsgBurn as MsgBurnIcon, MsgUpdateClass } from '@iconlake/client/types/iconlake.icon/module'
 import type { IconQueryHashResponse, IconlakeiconQueryClassResponse, IconlakeiconQueryNFTsResponse } from '@iconlake/client/types/iconlake.icon/rest'
@@ -54,17 +53,20 @@ export async function detectKeplr() {
       })
       await window.keplr.enable(chainId)
     }
-    const offlineSigner = window.keplr.getOfflineSigner(chainId);
+    const offlineSigner = window.keplr.getOfflineSignerOnlyAmino(chainId);
     client.useSigner(offlineSigner)
     isKeplrDetected = true
   }
 }
 
 export async function getBalance(address: string, denom: string) {
-  const res = await client.CosmosBankV1Beta1.query.queryBalance(address, {
-    denom
-  })
-  return res.data.balance
+  const res = await fetch(`${apiURL}/cosmos/bank/v1beta1/balances/${address}?denom=${denom}`).then<{
+    balance: {
+      amount: string;
+      denom: string;
+    }
+  }>(res => res.json())
+  return res.balance
 }
 
 export async function getAccount() {
@@ -76,8 +78,19 @@ export async function getAccount() {
 }
 
 export async function getChainAccount(address: string) {
-  const res = await client.CosmosAuthV1Beta1.query.queryAccount(address)
-  return res
+  const res = await fetch(`${apiURL}/cosmos/auth/v1beta1/accounts/${address}`).then<{
+    account: {
+      '@type': string;
+      address: string;
+      pub_key: {
+        '@type': string;
+        value: string;
+      };
+      account_number: string;
+      sequence: string;
+    }
+  }>(res => res.json())
+  return res.account
 }
 
 export async function mintDrop(address: string, amount: string) {
@@ -148,10 +161,8 @@ export async function burnIcon(value: MsgBurnIcon) {
 }
 
 export async function getTx(txHash: string) {
-  const res = await client.CosmosTxV1Beta1.query.serviceGetTx(txHash)
-  return await new Promise((resolve: (v: V1Beta1GetTxResponse) => void, reject) => {
-    handleResponse<V1Beta1GetTxResponse>(res as any, resolve, reject);
-  })
+  const res = await fetch(`${apiURL}/cosmos/tx/v1beta1/txs/${txHash}`).then(res => res.json())
+  return res.tx
 }
 
 export async function getDropInfo(address: string) {
