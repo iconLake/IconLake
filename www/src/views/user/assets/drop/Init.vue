@@ -17,6 +17,8 @@ const pageLoading = usePageLoading()
 
 const $route = useRoute()
 
+const bg = 'url(/imgs/init-drop-bg.png)'
+
 const userInfo = ref()
 const lakeAmount = ref(0)
 const lastMintTime = ref(0)
@@ -115,7 +117,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .page {
-  background: url('/imgs/init-drop-bg.png') center no-repeat;
+  background: v-bind('bg') center no-repeat;
   background-size: cover;
   position: absolute;
   top: 0;
