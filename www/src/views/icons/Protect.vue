@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { editIcon, projectApis, Icon as IconType, uploadFile } from '@/apis/project'
-import { getHash, mintIcon, getAccount, getTx, getChainAccount, burnIcon } from '@/apis/blockchain'
+import { getHash, mintIcon, getTx, getChainAccount, burnIcon } from '@/apis/blockchain'
 import Header from '@/components/Header.vue'
 import Icon from '@/components/Icon.vue'
 import User from '@/components/User.vue'
@@ -43,9 +43,11 @@ async function getIconInfo() {
   projectApis.getIcon(projectId.value, id.value).onUpdate(async (icon) => {
     Object.assign(iconInfo, icon.info)
     if (icon.info.txHash) {
-      await getTx(icon.info.txHash).catch(() => {
+      const tx = await getTx(icon.info.txHash)
+      if (!tx) {
+        toast.error(t('txNotFound'))
         iconInfo.txHash = undefined
-      })
+      }
     }
   })
 }
@@ -56,7 +58,8 @@ async function publish() {
   }
   isPending.value = true
   const hash = await getHash(iconInfo.svg.url)
-  if (!userInfo.value || !userInfo.value.blockchain?.id) {
+  if (!hash || !userInfo.value || !userInfo.value.blockchain?.id) {
+    toast.error(t('fail'))
     isPending.value = false
     return
   }
@@ -68,13 +71,10 @@ async function publish() {
     uriHash: hash.file_hash ?? '',
     name: iconInfo.code,
     description: iconInfo.name,
-    supply: 1
-  }).catch((err) => {
-    console.error(err)
-    isPending.value = false
-    toast(err.message)
+    supply: '1',
   })
   if (!res) {
+    isPending.value = false
     return
   }
   if (res?.code !== 0) {
@@ -97,7 +97,7 @@ async function checkChainAccount() {
   if (!userInfo.value?.blockchain?.id) {
     return
   }
-  const account = await getChainAccount(userInfo.value.blockchain?.id).catch(console.error)
+  const account = await getChainAccount(userInfo.value.blockchain?.id)
   if (account) {
     isChainAccountReady.value = true
   }
@@ -106,12 +106,10 @@ async function checkChainAccount() {
 async function onBurnIcon() {
   if (iconInfo.txHash && userInfo.value?.blockchain?.id) {
     isPending.value = true
-    const tx = await getTx(iconInfo.txHash).catch(err => {
-      console.error(err)
-      toast(err.message)
-      isPending.value = false
-    })
+    const tx = await getTx(iconInfo.txHash)
     if (!tx) {
+      toast.error(t('txNotFound'))
+      isPending.value = false
       return
     }
     const msg = tx?.body?.messages![0] as any
@@ -119,12 +117,9 @@ async function onBurnIcon() {
       creator: userInfo.value.blockchain?.id,
       classId: msg.class_id,
       id: msg.id
-    }).catch((err) => {
-      console.error(err)
-      toast(err.message)
-      isPending.value = false
     })
     if (!res) {
+      isPending.value = false
       return
     }
     if (res?.code !== 0) {

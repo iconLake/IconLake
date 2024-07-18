@@ -45,8 +45,6 @@ async function init() {
   ).then(() => {
     toast(t('alreadyMinting'))
     lastMintTime.value = Date.now()
-  }).catch((err) => {
-    toast(err.message ?? t('fail'))
   }).finally(() => {
     isIniting.value = false
   })
@@ -66,8 +64,8 @@ async function getInfo() {
       }
     }),
     addr.value ? getDropInfo(addr.value).then(dropInfo => {
-      if (dropInfo.info?.last_mint_time) {
-        lastMintTime.value = +dropInfo.info?.last_mint_time
+      if (dropInfo?.last_mint_time) {
+        lastMintTime.value = +dropInfo.last_mint_time
       }
     }) : false
   ])
