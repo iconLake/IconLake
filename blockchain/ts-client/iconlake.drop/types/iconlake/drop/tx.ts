@@ -389,3 +389,87 @@ if (_m0.util.Long !== Long) {
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
 }
+
+export function createDropAminoConverters() {
+  return {
+    "/iconlake.drop.MsgMint": {
+      aminoType: "cosmos-sdk/Mint",
+      toAmino: ({
+        creator,
+        amount
+      }: MsgMint): unknown => {
+        return {
+          creator,
+          amount: {
+            denom: amount.denom,
+            amount: amount.amount
+          }
+        };
+      },
+      fromAmino: ({
+        creator,
+        amount
+      }: any): MsgMint => {
+        return MsgMint.fromPartial({
+          creator,
+          amount: {
+            denom: amount.denom,
+            amount: amount.amount
+          }
+        });
+      }
+    },
+
+    "/iconlake.drop.MsgInit": {
+      aminoType: "cosmos-sdk/Init",
+      toAmino: ({
+        creator,
+        address
+      }: MsgInit): unknown => {
+        return {
+          creator,
+          address
+        };
+      },
+      fromAmino: ({
+        creator,
+        address
+      }: any): MsgInit => {
+        return MsgInit.fromPartial({
+          creator,
+          address
+        });
+      }
+    },
+
+    "/iconlake.drop.MsgUpdateParams": {
+      aminoType: "cosmos-sdk/UpdateParams",
+      toAmino: ({
+        authority,
+        params
+      }: MsgUpdateParams): unknown => {
+        return {
+          authority,
+          params: {
+            init_amount: params.initAmount,
+            min_amount_per_mint: params.minAmountPerMint,
+            max_amount_per_mint: params.maxAmountPerMint
+          }
+        };
+      },
+      fromAmino: ({
+        authority,
+        params
+      }: any): MsgUpdateParams => {
+        return MsgUpdateParams.fromPartial({
+          authority,
+          params: {
+            initAmount: params.init_amount,
+            minAmountPerMint: params.min_amount_per_mint,
+            maxAmountPerMint: params.max_amount_per_mint
+          }
+        });
+      }
+    }
+  }
+}

@@ -77,8 +77,8 @@ async function getAssets() {
       }
     })
     getDropInfo(uInfo.blockchain.id).then(dropInfo => {
-      if (dropInfo.info?.last_mint_time) {
-        lastMintTime.value = +dropInfo.info?.last_mint_time
+      if (dropInfo?.last_mint_time) {
+        lastMintTime.value = +dropInfo?.last_mint_time
       } else {
         lastMintTime.value = 0
       }
@@ -110,10 +110,7 @@ async function confirmAssets() {
     return
   }
   isConfirming.value = true
-  const data = await mintDrop(userInfo.value.blockchain.id, `${dropingAmount.value}`).catch((err) => {
-    console.error(err)
-    toast(err.message ?? t('fail'))
-  })
+  const data = await mintDrop(userInfo.value.blockchain.id, `${dropingAmount.value}`)
   if (data) {
     if (data.code === 0) {
       getAssets()
@@ -175,10 +172,7 @@ async function initDropAccount() {
       userInfo.value?.blockchain?.id,
       userInfo.value?.blockchain?.id,
       !!blockchainInfo.value?.config.backendService.initDROP,
-    ).catch((err) => {
-      console.error(err)
-      toast(err.message ?? t('fail'))
-    })
+    )
     if (res) {
       toast(t('alreadyMinting'))
       getAssets()
@@ -191,16 +185,16 @@ async function getNftClasses() {
   if (!userInfo.value?.blockchain?.id) {
     return
   }
-  const { nfts } = await getNFTs({
+  const res = await getNFTs({
     owner: userInfo.value?.blockchain?.id,
   })
-  if (!nfts) {
+  if (!res) {
     return
   }
   const classIds: {
     [key: string]: number
   } = {}
-  nfts.forEach((e) => {
+  res.nfts?.forEach((e) => {
     if (e.class_id) {
       if (!classIds[e.class_id]) {
         classIds[e.class_id] = 0

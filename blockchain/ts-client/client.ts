@@ -6,12 +6,13 @@ import {
   Registry,
 } from "@cosmjs/proto-signing";
 import { StdFee } from "@cosmjs/launchpad";
-import { SigningStargateClient } from "@cosmjs/stargate";
+import { AminoTypes, SigningStargateClient } from "@cosmjs/stargate";
 import { Env } from "./env";
 import { UnionToIntersection, Return, Constructor } from "./helpers";
 import { Module } from "./modules";
 import { EventEmitter } from "events";
 import { ChainInfo } from "@keplr-wallet/types";
+import { createIconlakeAminoConverters } from "./amino";
 
 const defaultFee = {
   amount: [],
@@ -23,6 +24,7 @@ export class IgniteClient extends EventEmitter {
   env: Env;
   signer?: OfflineSigner;
   registry: Array<[string, GeneratedType]> = [];
+  aminoTypes: AminoTypes;
   static plugin<T extends Module | Module[]>(plugin: T) {
     const currentPlugins = this.plugins;
 
@@ -42,7 +44,7 @@ export class IgniteClient extends EventEmitter {
   async signAndBroadcast(msgs: EncodeObject[], fee: StdFee, memo: string) {
     if (this.signer) {
       const { address } = (await this.signer.getAccounts())[0];
-      const signingClient = await SigningStargateClient.connectWithSigner(this.env.rpcURL, this.signer, { registry: new Registry(this.registry), prefix: this.env.prefix });
+      const signingClient = await SigningStargateClient.connectWithSigner(this.env.rpcURL, this.signer, { registry: new Registry(this.registry), prefix: this.env.prefix, aminoTypes: this.aminoTypes });
       return await signingClient.signAndBroadcast(address, msgs, fee ? fee : defaultFee, memo)
     } else {
       throw new Error(" Signer is not present.");
@@ -61,7 +63,8 @@ export class IgniteClient extends EventEmitter {
       if (this.registry) {
         this.registry = this.registry.concat(pluginInstance.registry)
       }
-		});		
+		});
+    this.aminoTypes = new AminoTypes(createIconlakeAminoConverters());
   }
   useSigner(signer: OfflineSigner) {    
       this.signer = signer;
@@ -72,100 +75,71 @@ export class IgniteClient extends EventEmitter {
       this.emit("signer-changed", this.signer);
   }
   async useKeplr(keplrChainInfo: Partial<ChainInfo> = {}) {
-    // Using queryClients directly because BaseClient has no knowledge of the modules at this stage
-    try {
-      const queryClient = (
-        await import("./cosmos.base.tendermint.v1beta1/module")
-      ).queryClient;
-      const bankQueryClient = (await import("./cosmos.bank.v1beta1/module"))
-        .queryClient;
-      
-      const stakingQueryClient = (await import("./cosmos.staking.v1beta1/module")).queryClient;
-      const stakingqc = stakingQueryClient({ addr: this.env.apiURL });
-      const staking = await (await stakingqc.queryParams()).data;
-      
-      const qc = queryClient({ addr: this.env.apiURL });
-      const node_info = await (await qc.serviceGetNodeInfo()).data;
-      const chainId = node_info.default_node_info?.network ?? "";
-      const chainName = chainId?.toUpperCase() + " Network";
-      const bankqc = bankQueryClient({ addr: this.env.apiURL });
-      const tokens = await (await bankqc.queryTotalSupply()).data;
-      const addrPrefix = this.env.prefix ?? "cosmos";
-      const rpc = this.env.rpcURL;
-      const rest = this.env.apiURL;
+    const chainId = "iconlake-1";
+    const chainName = "iconLake";
+    const addrPrefix = this.env.prefix ?? "iconlake";
+    const rpc = this.env.rpcURL;
+    const rest = this.env.apiURL;
 
-      let bip44 = {
-        coinType: 1009,
-      };
+    let bip44 = {
+      coinType: 1009,
+    };
 
-      let bech32Config = {
-        bech32PrefixAccAddr: addrPrefix,
-        bech32PrefixAccPub: addrPrefix + "pub",
-        bech32PrefixValAddr: addrPrefix + "valoper",
-        bech32PrefixValPub: addrPrefix + "valoperpub",
-        bech32PrefixConsAddr: addrPrefix + "valcons",
-        bech32PrefixConsPub: addrPrefix + "valconspub",
-      };
+    let bech32Config = {
+      bech32PrefixAccAddr: addrPrefix,
+      bech32PrefixAccPub: addrPrefix + "pub",
+      bech32PrefixValAddr: addrPrefix + "valoper",
+      bech32PrefixValPub: addrPrefix + "valoperpub",
+      bech32PrefixConsAddr: addrPrefix + "valcons",
+      bech32PrefixConsPub: addrPrefix + "valconspub",
+    };
 
-      let currencies =
-        tokens.supply?.map((x) => {
-          const y = {
-            coinDenom: x.denom?.toUpperCase() ?? "",
-            coinMinimalDenom: x.denom ?? "",
-            coinDecimals: 0,
+    let currencies = [{
+      coinDenom: "LAKE",
+      coinMinimalDenom: "ulake",
+      coinDecimals: 6,
+    }, {
+      coinDenom: "DROP",
+      coinMinimalDenom: "udrop",
+      coinDecimals: 4,
+    }];
+
+    
+    let stakeCurrency = {
+            coinDenom: "LAKE",
+            coinMinimalDenom: "ulake",
+            coinDecimals: 6,
           };
-          return y;
-        }) ?? [];
+    
+    let feeCurrencies = currencies;
 
-      
-      let stakeCurrency = {
-              coinDenom: staking.params?.bond_denom?.toUpperCase() ?? "",
-              coinMinimalDenom: staking.params?.bond_denom ?? "",
-              coinDecimals: 0,
-            };
-      
-      let feeCurrencies =
-        tokens.supply?.map((x) => {
-          const y = {
-            coinDenom: x.denom?.toUpperCase() ?? "",
-            coinMinimalDenom: x.denom ?? "",
-            coinDecimals: 0,
-          };
-          return y;
-        }) ?? [];
+    let coinType = 1009;
 
-      let coinType = 1009;
+    if (chainId) {
+      const suggestOptions: ChainInfo = {
+        chainId,
+        chainName,
+        rpc,
+        rest,
+        stakeCurrency,
+        bip44,
+        bech32Config,
+        currencies,
+        feeCurrencies,
+        coinType,
+        ...keplrChainInfo,
+      };
+      await window.keplr.experimentalSuggestChain(suggestOptions);
 
-      if (chainId) {
-        const suggestOptions: ChainInfo = {
-          chainId,
-          chainName,
-          rpc,
-          rest,
-          stakeCurrency,
-          bip44,
-          bech32Config,
-          currencies,
-          feeCurrencies,
-          coinType,
-          ...keplrChainInfo,
-        };
-        await window.keplr.experimentalSuggestChain(suggestOptions);
-
-        window.keplr.defaultOptions = {
-          sign: {
-            preferNoSetFee: true,
-            preferNoSetMemo: true,
-          },
-        };
-      }
-      await window.keplr.enable(chainId);
-      this.signer = window.keplr.getOfflineSigner(chainId);
-      this.emit("signer-changed", this.signer);
-    } catch (e) {
-      throw new Error(
-        "Could not load tendermint, staking and bank modules. Please ensure your client loads them to use useKeplr()"
-      );
+      window.keplr.defaultOptions = {
+        sign: {
+          preferNoSetFee: true,
+          preferNoSetMemo: true,
+        },
+      };
     }
+    await window.keplr.enable(chainId);
+    this.signer = window.keplr.getOfflineSigner(chainId);
+    this.emit("signer-changed", this.signer);
   }
 }

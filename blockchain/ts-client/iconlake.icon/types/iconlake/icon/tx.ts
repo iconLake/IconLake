@@ -12,7 +12,7 @@ export interface MsgMint {
   description: string;
   uri: string;
   uriHash: string;
-  supply: number;
+  supply: string;
 }
 
 export interface MsgMintResponse {
@@ -41,7 +41,7 @@ export interface MsgBurnResponse {
 }
 
 function createBaseMsgMint(): MsgMint {
-  return { creator: "", classId: "", id: "", name: "", description: "", uri: "", uriHash: "", supply: 0 };
+  return { creator: "", classId: "", id: "", name: "", description: "", uri: "", uriHash: "", supply: "" };
 }
 
 export const MsgMint = {
@@ -67,7 +67,7 @@ export const MsgMint = {
     if (message.uriHash !== "") {
       writer.uint32(58).string(message.uriHash);
     }
-    if (message.supply !== 0) {
+    if (message.supply !== "") {
       writer.uint32(64).uint64(message.supply);
     }
     return writer;
@@ -102,7 +102,7 @@ export const MsgMint = {
           message.uriHash = reader.string();
           break;
         case 8:
-          message.supply = longToNumber(reader.uint64() as Long);
+          message.supply = reader.uint64().toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -121,7 +121,7 @@ export const MsgMint = {
       description: isSet(object.description) ? String(object.description) : "",
       uri: isSet(object.uri) ? String(object.uri) : "",
       uriHash: isSet(object.uriHash) ? String(object.uriHash) : "",
-      supply: isSet(object.supply) ? Number(object.supply) : 0,
+      supply: isSet(object.supply) ? String(object.supply) : "",
     };
   },
 
@@ -134,7 +134,7 @@ export const MsgMint = {
     message.description !== undefined && (obj.description = message.description);
     message.uri !== undefined && (obj.uri = message.uri);
     message.uriHash !== undefined && (obj.uriHash = message.uriHash);
-    message.supply !== undefined && (obj.supply = Math.round(message.supply));
+    message.supply !== undefined && (obj.supply = message.supply);
     return obj;
   },
 
@@ -147,7 +147,7 @@ export const MsgMint = {
     message.description = object.description ?? "";
     message.uri = object.uri ?? "";
     message.uriHash = object.uriHash ?? "";
-    message.supply = object.supply ?? 0;
+    message.supply = object.supply ?? "";
     return message;
   },
 };
@@ -521,4 +521,82 @@ if (_m0.util.Long !== Long) {
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
+}
+
+export function createIconAminoConverters() {
+  return {
+    '/iconlake.icon.MsgMint': {
+      aminoType: 'icon/Mint',
+  
+      fromAmino(object: any): MsgMint {
+        return MsgMint.fromPartial({
+          creator: object.creator,
+          classId: object.class_id,
+          id: object.id,
+          name: object.name,
+          description: object.description,
+          uri: object.uri,
+          uriHash: object.uri_hash,
+          supply: object.supply,
+        });
+      },
+  
+      toAmino(message: MsgMint): unknown {
+        const obj: any = {};
+        message.classId !== undefined && (obj.class_id = message.classId);
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.description !== undefined && (obj.description = message.description);
+        message.id !== undefined && (obj.id = message.id);
+        message.name !== undefined && (obj.name = message.name);
+        message.supply !== undefined && (obj.supply = message.supply);
+        message.uri !== undefined && (obj.uri = message.uri);
+        message.uriHash !== undefined && (obj.uri_hash = message.uriHash);
+        return obj;
+      },
+    },
+    '/iconlake.icon.MsgBurn': {
+      aminoType: 'icon/Burn',
+  
+      fromAmino(object: any): MsgBurn {
+        return MsgBurn.fromPartial({
+          creator: object.creator,
+          classId: object.class_id,
+          id: object.id,
+        });
+      },
+  
+      toAmino(message: MsgBurn): unknown {
+        const obj: any = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.classId !== undefined && (obj.class_id = message.classId);
+        message.id !== undefined && (obj.id = message.id);
+        return obj;
+      },
+    },
+    '/iconlake.icon.MsgUpdateClass': {
+      aminoType: 'icon/UpdateClass',
+  
+      fromAmino(object: any): MsgUpdateClass {
+        return MsgUpdateClass.fromPartial({
+          creator: object.creator,
+          id: object.id,
+          name: object.name,
+          description: object.description,
+          uri: object.uri,
+          uriHash: object.uri_hash,
+        });
+      },
+  
+      toAmino(message: MsgUpdateClass): unknown {
+        const obj: any = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.id !== undefined && (obj.id = message.id);
+        message.name !== undefined && (obj.name = message.name);
+        message.description !== undefined && (obj.description = message.description);
+        message.uri !== undefined && (obj.uri = message.uri);
+        message.uriHash !== undefined && (obj.uri_hash = message.uriHash);
+        return obj;
+      },
+    },
+  }
 }

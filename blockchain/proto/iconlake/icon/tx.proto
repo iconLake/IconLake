@@ -39,9 +39,9 @@ message MsgUpdateClass {
 message MsgUpdateClassResponse {}
 
 message MsgBurn {
-  string creator = 1;
-  string classId = 2;
-  string id      = 3;
+  string creator  = 1;
+  string class_id = 2;
+  string id       = 3;
 }
 
 message MsgBurnResponse {}
