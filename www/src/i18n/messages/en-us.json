@@ -176,5 +176,7 @@
   "clearCacheDone&Reload": "Cache has been cleared, the page will be reloaded soon",
   "loggingOut": "Cleaning up data and logging out, please wait a moment",
   "userAuthError": "Your login information is incorrect, please log in again",
-  "permissionDenied": "You don't have permission to perform this operation"
+  "permissionDenied": "You don't have permission to perform this operation",
+  "cannotGetKeplrAccount": "Failed to get Keplr account, please authorize and try again",
+  "txNotFound": "Transaction not found"
 }

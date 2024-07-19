@@ -1,12 +1,10 @@
 import { CHAIN_ID, DROP_DENOM_MINI, IS_PRODUCTION } from '@/utils/const'
-import request, { handleResponse } from '@/utils/request'
+import request from '@/utils/request'
 import { Client } from '@iconlake/client'
-import type { V1Beta1GetTxResponse } from '@iconlake/client/types/cosmos.tx.v1beta1/rest'
-import type { DropQueryGetInfoResponse } from '@iconlake/client/types/iconlake.drop/rest'
 import type { MsgMint as MsgMintIcon, MsgBurn as MsgBurnIcon, MsgUpdateClass } from '@iconlake/client/types/iconlake.icon/module'
-import type { IconQueryHashResponse, IconlakeiconQueryClassResponse, IconlakeiconQueryNFTsResponse } from '@iconlake/client/types/iconlake.icon/rest'
 import { SHA256, lib } from 'crypto-js'
 import i18n from '@/i18n'
+import { toast } from '@/utils'
 
 const baseURL = '/api/blockchain/'
 
@@ -37,9 +35,12 @@ export const client = new Client(env)
 let isKeplrDetected = false
 
 export async function detectKeplr() {
-  if (isKeplrDetected) return
+  if (isKeplrDetected) {
+    return window.keplr
+  }
   if (!window.keplr) {
-    alert('Please install keplr extension');
+    toast('Please install keplr extension');
+    throw new Error('keplr extension not found')
   } else {
     const chainId = CHAIN_ID;
     try {
@@ -58,34 +59,65 @@ export async function detectKeplr() {
     client.useSigner(offlineSigner)
     isKeplrDetected = true
   }
+  return window.keplr
 }
 
 export async function getBalance(address: string, denom: string) {
-  const res = await client.CosmosBankV1Beta1.query.queryBalance(address, {
-    denom
+  const res = await fetch(`${apiURL}/cosmos/bank/v1beta1/balances/${address}?denom=${denom}`).then<{
+    balances: {
+      amount: string;
+      denom: string;
+    }[]
+  }>(res => res.json()).catch((e) => {
+    console.error(e)
+    return { balances: [] }
   })
-  return res.data.balance
+  return res.balances.find(balance => balance.denom === denom)
 }
 
-export async function getAccount() {
-  await detectKeplr()
-  if (!window.keplr) return
-  const offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID)
-  const accounts = await offlineSigner.getAccounts()
+export async function getAccount(address?: string) {
+  const keplr = await detectKeplr()
+  const offlineSigner = keplr.getOfflineSigner(CHAIN_ID)
+  const accounts = await offlineSigner.getAccounts().catch((e) => {
+    console.error(e)
+    toast.error(t('cannotGetKeplrAccount'))
+    return []
+  })
+  if (address) {
+    const account = accounts.find(account => account.address === address)
+    if (!account) {
+      toast.error(t('activeKeplrAccountAs', { addr: address }))
+    } else {
+      return account
+    }
+  }
   return accounts[0]
 }
 
 export async function getChainAccount(address: string) {
-  const res = await client.CosmosAuthV1Beta1.query.queryAccount(address)
-  return res
+  const res = await fetch(`${apiURL}/cosmos/auth/v1beta1/accounts/${address}`).then<{
+    account: {
+      '@type': string;
+      address: string;
+      pub_key: {
+        '@type': string;
+        value: string;
+      };
+      account_number: string;
+      sequence: string;
+    }
+  }>(res => res.json()).catch((e) => {
+    console.error(e)
+    return { account: undefined }
+  })
+  return res.account
 }
 
 export async function mintDrop(address: string, amount: string) {
   await detectKeplr()
-  if (!isKeplrDetected) return
-  const account = await getAccount()
-  if (!account || account.address !== address) {
-    return Promise.reject(new Error(t('activeKeplrAccountAs', { addr: address })))
+  const account = await getAccount(address)
+  if (!account) {
+    return undefined
   }
   const res = await client.IconlakeDrop.tx.sendMsgMint({
     value: {
@@ -96,16 +128,25 @@ export async function mintDrop(address: string, amount: string) {
       }
     },
     fee
+  }).catch((err) => {
+    console.error(err)
+    toast.error(err.message ?? t('fail'))
+    return undefined
   })
   return res
 }
 
 export async function signMsg(msg: string) {
-  await detectKeplr()
-  if (!window.keplr) return
+  const keplr = await detectKeplr()
   const account = await getAccount()
-  if (!account) return
-  const res = await window.keplr.signArbitrary(CHAIN_ID, account.address, msg)
+  if (!account) {
+    return undefined
+  }
+  const res = await keplr.signArbitrary(CHAIN_ID, account.address, msg).catch((err) => {
+    console.error(err)
+    toast.error(err.message ?? t('fail'))
+    return undefined
+  })
   return res
 }
 
@@ -113,52 +154,61 @@ export async function getHash(uri: string) {
   const res = await client.IconlakeIcon.query.queryHash({
     hash_type: 'p',
     uri
+  }).catch((err) => {
+    console.error(err)
+    return undefined
   })
-  return await new Promise((resolve: (v: IconQueryHashResponse) => void, reject) => {
-    handleResponse<IconQueryHashResponse>(res as any, resolve, reject);
-  })
+  return res?.data
 }
 
 export async function mintIcon(value: MsgMintIcon) {
   await detectKeplr()
-  if (!isKeplrDetected) return
-  const account = await getAccount()
-  if (!account || account.address !== value.creator) {
-    return Promise.reject(new Error(t('activeKeplrAccountAs', { addr: value.creator })))
+  const account = await getAccount(value.creator)
+  if (!account) {
+    return undefined
   }
   const res = await client.IconlakeIcon.tx.sendMsgMint({
     value,
     fee
+  }).catch((err) => {
+    console.error(err)
+    toast.error(err.message ?? t('fail'))
+    return undefined
   })
   return res
 }
 
 export async function burnIcon(value: MsgBurnIcon) {
   await detectKeplr()
-  if (!isKeplrDetected) return
-  const account = await getAccount()
-  if (!account || account.address !== value.creator) {
-    return Promise.reject(new Error(t('activeKeplrAccountAs', { addr: value.creator })))
+  const account = await getAccount(value.creator)
+  if (!account) {
+    return undefined
   }
   const res = await client.IconlakeIcon.tx.sendMsgBurn({
     value,
     fee
+  }).catch((err) => {
+    console.error(err)
+    toast.error(err.message ?? t('fail'))
+    return undefined
   })
   return res
 }
 
 export async function getTx(txHash: string) {
-  const res = await client.CosmosTxV1Beta1.query.serviceGetTx(txHash)
-  return await new Promise((resolve: (v: V1Beta1GetTxResponse) => void, reject) => {
-    handleResponse<V1Beta1GetTxResponse>(res as any, resolve, reject);
+  const res = await fetch(`${apiURL}/cosmos/tx/v1beta1/txs/${txHash}`).then(res => res.json()).catch((e) => {
+    console.error(e)
+    return { tx: undefined }
   })
+  return res.tx
 }
 
 export async function getDropInfo(address: string) {
-  const res = await client.IconlakeDrop.query.queryInfo(address)
-  return await new Promise((resolve: (v: DropQueryGetInfoResponse) => void, reject) => {
-    handleResponse<DropQueryGetInfoResponse>(res as any, resolve, reject);
+  const res = await client.IconlakeDrop.query.queryInfo(address).catch((e) => {
+    console.error(e)
+    return undefined
   })
+  return res?.data.info
 }
 
 export async function initDrop(creator: string, address: string, isBackendService: boolean) {
@@ -168,16 +218,19 @@ export async function initDrop(creator: string, address: string, isBackendServic
     })
   }
   await detectKeplr()
-  if (!isKeplrDetected) return
-  const account = await getAccount()
-  if (!account || account.address !== creator) {
-    return Promise.reject(new Error(t('activeKeplrAccountAs', { addr: creator })))
+  const account = await getAccount(creator)
+  if (!account) {
+    return undefined
   }
   return await client.IconlakeDrop.tx.sendMsgInit({
     value: {
       creator,
       address,
     }
+  }).catch((err) => {
+    console.error(err)
+    toast.error(err.message ?? t('fail'))
+    return undefined
   })
 }
 
@@ -186,28 +239,33 @@ export async function getNFTs(q: {
 }) {
   const res = await client.IconlakeIcon.query.queryNFTs({
     owner: q.owner
+  }).catch((e) => {
+    console.error(e)
+    return undefined
   })
-  return await new Promise((resolve: (v: IconlakeiconQueryNFTsResponse) => void, reject) => {
-    handleResponse<IconlakeiconQueryNFTsResponse>(res as any, resolve, reject);
-  })
+  return res?.data
 }
 
 export async function getNftClass(id: string) {
-  const res = await client.IconlakeIcon.query.queryClass({ id })
-  return await new Promise((resolve: (v: IconlakeiconQueryClassResponse) => void, reject) => {
-    handleResponse<IconlakeiconQueryClassResponse>(res as any, resolve, reject);
+  const res = await client.IconlakeIcon.query.queryClass({ id }).catch((e) => {
+    console.error(e)
+    return undefined
   })
+  return res?.data
 }
 
 export async function updateClass(value: MsgUpdateClass) {
   await detectKeplr()
-  if (!isKeplrDetected) return
-  const account = await getAccount()
-  if (!account || account.address !== value.creator) {
-    return Promise.reject(new Error(t('activeKeplrAccountAs', { addr: value.creator })))
+  const account = await getAccount(value.creator)
+  if (!account) {
+    return undefined
   }
   const res = await client.IconlakeIcon.tx.sendMsgUpdateClass({
     value
+  }).catch((err) => {
+    console.error(err)
+    toast.error(err.message ?? t('updateFailed'))
+    return undefined
   })
   return res
 }
@@ -223,18 +281,23 @@ export async function verifyUriHash(uri: string | undefined, hash: string | unde
       checked: false
     }
   }
-  const blob = await fetch(uri, {
+  const res = await fetch(uri, {
     headers: {
       "Cache-Control": "no-cache"
     }
-  }).then(e => e.blob())
-  const file = await blob.arrayBuffer()
+  }).then(e => e.blob()).catch(() => undefined)
+  if (!res) {
+    return {
+      checked: false
+    }
+  }
+  const file = await res.arrayBuffer()
   const words = lib.WordArray.create()
   ;(words as any).init(file)
   const fileHash = SHA256(words)
   return {
     checked: hash === fileHash.toString(),
-    url: URL.createObjectURL(blob)
+    url: URL.createObjectURL(res)
   }
 }
 

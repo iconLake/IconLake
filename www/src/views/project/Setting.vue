@@ -59,7 +59,8 @@ async function updateChain(e: Event) {
   await userApis.info().onUpdate(async (info) => {
     user = info
   })
-  if (!user?.blockchain?.id) {
+  if (!hash || !user?.blockchain?.id) {
+    toast.error(t('fail'))
     return
   }
   const res = await updateClass({
@@ -70,9 +71,6 @@ async function updateChain(e: Event) {
     symbol: project.value.class,
     uri,
     uriHash: hash.file_hash ?? '',
-  }).catch((err) => {
-    console.error(err)
-    toast(err.message ?? t('updateFailed'))
   })
   if (res) {
     if (res?.code === 0) {
