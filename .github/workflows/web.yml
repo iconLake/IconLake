@@ -1,4 +1,4 @@
-name: Build Service
+name: Build web
 
 on:
   push:
