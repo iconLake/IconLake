@@ -2,9 +2,9 @@ name: Build web
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "workflow" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "workflow" ]
   workflow_dispatch:
 
 jobs:
