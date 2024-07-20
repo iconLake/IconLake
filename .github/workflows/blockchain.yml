@@ -18,12 +18,24 @@ jobs:
     - name: Setup Go environment
       uses: actions/setup-go@v5.0.2
 
-    - run: sudo apt-get install libmagickwand-dev
-    - run: pkg-config --cflags --libs MagickWand
-    - run: wget https://github.com/iconLake/ignite-cli/releases/download/v0.27.3/ignite_0.27.3_linux_amd64.tar.gz
-    - run: mkdir ./ignite_0.27.3_linux_amd64 && tar -xzvf ignite_0.27.3_linux_amd64.tar.gz -C ./ignite_0.27.3_linux_amd64
-    - run: sudo mv ./ignite_0.27.3_linux_amd64/ignite /usr/local/bin/ && sudo chmod +x /usr/local/bin/ignite
-    - run: cd ./blockchain && ls -l && ignite version && ignite chain build --release --check-dependencies
+    - name: Install Magick
+      run: |
+        sudo apt-get install libmagickwand-dev
+        pkg-config --cflags --libs MagickWand
+    
+    - name: Install ignite
+      run: |
+        wget -q https://github.com/iconLake/ignite-cli/releases/download/v0.27.3/ignite_0.27.3_linux_amd64.tar.gz
+        mkdir ./ignite_0.27.3_linux_amd64
+        tar -xzvf ignite_0.27.3_linux_amd64.tar.gz -C ./ignite_0.27.3_linux_amd64
+        sudo mv ./ignite_0.27.3_linux_amd64/ignite /usr/local/bin/
+        sudo chmod +x /usr/local/bin/ignite
+    
+    - name: Build iconlaked
+      run: |
+        cd ./blockchain
+        ignite version
+        ignite chain build --release --check-dependencies
 
     - name: Upload iconlaked
       uses: actions/upload-artifact@v4
