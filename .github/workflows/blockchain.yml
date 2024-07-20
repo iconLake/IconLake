@@ -35,7 +35,7 @@ jobs:
       run: |
         cd ./blockchain
         ignite version
-        ignite chain build --release --check-dependencies
+        ignite chain build --release --check-dependencies --verbose
 
     - name: Upload iconlaked
       uses: actions/upload-artifact@v4
