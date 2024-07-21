@@ -3,20 +3,26 @@
 ## 开发
 
 ### 环境要求
-1. nodejs >= 16
-2. pnpm >= 7
+
+1. nodejs >= 20
+2. pnpm >= 9
 3. vue >= 3
 
 ### 安装
-```
+
+```shell
 pnpm i
 ```
+
 ### 开发环境启动
-```
+
+```shell
 pnpm run dev
 ```
+
 ### 发布
-```
+
+```shell
 pnpm run build
 ```
 

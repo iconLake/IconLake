@@ -22,8 +22,8 @@ const destPath = './public/'
 const scssFiles = `${srcPath}**/*.scss`
 const tsFiles = `${srcPath}**/*.ts`
 const jsonFiles = `${srcPath}**/*.json`
-const i18nHtmlFiles = [`${srcPath}**/*.html`, `!${srcPath}exhibition/*.html`]
-const htmlFiles = `${srcPath}exhibition/*.html`
+const i18nHtmlFiles = [`${srcPath}**/*.html`, `!${srcPath}exhibition/*.html`, `!${srcPath}**/*.zh-cn.html`, `!${srcPath}**/*.en-us.html`]
+const htmlFiles = [`${srcPath}exhibition/*.html`, `${srcPath}**/*.zh-cn.html`, `${srcPath}**/*.en-us.html`]
 
 let isChanged = false
 const srcOptions = {

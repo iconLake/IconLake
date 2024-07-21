@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import Browser from 'webextension-polyfill'
-import { ButtonTooltipType, Icon, Project, SVG, MsgType } from '../types'
+import { ButtonTooltipType, Icon, Project, SVG, MsgType, IconResource } from '../types'
 import { ElSelect, ElOption } from 'element-plus'
-import { list, addIcon } from '../apis/project'
+import { list, addIcon, uploadFile } from '../apis/project'
 import ButtonVue from '../components/Button.vue'
 import { domain } from '../apis/request'
+import { MD5 } from 'crypto-js'
 
 interface Item extends Icon {
   isSelected?: boolean
 }
 
 const icons = ref<Item[]>([])
+const tabUrl = ref(new URL('https://iconlake.com'))
 const projectId = ref('')
 const projectList = ref<Project[]>([])
 const isSaving = ref(false)
@@ -26,25 +28,29 @@ async function getIcons () {
     active: true,
     lastFocusedWindow: true
   })
+  if (!tab || !tab.id) return
   const res = await Browser.tabs.sendMessage(tab.id as number, {
     type: MsgType.GetIcons
   }) as {
     icons: Icon[]
+    url: string
   }
   icons.value = res.icons.map(e => ({
     ...e,
     isSelected: false
   }))
+  tabUrl.value = new URL(res.url)
 }
-
-getIcons()
 
 async function getProjects () {
   const data = await list()
   projectList.value = data.list || []
 }
 
-getProjects()
+onMounted(() => {
+  getIcons()
+  getProjects()
+})
 
 let lastSelectedIndex = -1
 function setSelected (item: Item, i: number, e: MouseEvent) {
@@ -80,6 +86,8 @@ async function gotoProject () {
   }
 }
 
+const genSVG = (svg: SVG) => `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="${svg.viewBox}">${svg.path}</svg>`
+
 async function save () {
   if (!projectId.value) {
     showTip('请选择项目')
@@ -91,19 +99,34 @@ async function save () {
   }
   isSaving.value = true
   const t = Date.now()
-  await addIcon(projectId.value, icons.value.filter(e => e.isSelected).map((e, i) => ({
-    code: `${t}-${i}`,
-    name: '',
-    svg: e.svg
-  }))).catch(() => {
+  const uploadedIcons: (IconResource | undefined)[] = await Promise.all(icons.value.filter(e => e.isSelected).map(async (e, i) => {
+    const content = genSVG(e.svg)
+    const hash = MD5(content).toString()
+    const res = await uploadFile(projectId.value, `${hash}.svg`, content)
+    if (!res) {
+      showTip('一个图标上传失败', ButtonTooltipType.Danger)
+      return
+    }
+    return {
+      code: hash,
+      name: e.name || `${tabUrl.value.hostname}-${i}`,
+      svg: {
+        url: res.url
+      }
+    }
+  }))
+  const addIcons = uploadedIcons.filter(e => !!e) as IconResource[]
+  if (addIcons.length === 0) {
+    showTip('所有图标都上传失败了', ButtonTooltipType.Danger)
+    return
+  }
+  await addIcon(projectId.value, addIcons).catch(() => {
     showTip('保存失败', ButtonTooltipType.Danger)
   })
   isSaving.value = false
   showTip('保存成功', ButtonTooltipType.Success)
   setTimeout(gotoProject, 1000)
 }
-
-const genSVG = (svg: SVG) => `<svg viewBox="${svg.viewBox}">${svg.path}</svg>`
 </script>
 
 <template>

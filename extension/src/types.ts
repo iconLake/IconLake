@@ -12,9 +12,19 @@ export interface SVG {
   path: string
 }
 
+export interface SVGResource {
+  url: string
+}
+
 export interface Icon {
   svg: SVG
   name: string
+}
+
+export interface IconResource {
+  svg: SVGResource
+  name: string
+  code: string
 }
 
 export interface Project {
