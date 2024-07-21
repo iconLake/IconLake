@@ -1,15 +1,15 @@
 import Browser from 'webextension-polyfill'
 
-export const domain = import.meta.env.DEV ? 'https://iconlake.com:8443' : 'https://iconlake.com'
+export const domain = import.meta.env.DEV ? 'https://test.iconlake.com' : 'https://iconlake.com'
 
-export function request (input: URL | RequestInfo, init?: RequestInit | undefined) {
+export async function request<T> (input: URL | RequestInfo, init?: RequestInit | undefined) {
   const _init = {
     headers: {
       'Content-Type': 'application/json; charset=utf-8'
     },
     ...init
   }
-  return fetch(input, _init).then(e => e.json()).then(e => {
+  return await fetch(input, _init).then(e => e.json()).then(e => {
     if (e.error) {
       if (e.error === 'userNotLogin' || e.error === 'tokenExpired') {
         Browser.tabs.create({
@@ -18,6 +18,6 @@ export function request (input: URL | RequestInfo, init?: RequestInit | undefine
       }
       throw new Error(e.error)
     }
-    return e
+    return e as T
   }).catch(console.error)
 }

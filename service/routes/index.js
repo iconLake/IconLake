@@ -15,6 +15,14 @@ router.get('/', (req, res) => {
   })
 })
 
+router.get('/docs/:id', (req, res) => {
+  setLocale(req, res)
+  res.sendFile(`./public/docs/${req.params.id}.${getLocale(req)}.html`, {
+    root,
+    maxAge
+  })
+})
+
 router.get('/login', loginIndex)
 
 router.get('/exhibition/:projectId/:nftId', express.static('public', { maxAge }), exhibitionNftInfo)
