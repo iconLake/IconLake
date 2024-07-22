@@ -10,6 +10,7 @@ import { PERMANENT_FILE_EXPIRE, TEMPORARY_FILE_EXPIRE, ONE_DAY_SECONDS } from '@
 import { ElSwitch } from 'element-plus'
 import { userApis, UserInfo } from '@/apis/user'
 import { usePageLoading } from '@/hooks/router'
+import Loading from '@/components/Loading.vue'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -258,6 +259,7 @@ async function onSetExpire(id: string, value: number) {
         @click="generate"
       >
         {{ t(data.generating.has('css') ? 'generating' : 'regenerate') }}
+        <Loading v-if="data.generating.has('css')" />
       </button>
     </div>
   </div>
@@ -295,6 +297,7 @@ async function onSetExpire(id: string, value: number) {
         @click="generate"
       >
         {{ t(data.generating.has('js') ? 'generating' : 'regenerate') }}
+        <Loading v-if="data.generating.has('js')" />
       </button>
     </div>
   </div>
@@ -451,6 +454,9 @@ async function onSetExpire(id: string, value: number) {
   }
   .operate {
     padding: 2rem 0;
+    .loading {
+      margin-left: 0.8rem;
+    }
   }
 }
 .files {
