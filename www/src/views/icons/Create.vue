@@ -324,13 +324,6 @@ async function save () {
               target="_blank"
             >{{ t('webStore') }}</a>
           </p>
-          <p>
-            <a
-              class="file"
-              :href="'/exts/chrome.crx'"
-              target="_blank"
-            >{{ t('downloadFile') }}</a>
-          </p>
         </div>
         <div class="item">
           <h3>
@@ -477,11 +470,6 @@ async function save () {
     align-items: flex-start;
     .item {
       margin: 5rem;
-      &:hover {
-        .file {
-          opacity: 1;
-        }
-      }
     }
     .store {
       display: inline-block;
