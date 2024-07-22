@@ -14,6 +14,7 @@ import Select from '@/components/Select.vue'
 import { userApis, UserInfo } from '@/apis/user'
 import { ElTooltip } from 'element-plus'
 import { usePageLoading } from '@/hooks/router'
+import Loading from '@/components/Loading.vue'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -285,15 +286,27 @@ function addGroup(group: Group) {
   getList()
 }
 
+const isDownloading = ref(false)
 async function batchDownload() {
+  if (isDownloading.value) {
+    return
+  }
+  isDownloading.value = true
   const zip = new JSZip()
-  data.selectedIcons.forEach(e => {
-    zip.file(`${e.code}.svg`, `<svg class="icon-svg" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="${e.svg.viewBox}">${e.svg.path}</svg>`)
-  })
+  await Promise.all(Array.from(data.selectedIcons.keys()).map(async k => {
+    const e = data.selectedIcons.get(k)!
+    const headers = new Headers()
+    headers.append('Cache-Control', 'no-cache')
+    const content = await fetch(e.svg.url, {
+      headers
+    }).then(res => res.text())
+    zip.file(`${e.code}.svg`, content)
+  }))
   const content = await zip.generateAsync({
     type: 'blob'
   })
   saveAs(content, `${data.name}_${Date.now()}.zip`)
+  isDownloading.value = false
 }
 
 // search
@@ -400,7 +413,11 @@ watch(() => data.keyword, () => {
         @click="batchDownload"
       >
         <span>{{ t('batchDownload') }}</span>
-        <i class="iconfont icon-download" />
+        <Loading v-if="isDownloading" />
+        <i
+          v-else
+          class="iconfont icon-download"
+        />
       </button>
     </div>
     <div
