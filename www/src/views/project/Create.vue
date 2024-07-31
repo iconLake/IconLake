@@ -6,12 +6,16 @@ import { toast } from "../../utils";
 import router from "../../router";
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router';
+import Select from '@/components/Select.vue';
+import Loading from '@/components/Loading.vue';
+import { PROJECT_TYPE } from '@/utils/const';
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
 
 const fmData = reactive({
   _id: '',
+  type: PROJECT_TYPE.SVG.toString(),
   name: '',
   desc: ''
 })
@@ -29,7 +33,8 @@ async function create () {
   isLoading.value = true
   const data = await createProject({
     name: fmData.name,
-    desc: fmData.desc
+    desc: fmData.desc,
+    type: +fmData.type,
   })
   fmData._id = data._id
   router.replace(`/icons/${data._id}`)
@@ -59,6 +64,16 @@ onMounted(() => {
         <h1>{{ t('newProject') }}</h1>
         <h2>{{ t('fillProjectNameAndDescription') }}</h2>
         <div class="item">
+          <label>{{ t('projectType') }}</label>
+          <Select
+            v-model="fmData.type"
+            :options="[
+              { label: t('projectTypeSvg'), value: PROJECT_TYPE.SVG.toString() },
+              { label: t('projectTypeImg'), value: PROJECT_TYPE.IMG.toString() },
+            ]"
+          />
+        </div>
+        <div class="item">
           <label>{{ t('projectName') }}</label>
           <div class="input flex">
             <i class="iconfont icon-name" />
@@ -87,11 +102,12 @@ onMounted(() => {
           </div>
         </div>
         <button
-          class="bg-danger"
+          class="bg-danger flex center"
           type="submit"
           :disabled="!isChecked"
         >
           {{ t('createNow') }}
+          <Loading v-if="isLoading" />
         </button>
       </form>
     </div>
@@ -159,12 +175,14 @@ onMounted(() => {
       margin-top: 0.875rem;
     }
     button[type="submit"] {
-      display: block;
       padding: 0;
       height: 4.5rem;
       border-radius: 2.25rem;
       width: 100%;
       margin-top: 2rem;
+      .loading {
+        margin-left: 0.8rem;
+      }
     }
     .icon-desc {
       margin-top: 1.52rem;
@@ -190,7 +208,26 @@ onMounted(() => {
         padding-top: 1.4rem;
       }
     }
-
+    .select {
+      height: 5.063rem;
+      :deep(.value) {
+        .text {
+          background-color: #3354bd;
+          color: #fff;
+          border: none;
+          padding: 0 0.938rem;
+        }
+        .icon-back {
+          padding: 0 0.938rem;
+        }
+      }
+      :deep(.dropdown) {
+        background-color: #3354bd;
+        .option:hover {
+          background-color: var(--color-main);
+        }
+      }
+    }
     .textarea-input {
       height: 10.063rem;
     }

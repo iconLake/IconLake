@@ -1,5 +1,5 @@
 import { cache } from '@/utils/cache'
-import request from '../utils/request'
+import request from '@/utils/request'
 
 const baseURL = '/api/project/'
 
@@ -10,7 +10,7 @@ export interface OriginalIcon {
 export interface BaseIcon {
   name: string
   code: string
-  svg: {
+  svg?: {
     url: string
     /**
      * @deprecated replace with 'url'
@@ -20,6 +20,9 @@ export interface BaseIcon {
      * @deprecated replace with 'url'
      */
     path?: string
+  }
+  img?: {
+    url: string
   }
 }
 
@@ -88,6 +91,7 @@ export interface Member {
 
 export interface Project {
   _id: string
+  type: number
   userId: string
   name: string
   files: Files
@@ -513,19 +517,25 @@ export function setExpire(projectId: string, fileId: string, fileType: 'css'|'js
   })
 }
 
-export function uploadFile(projectId: string, _id: string, data: string | ArrayBuffer, dir?: string) {
+export function uploadFile(params: {
+  projectId: string
+  _id: string
+  data: string | ArrayBuffer | Blob
+  dir?: string
+  contentType?: string
+}) {
   return <Promise<{key: string, url: string}>>request({
     method: 'POST',
     url: '/file/upload',
     baseURL,
     headers: {
-      'Content-Type': typeof data === 'string' ? 'text/plain; charset=utf-8' : 'application/octet-stream'
+      'Content-Type': params.contentType || (typeof params.data === 'string' ? 'text/plain; charset=utf-8' : 'application/octet-stream')
     },
     params: {
-      projectId,
-      _id,
-      dir,
+      projectId: params.projectId,
+      _id: params._id,
+      dir: params.dir,
     },
-    data
+    data: params.data
   })
 }

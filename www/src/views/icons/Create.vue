@@ -5,9 +5,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { addIcon, BaseIcon, projectApis, uploadFile } from '../../apis/project'
 import HeaderVue from '../../components/Header.vue'
 import UserVue from '../../components/User.vue'
-import { readFileAsText, toast } from '../../utils'
-import { MD5 } from 'crypto-js'
+import { readFileAsBlob, readFileAsText, toast } from '../../utils'
+import { MD5, lib } from 'crypto-js'
 import { usePageLoading } from '@/hooks/router'
+import { PROJECT_TYPE, PROJECT_TYPE_STRING } from '@/utils/const'
+import Loading from '@/components/Loading.vue'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -15,17 +17,19 @@ const pageLoading = usePageLoading()
 interface Icon extends BaseIcon {
   id?: string
   prefix?: string
+  isUploading?: boolean
 }
 
-type Tab = 'svg'|'iconfont'|'extension'
+type Tab = 'svg'|'iconfont'|'extension'|'img'
 
 const $route = useRoute()
 const $router = useRouter()
 
 const data = reactive({
   _id: $route.params.id as string,
+  type: 0,
   name: '',
-  activeTab: 'svg' as Tab,
+  activeTab: 'extension' as Tab,
   icons: [] as Icon[]
 })
 
@@ -38,8 +42,10 @@ const uploading = reactive({
 })
 
 async function getInfo () {
-  projectApis.info(data._id, 'name icons').onUpdate(async (res) => {
+  projectApis.info(data._id, 'type name icons').onUpdate(async (res) => {
+    data.type = res.type
     data.name = res.name
+    data.activeTab = ['', 'svg', 'img'][data.type] as Tab
     res.icons.forEach(e => {
       oldIcons[e.code] = e
     })
@@ -79,24 +85,48 @@ function updateIcons() {
   data.icons = icons
 }
 
-function uploadSVG(code: string, content: string) {
+function uploadMedia(type: string, code: string, content: string | Blob, contentType: string, name: string) {
   return new Promise((resolve, reject) => {
-    const hash = MD5(content).toString()
-    uploadFile(data._id, `${hash}.svg`, content).then(res => {
+    if (cachedIcons.has(code)) {
+      toast(t('codeExistsAndIconOut', { code }))
+      reject('code exists')
+      return
+    } else {
+      const reader = new FileReader()
+      const blob = content instanceof Blob ? content : new Blob([content])
+      reader.readAsDataURL(blob)
+      reader.onload = () => {
+        data.icons.push({
+          code,
+          name,
+          [type]: {
+            url: reader.result as string,
+          },
+          isUploading: true
+        })
+      }
+    }
+    uploadFile({
+      projectId: data._id,
+      _id: name,
+      data: content,
+      contentType
+    }).then(res => {
       if (cachedIcons.has(code)) {
         Object.assign(cachedIcons.get(code) as Icon, {
-        code,
-        svg: {
-          url: res.url,
-        }
-      })
+          [type]: {
+            url: res.url,
+          },
+          isUploading: false
+        })
       } else {
         cachedIcons.set(code, {
         code,
-        name: code,
-        svg: {
+        name,
+        [type]: {
           url: res.url,
-        }
+        },
+        isUploading: false
       })
       }
       updateIcons()
@@ -118,7 +148,24 @@ function onSVGChange(e: Event) {
       }
       const svgText = await readFileAsText(file)
       const code = file.name.substring(0, file.name.lastIndexOf('.'))
-      uploadSVG(code, svgText)
+      const hash = MD5(svgText).toString()
+      uploadMedia('svg', code, svgText, 'image/svg+xml', `${hash}.svg`)
+    })
+  }
+}
+
+function onImgChange(e: Event) {
+  const files = (e.target as HTMLInputElement).files
+  if (files && files.length > 0) {
+    Array.from(files).forEach(async file => {
+      if (!file.type.startsWith('image/')) {
+        return
+      }
+      const imgBlob = await readFileAsBlob(file)
+      const code = file.name.substring(0, file.name.lastIndexOf('.'))
+      const buf = await imgBlob.arrayBuffer()
+      const hash = MD5(lib.WordArray.create(Array.from(new Uint8Array(buf)))).toString()
+      uploadMedia('img', code, imgBlob, file.type, `${hash}.${file.type.substring(file.type.lastIndexOf('/') + 1)}`)
     })
   }
 }
@@ -140,7 +187,8 @@ function onIconfontJSChange(e: Event) {
           if (props) {
             const svgText = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="${props[2]}">${props[3]}</svg>`
             uploading.total++
-            uploadSVG(props[1], svgText).then(() => {
+            const hash = MD5(svgText).toString()
+            uploadMedia('svg', props[1], svgText, 'image/svg+xml', `${hash}.svg`).then(() => {
               uploading.success++
             }).catch(() => {
               uploading.fail++
@@ -212,6 +260,15 @@ async function save () {
   <UserVue />
   <div class="tab flex">
     <div
+      v-if="data.type === PROJECT_TYPE.IMG"
+      class="item"
+      :class="getTabClass('img')"
+      @click="setTabActive('img')"
+    >
+      {{ t('uploadImg') }}
+    </div>
+    <div
+      v-if="data.type === PROJECT_TYPE.SVG"
       class="item"
       :class="getTabClass('svg')"
       @click="setTabActive('svg')"
@@ -219,6 +276,7 @@ async function save () {
       {{ t('uploadSVG') }}
     </div>
     <div
+      v-if="data.type === PROJECT_TYPE.SVG"
       class="item"
       :class="getTabClass('iconfont')"
       @click="setTabActive('iconfont')"
@@ -230,27 +288,28 @@ async function save () {
       :class="getTabClass('extension')"
       @click="setTabActive('extension')"
     >
-      {{ t('collectSVG') }}
+      {{ t('collectIcons') }}
     </div>
   </div>
   <div class="wrap">
     <!-- icons -->
     <div
-      v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'"
-      class="icons flex start"
+      v-if="data.activeTab === 'svg' || data.activeTab === 'img' || data.activeTab === 'iconfont'"
+      :class="`icons flex start type-${PROJECT_TYPE_STRING[data.type]}`"
     >
       <div
         v-for="item in data.icons"
         :key="item.code"
         class="item"
       >
-        <img :src="item.svg?.url">
+        <img :src="item.svg?.url || item.img?.url">
         <div
           v-if="item.code"
           class="name"
           :title="item.code"
         >
           {{ item.code }}
+          <Loading v-if="item.isUploading" />
         </div>
         <div
           v-if="item.name && item.code !== item.name"
@@ -260,6 +319,21 @@ async function save () {
           {{ item.name }}
         </div>
       </div>
+    </div>
+    <div
+      v-if="data.activeTab === 'img'"
+      class="upload flex center"
+    >
+      <label for="img">
+        {{ t('selectIconFile', {type: t('img')}) }}
+        <input
+          id="img"
+          type="file"
+          accept="image/*"
+          multiple
+          @change="onImgChange"
+        >
+      </label>
     </div>
     <div
       v-if="data.activeTab === 'svg'"
@@ -308,7 +382,7 @@ async function save () {
       class="extension t-center"
     >
       <h1>{{ t('iconlakeExtension') }}</h1>
-      <h2>{{ t('collectAnySVG') }}</h2>
+      <h2>{{ t('collectFromAnySites') }}</h2>
       <div class="flex center download">
         <div class="item">
           <h3>
@@ -408,6 +482,15 @@ async function save () {
     flex-wrap: wrap;
     min-height: calc(100vh - 40rem);
 
+    &.type-img {
+      .item {
+        width: 30rem;
+      }
+      img {
+        height: 16rem;
+      }
+    }
+
     .item {
       width: 11.25rem;
       text-align: center;
@@ -416,6 +499,7 @@ async function save () {
 
     img {
       height: 2rem;
+      max-width: 100%;
     }
 
     .name {
@@ -427,6 +511,9 @@ async function save () {
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
+      .loading {
+        font-size: 1rem;
+      }
     }
   }
 

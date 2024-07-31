@@ -11,7 +11,7 @@ export async function list (req, res) {
         userId: req.user._id
       }
     }
-  }, req.query.fields ?? '_id name desc cover createTime icons.svg')
+  }, req.query.fields ?? '_id type name desc cover createTime icons.svg')
   res.json({
     list: list.map(e => {
       const info = e.toJSON()
@@ -27,6 +27,6 @@ export async function list (req, res) {
         info.cover = completeURL(info.cover)
       }
       return info
-    })
+    }).reverse()
   })
 }

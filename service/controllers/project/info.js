@@ -116,6 +116,8 @@ export async function edit (req, res) {
     data.members = [
       { userId: req.user._id, isAdmin: true }
     ]
+    const types = [false, true, true]
+    data.type = types[req.body.type] ? req.body.type : 1
     const p = new Project(data)
     _id = p._id
     await p.save()

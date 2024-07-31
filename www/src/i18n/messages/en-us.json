@@ -52,6 +52,7 @@
   "delete": "Delete",
   "deleteDone": "Delete Done",
   "fillProjectNameAndDescription": "Please fill in the project name and description",
+  "projectType": "Project Type",
   "projectName": "Project Name",
   "projectDescription": "Project Description",
   "createNow": "CREATE",
@@ -98,6 +99,7 @@
   "reactComponent": "React Component",
   "colon": " : ",
   "uploadSVG":"Upload SVG",
+  "uploadImg": "Upload Image",
   "importIconfont": "Import Iconfont",
   "selectIconFile": "Select {type} File",
   "fileCouldNotBeParsed": "File Could Not Be Parsed",
@@ -117,9 +119,9 @@
   "userNotLogin": "You haven't logged in, please log in first",
   "tokenExpired": "Your login information has expired, please login again",
   "batchDownload": "Batch Download",
-  "collectSVG": "Collect SVG",
+  "collectIcons": "Collect",
   "iconlakeExtension": "iconLake Extension",
-  "collectAnySVG": "Help you to collect any SVG on any website.",
+  "collectFromAnySites": "Help you collect any SVG or image from any website.",
   "webStore": "Web Store",
   "downloadFile": "Download File",
   "isPublic": "Is Public",
@@ -178,5 +180,6 @@
   "userAuthError": "Your login information is incorrect, please log in again",
   "permissionDenied": "You don't have permission to perform this operation",
   "cannotGetKeplrAccount": "Failed to get Keplr account, please authorize and try again",
-  "txNotFound": "Transaction not found"
+  "txNotFound": "Transaction not found",
+  "img": "Image"
 }
