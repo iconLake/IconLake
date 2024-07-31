@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { editIcon, projectApis, Icon as IconType, uploadFile } from '@/apis/project'
+import { editIcon, projectApis, Icon as IconType } from '@/apis/project'
 import { getHash, mintIcon, getTx, getChainAccount, burnIcon } from '@/apis/blockchain'
 import Header from '@/components/Header.vue'
 import Icon from '@/components/Icon.vue'
@@ -13,6 +13,7 @@ import LoadingVue from '@/components/Loading.vue'
 import { useI18n } from 'vue-i18n'
 import { IS_PRODUCTION } from '@/utils/const'
 import { usePageLoading } from '@/hooks/router'
+import { getIconUrl } from '@/utils/icon'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -57,7 +58,13 @@ async function publish() {
     return
   }
   isPending.value = true
-  const hash = await getHash(iconInfo.svg.url)
+  const uri = getIconUrl(iconInfo)
+  if (!uri) {
+    toast.error(t('fail'))
+    isPending.value = false
+    return
+  }
+  const hash = await getHash(uri)
   if (!hash || !userInfo.value || !userInfo.value.blockchain?.id) {
     toast.error(t('fail'))
     isPending.value = false
@@ -67,7 +74,7 @@ async function publish() {
     creator: userInfo.value.blockchain?.id,
     classId: projectId.value,
     id: hash.graph_hash ?? '',
-    uri: iconInfo.svg.url,
+    uri,
     uriHash: hash.file_hash ?? '',
     name: iconInfo.code,
     description: iconInfo.name,
@@ -150,7 +157,7 @@ onMounted(() => {
   <div class="main">
     <p>{{ t('onChainVerifyOwnership') }}</p>
     <div
-      v-if="iconInfo.svg.url"
+      v-if="getIconUrl(iconInfo)"
       class="info"
     >
       <Icon :info="iconInfo" />

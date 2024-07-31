@@ -15,6 +15,7 @@ import { userApis, UserInfo } from '@/apis/user'
 import { ElTooltip } from 'element-plus'
 import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
+import { getIconUrl } from '@/utils/icon'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -25,6 +26,7 @@ const userInfo = ref({} as UserInfo)
 
 const data = reactive({
   _id: $route.params.id as string,
+  type: 0,
   name: '',
   icons: [] as Icon[],
   groups: [] as Group[],
@@ -59,7 +61,8 @@ const editable = computed(() => {
 })
 
 async function getIcons () {
-  await projectApis.info(data._id, 'name icons groups').onUpdate(async res => {
+  await projectApis.info(data._id, 'type name icons groups').onUpdate(async res => {
+    data.type = res.type
     data.name = res.name
     data.members = res.members
     data.isPublic = res.isPublic
@@ -297,7 +300,11 @@ async function batchDownload() {
     const e = data.selectedIcons.get(k)!
     const headers = new Headers()
     headers.append('Cache-Control', 'no-cache')
-    const content = await fetch(e.svg.url, {
+    const url = getIconUrl(e)
+    if (!url) {
+      return
+    }
+    const content = await fetch(url, {
       headers
     }).then(res => res.text())
     zip.file(`${e.code}.svg`, content)
@@ -464,6 +471,7 @@ watch(() => data.keyword, () => {
       <Detail
         ref="detailDom"
         :project-id="data._id"
+        :project-type="data.type"
         :info="data.detail.info"
         :top="data.detail.top"
         :left="data.detail.left"

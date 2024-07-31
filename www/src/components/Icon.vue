@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getIconUrl } from '@/utils/icon';
 import { Icon } from "../apis/project"
 
 const props = defineProps<{
@@ -9,9 +10,9 @@ const props = defineProps<{
 <template>
   <div class="icon">
     <img
-      v-if="info.svg && info.svg.url"
+      v-if="getIconUrl(info)"
       class="icon-svg"
-      :src="info.svg?.url"
+      :src="getIconUrl(info)"
     >
   </div>
 </template>

@@ -162,7 +162,7 @@
   "enableDROPMintingForSomeone1": "Enable DROP Minting For ",
   "enableDROPMintingForSomeone2": "",
   "activeKeplrAccountAs": "Please switch the currently active account in Keplr to {addr}",
-  "fileSizeLimitExceeded": "Uploading files exceeding 5MB is not currently supported.",
+  "fileSizeLimitExceeded": "Uploading files exceeding 20MB is not currently supported.",
   "fileUploadFailed": "File upload failed",
   "fileIsSameAsOld": "The file is the same as the old one",
   "blockchainConfirmationSuccessful": "Blockchain confirmation successful",

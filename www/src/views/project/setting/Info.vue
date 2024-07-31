@@ -6,7 +6,7 @@ import { editInfo, projectApis, uploadFile } from '../../../apis/project'
 import { getExt, toast } from '../../../utils'
 import { ElSwitch, ElUpload } from 'element-plus'
 import type { UploadFile } from 'element-plus'
-import { UPLOAD_DIR } from '@/utils/const'
+import { UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
 import { usePageLoading } from '@/hooks/router'
 
 const { t } = useI18n()
@@ -44,14 +44,19 @@ async function save() {
 
 async function handleUpload(file: UploadFile) {
   if (!file.raw || !/^image\//i.test(file.raw?.type)) {
-    toast('请选择图片')
+    toast(t('pleaseSelectFile', { type: t('img') }))
     return
   }
-  if (!file.size || file.size / 1024 / 1024 > 5) {
-    toast('暂不支持上传超过5MB的图片')
+  if (!file.size || file.size > UPLOAD_FILE_SIZE_LIMIT) {
+    toast(t('fileSizeLimitExceeded'))
     return
   }
-  const res = await uploadFile(projectId, `${Date.now()}${getExt(file.name)}`, await file.raw.arrayBuffer(), UPLOAD_DIR.COVER)
+  const res = await uploadFile({
+    projectId,
+    _id: `${Date.now()}${getExt(file.name)}`,
+    data: await file.raw.arrayBuffer(),
+    dir: UPLOAD_DIR.COVER
+  })
   project.value.cover = res.url
 }
 

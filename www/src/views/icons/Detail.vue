@@ -3,18 +3,21 @@
 import { computed, nextTick, reactive, ref, watch, watchEffect } from 'vue'
 import { addTag, delTag, editGroup, editIcon, projectApis, Group, Icon, uploadFile } from '../../apis/project'
 import IconComponent from '../../components/Icon.vue'
-import { copy, readFileAsText, toast } from '../../utils'
+import { copy, readFileAsBlob, readFileAsText, toast } from '../../utils'
 import { useI18n } from 'vue-i18n'
 import Select from '@/components/Select.vue'
 import { ElUpload } from 'element-plus'
 import type { UploadFile } from 'element-plus'
-import { UPLOAD_DIR } from '@/utils/const'
-import { MD5 } from 'crypto-js'
+import { PROJECT_TYPE, PROJECT_TYPE_STRING, UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
+import { lib, MD5 } from 'crypto-js'
+import { getIconUrl } from '@/utils/icon'
+import { isImgFile, isSvgFile } from '@/utils/file'
 
 const { t } = useI18n()
 
 const props = defineProps<{
   projectId: string
+  projectType: number
   info: Icon
   top: string
   left: string
@@ -56,6 +59,12 @@ const groupOptions = computed(() => [
   { label: t('ungrouped'), value: '' },
   ...props.groups.map(e => ({ label: e.name, value: e._id }))
 ])
+const acceptType = computed(() => {
+  if (props.projectType === PROJECT_TYPE.IMG) {
+    return 'image/*'
+  }
+  return 'image/svg+xml'
+})
 
 defineExpose({
   root
@@ -174,37 +183,74 @@ watch(() => props.info._id, () => {
 })
 
 async function handleUpload(file: UploadFile) {
-  if (!file.raw || !/^image\/svg\+xml$/i.test(file.raw?.type)) {
-    toast(t('pleaseSelectFile', {type: 'SVG'}))
+  if (!file.raw) {
+    toast(t('pleaseSelectFile'))
     return
   }
-  if (!file.size || file.size / 1024 / 1024 > 5) {
+  if (!file.size || file.size > UPLOAD_FILE_SIZE_LIMIT) {
     toast(t('fileSizeLimitExceeded'))
     return
   }
+  if (props.projectType === PROJECT_TYPE.SVG && !isSvgFile(file.raw)) {
+    return
+  }
+  if (props.projectType === PROJECT_TYPE.IMG && !isImgFile(file.raw)) {
+    return
+  }
   const _id = props.info._id
-  const oldUrl = props.info.svg.url
-  const svgText = await readFileAsText(file.raw)
-  const hash = MD5(svgText).toString()
-  const fileName = `${hash}.svg`
-  if (new RegExp(`${fileName}$`).test(oldUrl)) {
-    toast(t('fileIsSameAsOld'))
+  const oldUrl = getIconUrl(props.info) || ''
+  let url = oldUrl
+  if (props.projectType === PROJECT_TYPE.SVG) {
+    const svgText = await readFileAsText(file.raw)
+    const hash = MD5(svgText).toString()
+    const fileName = `${hash}.svg`
+    if (new RegExp(`${fileName}$`).test(oldUrl)) {
+      toast(t('fileIsSameAsOld'))
+      return
+    }
+    const res = await uploadFile({
+      projectId: props.projectId,
+      _id: fileName,
+      data: svgText,
+      dir: UPLOAD_DIR.ICON
+    }).catch((err) => {
+      console.error(err)
+      toast.error(t('fileUploadFailed'))
+    })
+    if (!res) {
+      return
+    }
+    url = res.url
+  } else if (props.projectType === PROJECT_TYPE.IMG) {
+    const imgBlob = await readFileAsBlob(file.raw)
+    const buf = await imgBlob.arrayBuffer()
+    const hash = MD5(lib.WordArray.create(Array.from(new Uint8Array(buf)))).toString()
+    const code  = `${hash}.${file.name.substring(file.name.lastIndexOf('.') + 1)}`
+    const res = await uploadFile({
+      projectId: props.projectId,
+      _id: code,
+      data: imgBlob,
+      dir: UPLOAD_DIR.ICON
+    }).catch((err) => {
+      console.error(err)
+      toast.error(t('fileUploadFailed'))
+    })
+    if (!res) {
+      return
+    }
+    url = res.url
+  } else {
+    toast.error(t('notSupported'))
     return
   }
-  const res = await uploadFile(props.projectId, fileName, svgText, UPLOAD_DIR.ICON).catch((err) => {
-    console.error(err)
-    toast.error(t('fileUploadFailed'))
-  })
-  if (!res) {
-    return
-  }
+  const key = PROJECT_TYPE_STRING[props.projectType]
   const data = {
     _id,
-    svg: {
-      url: res.url
+    [key]: {
+      url
     }
   }
-  await editIcon(props.projectId, props.info._id, { svg: data.svg })
+  await editIcon(props.projectId, props.info._id, { [key]: data[key] })
   toast(t('saveDone'))
   emit('update', data)
 }
@@ -228,7 +274,7 @@ async function handleUpload(file: UploadFile) {
         <ElUpload
           :show-file-list="false"
           :auto-upload="false"
-          accept="image/svg+xml"
+          :accept="acceptType"
           class="upload-input"
           @change="handleUpload"
         >

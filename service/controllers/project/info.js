@@ -63,6 +63,9 @@ export async function info (req, res) {
         if (e.svg && e.svg.url) {
           e.svg.url = completeURL(e.svg.url)
         }
+        if (e.img && e.img.url) {
+          e.img.url = completeURL(e.img.url)
+        }
       })
     }
     if (/files/.test(fields) && !result.files) {

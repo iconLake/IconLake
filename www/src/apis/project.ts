@@ -400,6 +400,9 @@ export function editIcon(projectId: string, _id: string, info: {
   svg?: {
     url: string
   }
+  img?: {
+    url: string
+  }
 }) {
   cache.project.trigger({
     code: 'editIcon',
@@ -522,14 +525,13 @@ export function uploadFile(params: {
   _id: string
   data: string | ArrayBuffer | Blob
   dir?: string
-  contentType?: string
 }) {
   return <Promise<{key: string, url: string}>>request({
     method: 'POST',
     url: '/file/upload',
     baseURL,
     headers: {
-      'Content-Type': params.contentType || (typeof params.data === 'string' ? 'text/plain; charset=utf-8' : 'application/octet-stream')
+      'Content-Type': typeof params.data === 'string' ? 'text/plain; charset=utf-8' : 'application/octet-stream'
     },
     params: {
       projectId: params.projectId,

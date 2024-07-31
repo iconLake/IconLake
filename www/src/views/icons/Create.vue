@@ -8,8 +8,9 @@ import UserVue from '../../components/User.vue'
 import { readFileAsBlob, readFileAsText, toast } from '../../utils'
 import { MD5, lib } from 'crypto-js'
 import { usePageLoading } from '@/hooks/router'
-import { PROJECT_TYPE, PROJECT_TYPE_STRING } from '@/utils/const'
+import { PROJECT_TYPE, PROJECT_TYPE_STRING, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
 import Loading from '@/components/Loading.vue'
+import { isImgFile, isSvgFile } from '@/utils/file'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -17,7 +18,7 @@ const pageLoading = usePageLoading()
 interface Icon extends BaseIcon {
   id?: string
   prefix?: string
-  isUploading?: boolean
+  uploadStatus?: 0|1|-1
 }
 
 type Tab = 'svg'|'iconfont'|'extension'|'img'
@@ -85,8 +86,8 @@ function updateIcons() {
   data.icons = icons
 }
 
-function uploadMedia(type: string, code: string, content: string | Blob, contentType: string, name: string) {
-  return new Promise((resolve, reject) => {
+function uploadMedia(type: string, code: string, content: string | Blob, name: string, fileName?: string) {
+  return new Promise(async (resolve, reject) => {
     if (cachedIcons.has(code)) {
       toast(t('codeExistsAndIconOut', { code }))
       reject('code exists')
@@ -102,37 +103,39 @@ function uploadMedia(type: string, code: string, content: string | Blob, content
           [type]: {
             url: reader.result as string,
           },
-          isUploading: true
+          uploadStatus: 1
         })
       }
     }
     uploadFile({
       projectId: data._id,
-      _id: name,
+      _id: fileName || name,
       data: content,
-      contentType
     }).then(res => {
       if (cachedIcons.has(code)) {
         Object.assign(cachedIcons.get(code) as Icon, {
           [type]: {
             url: res.url,
           },
-          isUploading: false
+          uploadStatus: 0
         })
       } else {
         cachedIcons.set(code, {
-        code,
-        name,
-        [type]: {
-          url: res.url,
-        },
-        isUploading: false
-      })
+          code,
+          name,
+          [type]: {
+            url: res.url,
+          },
+          uploadStatus: 0
+        })
       }
       updateIcons()
       resolve(cachedIcons.get(code))
     }).catch((err) => {
       console.error(err)
+      Object.assign(cachedIcons.get(code) as Icon, {
+        uploadStatus: -1
+      })
       toast.error(t('fileUploadFailed'))
       reject(err)
     })
@@ -143,13 +146,17 @@ function onSVGChange(e: Event) {
   const files = (e.target as HTMLInputElement).files
   if (files && files.length > 0) {
     Array.from(files).forEach(async file => {
-      if (file.type !== 'image/svg+xml') {
+      if (!isSvgFile(file)) {
+        return
+      }
+      if (!file.size || file.size > UPLOAD_FILE_SIZE_LIMIT) {
+        toast(t('fileSizeLimitExceeded'))
         return
       }
       const svgText = await readFileAsText(file)
       const code = file.name.substring(0, file.name.lastIndexOf('.'))
       const hash = MD5(svgText).toString()
-      uploadMedia('svg', code, svgText, 'image/svg+xml', `${hash}.svg`)
+      uploadMedia('svg', code, svgText, `${hash}.svg`)
     })
   }
 }
@@ -158,14 +165,19 @@ function onImgChange(e: Event) {
   const files = (e.target as HTMLInputElement).files
   if (files && files.length > 0) {
     Array.from(files).forEach(async file => {
-      if (!file.type.startsWith('image/')) {
+      if (!isImgFile(file)) {
+        return
+      }
+      if (!file.size || file.size > UPLOAD_FILE_SIZE_LIMIT) {
+        toast(t('fileSizeLimitExceeded'))
         return
       }
       const imgBlob = await readFileAsBlob(file)
-      const code = file.name.substring(0, file.name.lastIndexOf('.'))
+      const name = file.name.substring(0, file.name.lastIndexOf('.'))
       const buf = await imgBlob.arrayBuffer()
       const hash = MD5(lib.WordArray.create(Array.from(new Uint8Array(buf)))).toString()
-      uploadMedia('img', code, imgBlob, file.type, `${hash}.${file.type.substring(file.type.lastIndexOf('/') + 1)}`)
+      const code  = `${hash}.${file.name.substring(file.name.lastIndexOf('.') + 1)}`
+      uploadMedia('img', code, imgBlob, name, code)
     })
   }
 }
@@ -188,7 +200,7 @@ function onIconfontJSChange(e: Event) {
             const svgText = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="${props[2]}">${props[3]}</svg>`
             uploading.total++
             const hash = MD5(svgText).toString()
-            uploadMedia('svg', props[1], svgText, 'image/svg+xml', `${hash}.svg`).then(() => {
+            uploadMedia('svg', props[1], svgText, `${hash}.svg`).then(() => {
               uploading.success++
             }).catch(() => {
               uploading.fail++
@@ -309,7 +321,11 @@ async function save () {
           :title="item.code"
         >
           {{ item.code }}
-          <Loading v-if="item.isUploading" />
+          <Loading v-if="item.uploadStatus === 1" />
+          <i
+            v-if="item.uploadStatus === -1"
+            class="iconfont icon-warn"
+          />
         </div>
         <div
           v-if="item.name && item.code !== item.name"
@@ -433,7 +449,7 @@ async function save () {
     </div>
     <!-- button -->
     <div
-      v-if="data.activeTab === 'svg' || data.activeTab === 'iconfont'"
+      v-if="data.activeTab === 'svg' || data.activeTab === 'img' || data.activeTab === 'iconfont'"
       class="flex center"
     >
       <button
