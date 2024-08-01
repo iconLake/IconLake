@@ -538,6 +538,7 @@ export function uploadFile(params: {
       _id: params._id,
       dir: params.dir,
     },
-    data: params.data
+    data: params.data,
+    timeout: 1000 * 60 * 3,
   })
 }

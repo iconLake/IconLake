@@ -16,6 +16,7 @@ import { ElTooltip } from 'element-plus'
 import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
 import { getIconUrl } from '@/utils/icon'
+import { PROJECT_TYPE, PROJECT_TYPE_STRING } from '@/utils/const'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -385,6 +386,7 @@ watch(() => data.keyword, () => {
         <i class="iconfont icon-batch" />
       </div>
       <router-link
+        v-if="data.type === PROJECT_TYPE.SVG"
         :to="`/icons/${data._id}/use`"
         class="operate-item flex"
       >
@@ -429,7 +431,7 @@ watch(() => data.keyword, () => {
     </div>
     <div
       ref="iconListDom"
-      class="list"
+      :class="`list type-${PROJECT_TYPE_STRING[data.type]}`"
     >
       <div
         v-for="item in data.list"
@@ -628,6 +630,16 @@ watch(() => data.keyword, () => {
   }
   .name {
     margin-bottom: 0.6rem;
+  }
+}
+.type-img {
+  .icon-item {
+    width: 30rem;
+    .icon {
+      width: auto;
+      max-width: 100%;
+      height: 16rem;
+    }
   }
 }
 

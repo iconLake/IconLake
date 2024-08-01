@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { addIcon, BaseIcon, projectApis, uploadFile } from '../../apis/project'
@@ -88,6 +88,7 @@ function updateIcons() {
 
 function uploadMedia(type: string, code: string, content: string | Blob, name: string, fileName?: string) {
   return new Promise(async (resolve, reject) => {
+    uploading.total++
     if (cachedIcons.has(code)) {
       toast(t('codeExistsAndIconOut', { code }))
       reject('code exists')
@@ -97,7 +98,7 @@ function uploadMedia(type: string, code: string, content: string | Blob, name: s
       const blob = content instanceof Blob ? content : new Blob([content])
       reader.readAsDataURL(blob)
       reader.onload = () => {
-        data.icons.push({
+        cachedIcons.set(code, {
           code,
           name,
           [type]: {
@@ -105,6 +106,7 @@ function uploadMedia(type: string, code: string, content: string | Blob, name: s
           },
           uploadStatus: 1
         })
+        updateIcons()
       }
     }
     uploadFile({
@@ -112,30 +114,22 @@ function uploadMedia(type: string, code: string, content: string | Blob, name: s
       _id: fileName || name,
       data: content,
     }).then(res => {
-      if (cachedIcons.has(code)) {
-        Object.assign(cachedIcons.get(code) as Icon, {
-          [type]: {
-            url: res.url,
-          },
-          uploadStatus: 0
-        })
-      } else {
-        cachedIcons.set(code, {
-          code,
-          name,
-          [type]: {
-            url: res.url,
-          },
-          uploadStatus: 0
-        })
-      }
+      uploading.success++
+      Object.assign(cachedIcons.get(code) as Icon, {
+        [type]: {
+          url: res.url,
+        },
+        uploadStatus: 0
+      })
       updateIcons()
       resolve(cachedIcons.get(code))
     }).catch((err) => {
+      uploading.fail++
       console.error(err)
       Object.assign(cachedIcons.get(code) as Icon, {
         uploadStatus: -1
       })
+      updateIcons()
       toast.error(t('fileUploadFailed'))
       reject(err)
     })
@@ -252,14 +246,25 @@ function onIconfontJSONChange(e: Event) {
   }
 }
 
+async function deleteIcon (icon: Icon) {
+  cachedIcons.delete(icon.code)
+  updateIcons()
+}
+
+const isSaving = ref(false)
 async function save () {
   if (uploading.success + uploading.fail < uploading.total) {
     toast.error(t('waitForUploadFinish'))
     return
   }
+  if (isSaving.value) {
+    return
+  }
+  isSaving.value = true
   await addIcon(data._id, data.icons)
   toast.success(t('saveDone'))
   $router.replace(`/icons/${data._id}`)
+  isSaving.value = false
 }
 </script>
 
@@ -316,6 +321,13 @@ async function save () {
       >
         <img :src="item.svg?.url || item.img?.url">
         <div
+          v-if="item.name && item.code !== item.name"
+          class="name"
+          :title="item.name"
+        >
+          {{ item.name }}
+        </div>
+        <div
           v-if="item.code"
           class="name"
           :title="item.code"
@@ -324,15 +336,19 @@ async function save () {
           <Loading v-if="item.uploadStatus === 1" />
           <i
             v-if="item.uploadStatus === -1"
+            :title="t('fileUploadFailed')"
             class="iconfont icon-warn"
           />
-        </div>
-        <div
-          v-if="item.name && item.code !== item.name"
-          class="name"
-          :title="item.name"
-        >
-          {{ item.name }}
+          <div
+            v-if="item.uploadStatus !== 1"
+            class="delete pointer flex center"
+            :title="t('delete')"
+            @click="deleteIcon(item)"
+          >
+            <i
+              class="iconfont icon-delete-fill c-danger"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -458,6 +474,7 @@ async function save () {
         @click="save"
       >
         {{ t('save') }}
+        <Loading v-if="isSaving" />
       </button>
     </div>
   </div>
@@ -511,6 +528,27 @@ async function save () {
       width: 11.25rem;
       text-align: center;
       margin-bottom: 5rem;
+      position: relative;
+      &:hover {
+        .delete {
+          opacity: 1;
+        }
+      }
+      .delete {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5rem;
+        height: 5rem;
+        margin: -2.5rem 0 0 -2.5rem;
+        border-radius: 2.5rem;
+        background-color: rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        transition: var(--transition);
+        .iconfont {
+          font-size: 3rem;
+        }
+      }
     }
 
     img {
@@ -529,6 +567,10 @@ async function save () {
       white-space:nowrap;
       .loading {
         font-size: 1rem;
+        color: var(--color-main);
+      }
+      .icon-warn {
+        color: var(--color-danger);
       }
     }
   }
@@ -593,6 +635,12 @@ async function save () {
   .browser {
     width: 8rem;
     height: 8rem;
+  }
+}
+
+.btn {
+  .loading {
+    margin-left: 0.8rem;
   }
 }
 
