@@ -10,6 +10,7 @@ import { getHash, updateClass, getNftClass } from '@/apis/blockchain'
 import Loading from '@/components/Loading.vue'
 import { toast } from '@/utils'
 import { usePageLoading } from '@/hooks/router'
+import { PROJECT_TYPE } from '@/utils/const'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -17,6 +18,7 @@ const pageLoading = usePageLoading()
 const $route = useRoute()
 const projectId = $route.params.id as string
 const project = ref({
+  type: PROJECT_TYPE.IMG,
   name: '',
   desc: '',
   cover: '',
@@ -27,7 +29,7 @@ const isUpdatingChain = ref(false)
 const isDiffFromChain = ref(false)
 
 async function getProject() {
-  await projectApis.info(projectId, 'name desc cover class').onUpdate(async (res) => {
+  await projectApis.info(projectId, 'type name desc cover class').onUpdate(async (res) => {
     project.value = res
   })
   getChainProject()
@@ -120,6 +122,7 @@ onMounted(() => {
         <span>{{ t('projectMember') }}</span>
       </router-link>
       <router-link
+        v-if="project.type === PROJECT_TYPE.SVG"
         class="item"
         active-class="active"
         to="./monitor"

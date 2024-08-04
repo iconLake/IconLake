@@ -284,6 +284,7 @@ async function handleUpload(file: UploadFile) {
           </div>
         </ElUpload>
         <router-link
+          v-if="projectType === PROJECT_TYPE.SVG"
           :to="`/analyse/icon/${projectId}/${info._id}`"
           class="count-use c-main"
         >

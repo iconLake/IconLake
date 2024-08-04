@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { addIcon, BaseIcon, projectApis, uploadFile } from '../../apis/project'
@@ -15,10 +15,16 @@ import { isImgFile, isSvgFile } from '@/utils/file'
 const { t } = useI18n()
 const pageLoading = usePageLoading()
 
+enum UploadStatus {
+  Uploading,
+  Success,
+  Fail
+}
+
 interface Icon extends BaseIcon {
   id?: string
   prefix?: string
-  uploadStatus?: 0|1|-1
+  uploadStatus?: UploadStatus
 }
 
 type Tab = 'svg'|'iconfont'|'extension'|'img'
@@ -104,7 +110,7 @@ function uploadMedia(type: string, code: string, content: string | Blob, name: s
           [type]: {
             url: reader.result as string,
           },
-          uploadStatus: 1
+          uploadStatus: UploadStatus.Uploading
         })
         updateIcons()
       }
@@ -119,7 +125,7 @@ function uploadMedia(type: string, code: string, content: string | Blob, name: s
         [type]: {
           url: res.url,
         },
-        uploadStatus: 0
+        uploadStatus: UploadStatus.Success
       })
       updateIcons()
       resolve(cachedIcons.get(code))
@@ -127,7 +133,7 @@ function uploadMedia(type: string, code: string, content: string | Blob, name: s
       uploading.fail++
       console.error(err)
       Object.assign(cachedIcons.get(code) as Icon, {
-        uploadStatus: -1
+        uploadStatus: UploadStatus.Fail
       })
       updateIcons()
       toast.error(t('fileUploadFailed'))
@@ -260,12 +266,14 @@ async function save () {
   if (isSaving.value) {
     return
   }
+  const icons = data.icons.filter(e => e.uploadStatus === UploadStatus.Success)
   isSaving.value = true
-  await addIcon(data._id, data.icons)
+  await addIcon(data._id, icons)
   toast.success(t('saveDone'))
   $router.replace(`/icons/${data._id}`)
   isSaving.value = false
 }
+const uploadedIconCount = computed(() => data.icons.filter(e => e.uploadStatus === UploadStatus.Success).length)
 </script>
 
 <template>
@@ -333,14 +341,14 @@ async function save () {
           :title="item.code"
         >
           {{ item.code }}
-          <Loading v-if="item.uploadStatus === 1" />
+          <Loading v-if="item.uploadStatus === UploadStatus.Uploading" />
           <i
-            v-if="item.uploadStatus === -1"
+            v-if="item.uploadStatus === UploadStatus.Fail"
             :title="t('fileUploadFailed')"
             class="iconfont icon-warn"
           />
           <div
-            v-if="item.uploadStatus !== 1"
+            v-if="item.uploadStatus !== UploadStatus.Uploading"
             class="delete pointer flex center"
             :title="t('delete')"
             @click="deleteIcon(item)"
@@ -470,7 +478,7 @@ async function save () {
     >
       <button
         class="btn danger"
-        :disabled="data.icons.length === 0"
+        :disabled="uploadedIconCount === 0"
         @click="save"
       >
         {{ t('save') }}

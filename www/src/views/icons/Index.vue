@@ -74,7 +74,7 @@ async function getIcons () {
       })
     }
     if (res.icons instanceof Array) {
-      data.icons = res.icons.reverse()
+      data.icons = [...res.icons].reverse()
       getList()
       nextTick(updateMainWidth)
     }

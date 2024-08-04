@@ -41,7 +41,7 @@ const txUrl = computed(() => {
 })
 
 async function getIconInfo() {
-  projectApis.getIcon(projectId.value, id.value).onUpdate(async (icon) => {
+  await projectApis.getIcon(projectId.value, id.value).onUpdate(async (icon) => {
     Object.assign(iconInfo, icon.info)
     if (icon.info.txHash) {
       const tx = await getTx(icon.info.txHash)
@@ -161,8 +161,8 @@ onMounted(() => {
       class="info"
     >
       <Icon :info="iconInfo" />
-      <h1>{{ iconInfo.code }}</h1>
-      <h2>{{ iconInfo.name }}</h2>
+      <h1>{{ iconInfo.name }}</h1>
+      <h2>{{ iconInfo.code }}</h2>
       <h3>Created by {{ userInfo?.blockchain?.id }}</h3>
       <div
         v-if="iconInfo.txHash"
@@ -226,6 +226,11 @@ onMounted(() => {
   .icon {
     width: 22rem;
     height: 22rem;
+    margin: 0 auto 1rem;
+    &.type-img {
+      width: 100%;
+      height: auto;
+    }
   }
   h2 {
     font-size: 1.5rem;

@@ -12,7 +12,6 @@ import { DROP_DENOM_MINI, LAKE_DENOM_MINI, LAKE_DENOM, DROP_DENOM, MINT_DROP_AMO
 import type { IconlakeiconClass } from '@iconlake/client/types/iconlake.icon/rest'
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router'
-import { clearCache } from '@/utils/cache'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -150,7 +149,7 @@ async function bindBlockchain() {
   })
   if (res.userId && res.userId !== uid) {
     toast(t('alreadyBoundAndSwitch'))
-    clearCache()
+    userApis.clearCache()
     setTimeout(() => {
       location.reload()
     }, 2000)

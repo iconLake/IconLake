@@ -8,10 +8,10 @@ const props = defineProps<{
 }>()
 
 const iconType = computed(() => {
-  if (props.info.svg) {
+  if (props.info.svg && props.info.svg.url) {
     return 'svg'
   }
-  if (props.info.img) {
+  if (props.info.img && props.info.img.url) {
     return 'img'
   }
   return 'unknown'
@@ -19,7 +19,7 @@ const iconType = computed(() => {
 </script>
 
 <template>
-  <div class="icon">
+  <div :class="`icon type-${iconType}`">
     <img
       v-if="getIconUrl(info)"
       :class="`icon-${iconType}`"
