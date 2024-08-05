@@ -619,7 +619,7 @@ watch(() => data.keyword, () => {
   .icon {
     width: 3.8rem;
     height: 3.8rem;
-    margin-bottom: 2.5rem;
+    margin: 0 auto 2.5rem;
   }
   .name,
   .code {

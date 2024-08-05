@@ -101,7 +101,7 @@ function uploadMedia(type: string, code: string, content: string | Blob, name: s
       return
     } else {
       const reader = new FileReader()
-      const blob = content instanceof Blob ? content : new Blob([content])
+      const blob = content instanceof Blob ? content : new Blob([content], { type: 'image/svg+xml' })
       reader.readAsDataURL(blob)
       reader.onload = () => {
         cachedIcons.set(code, {
@@ -121,21 +121,27 @@ function uploadMedia(type: string, code: string, content: string | Blob, name: s
       data: content,
     }).then(res => {
       uploading.success++
-      Object.assign(cachedIcons.get(code) as Icon, {
-        [type]: {
-          url: res.url,
-        },
-        uploadStatus: UploadStatus.Success
-      })
-      updateIcons()
-      resolve(cachedIcons.get(code))
+      if (cachedIcons.has(code)) {
+        Object.assign(cachedIcons.get(code) as Icon, {
+          [type]: {
+            url: res.url,
+          },
+          uploadStatus: UploadStatus.Success
+        })
+        updateIcons()
+        resolve(cachedIcons.get(code))
+      } else {
+        reject('icon deleted')
+      }
     }).catch((err) => {
       uploading.fail++
       console.error(err)
-      Object.assign(cachedIcons.get(code) as Icon, {
-        uploadStatus: UploadStatus.Fail
-      })
-      updateIcons()
+      if (cachedIcons.has(code)) {
+        Object.assign(cachedIcons.get(code) as Icon, {
+          uploadStatus: UploadStatus.Fail
+        })
+        updateIcons()
+      }
       toast.error(t('fileUploadFailed'))
       reject(err)
     })

@@ -2,13 +2,20 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import ElementPlus from 'unplugin-element-plus/vite'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 const proxyDomain = 'http://127.0.0.1:8088'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/manage/',
-  plugins: [vue(), ElementPlus()],
+  plugins: [
+    nodePolyfills({
+      include: ['buffer']
+    }),
+    vue(),
+    ElementPlus(),
+  ],
   server: {
     host: '0.0.0.0',
     port: 8080,
