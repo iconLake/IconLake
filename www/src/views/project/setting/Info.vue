@@ -104,7 +104,7 @@ onMounted(() => {
       @change="handleUpload"
     >
       <div
-        v-if="project.cover"
+        v-if="project.cover && !isCoverUploading"
         class="preview-cnt"
       >
         <img
