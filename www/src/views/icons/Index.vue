@@ -334,7 +334,7 @@ watch(() => data.keyword, () => {
       placement="right"
     >
       <span
-        :class="`iconfont icon-${data.isPublic ? '' : 'un'}visible visibility`"
+        :class="`iconfont icon-${data.isPublic ? 'visible' : 'private'} visibility`"
       />
     </ElTooltip>
     <router-link
@@ -521,9 +521,9 @@ watch(() => data.keyword, () => {
     }
   }
   .visibility {
-    font-size: 2rem;
+    font-size: 1.2rem;
     margin-left: 1rem;
-    color: #4d4d4d;
+    color: #666;
   }
   .setting {
     margin-left: 1.5rem;

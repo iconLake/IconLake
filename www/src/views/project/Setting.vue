@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import UserVue from '../../components/User.vue'
 import HeaderVue from '../../components/Header.vue'
@@ -11,6 +11,7 @@ import Loading from '@/components/Loading.vue'
 import { toast } from '@/utils'
 import { usePageLoading } from '@/hooks/router'
 import { PROJECT_TYPE } from '@/utils/const'
+import { event } from '@/utils/event'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -85,10 +86,22 @@ async function updateChain(e: Event) {
   isUpdatingChain.value = false
 }
 
+const handleProjectInfoChange = (data: { id: string }) => {
+  if (data.id === projectId) {
+    getProject()
+  }
+}
+
 onMounted(() => {
   getProject().finally(() => {
     pageLoading.end()
   })
+
+  event.on(event.EventType.ProjectInfoChange, handleProjectInfoChange)
+})
+
+onUnmounted(() => {
+  event.off(event.EventType.ProjectInfoChange, handleProjectInfoChange)
 })
 </script>
 

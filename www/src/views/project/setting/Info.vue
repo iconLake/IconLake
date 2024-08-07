@@ -9,6 +9,7 @@ import type { UploadFile } from 'element-plus'
 import { PROJECT_TYPE, UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
 import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
+import { event } from '@/utils/event'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -26,6 +27,7 @@ const project = ref({
   isPublic: false,
 })
 const isCoverUploading = ref(false)
+const isSaving = ref(false)
 
 async function getProject() {
   projectApis.info(projectId, 'type name desc cover class prefix').onUpdate(async res => {
@@ -34,15 +36,21 @@ async function getProject() {
 }
 
 async function save() {
-  if (!project.value) {
+  if (!project.value || isSaving.value) {
     return
   }
-  await editInfo(projectId, project.value)
+  isSaving.value = true
+  try {
+    await editInfo(projectId, project.value)
+  } catch (err) {
+    isSaving.value = false
+    return
+  }
   toast(t('saveDone'))
-  setTimeout(() => {
-    window.scrollTo(0, 0)
-    location.reload()
-  }, 1000)
+  event.emit(event.EventType.ProjectInfoChange, {
+    id: projectId,
+  })
+  isSaving.value = false
 }
 
 async function handleUpload(file: UploadFile) {
@@ -154,6 +162,7 @@ onMounted(() => {
         @click="save"
       >
         {{ t('save') }}
+        <Loading v-if="isSaving" />
       </button>
     </div>
   </form>
@@ -216,6 +225,11 @@ onMounted(() => {
   transition: var(--transition);
   .iconfont {
     font-size: 2rem;
+  }
+}
+.btn {
+  .loading {
+    margin-left: 0.8rem;
   }
 }
 </style>
