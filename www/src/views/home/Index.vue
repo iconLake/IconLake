@@ -87,7 +87,7 @@ onMounted(() => {
             <div
               v-for="icon in item.icons"
               :key="icon._id"
-              class="icon-item"
+              class="icon-item flex center"
             >
               <IconVue :info="icon" />
             </div>

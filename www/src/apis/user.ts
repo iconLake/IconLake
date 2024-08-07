@@ -10,18 +10,24 @@ export interface UserInfo {
 
 import { cache } from '@/utils/cache'
 import request from '../utils/request'
+import { ONE_DAY_SECONDS } from '@/utils/const'
 
 const baseURL = '/api/user/'
+
+let userId = ''
 
 export const userApis = {
   get info() {
     return cache.user.enable({
-      code: 'info',
+      maxAge: ONE_DAY_SECONDS,
       executor: info
     })
   },
   get clearCache() {
     return clearUserCache
+  },
+  get userId() {
+    return getUserId
   }
 }
 
@@ -39,10 +45,15 @@ async function info() {
   return userInfo
 }
 
-export async function clearUserCache() {
-  await cache.user.trigger({
-    code: 'info',
+async function getUserId() {
+  await userApis.info().onUpdate(async (userInfo) => {
+    userId = userInfo._id
   })
+  return userId
+}
+
+async function clearUserCache() {
+  await cache.user.clear(userId)
 }
 
 /**

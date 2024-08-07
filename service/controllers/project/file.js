@@ -16,9 +16,16 @@ export async function upload (req, res) {
     icon: true,
     cover: true
   }
-  const data = await save(_id, req.body, `${(req.query.dir && dirs[req.query.dir]) ? req.query.dir : 'icon'}/${projectId}/`)
-  res.json({
-    key: data.key,
-    url: completeURL(data.key)
+  const data = await save(_id, req.body, `${(req.query.dir && dirs[req.query.dir]) ? req.query.dir : 'icon'}/${projectId}/`).catch((e) => {
+    console.error(e)
+    res.json({
+      error: ERROR_CODE.FAIL
+    })
   })
+  if (data) {
+    res.json({
+      key: data.key,
+      url: completeURL(data.key)
+    })
+  }
 }

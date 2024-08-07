@@ -34,6 +34,11 @@ export const IconSchema = new Schema({
 })
 
 export const ProjectSchema = new Schema({
+  type: {
+    type: Number,
+    default: 1,
+    enum: [1, 2] // 1: svg, 2: img
+  },
   name: String,
   desc: String,
   cover: String,

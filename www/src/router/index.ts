@@ -89,6 +89,10 @@ const routes: Array<RouteRecordRaw> = [
     path: '/user/assets/drop/init',
     name: 'initDROP',
     component: () => import('../views/user/assets/drop/Init.vue')
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/home'
   }
 ]
 

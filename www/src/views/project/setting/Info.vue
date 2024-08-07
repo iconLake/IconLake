@@ -6,8 +6,10 @@ import { editInfo, projectApis, uploadFile } from '../../../apis/project'
 import { getExt, toast } from '../../../utils'
 import { ElSwitch, ElUpload } from 'element-plus'
 import type { UploadFile } from 'element-plus'
-import { UPLOAD_DIR } from '@/utils/const'
+import { PROJECT_TYPE, UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
 import { usePageLoading } from '@/hooks/router'
+import Loading from '@/components/Loading.vue'
+import { event } from '@/utils/event'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -16,6 +18,7 @@ const $route = useRoute()
 
 const projectId = $route.params.id as string
 const project = ref({
+  type: PROJECT_TYPE.IMG,
   name: '',
   desc: '',
   cover: '',
@@ -23,36 +26,55 @@ const project = ref({
   prefix: '',
   isPublic: false,
 })
+const isCoverUploading = ref(false)
+const isSaving = ref(false)
 
 async function getProject() {
-  projectApis.info(projectId, 'name desc cover class prefix').onUpdate(async res => {
+  projectApis.info(projectId, 'type name desc cover class prefix').onUpdate(async res => {
     project.value = res
   })
 }
 
 async function save() {
-  if (!project.value) {
+  if (!project.value || isSaving.value) {
     return
   }
-  await editInfo(projectId, project.value)
+  isSaving.value = true
+  try {
+    await editInfo(projectId, project.value)
+  } catch (err) {
+    isSaving.value = false
+    return
+  }
   toast(t('saveDone'))
-  setTimeout(() => {
-    window.scrollTo(0, 0)
-    location.reload()
-  }, 1000)
+  event.emit(event.EventType.ProjectInfoChange, {
+    id: projectId,
+  })
+  isSaving.value = false
 }
 
 async function handleUpload(file: UploadFile) {
   if (!file.raw || !/^image\//i.test(file.raw?.type)) {
-    toast('请选择图片')
+    toast(t('pleaseSelectFile', { type: t('img') }))
     return
   }
-  if (!file.size || file.size / 1024 / 1024 > 5) {
-    toast('暂不支持上传超过5MB的图片')
+  if (!file.size || file.size > UPLOAD_FILE_SIZE_LIMIT) {
+    toast(t('fileSizeLimitExceeded'))
     return
   }
-  const res = await uploadFile(projectId, `${Date.now()}${getExt(file.name)}`, await file.raw.arrayBuffer(), UPLOAD_DIR.COVER)
-  project.value.cover = res.url
+  isCoverUploading.value = true
+  const res = await uploadFile({
+    projectId,
+    _id: `${Date.now()}${getExt(file.name)}`,
+    data: await file.raw.arrayBuffer(),
+    dir: UPLOAD_DIR.COVER
+  }).catch(() => {
+    toast(t('fileUploadFailed'))
+  })
+  isCoverUploading.value = false
+  if (res) {
+    project.value.cover = res.url
+  }
 }
 
 onMounted(() => {
@@ -90,7 +112,7 @@ onMounted(() => {
       @change="handleUpload"
     >
       <div
-        v-if="project.cover"
+        v-if="project.cover && !isCoverUploading"
         class="preview-cnt"
       >
         <img
@@ -105,23 +127,29 @@ onMounted(() => {
         v-else
         class="upload-add flex center"
       >
-        <i class="iconfont icon-plus" />
+        <Loading v-if="isCoverUploading" />
+        <i
+          v-else
+          class="iconfont icon-plus"
+        />
       </div>
     </ElUpload>
-    <p>{{ t('class') }}</p>
-    <input
-      v-model="project.class"
-      type="text"
-      class="input"
-      maxlength="15"
-    >
-    <p>{{ t('prefix') }}</p>
-    <input
-      v-model="project.prefix"
-      type="text"
-      class="input"
-      maxlength="15"
-    >
+    <template v-if="project.type === PROJECT_TYPE.SVG">
+      <p>{{ t('class') }}</p>
+      <input
+        v-model="project.class"
+        type="text"
+        class="input"
+        maxlength="15"
+      >
+      <p>{{ t('prefix') }}</p>
+      <input
+        v-model="project.prefix"
+        type="text"
+        class="input"
+        maxlength="15"
+      >
+    </template>
     <p>{{ t('isPublic') }}</p>
     <ElSwitch
       v-model="project.isPublic"
@@ -134,6 +162,7 @@ onMounted(() => {
         @click="save"
       >
         {{ t('save') }}
+        <Loading v-if="isSaving" />
       </button>
     </div>
   </form>
@@ -164,6 +193,9 @@ onMounted(() => {
     border: #ccc 1px solid;
     border-radius: 0.625rem;
     color: var(--el-color-black);
+    .loading {
+      color: var(--color-main);
+    }
   }
   .upload-preview {
     height: 10rem;
@@ -193,6 +225,11 @@ onMounted(() => {
   transition: var(--transition);
   .iconfont {
     font-size: 2rem;
+  }
+}
+.btn {
+  .loading {
+    margin-left: 0.8rem;
   }
 }
 </style>

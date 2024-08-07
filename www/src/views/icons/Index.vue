@@ -15,6 +15,8 @@ import { userApis, UserInfo } from '@/apis/user'
 import { ElTooltip } from 'element-plus'
 import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
+import { getIconUrl } from '@/utils/icon'
+import { PROJECT_TYPE, PROJECT_TYPE_STRING } from '@/utils/const'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -25,6 +27,7 @@ const userInfo = ref({} as UserInfo)
 
 const data = reactive({
   _id: $route.params.id as string,
+  type: 0,
   name: '',
   icons: [] as Icon[],
   groups: [] as Group[],
@@ -59,7 +62,8 @@ const editable = computed(() => {
 })
 
 async function getIcons () {
-  await projectApis.info(data._id, 'name icons groups').onUpdate(async res => {
+  await projectApis.info(data._id, 'type name icons groups').onUpdate(async res => {
+    data.type = res.type
     data.name = res.name
     data.members = res.members
     data.isPublic = res.isPublic
@@ -70,7 +74,7 @@ async function getIcons () {
       })
     }
     if (res.icons instanceof Array) {
-      data.icons = res.icons.reverse()
+      data.icons = [...res.icons].reverse()
       getList()
       nextTick(updateMainWidth)
     }
@@ -297,7 +301,11 @@ async function batchDownload() {
     const e = data.selectedIcons.get(k)!
     const headers = new Headers()
     headers.append('Cache-Control', 'no-cache')
-    const content = await fetch(e.svg.url, {
+    const url = getIconUrl(e)
+    if (!url) {
+      return
+    }
+    const content = await fetch(url, {
       headers
     }).then(res => res.text())
     zip.file(`${e.code}.svg`, content)
@@ -326,7 +334,7 @@ watch(() => data.keyword, () => {
       placement="right"
     >
       <span
-        :class="`iconfont icon-${data.isPublic ? '' : 'un'}visible visibility`"
+        :class="`iconfont icon-${data.isPublic ? 'visible' : 'private'} visibility`"
       />
     </ElTooltip>
     <router-link
@@ -378,6 +386,7 @@ watch(() => data.keyword, () => {
         <i class="iconfont icon-batch" />
       </div>
       <router-link
+        v-if="data.type === PROJECT_TYPE.SVG"
         :to="`/icons/${data._id}/use`"
         class="operate-item flex"
       >
@@ -422,7 +431,7 @@ watch(() => data.keyword, () => {
     </div>
     <div
       ref="iconListDom"
-      class="list"
+      :class="`list type-${PROJECT_TYPE_STRING[data.type]}`"
     >
       <div
         v-for="item in data.list"
@@ -464,6 +473,7 @@ watch(() => data.keyword, () => {
       <Detail
         ref="detailDom"
         :project-id="data._id"
+        :project-type="data.type"
         :info="data.detail.info"
         :top="data.detail.top"
         :left="data.detail.left"
@@ -511,9 +521,9 @@ watch(() => data.keyword, () => {
     }
   }
   .visibility {
-    font-size: 2rem;
+    font-size: 1.2rem;
     margin-left: 1rem;
-    color: #4d4d4d;
+    color: #666;
   }
   .setting {
     margin-left: 1.5rem;
@@ -609,7 +619,7 @@ watch(() => data.keyword, () => {
   .icon {
     width: 3.8rem;
     height: 3.8rem;
-    margin-bottom: 2.5rem;
+    margin: 0 auto 2.5rem;
   }
   .name,
   .code {
@@ -620,6 +630,16 @@ watch(() => data.keyword, () => {
   }
   .name {
     margin-bottom: 0.6rem;
+  }
+}
+.type-img {
+  .icon-item {
+    width: 30rem;
+    .icon {
+      width: auto;
+      max-width: 100%;
+      height: 16rem;
+    }
   }
 }
 

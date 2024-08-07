@@ -170,3 +170,18 @@ export function readFileAsText(file: File) {
     reader.readAsText(file)
   })
 }
+
+export function readFileAsBlob(file: File) {
+  return new Promise<Blob>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (!reader.result) {
+        reject()
+      } else {
+        resolve(new Blob([reader.result], { type: file.type }))
+      }
+    }
+    reader.onerror = reject
+    reader.readAsArrayBuffer(file)
+  })
+}

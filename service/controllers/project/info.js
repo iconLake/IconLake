@@ -63,6 +63,9 @@ export async function info (req, res) {
         if (e.svg && e.svg.url) {
           e.svg.url = completeURL(e.svg.url)
         }
+        if (e.img && e.img.url) {
+          e.img.url = completeURL(e.img.url)
+        }
       })
     }
     if (/files/.test(fields) && !result.files) {
@@ -116,6 +119,8 @@ export async function edit (req, res) {
     data.members = [
       { userId: req.user._id, isAdmin: true }
     ]
+    const types = [false, true, true]
+    data.type = types[req.body.type] ? req.body.type : 1
     const p = new Project(data)
     _id = p._id
     await p.save()

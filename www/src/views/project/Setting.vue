@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import UserVue from '../../components/User.vue'
 import HeaderVue from '../../components/Header.vue'
@@ -10,6 +10,8 @@ import { getHash, updateClass, getNftClass } from '@/apis/blockchain'
 import Loading from '@/components/Loading.vue'
 import { toast } from '@/utils'
 import { usePageLoading } from '@/hooks/router'
+import { PROJECT_TYPE } from '@/utils/const'
+import { event } from '@/utils/event'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -17,6 +19,7 @@ const pageLoading = usePageLoading()
 const $route = useRoute()
 const projectId = $route.params.id as string
 const project = ref({
+  type: PROJECT_TYPE.IMG,
   name: '',
   desc: '',
   cover: '',
@@ -27,7 +30,7 @@ const isUpdatingChain = ref(false)
 const isDiffFromChain = ref(false)
 
 async function getProject() {
-  await projectApis.info(projectId, 'name desc cover class').onUpdate(async (res) => {
+  await projectApis.info(projectId, 'type name desc cover class').onUpdate(async (res) => {
     project.value = res
   })
   getChainProject()
@@ -83,10 +86,22 @@ async function updateChain(e: Event) {
   isUpdatingChain.value = false
 }
 
+const handleProjectInfoChange = (data: { id: string }) => {
+  if (data.id === projectId) {
+    getProject()
+  }
+}
+
 onMounted(() => {
   getProject().finally(() => {
     pageLoading.end()
   })
+
+  event.on(event.EventType.ProjectInfoChange, handleProjectInfoChange)
+})
+
+onUnmounted(() => {
+  event.off(event.EventType.ProjectInfoChange, handleProjectInfoChange)
 })
 </script>
 
@@ -120,6 +135,7 @@ onMounted(() => {
         <span>{{ t('projectMember') }}</span>
       </router-link>
       <router-link
+        v-if="project.type === PROJECT_TYPE.SVG"
         class="item"
         active-class="active"
         to="./monitor"

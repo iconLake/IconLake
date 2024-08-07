@@ -41,7 +41,7 @@ app.use(express.text({
   limit: '10mb'
 }))
 app.use(express.raw({
-  limit: '10mb'
+  limit: '20mb'
 }))
 app.use('/api', apiRouter)
 app.use('/visit', visitRouter)

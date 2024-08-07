@@ -24,3 +24,15 @@ export const UPLOAD_DIR = {
 export const PUBLIC_PAGES = [
   /^\/manage\/icons\/[^\/]+(\/use)?/i
 ]
+
+export const PROJECT_TYPE = {
+  SVG: 1,
+  IMG: 2,
+}
+
+export const PROJECT_TYPE_STRING = {
+  [PROJECT_TYPE.SVG]: 'svg',
+  [PROJECT_TYPE.IMG]: 'img',
+}
+
+export const UPLOAD_FILE_SIZE_LIMIT = 20 * 1024 * 1024
