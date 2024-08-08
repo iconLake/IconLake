@@ -38,7 +38,7 @@ const db = new Dexie('iconlake') as Dexie & {
   cache: EntityTable<Cache, 'id'>
 }
 db.version(1).stores({
-  cache: 'id,userId,value,createTime',
+  cache: '&id,userId,value,createTime',
 })
 
 export async function addCache(props: ICacheSetProps) {
@@ -103,9 +103,10 @@ export const cache = {
 }
 
 export async function clearCache() {
-  await db.cache.clear()
+  await db.delete()
 }
 
 async function clearUserCache(userId: string) {
-  await db.cache.where('userId').equals(userId).delete()
+  const list = await db.cache.where('userId').equals(userId).toArray()
+  await db.cache.bulkDelete(list.map(i => i.id))
 }
