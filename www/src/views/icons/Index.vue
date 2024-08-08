@@ -305,10 +305,19 @@ async function batchDownload() {
     if (!url) {
       return
     }
+    let ext = ''
     const content = await fetch(url, {
       headers
-    }).then(res => res.text())
-    zip.file(`${e.code}.svg`, content)
+    }).then(res => {
+      const contentType = res.headers.get('Content-Type')
+      if (contentType === 'image/svg+xml') {
+        ext = '.svg'
+      } else {
+        ext = `.${contentType?.split('/')?.[1] || 'png'}`
+      }
+      return res.blob()
+    })
+    zip.file(`${e.code.replace(new RegExp(`${ext}$`, 'i'), '')}${ext}`, content)
   }))
   const content = await zip.generateAsync({
     type: 'blob'
