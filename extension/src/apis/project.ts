@@ -17,7 +17,7 @@ export function addIcon(projectId: string, icons: IconResource[]) {
   })
 }
 
-export function uploadFile(projectId: string, _id: string, data: string | Uint8Array, dir?: string): Promise<void | {
+export function uploadFile(projectId: string, _id: string, data: string | Blob, dir?: string): Promise<void | {
   url: string;
   key: string;
 }> {

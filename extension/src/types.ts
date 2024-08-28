@@ -1,5 +1,6 @@
 export enum MsgType {
-  GetIcons = 'getIcons'
+  GetSvgs = 'getSvgs',
+  GetImgs = 'getImgs',
 }
 
 export interface Msg {
@@ -12,17 +13,21 @@ export interface SVG {
   path: string
 }
 
-export interface SVGResource {
+export interface Resource {
   url: string
 }
 
 export interface Icon {
-  svg: SVG
+  svg?: SVG
+  img?: {
+    url: string
+  }
   name: string
 }
 
 export interface IconResource {
-  svg: SVGResource
+  svg?: Resource
+  img?: Resource
   name: string
   code: string
 }
@@ -30,10 +35,16 @@ export interface IconResource {
 export interface Project {
   _id: string
   name: string
+  type: ProjectTypes
 }
 
 export enum ButtonTooltipType {
   Default = 'dark',
   Success = 'success',
   Danger = 'danger'
+}
+
+export enum ProjectTypes {
+  SVG = 1,
+  Img = 2
 }
