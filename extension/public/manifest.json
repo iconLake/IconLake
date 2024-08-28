@@ -2,7 +2,7 @@
   "id": "iconlake",
   "name": "iconLake",
   "description": "iconLake Extension",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "manifest_version": 3,
   "icons": {
     "16": "images/logo-16.png",
