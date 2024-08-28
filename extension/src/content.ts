@@ -1,5 +1,6 @@
 enum MsgType {
-  GetIcons = 'getIcons'
+  GetSvgs = 'getSvgs',
+  GetImgs = 'getImgs',
 }
 
 interface Msg {
@@ -8,7 +9,7 @@ interface Msg {
 }
 
 const handler = {
-  [MsgType.GetIcons]: async () => {
+  [MsgType.GetSvgs]: async () => {
     const svgDoms = document.querySelectorAll('svg')
     const iconsSet = new Set()
     const icons = Array.from(svgDoms).map(e => {
@@ -25,6 +26,21 @@ const handler = {
       }
       iconsSet.add(e.svg.path)
       return true
+    })
+    return {
+      icons,
+      url: location.href
+    }
+  },
+  [MsgType.GetImgs]: async () => {
+    const imgDoms = document.querySelectorAll('img')
+    const icons = Array.from(imgDoms).map(e => {
+      return {
+        img: {
+          url: e.src
+        },
+        name: (e.getAttribute('alt') ?? e.getAttribute('title')) ?? ''
+      }
     })
     return {
       icons,

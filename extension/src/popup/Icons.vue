@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import Browser from 'webextension-polyfill'
-import { ButtonTooltipType, Icon, Project, SVG, MsgType, IconResource } from '../types'
+import { ButtonTooltipType, Icon, Project, SVG, MsgType, IconResource, ProjectTypes } from '../types'
 import { ElSelect, ElOption } from 'element-plus'
 import { list, addIcon, uploadFile } from '../apis/project'
 import ButtonVue from '../components/Button.vue'
 import { domain } from '../apis/request'
-import { MD5 } from 'crypto-js'
+import { lib, MD5 } from 'crypto-js'
 
 interface Item extends Icon {
   isSelected?: boolean
@@ -22,15 +22,17 @@ const tooltip = reactive({
   content: ''
 })
 const tooltipType = ref(ButtonTooltipType.Default)
+const projectType = ref(ProjectTypes.SVG)
 
-async function getIcons () {
+async function getIcons (type?: ProjectTypes) {
   const [tab] = await Browser.tabs.query({
     active: true,
     lastFocusedWindow: true
   })
   if (!tab || !tab.id) return
+  const msgType = type === ProjectTypes.Img ? MsgType.GetImgs : MsgType.GetSvgs
   const res = await Browser.tabs.sendMessage(tab.id as number, {
-    type: MsgType.GetIcons
+    type: msgType
   }) as {
     icons: Icon[]
     url: string
@@ -42,14 +44,24 @@ async function getIcons () {
   tabUrl.value = new URL(res.url)
 }
 
-async function getProjects () {
-  const data = await list()
-  projectList.value = data.list || []
+let allProjects: Project[]
+async function getProjects (type?: ProjectTypes) {
+  if (!allProjects) {
+    const data = await list()
+    allProjects = data.list || []
+  }
+  if (type) {
+    return allProjects.filter(e => e.type === type)
+  }
+  return allProjects
 }
 
-onMounted(() => {
-  getIcons()
-  getProjects()
+watch(projectType, async (value) => {
+  getIcons(value)
+  projectId.value = ''
+  projectList.value = await getProjects(value)
+}, {
+  immediate: true
 })
 
 let lastSelectedIndex = -1
@@ -100,17 +112,34 @@ async function save () {
   isSaving.value = true
   const t = Date.now()
   const uploadedIcons: (IconResource | undefined)[] = await Promise.all(icons.value.filter(e => e.isSelected).map(async (e, i) => {
-    const content = genSVG(e.svg)
-    const hash = MD5(content).toString()
-    const res = await uploadFile(projectId.value, `${hash}.svg`, content)
+    let res
+    let code = ''
+    if (e.svg) {
+      const content = genSVG(e.svg)
+      code = MD5(content).toString()
+      res = await uploadFile(projectId.value, `${code}.svg`, content)
+    } else if (e.img) {
+      const file = await fetch(e.img.url).then(res => res.blob()).catch(() => {
+        showTip('获取图片失败', ButtonTooltipType.Danger)
+      })
+      if (!file) return
+      const hash = MD5(lib.WordArray.create(Array.from(new Uint8Array(await file.arrayBuffer())))).toString()
+      let ext = file.type.split('/')[1]
+      if (ext === 'svg+xml') ext = 'svg'
+      code = `${hash}.${ext}`
+      res = await uploadFile(projectId.value, code, file)
+    } else {
+      console.error('unknown icon', e)
+      return
+    }
     if (!res) {
       showTip('一个图标上传失败', ButtonTooltipType.Danger)
       return
     }
     return {
-      code: hash,
+      code,
       name: e.name || `${tabUrl.value.hostname}-${i}`,
-      svg: {
+      [projectType.value === ProjectTypes.Img ? 'img' : 'svg']: {
         url: res.url
       }
     }
@@ -130,9 +159,16 @@ async function save () {
 </script>
 
 <template>
-  <div class="list">
+  <div class="list" :class="{img: projectType === ProjectTypes.Img}">
+    <div class="types">
+      <div class="item" :class="{active: projectType === ProjectTypes.SVG}" @click="projectType = ProjectTypes.SVG">SVG</div>
+      <div class="item" :class="{active: projectType === ProjectTypes.Img}" @click="projectType = ProjectTypes.Img">图片</div>
+    </div>
     <div class="item" :class="{selected: item.isSelected}" v-for="(item, i) in icons" :key="i" @click="setSelected(item, i, $event)">
-      <div class="wrapper" v-html="genSVG(item.svg)"></div>
+      <div class="wrapper svg" v-if="item.svg" v-html="genSVG(item.svg)"></div>
+      <div class="wrapper img" v-if="item.img">
+        <img :src="item.img.url" />
+      </div>
     </div>
     <div v-if="icons.length === 0" class="empty">野渡无人舟自横</div>
   </div>
@@ -145,6 +181,30 @@ async function save () {
 </template>
 
 <style lang="scss" scoped>
+.types {
+  width: 100%;
+  display: flex;
+  background-color: #fff;
+  height: 36px;
+  overflow: hidden;
+  border-radius: 18px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border-radius: 18px;
+    flex: 1;
+    cursor: pointer;
+    &.active {
+      color: #fff;
+      background: var(--el-color-primary);
+    }
+  }
+}
+
 .list {
   display: flex;
   flex-wrap: wrap;
@@ -154,44 +214,59 @@ async function save () {
   flex: 1;
   .empty {
     width: 100%;
-    height: 100%;
+    height: calc(100% - 52px);
     display: flex;
     align-items: center;
     justify-content: center;
     color: #bbb;
     font-size: 1.5rem;
   }
-}
-.item {
-  width: 20%;
-  padding: 6px;
-  box-sizing: border-box;
-  text-align: center;
-  line-height: 1;
-  cursor: pointer;
-  position: relative;
-  :deep(svg) {
-    width: 100%;
-    aspect-ratio: 1;
-    fill: currentColor;
-  }
-  .wrapper {
-    border: 1px solid transparent;
-    border-radius: 10px;
-    padding: 10px;
-  }
-  &:hover {
+  .item {
+    width: 20%;
+    padding: 6px;
+    box-sizing: border-box;
+    text-align: center;
+    line-height: 1;
+    cursor: pointer;
+    position: relative;
+    :deep(svg) {
+      width: 100%;
+      aspect-ratio: 1;
+      fill: currentColor;
+    }
     .wrapper {
-      background-color: #e5ecff;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1;
+      overflow: hidden;
+      img {
+        max-height: 100%;
+        max-width: 100%;
+      }
+    }
+    &:hover {
+      .wrapper {
+        background-color: #e5ecff;
+      }
+    }
+    &.selected {
+      .wrapper {
+        border-color: var(--el-color-primary);
+        background-color: #fff;
+      }
     }
   }
-  &.selected {
-    .wrapper {
-      border-color: var(--el-color-primary);
-      background-color: #fff;
+  &.img {
+    .item {
+      width: 50%;
     }
   }
 }
+
 .operate {
   display: flex;
   align-items: center;
