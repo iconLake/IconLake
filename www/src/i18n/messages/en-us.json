@@ -181,5 +181,7 @@
   "permissionDenied": "You don't have permission to perform this operation",
   "cannotGetKeplrAccount": "Failed to get Keplr account, please authorize and try again",
   "txNotFound": "Transaction not found",
-  "img": "Image"
+  "img": "Image",
+  "or": "Or",
+  "contactUsFromTheseMethods": "Contact us for assistance through the following methods:"
 }
