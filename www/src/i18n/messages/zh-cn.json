@@ -183,5 +183,7 @@
   "permissionDenied": "你没有权限执行这个操作",
   "cannotGetKeplrAccount": "无法通过Keplr获取iconLake账户，请授权后重试",
   "txNotFound": "交易未找到",
-  "img": "图片"
+  "img": "图片",
+  "or": "或者",
+  "contactUsFromTheseMethods": "通过以下方式联系我们获取帮助："
 }

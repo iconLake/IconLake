@@ -341,6 +341,40 @@ onMounted(async () => {
       <div class="iconfont icon-copy" />
       {{ shareMsg }}
     </div>
+    <p class="contact">
+      {{ t('or') }} {{ t('contactUsFromTheseMethods') }}
+      <a
+        target="_blank"
+        href="https://gitee.com/iconLake/IconLake"
+        title="Gitee"
+      >
+        <img
+          src="/imgs/gitee-logo.svg"
+          alt="gitee"
+        >
+      </a>
+      <a
+        target="_blank"
+        href="https://github.com/iconLake/IconLake"
+        title="Github"
+      >
+        <img
+          src="/imgs/github-logo.svg"
+          alt="github"
+        >
+      </a>
+      <a
+        target="_blank"
+        href="https://x.com/iconLake"
+        title="X"
+      >
+        <img
+          class="x"
+          src="/imgs/x-logo.svg"
+          alt="x"
+        >
+      </a>
+    </p>
   </div>
   <div class="list flex start">
     <a
@@ -458,6 +492,16 @@ onMounted(async () => {
       right: 1.2rem;
       top: 1.2rem;
       color: var(--color-main);
+    }
+  }
+  .contact {
+    margin-top: 8rem;
+    img {
+      height: 2rem;
+      margin: 0 0.5rem;
+      &.x {
+        height: 1.6rem;
+      }
     }
   }
 }
