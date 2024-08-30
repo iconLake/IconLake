@@ -349,7 +349,7 @@ onMounted(async () => {
         title="Gitee"
       >
         <img
-          src="/imgs/gitee-logo.svg"
+          :src="'/imgs/gitee-logo.svg'"
           alt="gitee"
         >
       </a>
@@ -359,7 +359,7 @@ onMounted(async () => {
         title="Github"
       >
         <img
-          src="/imgs/github-logo.svg"
+          :src="'/imgs/github-logo.svg'"
           alt="github"
         >
       </a>
@@ -370,7 +370,7 @@ onMounted(async () => {
       >
         <img
           class="x"
-          src="/imgs/x-logo.svg"
+          :src="'/imgs/x-logo.svg'"
           alt="x"
         >
       </a>
