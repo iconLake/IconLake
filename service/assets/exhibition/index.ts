@@ -11,14 +11,14 @@ import type { IconLakeAPI } from './api'
     return
   }
 
-  const info = await iconlakeAPI.project.getInfo()
+  const info = await iconlakeAPI.class.getInfo()
   if (!info) {
     iconlakeDom.innerHTML = '<h1 class="blocked">This project has not been published to the chain.</h1>'
     iconlakeAPI.loading.isShow = false
     return
   }
   const verify = await fetch(
-    `/api/blacklist/verify/project?address=${info.data.author}&projectId=${iconlakeAPI.project.id}`
+    `/api/blacklist/verify/project?address=${info.data.author}&projectId=${iconlakeAPI.class.id}`
   )
     .then((e) => e.json())
     .catch(console.error)
@@ -44,7 +44,7 @@ import type { IconLakeAPI } from './api'
     document.body.appendChild(blockIcon)
   }
 
-  let themeUrl = '/themes/default/components/exhibition-4b3bb7a6.js'
+  let themeUrl = '/themes/default/components/exhibition-193527d4.js'
   const qUrl = new URL(location.href)
   if (qUrl.searchParams.has('theme')) {
     const tUrl = qUrl.searchParams.get('theme')

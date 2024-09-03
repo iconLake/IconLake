@@ -46,12 +46,12 @@ import type { IconLakeAPI } from '../../exhibition/api'
     author: ''
   }
   const getInfo = async () => {
-    cachedInfo.classId = iconlakeAPI.project.id
+    cachedInfo.classId = iconlakeAPI.class.id
     cachedInfo.nftId = iconlakeAPI.nft.id
     if (iconlakeAPI.nft.id) {
       cachedInfo.author = await iconlakeAPI.nft.getInfo().then(res => res.data.author)
-    } else if (iconlakeAPI.project.id) {
-      cachedInfo.author = await iconlakeAPI.project.getInfo().then(res => res.data.author)
+    } else if (iconlakeAPI.class.id) {
+      cachedInfo.author = await iconlakeAPI.class.getInfo().then(res => res.data.author)
     }
   }
   getInfo()

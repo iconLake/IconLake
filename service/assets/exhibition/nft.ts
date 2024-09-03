@@ -18,7 +18,7 @@ import type { IconLakeAPI } from './api';
     return
   }
   const verify = await fetch(
-    `/api/blacklist/verify/nft?address=${info.data.author}&projectId=${iconlakeAPI.project.id}&nftId=${iconlakeAPI.nft.id}`
+    `/api/blacklist/verify/nft?address=${info.data.author}&projectId=${iconlakeAPI.class.id}&nftId=${iconlakeAPI.nft.id}`
   )
     .then((e) => e.json())
     .catch(console.error)
@@ -46,7 +46,7 @@ import type { IconLakeAPI } from './api';
     document.body.appendChild(blockIcon)
   }
 
-  let themeUrl = '/themes/default/components/nft-b31a686d.js'
+  let themeUrl = '/themes/default/components/nft-6e5e0389.js'
   const qUrl = new URL(location.href)
   if (qUrl.searchParams.has('theme')) {
     const tUrl = qUrl.searchParams.get('theme')
