@@ -46,7 +46,7 @@ Whether you are a development engineer, designer, product manager, operator, ope
 <p align="center">
    <img src="./documents/resources/wx.jpg" alt="Join us" width="300" />
 </p>
-<center>Add WeChat and invite you to join the group "iconLake Future Builders".</center>
+<p align="center">Add WeChat and invite you to join the group "iconLake Future Builders".</p>
 
 ## Q&A
 

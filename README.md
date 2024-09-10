@@ -46,7 +46,7 @@ iconLake是一个去中心化的项目，我们也在致力于用去中心化的
 <p align="center">
   <img src="./documents/resources/wx.jpg" alt="加入我们" width="300" />
 </p>
-<center>加微信，邀你进群“iconLake Future Builders”。</center>
+<p align="center">加微信，邀你进群“iconLake Future Builders”。</p>
 
 ## 问与答
 
