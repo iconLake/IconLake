@@ -44,8 +44,9 @@ Let us participate in the "infinite game" of iconLake and inject infinite possib
 Whether you are a development engineer, designer, product manager, operator, operation and maintenance, tester, user... iconLake needs you.
 
 <p align="center">
-   <img src="./documents/resources/wxgroup.jpg" alt="Join us" width="300" />
+   <img src="./documents/resources/wx.jpg" alt="Join us" width="300" />
 </p>
+<center>Add WeChat and invite you to join the group "iconLake Future Builders".</center>
 
 ## Q&A
 

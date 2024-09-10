@@ -22,6 +22,10 @@ export async function renderProject (req, res) {
     <meta property="og:title" content="${project.name}" />
     <meta property="og:description" content="${project.description}" />
     <meta property="og:image" content="${project.uri}" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="${project.name}" />
+    <meta name="twitter:description" content="${project.description}" />
+    <meta name="twitter:image" content="${project.uri}" />
   </head>
   <body>
     <img src="${project.uri}" alt="${project.name}">
@@ -50,6 +54,10 @@ export async function renderNft (req, res) {
     <meta property="og:title" content="${nft.data.name}" />
     <meta property="og:description" content="${nft.data.description}" />
     <meta property="og:image" content="${nft.uri}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${nft.data.name}" />
+    <meta name="twitter:description" content="${nft.data.description}" />
+    <meta name="twitter:image" content="${nft.uri}" />
   </head>
   <body>
     <img src="${nft.uri}" alt="${nft.data.name}">
