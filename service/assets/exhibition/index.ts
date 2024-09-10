@@ -44,7 +44,7 @@ import type { IconLakeAPI } from './api'
     document.body.appendChild(blockIcon)
   }
 
-  let themeUrl = '/themes/default/components/exhibition-193527d4.js'
+  let themeUrl = '/themes/default/components/exhibition-0fd6aa8f.js'
   const qUrl = new URL(location.href)
   if (qUrl.searchParams.has('theme')) {
     const tUrl = qUrl.searchParams.get('theme')
