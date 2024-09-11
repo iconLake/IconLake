@@ -1,10 +1,11 @@
 import { CHAIN_ID, DROP_DENOM_MINI, IS_PRODUCTION } from '@/utils/const'
 import request from '@/utils/request'
 import { Client } from '@iconlake/client'
-import type { MsgMint as MsgMintIcon, MsgBurn as MsgBurnIcon, MsgUpdateClass } from '@iconlake/client/types/iconlake.icon/module'
+import type { MsgMint as MsgMintIcon, MsgBurn as MsgBurnIcon, MsgUpdateClass, MsgMint } from '@iconlake/client/types/iconlake.icon/module'
 import { SHA256, lib } from 'crypto-js'
 import i18n from '@/i18n'
 import { toast } from '@/utils'
+import camelcaseKeys from 'camelcase-keys'
 
 const baseURL = '/api/blockchain/'
 
@@ -99,18 +100,18 @@ export async function getChainAccount(address: string) {
     account: {
       '@type': string;
       address: string;
-      pub_key: {
+      pubKey: {
         '@type': string;
         value: string;
       };
-      account_number: string;
+      accountNumber: string;
       sequence: string;
     }
   }>(res => res.json()).catch((e) => {
     console.error(e)
     return { account: undefined }
   })
-  return res.account
+  return res.account && camelcaseKeys(res.account)
 }
 
 export async function mintDrop(address: string, amount: string) {
@@ -200,7 +201,7 @@ export async function getTx(txHash: string) {
     console.error(e)
     return { tx: undefined }
   })
-  return res.tx
+  return camelcaseKeys(res.tx, { deep: true })
 }
 
 export async function getDropInfo(address: string) {
@@ -252,6 +253,14 @@ export async function getNftClass(id: string) {
     return undefined
   })
   return res?.data
+}
+
+export async function getNftByTxHash(txHash: string) {
+  const res = await getTx(txHash)
+  if (res.body.messages[0]['@type'] === '/iconlake.icon.MsgMint') {
+    return res.body.messages[0] as MsgMint
+  }
+  return undefined
 }
 
 export async function updateClass(value: MsgUpdateClass) {

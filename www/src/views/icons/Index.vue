@@ -168,7 +168,9 @@ function updateMainWidth () {
   if (typeof iconListDom.value.querySelector === 'function') {
     const icon = iconListDom.value.querySelector('.icon-item')
     if (icon) {
-      const w = icon.getBoundingClientRect().width * 3 / 2
+      const computedStyle = window.getComputedStyle(icon)
+      const margin = parseFloat(computedStyle.marginRight) + parseFloat(computedStyle.marginLeft)
+      const w = icon.getBoundingClientRect().width + margin
       // - 20 用于消除滚动条的影响
       mainDom.value.style.width = `${Math.floor((window.innerWidth - 20) / w) * w}px`
     }
@@ -644,6 +646,7 @@ watch(() => data.keyword, () => {
 .type-img {
   .icon-item {
     width: 30rem;
+    max-width: calc(24vw - 5rem);
     .icon {
       width: auto;
       max-width: 100%;
