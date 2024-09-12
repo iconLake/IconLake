@@ -393,7 +393,7 @@ function isSet(value: any): boolean {
 export function createDropAminoConverters() {
   return {
     "/iconlake.drop.MsgMint": {
-      aminoType: "cosmos-sdk/Mint",
+      aminoType: "drop/Mint",
       toAmino: ({
         creator,
         amount
@@ -421,7 +421,7 @@ export function createDropAminoConverters() {
     },
 
     "/iconlake.drop.MsgInit": {
-      aminoType: "cosmos-sdk/Init",
+      aminoType: "drop/Init",
       toAmino: ({
         creator,
         address
@@ -443,7 +443,7 @@ export function createDropAminoConverters() {
     },
 
     "/iconlake.drop.MsgUpdateParams": {
-      aminoType: "cosmos-sdk/UpdateParams",
+      aminoType: "drop/UpdateParams",
       toAmino: ({
         authority,
         params
