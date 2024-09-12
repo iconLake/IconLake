@@ -56,7 +56,7 @@ export async function detectKeplr() {
       })
       await window.keplr.enable(chainId)
     }
-    const offlineSigner = window.keplr.getOfflineSigner(chainId);
+    const offlineSigner = await window.keplr.getOfflineSignerAuto(chainId);
     client.useSigner(offlineSigner)
     isKeplrDetected = true
   }
@@ -257,7 +257,7 @@ export async function getNftClass(id: string) {
 
 export async function getNftByTxHash(txHash: string) {
   const res = await getTx(txHash)
-  if (res.body.messages[0]['@type'] === '/iconlake.icon.MsgMint') {
+  if (res?.body?.messages[0]['@type'] === '/iconlake.icon.MsgMint') {
     return res.body.messages[0] as MsgMint
   }
   return undefined

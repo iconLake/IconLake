@@ -12,8 +12,8 @@ importers:
         specifier: ^0.31.3
         version: 0.31.3
       '@iconlake/client':
-        specifier: ^1.0.0
-        version: 1.0.0(@cosmjs/launchpad@0.27.1)(@cosmjs/proto-signing@0.31.1)(@cosmjs/stargate@0.31.1)
+        specifier: ^1.1.0
+        version: 1.1.0(@cosmjs/launchpad@0.27.1)(@cosmjs/proto-signing@0.31.1)(@cosmjs/stargate@0.31.1)
       axios:
         specifier: ^0.27.2
         version: 0.27.2
@@ -236,8 +236,8 @@ packages:
   '@humanwhocodes/object-schema@1.2.1':
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
 
-  '@iconlake/client@1.0.0':
-    resolution: {integrity: sha512-zXXiRazXMMFyopBFrbQnk1nScjUY7iAWQeqPOYIvvDfo/oiE8PkN9du7LgfRySP69VkKwfKXCqzioAVzGOmVEQ==}
+  '@iconlake/client@1.1.0':
+    resolution: {integrity: sha512-pfK7dawI0++bGwEa8B9329cXX1Xw69yU2dIe036HDLqIAbyKHrH1THT+EhSx7Neh6EbQDP8zfhjIPuapqS5Qzw==}
     peerDependencies:
       '@cosmjs/launchpad': 0.27.1
       '@cosmjs/proto-signing': 0.31.1
@@ -2336,7 +2336,7 @@ snapshots:
 
   '@humanwhocodes/object-schema@1.2.1': {}
 
-  '@iconlake/client@1.0.0(@cosmjs/launchpad@0.27.1)(@cosmjs/proto-signing@0.31.1)(@cosmjs/stargate@0.31.1)':
+  '@iconlake/client@1.1.0(@cosmjs/launchpad@0.27.1)(@cosmjs/proto-signing@0.31.1)(@cosmjs/stargate@0.31.1)':
     dependencies:
       '@cosmjs/launchpad': 0.27.1
       '@cosmjs/proto-signing': 0.31.1

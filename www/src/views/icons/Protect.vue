@@ -4,7 +4,7 @@ import { getHash, mintIcon, getTx, getChainAccount, burnIcon, getNftByTxHash } f
 import Header from '@/components/Header.vue'
 import Icon from '@/components/Icon.vue'
 import User from '@/components/User.vue'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { toast } from '@/utils'
 import { userApis } from '@/apis/user'
@@ -38,18 +38,26 @@ const txUrl = computed(() => {
   }
 })
 
+watch(() => iconInfo.txHash, () => {
+  getNftInfo()
+})
+
+async function getNftInfo() {
+  if (!iconInfo.txHash) {
+    return
+  }
+  const nft = await getNftByTxHash(iconInfo.txHash)
+  if (!nft) {
+    toast.error(t('txNotFound'))
+    iconInfo.txHash = undefined
+  } else {
+    Object.assign(nftInfo, nft)
+  }
+}
+
 async function getIconInfo() {
   await projectApis.getIcon(projectId.value, id.value).onUpdate(async (icon) => {
     Object.assign(iconInfo, icon.info)
-    if (icon.info.txHash) {
-      const nft = await getNftByTxHash(icon.info.txHash)
-      if (!nft) {
-        toast.error(t('txNotFound'))
-        iconInfo.txHash = undefined
-      } else {
-        Object.assign(nftInfo, nft)
-      }
-    }
   })
 }
 
