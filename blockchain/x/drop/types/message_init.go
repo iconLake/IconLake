@@ -32,7 +32,7 @@ func (msg *MsgInit) GetSigners() []sdk.AccAddress {
 }
 
 func (msg *MsgInit) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
+	bz := Amino.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
