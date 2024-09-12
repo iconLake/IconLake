@@ -53,7 +53,8 @@ async function getUserId() {
 }
 
 async function clearUserCache() {
-  await cache.user.clear(userId)
+  const uid = await userApis.userId()
+  await cache.user.clear(uid)
 }
 
 /**

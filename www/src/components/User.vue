@@ -68,7 +68,7 @@ async function userLogout() {
   showPop(false)
   toast(t('loggingOut'))
   await logout()
-  userApis.clearCache()
+  await userApis.clearCache()
   gotoLogin()
 }
 
