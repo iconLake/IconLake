@@ -38,7 +38,6 @@ jobs:
       run: |
         cd ./blockchain
         ignite version
-        ls -l
         ignite chain build --release --check-dependencies --verbose
 
     - name: Upload iconlaked
