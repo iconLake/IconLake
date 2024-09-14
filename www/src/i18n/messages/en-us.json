@@ -15,9 +15,10 @@
   "auth": "Auth",
   "newProject": "New Project",
   "welcomeAndGuide": "Welcome to iconLake, let's make your first project.",
-  "iconGroup": "Works Groups",
+  "iconGroup": "Groups",
   "projectInfo": "Information",
   "projectMember": "Members",
+  "theme": "Theme",
   "monitor": "Monitor",
   "advance": "Advance",
   "feedback": "Feedback Issues",
@@ -183,5 +184,12 @@
   "txNotFound": "Transaction not found",
   "img": "Image",
   "or": "Or",
-  "contactUsFromTheseMethods": "Contact us for assistance through the following methods:"
+  "contactUsFromTheseMethods": "Contact us for assistance through the following methods:",
+  "useDiyTheme": "Customize Theme",
+  "useDefaultTheme": "Use Default Theme",
+  "selectFileAndExample": "Select File, for example: ",
+  "uploadExhibitionIndexComponent": "Upload Exhibition Theme of Index Page",
+  "uploadExhibitionNftComponent": "Upload Exhibition Theme of Work Page",
+  "basedOnOpenSourceToDiyTheme": "Based on our open-source theme, you can develop a custom theme.",
+  "uploading": "Uploading..."
 }

@@ -135,6 +135,14 @@ onUnmounted(() => {
         <span>{{ t('projectMember') }}</span>
       </router-link>
       <router-link
+        class="item"
+        active-class="active"
+        to="./theme"
+      >
+        <i class="iconfont icon-theme" />
+        <span>{{ t('theme') }}</span>
+      </router-link>
+      <router-link
         v-if="project.type === PROJECT_TYPE.SVG"
         class="item"
         active-class="active"

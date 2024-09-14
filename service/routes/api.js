@@ -13,6 +13,7 @@ import * as projectInvite from '../controllers/project/invite.js'
 import * as projectMember from '../controllers/project/member.js'
 import * as projectIcon from '../controllers/project/icon.js'
 import * as projectFile from '../controllers/project/file.js'
+import * as projectTheme from '../controllers/project/theme.js'
 import * as iconInfo from '../controllers/icon/info.js'
 import { params as loginParams } from '../controllers/login/index.js'
 import { init as initDrop } from '../controllers/blockchain/drop.js'
@@ -57,6 +58,8 @@ router.post('/project/icon/batchGroup', userMiddleware, projectIcon.batchGroup)
 router.post('/project/icon/gen', userMiddleware, projectIcon.gen)
 router.post('/project/icon/setExpire', userMiddleware, projectIcon.setExpire)
 router.post('/project/file/upload', userMiddleware, projectFile.upload)
+router.post('/project/theme/edit', userMiddleware, projectTheme.edit)
+router.get('/project/theme/components', projectTheme.components)
 
 router.post('/icon/info/edit', userMiddleware, iconInfo.edit)
 

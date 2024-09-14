@@ -19,6 +19,7 @@ export const MINT_DROP_AMOUNT_MAX = 600000
 export const UPLOAD_DIR = {
   COVER: 'cover',
   ICON: 'icon',
+  THEME: 'theme',
 }
 
 export const PUBLIC_PAGES = [

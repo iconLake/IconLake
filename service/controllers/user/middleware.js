@@ -24,7 +24,7 @@ export default middleware
 /**
  * 检查登录
  * @param {Request} req
- * @returns {{error?: string, user?: object}}
+ * @returns {Promise<{error?: string, user?: object}>}
  */
 export async function checkLogin (req) {
   if (!req.cookies.token) {

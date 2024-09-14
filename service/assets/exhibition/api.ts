@@ -46,6 +46,7 @@ export interface IconLakeAPI {
   isProduction: boolean
   config: {
     lcd: string
+    cdn: string
   }
   loading: {
     dom: Element
@@ -66,9 +67,14 @@ export interface IconLakeAPI {
   verifyHash: (uri: string, uriHash: string) => Promise<number>
 }
 
-((globalThis: Window & { iconlakeAPI: IconLakeAPI, __sharethis__: any }) => {
+export interface Sharethis {
+  load: (type: string, options?: { [key: string]: string }) => Promise<void>
+}
+
+((globalThis: Window & { iconlakeAPI: IconLakeAPI, __sharethis__: Sharethis }) => {
   const isProduction = !/test|localhost|127\.0\.0\.1/i.test(location.href)
   const lcd = isProduction ? 'https://lcd.iconlake.com' : 'https://lcd.testnet.iconlake.com'
+  const cdn = isProduction ? 'https://cdn.iconlake.com' : 'https://iconlake-hk-test-1304929357.cos.ap-hongkong.myqcloud.com'
 
   /**
    * Loading
@@ -198,7 +204,7 @@ export interface IconLakeAPI {
         }
         const timer = setInterval(() => {
           if (globalThis.__sharethis__) {
-            clearInterval(timer)
+            clearInterval(timer as unknown as number)
             return resolve()
           }
         }, 50)
@@ -251,7 +257,8 @@ export interface IconLakeAPI {
     version: 1,
     isProduction,
     config: {
-      lcd
+      lcd,
+      cdn
     },
     loading,
     class: classAPI,

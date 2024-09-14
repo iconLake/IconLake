@@ -1,7 +1,7 @@
 import type { IconLakeAPI } from './api'
 
 (async () => {
-  const iconlakeAPI = (window as any).iconlakeAPI as IconLakeAPI
+  const iconlakeAPI = (window as unknown as Window & { iconlakeAPI: IconLakeAPI }).iconlakeAPI
   if (!iconlakeAPI) {
     console.error('window.iconlakeAPI is not defined')
     return
@@ -45,6 +45,10 @@ import type { IconLakeAPI } from './api'
   }
 
   let themeUrl = '/themes/default/components/exhibition-0fd6aa8f.js'
+  const diyTheme = await fetch(`/api/project/theme/components?id=${iconlakeAPI.class.id}`).then((e) => e.json())
+  if (diyTheme?.class) {
+    themeUrl = `${iconlakeAPI.config.cdn}/${diyTheme.class}`
+  }
   const qUrl = new URL(location.href)
   if (qUrl.searchParams.has('theme')) {
     const tUrl = qUrl.searchParams.get('theme')
