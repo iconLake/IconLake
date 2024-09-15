@@ -11,7 +11,7 @@ import { userApis } from '@/apis/user'
 import type { UserInfo } from '@/apis/user'
 import LoadingVue from '@/components/Loading.vue'
 import { useI18n } from 'vue-i18n'
-import { IS_PRODUCTION } from '@/utils/const'
+import { ONLINE_DOMAIN, IS_PRODUCTION } from '@/utils/const'
 import { usePageLoading } from '@/hooks/router'
 import { getIconUrl } from '@/utils/icon'
 import type { MsgMint } from '@iconlake/client/types/iconlake.icon/module'
@@ -213,7 +213,7 @@ onMounted(() => {
           v-if="nftInfo.classId && nftInfo.id"
           target="_blank"
           class="success exhibition"
-          :href="`/exhibition/${nftInfo.classId}/${nftInfo.id}`"
+          :href="`${ONLINE_DOMAIN}/exhibition/${nftInfo.classId}/${nftInfo.id}`"
         >
           <i class="iconfont icon-exhibition" />
         </a>

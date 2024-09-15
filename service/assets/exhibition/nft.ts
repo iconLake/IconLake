@@ -47,9 +47,11 @@ import type { IconLakeAPI } from './api';
   }
 
   let themeUrl = '/themes/default/components/nft-6e5e0389.js'
-  const diyTheme = await fetch(`/api/project/theme/components?id=${iconlakeAPI.class.id}`).then((e) => e.json())
-  if (diyTheme?.nft) {
-    themeUrl = `${iconlakeAPI.config.cdn}/${diyTheme.nft}`
+  if (!iconlakeAPI.isProduction || (iconlakeAPI.isProduction && location.origin !== iconlakeAPI.domain.master)) {
+    const diyTheme = await fetch(`/api/project/theme/components?id=${iconlakeAPI.class.id}`).then((e) => e.json())
+    if (diyTheme?.nft) {
+      themeUrl = `${iconlakeAPI.config.cdn}/${diyTheme.nft}`
+    }
   }
   const qUrl = new URL(location.href)
   if (qUrl.searchParams.has('theme')) {

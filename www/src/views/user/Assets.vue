@@ -8,7 +8,7 @@ import { formatDropAmount, formatLakeAmount, toast, copy } from '@/utils'
 import HeaderVue from '@/components/Header.vue'
 import LoadingVue from '@/components/Loading.vue'
 import { getSignMsg } from '@/utils/blockchain'
-import { DROP_DENOM_MINI, LAKE_DENOM_MINI, LAKE_DENOM, DROP_DENOM, MINT_DROP_AMOUNT_MAX, MINT_DROP_AMOUNT_MIN } from '@/utils/const'
+import { DROP_DENOM_MINI, LAKE_DENOM_MINI, LAKE_DENOM, DROP_DENOM, MINT_DROP_AMOUNT_MAX, MINT_DROP_AMOUNT_MIN, ONLINE_DOMAIN } from '@/utils/const'
 import type { IconlakeiconClass } from '@iconlake/client/types/iconlake.icon/rest'
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router'
@@ -381,7 +381,7 @@ onMounted(async () => {
       v-for="item in classes"
       :key="item.id"
       class="item"
-      :href="`/exhibition/${item.id ? encodeURIComponent(item.id) : ''}`"
+      :href="`${ONLINE_DOMAIN}/exhibition/${item.id ? encodeURIComponent(item.id) : ''}`"
       target="_blank"
     >
       <div class="item-cover">

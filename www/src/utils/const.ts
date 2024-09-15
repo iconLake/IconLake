@@ -37,3 +37,5 @@ export const PROJECT_TYPE_STRING = {
 }
 
 export const UPLOAD_FILE_SIZE_LIMIT = 20 * 1024 * 1024
+
+export const ONLINE_DOMAIN = IS_PRODUCTION ? 'https://iconlake.online' : window.location.origin

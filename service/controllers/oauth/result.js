@@ -5,6 +5,10 @@ import { User } from '../../models/user.js'
 import { AVATAR_PATH, ERROR_CODE, TOKEN_MAX_AGE } from '../../utils/const.js'
 import { download, save as saveFile } from '../../utils/file.js'
 import { checkLogin } from '../user/middleware.js'
+import { getConfig } from '../../config/index.js'
+
+const config = getConfig()
+const hostname = new URL(config.domain).hostname
 
 /**
  * 生成token
@@ -24,6 +28,7 @@ export function generateToken () {
  */
 export function setToken (res, user) {
   res.cookie('token', `${user.id}:${user.token}`, {
+    domain: hostname,
     maxAge: TOKEN_MAX_AGE,
     httpOnly: true,
     sameSite: 'strict',

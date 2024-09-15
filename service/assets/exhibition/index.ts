@@ -45,9 +45,11 @@ import type { IconLakeAPI } from './api'
   }
 
   let themeUrl = '/themes/default/components/exhibition-0fd6aa8f.js'
-  const diyTheme = await fetch(`/api/project/theme/components?id=${iconlakeAPI.class.id}`).then((e) => e.json())
-  if (diyTheme?.class) {
-    themeUrl = `${iconlakeAPI.config.cdn}/${diyTheme.class}`
+  if (!iconlakeAPI.isProduction || (iconlakeAPI.isProduction && location.origin !== iconlakeAPI.domain.master)) {
+    const diyTheme = await fetch(`/api/project/theme/components?id=${iconlakeAPI.class.id}`).then((e) => e.json())
+    if (diyTheme?.class) {
+      themeUrl = `${iconlakeAPI.config.cdn}/${diyTheme.class}`
+    }
   }
   const qUrl = new URL(location.href)
   if (qUrl.searchParams.has('theme')) {

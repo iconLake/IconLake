@@ -48,6 +48,10 @@ export interface IconLakeAPI {
     lcd: string
     cdn: string
   }
+  domain: {
+    master: string
+    online: string
+  }
   loading: {
     dom: Element
     isShow: boolean
@@ -75,6 +79,11 @@ export interface Sharethis {
   const isProduction = !/test|localhost|127\.0\.0\.1/i.test(location.href)
   const lcd = isProduction ? 'https://lcd.iconlake.com' : 'https://lcd.testnet.iconlake.com'
   const cdn = isProduction ? 'https://cdn.iconlake.com' : 'https://iconlake-hk-test-1304929357.cos.ap-hongkong.myqcloud.com'
+
+  const domain = {
+    master: isProduction ? 'https://iconlake.com' : location.origin,
+    online: isProduction ? 'https://iconlake.online' : location.origin
+  }
 
   /**
    * Loading
@@ -260,6 +269,7 @@ export interface Sharethis {
       lcd,
       cdn
     },
+    domain,
     loading,
     class: classAPI,
     nft: nftAPI,

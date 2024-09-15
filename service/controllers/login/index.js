@@ -4,6 +4,7 @@ import { getConfig } from '../../config/index.js'
 import { checkLogin } from '../user/middleware.js'
 
 const config = getConfig()
+const hostname = new URL(config.domain).hostname
 
 /**
  * 登录页
@@ -17,6 +18,10 @@ export default async function index (req, res) {
       return
     }
   }
+  if (req.hostname !== hostname) {
+    res.redirect(`${config.domain}/login`)
+    return
+  }
   res.sendFile(`./public/login/index.${getLocale(req)}.html`, {
     root: ROOT,
     maxAge: RESOURCE_MAX_AGE
@@ -28,6 +33,7 @@ export default async function index (req, res) {
  */
 export async function params (req, res) {
   res.json({
+    domain: config.domain,
     clientId: {
       gitee: config.gitee.clientId,
       github: config.github.clientId
