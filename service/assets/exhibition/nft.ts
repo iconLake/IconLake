@@ -6,14 +6,16 @@ import type { IconLakeAPI } from './api';
     console.error('window.iconlakeAPI is not defined')
     return
   }
-  const iconlakeDom = document.querySelector('iconlake-nft')
-  if (!iconlakeDom) {
+
+  const rootDom = document.querySelector('#iconlake-root')
+  if (!rootDom) {
+    console.error('rootDom is not defined')
     return
   }
 
   const info = await iconlakeAPI.nft.getInfo()
   if (!info) {
-    iconlakeDom.innerHTML = '<h1 class="blocked">This NFT have not been published to the chain.</h1>'
+    rootDom.innerHTML = '<h1 class="blocked">This NFT have not been published to the chain.</h1>'
     iconlakeAPI.loading.isShow = false
     return
   }
@@ -30,7 +32,7 @@ import type { IconLakeAPI } from './api';
       '/api/admin/info/verify'
     ).then((e) => e.json()).then((data) => data.isAdmin)
     if (!isAdmin) {
-      iconlakeDom.innerHTML = '<h1 class="blocked">This NFT has been blocked.</h1>'
+      rootDom.innerHTML = '<h1 class="blocked">This NFT has been blocked.</h1>'
       iconlakeAPI.loading.isShow = false
       return
     }
@@ -46,7 +48,7 @@ import type { IconLakeAPI } from './api';
     document.body.appendChild(blockIcon)
   }
 
-  let themeUrl = '/themes/default/components/nft-6e5e0389.js'
+  let themeUrl = '/themes/default/nft-CWxVoVvK.js'
   if (!iconlakeAPI.isProduction || (iconlakeAPI.isProduction && location.origin !== iconlakeAPI.domain.master)) {
     const diyTheme = await fetch(`/api/project/theme/components?id=${iconlakeAPI.class.id}`).then((e) => e.json())
     if (diyTheme?.nft) {
@@ -60,9 +62,11 @@ import type { IconLakeAPI } from './api';
       themeUrl = tUrl
     }
   }
-  import(themeUrl).then((module) => {
-    customElements.define('iconlake-nft', module.default)
-  })
+  const scriptDom = document.createElement('script')
+  scriptDom.src = themeUrl
+  scriptDom.type = 'module'
+  scriptDom.crossOrigin = 'anonymous'
+  document.body.appendChild(scriptDom)
 })();
 
 (() => {
