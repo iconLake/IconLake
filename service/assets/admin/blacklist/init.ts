@@ -1,7 +1,7 @@
-import type { IconLakeAPI } from '../../exhibition/api'
+import type { IconlakeAPI } from '../../exhibition/api'
 
 (() => {
-  const iconlakeAPI = (window as any).iconlakeAPI as IconLakeAPI
+  const iconlakeAPI = (window as any).iconlakeAPI as IconlakeAPI
   if (!iconlakeAPI) {
     console.error('window.iconlakeAPI is not defined')
     return
