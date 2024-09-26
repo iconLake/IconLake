@@ -59,7 +59,7 @@ router.post('/project/icon/gen', userMiddleware, projectIcon.gen)
 router.post('/project/icon/setExpire', userMiddleware, projectIcon.setExpire)
 router.post('/project/file/upload', userMiddleware, projectFile.upload)
 router.post('/project/theme/edit', userMiddleware, projectTheme.edit)
-router.get('/project/theme/components', projectTheme.components)
+router.get('/project/theme/info', projectTheme.info)
 
 router.post('/icon/info/edit', userMiddleware, iconInfo.edit)
 

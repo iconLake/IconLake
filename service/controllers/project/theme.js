@@ -35,9 +35,9 @@ export async function edit (req, res) {
 }
 
 /**
- * @api {get} /project/theme/components 主题
+ * @api {get} /project/theme/info 主题
  */
-export async function components (req, res) {
+export async function info (req, res) {
   const id = req.query.id
   if (!id) {
     res.json({
