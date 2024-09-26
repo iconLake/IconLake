@@ -39,6 +39,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/project/setting/Member.vue')
       },
       {
+        path: 'theme',
+        name: 'themeSetting',
+        component: () => import('../views/project/setting/Theme.vue')
+      },
+      {
         path: 'monitor',
         name: 'projectMonitorSetting',
         component: () => import('../views/project/setting/Monitor.vue')

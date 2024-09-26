@@ -16,7 +16,7 @@ import { ElTooltip } from 'element-plus'
 import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
 import { getIconUrl } from '@/utils/icon'
-import { PROJECT_TYPE, PROJECT_TYPE_STRING } from '@/utils/const'
+import { ONLINE_DOMAIN, PROJECT_TYPE, PROJECT_TYPE_STRING } from '@/utils/const'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -360,7 +360,7 @@ watch(() => data.keyword, () => {
     </router-link>
     <a
       class="iconfont icon-exhibition exhibition"
-      :href="`/exhibition/${data._id}`"
+      :href="`${ONLINE_DOMAIN}/exhibition/${data._id}`"
       target="_blank"
       :title="t('exhibition')"
     />
@@ -471,7 +471,10 @@ watch(() => data.keyword, () => {
             @mouseleave="hideDetail()"
             @click="selectIcon(icon, $event)"
           >
-            <IconVue :info="icon" />
+            <IconVue
+              :info="icon"
+              :compress="{ maxWidth: 600, maxHeight: 600}"
+            />
             <div class="name">
               {{ icon.name }}
             </div>

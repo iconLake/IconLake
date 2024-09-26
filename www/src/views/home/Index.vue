@@ -89,7 +89,10 @@ onMounted(() => {
               :key="icon._id"
               class="icon-item flex center"
             >
-              <IconVue :info="icon" />
+              <IconVue
+                :info="icon"
+                :compress="{ maxWidth: 60, maxHeight: 60 }"
+              />
             </div>
           </div>
         </router-link>

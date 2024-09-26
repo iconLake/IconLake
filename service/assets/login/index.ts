@@ -13,6 +13,7 @@
   }
   // 获取参数
   const params: {
+    domain: string
     clientId: {
       gitee: string
       github: string
@@ -24,6 +25,12 @@
       keplr: boolean
     }
   } = await fetch('/api/login/params').then(res => res.json())
+
+  // redirect
+  if (params.domain !== location.origin) {
+    location.href = `${params.domain}${location.pathname}`
+    return
+  }
 
   const domain = encodeURIComponent(location.origin)
 

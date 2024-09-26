@@ -41,11 +41,16 @@ export interface ShareInfo {
   description: string
 }
 
-export interface IconLakeAPI {
+export interface IconlakeAPI {
   version: number
   isProduction: boolean
   config: {
     lcd: string
+    cdn: string
+  }
+  domain: {
+    master: string
+    online: string
   }
   loading: {
     dom: Element
@@ -66,9 +71,19 @@ export interface IconLakeAPI {
   verifyHash: (uri: string, uriHash: string) => Promise<number>
 }
 
-((globalThis: Window & { iconlakeAPI: IconLakeAPI, __sharethis__: any }) => {
+export interface Sharethis {
+  load: (type: string, options?: { [key: string]: string }) => Promise<void>
+}
+
+((globalThis: Window & { iconlakeAPI: IconlakeAPI, __sharethis__: Sharethis }) => {
   const isProduction = !/test|localhost|127\.0\.0\.1/i.test(location.href)
   const lcd = isProduction ? 'https://lcd.iconlake.com' : 'https://lcd.testnet.iconlake.com'
+  const cdn = isProduction ? 'https://cdn.iconlake.com' : 'https://iconlake-hk-test-1304929357.cos.ap-hongkong.myqcloud.com'
+
+  const domain = {
+    master: isProduction ? 'https://iconlake.com' : location.origin,
+    online: isProduction ? 'https://iconlake.online' : location.origin
+  }
 
   /**
    * Loading
@@ -121,7 +136,7 @@ export interface IconLakeAPI {
    */
   const classAPI = {
     id: ''
-  } as IconLakeAPI['class']
+  } as IconlakeAPI['class']
   Object.defineProperties(classAPI, {
     id: {
       get () {
@@ -147,7 +162,7 @@ export interface IconLakeAPI {
    */
   const nftAPI = {
     id: ''
-  } as IconLakeAPI['nft']
+  } as IconlakeAPI['nft']
   Object.defineProperties(nftAPI, {
     id: {
       get () {
@@ -198,7 +213,7 @@ export interface IconLakeAPI {
         }
         const timer = setInterval(() => {
           if (globalThis.__sharethis__) {
-            clearInterval(timer)
+            clearInterval(timer as unknown as number)
             return resolve()
           }
         }, 50)
@@ -251,8 +266,10 @@ export interface IconLakeAPI {
     version: 1,
     isProduction,
     config: {
-      lcd
+      lcd,
+      cdn
     },
+    domain,
     loading,
     class: classAPI,
     nft: nftAPI,

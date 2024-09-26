@@ -89,6 +89,11 @@ export interface Member {
   userId: string
 }
 
+export interface Theme {
+  class: string
+  nft: string
+}
+
 export interface Project {
   _id: string
   type: number
@@ -106,6 +111,7 @@ export interface Project {
   invite?: Invite
   isPublic: boolean
   members: [Member]
+  theme: Theme
 }
 
 export interface Res {
@@ -459,5 +465,17 @@ export function uploadFile(params: {
     },
     data: params.data,
     timeout: 1000 * 60 * 3,
+  })
+}
+
+export function editTheme(projectId: string, theme: Theme) {
+  return <Promise<IdRes>>request({
+    method: 'POST',
+    url: '/theme/edit',
+    baseURL,
+    data: {
+      projectId,
+      ...theme
+    },
   })
 }

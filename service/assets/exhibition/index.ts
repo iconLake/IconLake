@@ -1,19 +1,21 @@
-import type { IconLakeAPI } from './api'
+import type { IconlakeAPI } from './api'
 
 (async () => {
-  const iconlakeAPI = (window as any).iconlakeAPI as IconLakeAPI
+  const iconlakeAPI = (window as unknown as Window & { iconlakeAPI: IconlakeAPI }).iconlakeAPI
   if (!iconlakeAPI) {
     console.error('window.iconlakeAPI is not defined')
     return
   }
-  const iconlakeDom = document.querySelector('iconlake-exhibition')
-  if (!iconlakeDom) {
+
+  const rootDom = document.querySelector('#iconlake-root')
+  if (!rootDom) {
+    console.error('rootDom is not defined')
     return
   }
 
   const info = await iconlakeAPI.class.getInfo()
   if (!info) {
-    iconlakeDom.innerHTML = '<h1 class="blocked">This project has not been published to the chain.</h1>'
+    rootDom.innerHTML = '<h1 class="blocked">This project has not been published to the chain.</h1>'
     iconlakeAPI.loading.isShow = false
     return
   }
@@ -30,7 +32,7 @@ import type { IconLakeAPI } from './api'
       '/api/admin/info/verify'
     ).then((e) => e.json()).then((data) => data.isAdmin)
     if (!isAdmin) {
-      iconlakeDom.innerHTML = '<h1 class="blocked">This project has been blocked.</h1>'
+      rootDom.innerHTML = '<h1 class="blocked">This project has been blocked.</h1>'
       iconlakeAPI.loading.isShow = false
       return
     }
@@ -44,7 +46,13 @@ import type { IconLakeAPI } from './api'
     document.body.appendChild(blockIcon)
   }
 
-  let themeUrl = '/themes/default/components/exhibition-0fd6aa8f.js'
+  let themeUrl = '/themes/default/exhibition-ctUyeXaI.js'
+  if (!iconlakeAPI.isProduction || (iconlakeAPI.isProduction && location.origin !== iconlakeAPI.domain.master)) {
+    const diyTheme = await fetch(`/api/project/theme/info?id=${iconlakeAPI.class.id}`).then((e) => e.json())
+    if (diyTheme?.class) {
+      themeUrl = `${iconlakeAPI.config.cdn}/${diyTheme.class}`
+    }
+  }
   const qUrl = new URL(location.href)
   if (qUrl.searchParams.has('theme')) {
     const tUrl = qUrl.searchParams.get('theme')
@@ -52,9 +60,11 @@ import type { IconLakeAPI } from './api'
       themeUrl = tUrl
     }
   }
-  import(themeUrl).then(module => {
-    customElements.define('iconlake-exhibition', module.default)
-  })
+  const scriptDom = document.createElement('script')
+  scriptDom.src = themeUrl
+  scriptDom.type = 'module'
+  scriptDom.crossOrigin = 'anonymous'
+  document.body.appendChild(scriptDom)
 })();
 
 (() => {

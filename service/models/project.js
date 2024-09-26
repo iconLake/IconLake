@@ -98,6 +98,10 @@ export const ProjectSchema = new Schema({
   isPublic: {
     type: Boolean,
     default: true
+  },
+  theme: {
+    class: String,
+    nft: String
   }
 })
 

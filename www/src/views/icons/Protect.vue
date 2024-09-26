@@ -11,7 +11,7 @@ import { userApis } from '@/apis/user'
 import type { UserInfo } from '@/apis/user'
 import LoadingVue from '@/components/Loading.vue'
 import { useI18n } from 'vue-i18n'
-import { IS_PRODUCTION } from '@/utils/const'
+import { ONLINE_DOMAIN, IS_PRODUCTION } from '@/utils/const'
 import { usePageLoading } from '@/hooks/router'
 import { getIconUrl } from '@/utils/icon'
 import type { MsgMint } from '@iconlake/client/types/iconlake.icon/module'
@@ -167,7 +167,10 @@ onMounted(() => {
       v-if="getIconUrl(iconInfo)"
       class="info"
     >
-      <Icon :info="iconInfo" />
+      <Icon
+        :info="iconInfo"
+        :compress="{ maxWidth: 800, maxHeight: 800 }"
+      />
       <h1>{{ iconInfo.name }}</h1>
       <h2>{{ iconInfo.code }}</h2>
       <h3>Created by {{ userInfo?.blockchain?.id }}</h3>
@@ -213,7 +216,7 @@ onMounted(() => {
           v-if="nftInfo.classId && nftInfo.id"
           target="_blank"
           class="success exhibition"
-          :href="`/exhibition/${nftInfo.classId}/${nftInfo.id}`"
+          :href="`${ONLINE_DOMAIN}/exhibition/${nftInfo.classId}/${nftInfo.id}`"
         >
           <i class="iconfont icon-exhibition" />
         </a>

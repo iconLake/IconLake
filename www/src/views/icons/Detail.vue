@@ -278,7 +278,10 @@ async function handleUpload(file: UploadFile) {
           class="upload-input"
           @change="handleUpload"
         >
-          <IconComponent :info="info" />
+          <IconComponent
+            :info="info"
+            :compress="{ maxWidth: 600, maxHeight: 600 }"
+          />
           <div class="mask flex center">
             <i class="iconfont icon-edit" />
           </div>
