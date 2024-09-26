@@ -173,7 +173,7 @@
   "burnIcon": "销毁链上凭证",
   "burnDone": "销毁成功",
   "burnFailed": "销毁失败",
-  "beianHtml": "<a href=\"https://beian.miit.gov.cn/\" target=\"_blank\">陕ICP备2020018382号-4</a>",
+  "beianHtml": "<a href=\"https://beian.miit.gov.cn/\" target=\"_blank\">陕ICP备2020018382号</a>",
   "chooseIconfontJSFirst": "请先选择iconfont.js文件",
   "waitForUploadFinish": "请耐心等待上传完成",
   "invalidParams": "参数错误",

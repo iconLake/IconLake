@@ -1,11 +1,29 @@
 <script setup lang="ts">
 import { getIconUrl } from '@/utils/icon';
 import { Icon } from "../apis/project"
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { addCompressParams } from '@/utils';
 
 const props = defineProps<{
   info: Icon
+  compress?: {
+    maxWidth?: number
+    maxHeight?: number
+  }
 }>()
+
+const isError = ref(false)
+
+const imgUrl = computed(() => {
+  const url = getIconUrl(props.info)
+  if (!url) {
+    return ''
+  }
+  if (!isError.value && props.compress) {
+    return addCompressParams(url, props.compress)
+  }
+  return url
+})
 
 const iconType = computed(() => {
   if (props.info.svg && props.info.svg.url) {
@@ -16,14 +34,16 @@ const iconType = computed(() => {
   }
   return 'unknown'
 })
+
 </script>
 
 <template>
   <div :class="`icon type-${iconType}`">
     <img
-      v-if="getIconUrl(info)"
+      v-if="imgUrl"
       :class="`icon-${iconType}`"
-      :src="getIconUrl(info)"
+      :src="imgUrl"
+      @error="isError = true"
     >
   </div>
 </template>

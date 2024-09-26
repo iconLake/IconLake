@@ -1,5 +1,5 @@
 import { locale, messages } from '../i18n'
-import { DROP_DENOM, DROP_DENOM_MINI, LAKE_DENOM, PUBLIC_PAGES } from './const'
+import { DROP_DENOM, DROP_DENOM_MINI, LAKE_DENOM, NOT_COMPRESS_EXTS, PUBLIC_PAGES } from './const'
 
 const toastList: {
   params: {
@@ -157,7 +157,7 @@ export function isPagePublic(path = location.pathname) {
 
 export function getExt(name: string) {
   const i = name.lastIndexOf('.')
-  return i === -1 ? '' : name.substring(i)
+  return i === -1 ? '' : name.substring(i).toLowerCase()
 }
 
 export function readFileAsText(file: File) {
@@ -184,4 +184,22 @@ export function readFileAsBlob(file: File) {
     reader.onerror = reject
     reader.readAsArrayBuffer(file)
   })
+}
+
+export function addCompressParams(url: string, params: {
+  maxWidth?: number
+  maxHeight?: number
+}) {
+  const ext = getExt(url)
+  if (NOT_COMPRESS_EXTS[ext]) {
+    return url
+  }
+  let query = ''
+  if (url.indexOf('?') === -1) {
+    query += '?'
+  } else {
+    query += '&'
+  }
+  query += `imageMogr2/thumbnail/${params.maxWidth ?? ''}x${params.maxHeight ?? ''}>/ignore-error/1`
+  return `${url}${query}`
 }

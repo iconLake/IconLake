@@ -167,7 +167,10 @@ onMounted(() => {
       v-if="getIconUrl(iconInfo)"
       class="info"
     >
-      <Icon :info="iconInfo" />
+      <Icon
+        :info="iconInfo"
+        :compress="{ maxWidth: 800, maxHeight: 800 }"
+      />
       <h1>{{ iconInfo.name }}</h1>
       <h2>{{ iconInfo.code }}</h2>
       <h3>Created by {{ userInfo?.blockchain?.id }}</h3>

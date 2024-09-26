@@ -471,7 +471,10 @@ watch(() => data.keyword, () => {
             @mouseleave="hideDetail()"
             @click="selectIcon(icon, $event)"
           >
-            <IconVue :info="icon" />
+            <IconVue
+              :info="icon"
+              :compress="{ maxWidth: 600, maxHeight: 600}"
+            />
             <div class="name">
               {{ icon.name }}
             </div>

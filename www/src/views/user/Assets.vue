@@ -4,7 +4,7 @@ import type { BlockchainInfo } from '@/apis/blockchain'
 import { UserInfo, userApis, loginByBlockchain } from '@/apis/user'
 import { ref, onBeforeUnmount, reactive, computed, onMounted } from 'vue'
 import UserVue from '@/components/User.vue'
-import { formatDropAmount, formatLakeAmount, toast, copy } from '@/utils'
+import { formatDropAmount, formatLakeAmount, toast, copy, addCompressParams } from '@/utils'
 import HeaderVue from '@/components/Header.vue'
 import LoadingVue from '@/components/Loading.vue'
 import { getSignMsg } from '@/utils/blockchain'
@@ -388,7 +388,7 @@ onMounted(async () => {
         <div
           class="cover-img flex center"
           :style="{
-            backgroundImage: item.url ? `url(${item.url})` : 'none'
+            backgroundImage: item.url ? `url(${addCompressParams(item.url, { maxWidth: 600, maxHeight: 600 })})` : 'none'
           }"
         >
           <i
@@ -527,7 +527,7 @@ onMounted(async () => {
       height: 100%;
       transition: var(--transition);
       background-position: center;
-      background-size: contain;
+      background-size: cover;
       .iconfont {
         font-size: 12rem;
         color: #ddd;
