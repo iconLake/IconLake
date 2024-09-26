@@ -41,7 +41,7 @@ export interface ShareInfo {
   description: string
 }
 
-export interface IconLakeAPI {
+export interface IconlakeAPI {
   version: number
   isProduction: boolean
   config: {
@@ -75,7 +75,7 @@ export interface Sharethis {
   load: (type: string, options?: { [key: string]: string }) => Promise<void>
 }
 
-((globalThis: Window & { iconlakeAPI: IconLakeAPI, __sharethis__: Sharethis }) => {
+((globalThis: Window & { iconlakeAPI: IconlakeAPI, __sharethis__: Sharethis }) => {
   const isProduction = !/test|localhost|127\.0\.0\.1/i.test(location.href)
   const lcd = isProduction ? 'https://lcd.iconlake.com' : 'https://lcd.testnet.iconlake.com'
   const cdn = isProduction ? 'https://cdn.iconlake.com' : 'https://iconlake-hk-test-1304929357.cos.ap-hongkong.myqcloud.com'
@@ -136,7 +136,7 @@ export interface Sharethis {
    */
   const classAPI = {
     id: ''
-  } as IconLakeAPI['class']
+  } as IconlakeAPI['class']
   Object.defineProperties(classAPI, {
     id: {
       get () {
@@ -162,7 +162,7 @@ export interface Sharethis {
    */
   const nftAPI = {
     id: ''
-  } as IconLakeAPI['nft']
+  } as IconlakeAPI['nft']
   Object.defineProperties(nftAPI, {
     id: {
       get () {

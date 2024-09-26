@@ -1,7 +1,7 @@
-import type { IconLakeAPI } from './api';
+import type { IconlakeAPI } from './api';
 
 (async () => {
-  const iconlakeAPI = (window as unknown as Window & { iconlakeAPI: IconLakeAPI }).iconlakeAPI
+  const iconlakeAPI = (window as unknown as Window & { iconlakeAPI: IconlakeAPI }).iconlakeAPI
   if (!iconlakeAPI) {
     console.error('window.iconlakeAPI is not defined')
     return
