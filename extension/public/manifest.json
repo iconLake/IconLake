@@ -33,7 +33,10 @@
   },
   "options_page": "options.html",
   "permissions": [
-    "tabs"
+    "tabs",
+    "declarativeNetRequestFeedback",
+    "declarativeNetRequestWithHostAccess",
+    "storage"
   ],
   "host_permissions": [
     "*://*/*"

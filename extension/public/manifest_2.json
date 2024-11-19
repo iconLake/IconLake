@@ -33,6 +33,9 @@
   "options_page": "options.html",
   "permissions": [
     "tabs",
+    "declarativeNetRequestFeedback",
+    "declarativeNetRequestWithHostAccess",
+    "storage",
     "*://*/*"
   ]
 }
