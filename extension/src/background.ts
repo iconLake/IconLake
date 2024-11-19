@@ -1,4 +1,5 @@
 import Browser from 'webextension-polyfill'
+import { initModifyRequest, handleModifyRequestReferer } from './background/modify-request'
 
 if (import.meta.env.DEV) {
   const ws = new WebSocket('ws://127.0.0.1:35729')
@@ -23,3 +24,11 @@ if (import.meta.env.DEV) {
     }, 1000)
   }
 }
+
+initModifyRequest()
+
+Browser.runtime.onMessage.addListener(async (message, sender) => {
+  if (message.type === 'ModifyRequestReferer') {
+    return await handleModifyRequestReferer(message)
+  }
+});

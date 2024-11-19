@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import Browser from 'webextension-polyfill'
 import { ButtonTooltipType, Icon, Project, SVG, MsgType, IconResource, ProjectTypes } from '../types'
 import { ElSelect, ElOption } from 'element-plus'
@@ -37,6 +37,15 @@ async function getIcons (type?: ProjectTypes) {
     icons: Icon[]
     url: string
   }
+  if (type === ProjectTypes.Img) {
+    await Browser.runtime.sendMessage({
+      type: 'ModifyRequestReferer',
+      data: res.icons.map(e => ({
+        url: e.img?.url,
+        referer: res.url
+      }))
+    })
+  }
   icons.value = res.icons.map(e => ({
     ...e,
     isSelected: false
@@ -60,6 +69,7 @@ watch(projectType, async (value) => {
   getIcons(value)
   projectId.value = ''
   projectList.value = await getProjects(value)
+  await saveProjectType()
 }, {
   immediate: true
 })
@@ -156,6 +166,21 @@ async function save () {
   showTip('保存成功', ButtonTooltipType.Success)
   setTimeout(gotoProject, 1000)
 }
+
+async function getSavedProjectType() {
+  const { projectType: type } = await Browser.storage.local.get('projectType')
+  if (type) {
+    projectType.value = type
+  }
+}
+
+async function saveProjectType () {
+  await Browser.storage.local.set({ projectType: projectType.value })
+}
+
+onMounted(async () => {
+  await getSavedProjectType()
+})
 </script>
 
 <template>

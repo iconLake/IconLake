@@ -2,7 +2,7 @@
   "id": "iconlake",
   "name": "iconLake",
   "description": "iconLake Extension",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "manifest_version": 3,
   "icons": {
     "16": "images/logo-16.png",
@@ -33,7 +33,10 @@
   },
   "options_page": "options.html",
   "permissions": [
-    "tabs"
+    "tabs",
+    "declarativeNetRequestFeedback",
+    "declarativeNetRequestWithHostAccess",
+    "storage"
   ],
   "host_permissions": [
     "*://*/*"
