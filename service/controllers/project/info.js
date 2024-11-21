@@ -1,12 +1,11 @@
 import { includeKeys } from 'filter-obj'
 import { getConfig } from '../../config/index.js'
 import { Project } from '../../models/project.js'
-import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM } from '../../utils/const.js'
+import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM, PROJECT_TYPE, PROJECT_STYLE } from '../../utils/const.js'
 import { isActive as isCosActive } from '../../utils/cos.js'
 import { deleteProjectDir } from './icon/gen/index.js'
 import { middleware as userMiddleware, checkLogin } from '../user/middleware.js'
 import { completeURL, slimURL } from '../../utils/file.js'
-
 const config = getConfig()
 
 /**
@@ -91,7 +90,7 @@ export async function info (req, res) {
  */
 export async function edit (req, res) {
   let _id = req.body._id
-  const data = includeKeys(req.body, ['name', 'desc', 'class', 'prefix', 'cover', 'isPublic'])
+  const data = includeKeys(req.body, ['name', 'desc', 'class', 'prefix', 'cover', 'isPublic', 'style.list'])
   if (typeof _id === 'string' && _id.length > 0) {
     if ('cover' in data) {
       data.cover = slimURL(data.cover)
@@ -121,6 +120,9 @@ export async function edit (req, res) {
     ]
     const types = [false, true, true]
     data.type = types[req.body.type] ? req.body.type : 1
+    data.style = {
+      list: data.type === PROJECT_TYPE.IMG ? PROJECT_STYLE.TIDY : PROJECT_STYLE.DEFAULT
+    }
     const p = new Project(data)
     _id = p._id
     await p.save()

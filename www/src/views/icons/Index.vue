@@ -16,7 +16,7 @@ import { ElTooltip } from 'element-plus'
 import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
 import { getIconUrl } from '@/utils/icon'
-import { ONLINE_DOMAIN, PROJECT_TYPE, PROJECT_TYPE_STRING } from '@/utils/const'
+import { ONLINE_DOMAIN, PROJECT_TYPE, PROJECT_TYPE_STRING, PROJECT_STYLE, PROJECT_STYLE_STRING } from '@/utils/const'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -28,6 +28,9 @@ const userInfo = ref({} as UserInfo)
 const data = reactive({
   _id: $route.params.id as string,
   type: 0,
+  style: {
+    list: PROJECT_STYLE.DEFAULT,
+  },
   name: '',
   icons: [] as Icon[],
   groups: [] as Group[],
@@ -62,11 +65,12 @@ const editable = computed(() => {
 })
 
 async function getIcons () {
-  await projectApis.info(data._id, 'type name icons groups').onUpdate(async res => {
+  await projectApis.info(data._id, 'type name icons groups style').onUpdate(async res => {
     data.type = res.type
     data.name = res.name
     data.members = res.members
     data.isPublic = res.isPublic
+    Object.assign(data.style, res.style)
     if (res.groups instanceof Array) {
       data.groups = res.groups.sort((a, b) => b.num - a.num)
       res.groups.forEach(e => {
@@ -442,7 +446,7 @@ watch(() => data.keyword, () => {
     </div>
     <div
       ref="iconListDom"
-      :class="`list type-${PROJECT_TYPE_STRING[data.type]}`"
+      :class="`list type-${PROJECT_TYPE_STRING[data.type]} style-${PROJECT_STYLE_STRING[data.style.list]}`"
     >
       <div
         v-for="item in data.list"
@@ -611,7 +615,6 @@ watch(() => data.keyword, () => {
 .icon-item {
   margin: 2.5rem;
   padding: 1.2rem 0;
-  cursor: pointer;
   color: #808080;
   font-size: 1.4rem;
   width: 10rem;
@@ -621,9 +624,11 @@ watch(() => data.keyword, () => {
   &.selectable {
     background: #e5ecff;
     user-select: none;
+    cursor: pointer;
     &.selected {
       border-color: $color-main;
       background: #fff;
+      overflow: hidden;
     }
     .name,
     .code {
@@ -654,6 +659,43 @@ watch(() => data.keyword, () => {
       width: auto;
       max-width: 100%;
       height: 16rem;
+    }
+  }
+}
+.style-tidy {
+  .group-title {
+    margin: 1rem 0;
+  }
+  .icon-item {
+    width: 15rem;
+    aspect-ratio: 0.618;
+    padding: 0;
+    margin: 0;
+    .name,
+    .code {
+      display: none;
+    }
+    .icon {
+      margin: 0 auto;
+      height: 100%;
+    }
+    ::v-deep(.icon-img) {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  &.type-svg {
+    .icon-item {
+      aspect-ratio: 1;
+      .icon {
+        width: 6rem;
+      }
+      ::v-deep(.icon-svg) {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
     }
   }
 }

@@ -4,8 +4,8 @@ import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router'
 import { ElUpload, UploadFile } from 'element-plus'
 import { toast } from '@/utils';
-import { UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const';
-import { editTheme, projectApis, uploadFile } from '@/apis/project';
+import { PROJECT_STYLE, UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const';
+import { editInfo, editTheme, projectApis, uploadFile } from '@/apis/project';
 import { useRoute } from 'vue-router';
 import Loading from '@/components/Loading.vue';
 
@@ -25,6 +25,9 @@ const fm = reactive({
   class: '',
   nft: '',
 })
+const style = reactive({
+  list: -1,
+})
 
 const isSaving = ref(false)
 
@@ -35,8 +38,9 @@ onMounted(() => {
 })
 
 async function getTheme() {
-  projectApis.info(projectId, 'theme').onUpdate(async res => {
+  projectApis.info(projectId, 'theme style').onUpdate(async res => {
     Object.assign(fm, res.theme)
+    Object.assign(style, res.style)
     isDiy.value = !!res.theme?.class || !!res.theme?.nft
   })
 }
@@ -103,10 +107,38 @@ async function save() {
   toast(t('saveDone'))
   isSaving.value = false
 }
+
+async function handleSelectStyle(type: number) {
+  style.list = type
+  await editInfo(projectId, {
+    'style.list': type
+  })
+  toast(t('saveDone'))
+}
 </script>
 
 <template>
   <div class="theme">
+    <p class="title">
+      {{ t('iconListTheme') }}
+    </p>
+    <div class="flex start opt-style">
+      <div
+        class="opt-item style-default"
+        :class="{active: style.list === PROJECT_STYLE.DEFAULT}"
+        @click="handleSelectStyle(PROJECT_STYLE.DEFAULT)"
+      />
+      <div
+        class="opt-item style-tidy"
+        :class="{active: style.list === PROJECT_STYLE.TIDY}"
+        @click="handleSelectStyle(PROJECT_STYLE.TIDY)"
+      />
+    </div>
+  </div>
+  <div class="theme">
+    <p class="title">
+      {{ t('exhibitionTheme') }}
+    </p>
     <div class="flex start opt-type">
       <div
         class="switch"
@@ -200,6 +232,42 @@ async function save() {
   background-color: #fff;
   border-radius: 0.4rem;
   padding: 3.6rem 5.2rem;
+  margin-bottom: 2rem;
+}
+.title {
+  margin-bottom: 2.2rem;
+}
+.opt-style {
+  .opt-item {
+    height: 10rem;
+    aspect-ratio: 4 / 3;
+    margin-right: 5rem;
+    position: relative;
+    cursor: pointer;
+    &.style-default {
+      background: url('/imgs/list-style-default.png') no-repeat center center / contain;
+    }
+    &.style-tidy {
+      background: url('/imgs/list-style-tidy.png') no-repeat center center / contain;
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -1.5rem;
+      left: 0;
+      right: 0;
+      margin: auto;
+      width: 1rem;
+      height: 1rem;
+      border-radius: 0.5rem;
+      background-color: #cfd5e6;
+    }
+    &.active {
+      &::after {
+        background-color: var(--color-main);
+      }
+    }
+  }
 }
 .opt-type {
   align-items: center;

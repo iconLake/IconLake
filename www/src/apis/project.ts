@@ -112,6 +112,9 @@ export interface Project {
   isPublic: boolean
   members: [Member]
   theme: Theme
+  style: {
+    list: number
+  }
 }
 
 export interface Res {
@@ -210,6 +213,7 @@ function info(id: string, fields: string) {
 export function editInfo(_id: string, info: {
   name?: string
   desc?: string
+  'style.list'?: number
 }) {
   return <Promise<Res>>request({
     method: 'POST',

@@ -102,6 +102,12 @@ export const ProjectSchema = new Schema({
   theme: {
     class: String,
     nft: String
+  },
+  style: {
+    list: {
+      type: Number,
+      default: 0
+    }
   }
 })
 
