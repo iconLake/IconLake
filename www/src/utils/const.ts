@@ -36,6 +36,16 @@ export const PROJECT_TYPE_STRING = {
   [PROJECT_TYPE.IMG]: 'img',
 }
 
+export const PROJECT_STYLE = {
+  DEFAULT: 0,
+  TIDY: 1,
+}
+
+export const PROJECT_STYLE_STRING = {
+  [PROJECT_STYLE.DEFAULT]: 'default',
+  [PROJECT_STYLE.TIDY]: 'tidy',
+}
+
 export const UPLOAD_FILE_SIZE_LIMIT = 20 * 1024 * 1024
 
 export const ONLINE_DOMAIN = IS_PRODUCTION ? 'https://iconlake.online' : window.location.origin

@@ -193,5 +193,7 @@
   "uploadExhibitionIndexComponent": "上传展览首页主题",
   "uploadExhibitionNftComponent": "上传展览作品页主题",
   "basedOnOpenSourceToDiyTheme": "基于我们的开源主题，可以开发自定义主题。",
-  "uploading": "上传中..."
+  "uploading": "上传中...",
+  "exhibitionTheme": "展览主题",
+  "iconListTheme": "管理作品页列表展示风格"
 }

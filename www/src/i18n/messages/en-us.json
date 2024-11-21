@@ -191,5 +191,7 @@
   "uploadExhibitionIndexComponent": "Upload Exhibition Theme of Index Page",
   "uploadExhibitionNftComponent": "Upload Exhibition Theme of Work Page",
   "basedOnOpenSourceToDiyTheme": "Based on our open-source theme, you can develop a custom theme.",
-  "uploading": "Uploading..."
+  "uploading": "Uploading...",
+  "exhibitionTheme": "Exhibition Theme",
+  "iconListTheme": "List Style of Icon Management Page"
 }

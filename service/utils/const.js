@@ -90,3 +90,13 @@ export const LAKE_DENOM = 'LAKE'
 export const LAKE_DENOM_MINI = 'ulake'
 
 export const ADDRESS_PREFIX = 'iconlake'
+
+export const PROJECT_TYPE = {
+  SVG: 1,
+  IMG: 2
+}
+
+export const PROJECT_STYLE = {
+  DEFAULT: 0,
+  TIDY: 1
+}
