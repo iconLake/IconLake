@@ -1,5 +1,7 @@
 import Browser from 'webextension-polyfill'
 import { initModifyRequest, handleModifyRequestReferer } from './background/modify-request'
+import { handleSearch, initSearch } from './background/search'
+import { MsgType } from './background/types'
 
 if (import.meta.env.DEV) {
   const ws = new WebSocket('ws://127.0.0.1:35729')
@@ -26,9 +28,31 @@ if (import.meta.env.DEV) {
 }
 
 initModifyRequest()
+initSearch()
 
 Browser.runtime.onMessage.addListener(async (message, sender) => {
-  if (message.type === 'ModifyRequestReferer') {
-    return await handleModifyRequestReferer(message)
+  const type = (message.type as MsgType).toString().toLowerCase()
+  const params: any[] = message.params instanceof Array ? message.params : [message.params]
+
+  let result
+
+  console.log('receive message', type, params)
+  switch (type) {
+    case MsgType.ModifyRequestReferer.toString().toLowerCase():
+      result = await handleModifyRequestReferer(params[0])
+      break
+    case MsgType.Search.toString().toLowerCase():
+      result = await handleSearch(params[0])
+      break
+    case MsgType.Ping.toString().toLowerCase():
+      result = { timestamp: Date.now() }
+      break
+    default:
+      result = {
+        error: 'unknown message type'
+      }
   }
+
+  console.log('send message', result)
+  return result
 });

@@ -195,5 +195,8 @@
   "basedOnOpenSourceToDiyTheme": "基于我们的开源主题，可以开发自定义主题。",
   "uploading": "上传中...",
   "exhibitionTheme": "展览主题",
-  "iconListTheme": "管理作品页列表展示风格"
+  "iconListTheme": "管理作品页列表展示风格",
+  "previousBtn": "上一个（按键：←）",
+  "nextBtn": "下一个（按键：→）",
+  "closeBtn": "关闭（点击空白区域或按键：ESC）"
 }

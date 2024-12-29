@@ -40,10 +40,12 @@ async function getIcons (type?: ProjectTypes) {
   if (type === ProjectTypes.Img) {
     await Browser.runtime.sendMessage({
       type: 'ModifyRequestReferer',
-      data: res.icons.map(e => ({
-        url: e.img?.url,
-        referer: res.url
-      }))
+      params: [
+        res.icons.map(e => ({
+          url: e.img?.url,
+          referer: res.url
+        }))
+      ]
     })
   }
   icons.value = res.icons.map(e => ({

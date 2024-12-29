@@ -17,6 +17,7 @@ import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
 import { getIconUrl } from '@/utils/icon'
 import { ONLINE_DOMAIN, PROJECT_TYPE, PROJECT_TYPE_STRING, PROJECT_STYLE, PROJECT_STYLE_STRING } from '@/utils/const'
+import SearchWebVue from './search/web.vue'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -488,6 +489,9 @@ watch(() => data.keyword, () => {
           </div>
         </div>
       </div>
+      <!-- search web -->
+      <SearchWebVue :keywords="data.keyword" />
+      <!-- detail -->
       <Detail
         ref="detailDom"
         :project-id="data._id"
@@ -526,6 +530,7 @@ watch(() => data.keyword, () => {
 
 <style lang="scss" scoped>
 @import "../../styles/var.scss";
+@import "./styles.scss";
 
 .header {
   .name {
@@ -557,7 +562,7 @@ watch(() => data.keyword, () => {
 .main {
   margin: 0 auto;
   width: 90%;
-  padding-bottom: 25rem;
+  padding-bottom: 2rem;
 }
 .search {
   .input {
@@ -600,106 +605,6 @@ watch(() => data.keyword, () => {
     }
   }
 }
-.list {
-  position: relative;
-  .group {
-    &-title {
-      line-height: 2;
-    }
-  }
-  .icons {
-    display: flex;
-    flex-wrap: wrap;
-  }
-}
-.icon-item {
-  margin: 2.5rem;
-  padding: 1.2rem 0;
-  color: #808080;
-  font-size: 1.4rem;
-  width: 10rem;
-  border-radius: 0.4rem;
-  box-sizing: border-box;
-  border: solid 0.1rem transparent;
-  &.selectable {
-    background: #e5ecff;
-    user-select: none;
-    cursor: pointer;
-    &.selected {
-      border-color: $color-main;
-      background: #fff;
-      overflow: hidden;
-    }
-    .name,
-    .code {
-      padding: 0 0.5rem;
-    }
-  }
-  .icon {
-    width: 3.8rem;
-    height: 3.8rem;
-    margin: 0 auto 2.5rem;
-  }
-  .name,
-  .code {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.1;
-  }
-  .name {
-    margin-bottom: 0.6rem;
-  }
-}
-.type-img {
-  .icon-item {
-    width: 30rem;
-    max-width: calc(24vw - 5rem);
-    .icon {
-      width: auto;
-      max-width: 100%;
-      height: 16rem;
-    }
-  }
-}
-.style-tidy {
-  .group-title {
-    margin: 1rem 0;
-  }
-  .icon-item {
-    width: 15rem;
-    aspect-ratio: 0.618;
-    padding: 0;
-    margin: 0;
-    .name,
-    .code {
-      display: none;
-    }
-    .icon {
-      margin: 0 auto;
-      height: 100%;
-    }
-    ::v-deep(.icon-img) {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  }
-  &.type-svg {
-    .icon-item {
-      aspect-ratio: 1;
-      .icon {
-        width: 6rem;
-      }
-      ::v-deep(.icon-svg) {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-    }
-  }
-}
-
 .operate-batch {
   padding: 2rem;
   background: #fff;

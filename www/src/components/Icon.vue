@@ -34,7 +34,6 @@ const iconType = computed(() => {
   }
   return 'unknown'
 })
-
 </script>
 
 <template>
