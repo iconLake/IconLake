@@ -35,7 +35,8 @@
     "tabs",
     "declarativeNetRequestFeedback",
     "declarativeNetRequestWithHostAccess",
-    "storage"
+    "storage",
+    "cookies"
   ],
   "host_permissions": [
     "*://*/*"

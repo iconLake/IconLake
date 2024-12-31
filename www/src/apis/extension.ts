@@ -1,3 +1,5 @@
+import { Icon } from './project'
+
 let isExtensionReady = false
 
 const IconlakeRequestMsgTypePrefix = 'iconlakeRequest:'
@@ -60,6 +62,33 @@ export function search(params: {
   return requestExtension({type: 'search', params})
 }
 
+export async function getExtensionInfo() {
+  await new Promise((resolve, reject) => {
+    const timer = setInterval(() => {
+      if (isExtensionReady) {
+        clearInterval(timer)
+        clearTimeout(timeout)
+        resolve(null)
+      }
+    }, 50)
+    const timeout = setTimeout(() => {
+      clearInterval(timer)
+      reject(new Error('timeout'))
+    }, 500)
+  })
+  return {
+    isReady: isExtensionReady
+  }
+}
+
+export interface SearchedIcon extends Icon {
+  img?: {
+    url: string
+    originalUrl?: string
+  }
+}
+
 export const extensionApis = {
   search,
+  getExtensionInfo,
 }

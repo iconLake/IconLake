@@ -196,5 +196,10 @@
   "iconListTheme": "List Style of Icon Management Page",
   "previousBtn": "Previous (Press key: ←)",
   "nextBtn": "Next (Press key: →)",
-  "closeBtn": "Close (Click empty area or press key: ESC)"
+  "closeBtn": "Close (Click empty area or press key: ESC)",
+  "workFrom": "The following works are from: ",
+  "more": "More",
+  "searching": "Searching",
+  "installExtension&gotoStore": "Install the iconLake browser extension to get other website works. Go to the store to install: ",
+  "saveToProject": "Save to current project"
 }

@@ -1,14 +1,14 @@
-export enum MediaType {
-  Svg = 'svg',
-  Image = 'image',
-  Video = 'video',
-}
-
 export interface Media {
-  type: MediaType
-  src: string
+  mimeType: string
+  img?: {
+    url: string
+    originalUrl?: string
+  }
+  svg?: {
+    url: string
+  }
   name?: string
-  description?: string
+  code?: string
   referer: string
 }
 

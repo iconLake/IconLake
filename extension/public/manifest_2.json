@@ -35,6 +35,7 @@
     "declarativeNetRequestFeedback",
     "declarativeNetRequestWithHostAccess",
     "storage",
+    "cookies",
     "*://*/*"
   ]
 }

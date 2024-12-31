@@ -1,5 +1,5 @@
 import { handleModifyRequestReferer } from "../modify-request"
-import { MediaType, SearchParams, SearchResult } from "./types"
+import { SearchParams, SearchResult } from "./types"
 
 let seq = ''
 
@@ -24,7 +24,7 @@ export async function handleHuaban(params: SearchParams): Promise<SearchResult> 
   const originalList = isFeeds ? res.feeds : res.pins
   const list = originalList.map((e: { file: { bucket: string, key: string }, raw_text: string, pin_id: string }) => {
     return {
-      type: MediaType.Image,
+      mimeType: 'image/webp',
       img: {
         url: `https://${e.file.bucket}.huaban.com/${e.file.key}_fw240webp`,
         originalUrl: `https://${e.file.bucket}.huaban.com/${e.file.key}_fw1200webp`,

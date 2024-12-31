@@ -36,7 +36,6 @@ Browser.runtime.onMessage.addListener(async (message, sender) => {
 
   let result
 
-  console.log('receive message', type, params)
   switch (type) {
     case MsgType.ModifyRequestReferer.toString().toLowerCase():
       result = await handleModifyRequestReferer(params[0])
@@ -53,6 +52,5 @@ Browser.runtime.onMessage.addListener(async (message, sender) => {
       }
   }
 
-  console.log('send message', result)
   return result
 });

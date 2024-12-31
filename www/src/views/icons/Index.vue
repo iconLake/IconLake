@@ -17,7 +17,7 @@ import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
 import { getIconUrl } from '@/utils/icon'
 import { ONLINE_DOMAIN, PROJECT_TYPE, PROJECT_TYPE_STRING, PROJECT_STYLE, PROJECT_STYLE_STRING } from '@/utils/const'
-import SearchWebVue from './search/web.vue'
+import SearchWebVue from './search/Web.vue'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -45,7 +45,7 @@ const data = reactive({
   },
   isBatching: false,
   selectedIcons: new Map<string, Icon>(),
-  keyword: '',
+  keywords: '',
   batchGroupId: '',
   members: [] as Member[],
   isPublic: false
@@ -117,15 +117,15 @@ function getList () {
 }
 
 function iconFilter (icon: Icon) {
-  if (!data.keyword) {
+  if (!data.keywords) {
     return true
   }
-  const reg = new RegExp(data.keyword, 'i')
+  const reg = new RegExp(data.keywords, 'i')
   return reg.test(icon.name) || reg.test(icon.code)
 }
 
 function groupFilter (group: Group) {
-  return data.keyword ? group.icons.length > 0 : true
+  return data.keywords ? group.icons.length > 0 : true
 }
 
 const mainDom = ref<HTMLElement>()
@@ -334,7 +334,7 @@ async function batchDownload() {
 }
 
 // search
-watch(() => data.keyword, () => {
+watch(() => data.keywords, () => {
   getList()
 })
 </script>
@@ -379,7 +379,7 @@ watch(() => data.keyword, () => {
       <div class="input">
         <i class="iconfont icon-search" />
         <input
-          v-model="data.keyword"
+          v-model="data.keywords"
           type="text"
           :placeholder="t('search')"
         >
@@ -490,7 +490,7 @@ watch(() => data.keyword, () => {
         </div>
       </div>
       <!-- search web -->
-      <SearchWebVue :keywords="data.keyword" />
+      <SearchWebVue :keywords="data.keywords" />
       <!-- detail -->
       <Detail
         ref="detailDom"

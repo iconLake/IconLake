@@ -198,5 +198,10 @@
   "iconListTheme": "管理作品页列表展示风格",
   "previousBtn": "上一个（按键：←）",
   "nextBtn": "下一个（按键：→）",
-  "closeBtn": "关闭（点击空白区域或按键：ESC）"
+  "closeBtn": "关闭（点击空白区域或按键：ESC）",
+  "workFrom": "以下作品来自：",
+  "more": "更多",
+  "searching": "搜索中",
+  "installExtension&gotoStore": "安装iconLake浏览器扩展，获取其他网站作品。前往商店安装：",
+  "saveToProject": "保存到当前项目"
 }

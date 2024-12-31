@@ -8,7 +8,11 @@ async function getRequestRefererFromStorage(): Promise<{
   [key: string]: string;
 }> {
   const { requestReferers } = await Browser.storage.local.get('requestReferers');
-  return requestReferers || {};
+  return {
+    'https://huaban.com': 'https://huaban.com',
+    'https://www.iconfont.cn': 'https://www.iconfont.cn',
+    ...(requestReferers || {})
+  };
 }
 
 async function saveRequestReferersToStorage(requestReferers: { [key: string]: string }): Promise<void> {
@@ -31,7 +35,7 @@ function getRules(requestReferers: { [key: string]: string }) {
       action: {
         requestHeaders: [
           { header: 'Referer', operation: 'set', value: referer },
-          { header: 'Origin', operation: 'set', value: referer },
+          { header: 'Origin', operation: 'set', value: hostname },
         ],
         type: 'modifyHeaders'
       },

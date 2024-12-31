@@ -11,6 +11,7 @@ const props = defineProps<{
   onClose: () => void
   onPrev: () => void
   onNext: () => void
+  onCollect: (info: Icon) => void|Promise<void>
 }>()
 
 function isLink(url: string) {
@@ -82,6 +83,13 @@ onBeforeUnmount(() => {
       </div>
     </div>
   </div>
+  <div
+    class="collect"
+    :title="t('saveToProject')"
+    @click="onCollect(info)"
+  >
+    <i class="iconfont icon-download" />
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -98,17 +106,20 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(20px);
   overflow: auto;
   padding: 1.5rem;
+
   .icon {
     width: auto;
     height: auto;
     max-width: 98vw;
     max-height: 92vh;
   }
+
   .name {
     margin-top: 1.5rem;
     font-size: 1.5rem;
     line-height: 1.5;
   }
+
   .code {
     margin-top: 0.5rem;
     font-size: 1.2rem;
@@ -119,13 +130,16 @@ onBeforeUnmount(() => {
     margin-top: 5rem;
     color: #aaa;
     transition: $transition;
-    & > div {
+
+    &>div {
       text-align: center;
       cursor: pointer;
     }
+
     .btn-close {
       margin: 0 5rem;
     }
+
     .btn-name {
       font-size: 1rem;
       color: #666;
@@ -133,15 +147,31 @@ onBeforeUnmount(() => {
       opacity: 0;
       transition: $transition;
     }
+
     .iconfont.rotate {
       transform: rotate(180deg);
     }
+
     &:hover {
       color: #000;
+
       .btn-name {
         opacity: 1;
       }
     }
+  }
+}
+
+.collect {
+  position: fixed;
+  z-index: 100;
+  bottom: 0;
+  right: 0;
+  cursor: pointer;
+  padding: 1.8rem;
+
+  .iconfont {
+    font-size: 2.5rem;
   }
 }
 </style>
