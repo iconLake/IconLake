@@ -3,7 +3,8 @@
     <div class="group">
       <div class="group-title flex">
         <div>
-          {{ t('workFrom') }}<a
+          {{ t('workFrom') }}
+          <a
             :href="siteInfo?.url"
             target="_blank"
           >{{ siteInfo?.name }}</a>
@@ -40,7 +41,7 @@
           class="flex center more"
           @click="loadMore"
         >
-          {{ t('more') }}...
+          {{ loadMoreText }}
         </div>
         <div
           v-if="loading"
@@ -84,11 +85,12 @@
   </div>
   <ReviewVue
     v-if="isReview"
-    :info="reviewIcon"
+    :icon="reviewIcon"
+    :project-id="projectId"
+    :project-type="projectType"
     @close="isReview = false"
     @prev="reviewIndex--"
     @next="reviewIndex++"
-    @collect="collect"
   />
 </template>
 
@@ -98,21 +100,28 @@ import IconVue from '@/components/Icon.vue'
 import { extensionApis, SearchedIcon } from '@/apis/extension';
 import ReviewVue from '../Review.vue';
 import LoadingVue from '@/components/Loading.vue';
-import { SEARCH_SITES } from '@/utils/const';
+import { PROJECT_TYPE, SEARCH_SITES } from '@/utils/const';
 import { useI18n } from 'vue-i18n';
-import { getIconUrl } from '@/utils/icon';
 
-
-const props = defineProps<{ keywords: string }>()
+const props = defineProps<{
+  keywords: string
+  projectId: string
+  projectType: number
+}>()
 const list = ref<SearchedIcon[]>([])
 const loading = ref(false)
 const page = ref(1)
 const isReview = ref(false)
 const reviewIndex = ref(0)
-const site = ref('iconfont')
+const site = ref('')
 const isExtensionReady = ref(false)
+const error = ref('')
 
 const { t } = useI18n()
+
+watch(() => props.projectType, (v) => {
+  site.value = v === PROJECT_TYPE.SVG ? 'iconfont' : 'huaban'
+})
 
 const reviewIcon = computed(() => {
   let index = reviewIndex.value
@@ -135,6 +144,16 @@ const siteInfo = computed(() => {
   return item
 })
 
+const loadMoreText = computed(() => {
+  if (error.value) {
+    if (error.value === 'Unauthorized') {
+      return t('searchErrorUnauthorized', { name: siteInfo.value?.name })
+    }
+    return t('searchErrorGuide', { name: siteInfo.value?.name })
+  }
+  return `${t('more')}...`
+})
+
 const reload = () => {
   page.value = 1
   search({
@@ -153,7 +172,6 @@ watch(
       reload()
     }, 500)
   },
-  { immediate: true }
 )
 
 watch(
@@ -174,30 +192,26 @@ async function search(params: { site: string; keywords: string; page: number; })
     const res = await extensionApis.search(params).catch((err) => {
       console.error(err)
       loading.value = false
+      error.value = err.toString()
       return {
-        list: []
+        list: [],
+        error: err.toString()
       }
     })
     list.value = list.value.concat(res.list)
     loading.value = false
+    error.value = res.error
 }
 
 async function loadMore() {
-  page.value++
+  if (!error.value) {
+    page.value++
+  }
   search({
     site: site.value,
     keywords: props.keywords,
     page: page.value
   })
-}
-
-async function collect(icon: SearchedIcon) {
-  const url = getIconUrl(icon)
-  if (!url) {
-    return
-  }
-  const file = await fetch(url).then(res => res.blob())
-
 }
 
 onMounted(async () => {
@@ -220,6 +234,14 @@ onMounted(async () => {
   }
 }
 
+.group-title {
+  a {
+    text-decoration: underline;
+    text-underline-offset: 0.3rem;
+    text-decoration-color: $color-main;
+  }
+}
+
 .icon-item {
   cursor: pointer;
 }
@@ -234,17 +256,22 @@ onMounted(async () => {
 }
 
 .sites {
+  align-items: flex-end;
   .site-item {
     cursor: pointer;
     margin-left: 1.2rem;
+    font-size: 1rem;
+    line-height: 1;
     &.active {
       color: $color-main;
+      font-size: 1.6rem;
     }
   }
 }
 
 .guide {
   align-items: center;
+  margin-top: 2rem;
   a {
     margin-left: 0.8rem;
   }

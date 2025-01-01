@@ -3,7 +3,7 @@ import { Site } from "./search/types"
 import { handleHuaban } from "./search/huaban"
 import { handleIconfont } from "./search/iconfont"
 
-const sites: { [key: string]: (params: SearchParams) => Promise<SearchResult> } = {
+const sites: { [key: string]: (params: SearchParams) => Promise<SearchResult|SearchError> } = {
   [Site.huaban]: handleHuaban,
   [Site.iconfont]: handleIconfont,
 }

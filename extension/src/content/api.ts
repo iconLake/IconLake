@@ -26,11 +26,21 @@ export function initApi() {
       const type = e.data.type.substring(IconlakeRequestMsgTypePrefix.length)
       const params = e.data.params instanceof Array ? e.data.params : [e.data.params]
       callBackground(type, params).then(response => {
-        responseToFrontend({
+        const result: {
+          type: string;
+          id: string;
+          response?: any;
+          error?: any;
+        } = {
           type,
           id: e.data.id,
-          response
-        })
+        }
+        if (response.error) {
+          result.error = response.error
+        } else {
+          result.response = response
+        }
+        responseToFrontend(result)
       }).catch(error => {
         responseToFrontend({
           type,

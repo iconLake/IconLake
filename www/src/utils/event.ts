@@ -2,10 +2,14 @@ const EVENT_PREFIX = 'iconlake:'
 
 enum EventType {
   ProjectInfoChange = 'project_info_change',
+  IconCollected = 'icon_collected',
 }
 
 interface EventData {
   [EventType.ProjectInfoChange]: {
+    id: string
+  }
+  [EventType.IconCollected]: {
     id: string
   }
 }
@@ -15,7 +19,8 @@ type EventListenerCall = (e: MessageEvent) => void
 
 class IconlakeEvent {
   private registedEvents: Record<EventType, number> = {
-    [EventType.ProjectInfoChange]: 0
+    [EventType.ProjectInfoChange]: 0,
+    [EventType.IconCollected]: 0
   }
   private listenerMap = new Map<EventListener, EventListenerCall>()
   public EventType = EventType

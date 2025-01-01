@@ -1,9 +1,9 @@
 import { handleModifyRequestReferer } from "../modify-request"
-import { SearchParams, SearchResult } from "./types"
+import { SearchError, SearchParams, SearchResult } from "./types"
 
 let seq = ''
 
-export async function handleHuaban(params: SearchParams): Promise<SearchResult> {
+export async function handleHuaban(params: SearchParams): Promise<SearchResult|SearchError> {
   let isFeeds = false
   let url = `https://huaban.com/v3/search/file?text=${params.keywords}&sort=all&limit=40&page=${params.page}&position=search_pin&fields=pins:PIN%7Ctotal,facets,split_words,relations,rec_topic_material,topics`
   if (!params.keywords) {
@@ -18,9 +18,15 @@ export async function handleHuaban(params: SearchParams): Promise<SearchResult> 
     .catch(err => {
       console.error(err)
       return {
-        err
+        err: 1,
+        msg: err.message || 'Unknown Error'
       }
     })
+  if (res.err) {
+    return {
+      error: res.err === 401 ? 'Unauthorized' : res.err.toString()
+    }
+  }
   const originalList = isFeeds ? res.feeds : res.pins
   const list = originalList.map((e: { file: { bucket: string, key: string }, raw_text: string, pin_id: string }) => {
     return {

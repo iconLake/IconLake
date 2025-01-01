@@ -17,3 +17,15 @@ export function isImgFile(file: File, isShowToast = true) {
   }
   return isImg
 }
+
+export function getExtByMimeType(mimeType: string) {
+  const parts = mimeType.split('/')
+  if (parts.length < 2) {
+    return mimeType
+  }
+  if (parts[1] === 'svg+xml') {
+    return 'svg'
+  } else {
+    return parts[1]
+  }
+}

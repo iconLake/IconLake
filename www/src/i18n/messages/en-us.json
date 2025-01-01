@@ -201,5 +201,7 @@
   "more": "More",
   "searching": "Searching",
   "installExtension&gotoStore": "Install the iconLake browser extension to get other website works. Go to the store to install: ",
-  "saveToProject": "Save to current project"
+  "saveToProject": "Upload to current project (Press key: ↑, if only download to local, press: ↓)",
+  "searchErrorGuide": "Something went wrong and the work could not be retrieved. Please go to {name} to check! Or try again!",
+  "searchErrorUnauthorized": "Please log in first to search. Go to {name} to log in. Please log in and try again!"
 }

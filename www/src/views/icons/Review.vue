@@ -1,18 +1,29 @@
 <script setup lang="ts">
 import { Icon } from '@/apis/project';
 import IconVue from '@/components/Icon.vue';
-import { onBeforeUnmount, onMounted } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import CollectVue from './search/Collect.vue';
 
 const { t } = useI18n();
 
 const props = defineProps<{
-  info: Icon
+  icon: Icon
+  projectId: string
+  projectType: number
   onClose: () => void
   onPrev: () => void
   onNext: () => void
-  onCollect: (info: Icon) => void|Promise<void>
 }>()
+
+const isImgShow = ref(true)
+
+watch(() => props.icon, () => {
+  isImgShow.value = false
+  setTimeout(() => {
+    isImgShow.value = true
+  })
+})
 
 function isLink(url: string) {
   return /^https?:\/\//i.test(url)
@@ -41,17 +52,20 @@ onBeforeUnmount(() => {
     class="review flex center column"
     @click.self="onClose"
   >
-    <IconVue :info="info" />
+    <IconVue
+      v-if="isImgShow"
+      :info="icon"
+    />
     <div class="name">
-      {{ info.name }}
+      {{ icon.name }}
     </div>
     <div class="code">
       <a
-        v-if="isLink(info.code)"
+        v-if="isLink(icon.code)"
         target="_blank"
-        :href="info.code"
-      >{{ info.code }}</a>
-      <span v-else>{{ info.code }}</span>
+        :href="icon.code"
+      >{{ icon.code }}</a>
+      <span v-else>{{ icon.code }}</span>
     </div>
     <div class="btns flex center">
       <div
@@ -83,13 +97,11 @@ onBeforeUnmount(() => {
       </div>
     </div>
   </div>
-  <div
-    class="collect"
-    :title="t('saveToProject')"
-    @click="onCollect(info)"
-  >
-    <i class="iconfont icon-download" />
-  </div>
+  <CollectVue
+    :icon="icon"
+    :project-id="projectId"
+    :project-type="projectType"
+  />
 </template>
 
 <style scoped lang="scss">
@@ -106,12 +118,16 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(20px);
   overflow: auto;
   padding: 1.5rem;
+  justify-content: flex-start;
 
   .icon {
     width: auto;
     height: auto;
     max-width: 98vw;
     max-height: 92vh;
+    :deep(img) {
+      min-height: 50vh;
+    }
   }
 
   .name {
@@ -159,19 +175,6 @@ onBeforeUnmount(() => {
         opacity: 1;
       }
     }
-  }
-}
-
-.collect {
-  position: fixed;
-  z-index: 100;
-  bottom: 0;
-  right: 0;
-  cursor: pointer;
-  padding: 1.8rem;
-
-  .iconfont {
-    font-size: 2.5rem;
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
@@ -18,6 +18,7 @@ import Loading from '@/components/Loading.vue'
 import { getIconUrl } from '@/utils/icon'
 import { ONLINE_DOMAIN, PROJECT_TYPE, PROJECT_TYPE_STRING, PROJECT_STYLE, PROJECT_STYLE_STRING } from '@/utils/const'
 import SearchWebVue from './search/Web.vue'
+import { event } from '@/utils/event'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -190,6 +191,11 @@ onMounted(() => {
   getIcons().finally(() => {
     pageLoading.end()
   })
+  event.on(event.EventType.IconCollected, getIcons)
+})
+
+onBeforeUnmount(() => {
+  event.off(event.EventType.IconCollected, getIcons)
 })
 
 function selectIcon(icon:Icon, e:MouseEvent) {
@@ -490,7 +496,11 @@ watch(() => data.keywords, () => {
         </div>
       </div>
       <!-- search web -->
-      <SearchWebVue :keywords="data.keywords" />
+      <SearchWebVue
+        :keywords="data.keywords"
+        :project-id="data._id"
+        :project-type="data.type"
+      />
       <!-- detail -->
       <Detail
         ref="detailDom"

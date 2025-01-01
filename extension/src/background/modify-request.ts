@@ -28,20 +28,20 @@ async function updateRequestRules(rules: Rule[]): Promise<void> {
 
 function getRules(requestReferers: { [key: string]: string }) {
   const rules: Rule[] = [];
-  for (const [hostname, referer] of Object.entries(requestReferers)) {
+  for (const [target, referer] of Object.entries(requestReferers)) {
     rules.push({
       id: rules.length + 1,
       priority: 1,
       action: {
         requestHeaders: [
           { header: 'Referer', operation: 'set', value: referer },
-          { header: 'Origin', operation: 'set', value: hostname },
+          { header: 'Origin', operation: 'set', value: referer },
         ],
         type: 'modifyHeaders'
       },
       condition: {
         domains: Domains,
-        urlFilter: hostname,
+        urlFilter: target,
         resourceTypes: ['image', 'media', 'xmlhttprequest'],
       }
     } as Rule);
@@ -66,15 +66,15 @@ export async function handleModifyRequestReferer(data: {
   let isNew = false;
 
   data.forEach(e => {
-    const hostname = new URL(e.url).hostname;
+    const target = new URL(e.url).origin;
     const referer = new URL(e.referer).origin;
 
-    if (!hostname || !referer) {
+    if (!target || !referer) {
       return;
     }
 
-    if (!referers[hostname]) {
-      referers[hostname] = referer;
+    if (!referers[target]) {
+      referers[target] = referer;
       isNew = true;
     }
   });
