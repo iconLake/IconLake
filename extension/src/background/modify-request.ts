@@ -11,6 +11,7 @@ async function getRequestRefererFromStorage(): Promise<{
   return {
     'https://huaban.com': 'https://huaban.com',
     'https://www.iconfont.cn': 'https://www.iconfont.cn',
+    'https://www.zcool.com.cn': 'https://www.zcool.com.cn',
     ...(requestReferers || {})
   };
 }

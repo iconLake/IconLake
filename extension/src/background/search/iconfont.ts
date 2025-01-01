@@ -1,7 +1,7 @@
 import Browser from "webextension-polyfill";
-import { SearchParams, SearchResult } from "./types";
+import { SearchError, SearchParams, SearchResult } from "./types";
 
-export async function handleIconfont(params: SearchParams): Promise<SearchResult> {
+export async function handleIconfont(params: SearchParams): Promise<SearchResult|SearchError> {
   const cookies = await Browser.cookies.getAll({
     url: 'https://www.iconfont.cn'
   })
@@ -31,6 +31,11 @@ export async function handleIconfont(params: SearchParams): Promise<SearchResult
         err
       }
     })
+  if (res.err) {
+    return {
+      error: res.err.toString()
+    }
+  }
   const list = await Promise.all(
     res.data.icons.map(async (e: { show_svg: string; name: string; unicode: string; }) => {
       const url = await new Promise<string>((resolve, reject) => {

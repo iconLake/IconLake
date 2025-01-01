@@ -15,6 +15,7 @@ export interface Media {
 export enum Site {
   iconfont = 'iconfont',
   huaban = 'huaban',
+  zcool = 'zcool',
 }
 
 export interface SearchParams {

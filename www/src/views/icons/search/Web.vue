@@ -120,7 +120,7 @@ const error = ref('')
 const { t } = useI18n()
 
 watch(() => props.projectType, (v) => {
-  site.value = v === PROJECT_TYPE.SVG ? 'iconfont' : 'huaban'
+  site.value = v === PROJECT_TYPE.SVG ? 'iconfont' : 'zcool'
 })
 
 const reviewIcon = computed(() => {
