@@ -102,6 +102,7 @@ import ReviewVue from '../Review.vue';
 import LoadingVue from '@/components/Loading.vue';
 import { PROJECT_TYPE, SEARCH_SITES } from '@/utils/const';
 import { useI18n } from 'vue-i18n';
+import { storage } from '@/utils/storage';
 
 const props = defineProps<{
   keywords: string
@@ -120,7 +121,15 @@ const error = ref('')
 const { t } = useI18n()
 
 watch(() => props.projectType, (v) => {
-  site.value = v === PROJECT_TYPE.SVG ? 'iconfont' : 'zcool'
+  let storedSite = storage.getProjectDefaultSearchSite(props.projectId)
+  if (SEARCH_SITES.find(e => e.code === storedSite) === undefined) {
+    storedSite = undefined
+  }
+  site.value = storedSite || (v === PROJECT_TYPE.SVG ? 'iconfont' : 'huaban')
+})
+
+watch(() => site.value, (v) => {
+  storage.setProjectDefaultSearchSite(props.projectId, v)
 })
 
 const reviewIcon = computed(() => {
