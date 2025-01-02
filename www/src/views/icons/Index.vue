@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
@@ -17,6 +17,8 @@ import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
 import { getIconUrl } from '@/utils/icon'
 import { ONLINE_DOMAIN, PROJECT_TYPE, PROJECT_TYPE_STRING, PROJECT_STYLE, PROJECT_STYLE_STRING } from '@/utils/const'
+import SearchWebVue from './search/Web.vue'
+import { event } from '@/utils/event'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -44,7 +46,7 @@ const data = reactive({
   },
   isBatching: false,
   selectedIcons: new Map<string, Icon>(),
-  keyword: '',
+  keywords: '',
   batchGroupId: '',
   members: [] as Member[],
   isPublic: false
@@ -116,15 +118,15 @@ function getList () {
 }
 
 function iconFilter (icon: Icon) {
-  if (!data.keyword) {
+  if (!data.keywords) {
     return true
   }
-  const reg = new RegExp(data.keyword, 'i')
+  const reg = new RegExp(data.keywords, 'i')
   return reg.test(icon.name) || reg.test(icon.code)
 }
 
 function groupFilter (group: Group) {
-  return data.keyword ? group.icons.length > 0 : true
+  return data.keywords ? group.icons.length > 0 : true
 }
 
 const mainDom = ref<HTMLElement>()
@@ -189,6 +191,11 @@ onMounted(() => {
   getIcons().finally(() => {
     pageLoading.end()
   })
+  event.on(event.EventType.IconCollected, getIcons)
+})
+
+onBeforeUnmount(() => {
+  event.off(event.EventType.IconCollected, getIcons)
 })
 
 function selectIcon(icon:Icon, e:MouseEvent) {
@@ -333,7 +340,7 @@ async function batchDownload() {
 }
 
 // search
-watch(() => data.keyword, () => {
+watch(() => data.keywords, () => {
   getList()
 })
 </script>
@@ -378,7 +385,7 @@ watch(() => data.keyword, () => {
       <div class="input">
         <i class="iconfont icon-search" />
         <input
-          v-model="data.keyword"
+          v-model="data.keywords"
           type="text"
           :placeholder="t('search')"
         >
@@ -488,6 +495,13 @@ watch(() => data.keyword, () => {
           </div>
         </div>
       </div>
+      <!-- search web -->
+      <SearchWebVue
+        :keywords="data.keywords"
+        :project-id="data._id"
+        :project-type="data.type"
+      />
+      <!-- detail -->
       <Detail
         ref="detailDom"
         :project-id="data._id"
@@ -526,6 +540,7 @@ watch(() => data.keyword, () => {
 
 <style lang="scss" scoped>
 @import "../../styles/var.scss";
+@import "./styles.scss";
 
 .header {
   .name {
@@ -557,7 +572,7 @@ watch(() => data.keyword, () => {
 .main {
   margin: 0 auto;
   width: 90%;
-  padding-bottom: 25rem;
+  padding-bottom: 2rem;
 }
 .search {
   .input {
@@ -600,106 +615,6 @@ watch(() => data.keyword, () => {
     }
   }
 }
-.list {
-  position: relative;
-  .group {
-    &-title {
-      line-height: 2;
-    }
-  }
-  .icons {
-    display: flex;
-    flex-wrap: wrap;
-  }
-}
-.icon-item {
-  margin: 2.5rem;
-  padding: 1.2rem 0;
-  color: #808080;
-  font-size: 1.4rem;
-  width: 10rem;
-  border-radius: 0.4rem;
-  box-sizing: border-box;
-  border: solid 0.1rem transparent;
-  &.selectable {
-    background: #e5ecff;
-    user-select: none;
-    cursor: pointer;
-    &.selected {
-      border-color: $color-main;
-      background: #fff;
-      overflow: hidden;
-    }
-    .name,
-    .code {
-      padding: 0 0.5rem;
-    }
-  }
-  .icon {
-    width: 3.8rem;
-    height: 3.8rem;
-    margin: 0 auto 2.5rem;
-  }
-  .name,
-  .code {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.1;
-  }
-  .name {
-    margin-bottom: 0.6rem;
-  }
-}
-.type-img {
-  .icon-item {
-    width: 30rem;
-    max-width: calc(24vw - 5rem);
-    .icon {
-      width: auto;
-      max-width: 100%;
-      height: 16rem;
-    }
-  }
-}
-.style-tidy {
-  .group-title {
-    margin: 1rem 0;
-  }
-  .icon-item {
-    width: 15rem;
-    aspect-ratio: 0.618;
-    padding: 0;
-    margin: 0;
-    .name,
-    .code {
-      display: none;
-    }
-    .icon {
-      margin: 0 auto;
-      height: 100%;
-    }
-    ::v-deep(.icon-img) {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  }
-  &.type-svg {
-    .icon-item {
-      aspect-ratio: 1;
-      .icon {
-        width: 6rem;
-      }
-      ::v-deep(.icon-svg) {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-    }
-  }
-}
-
 .operate-batch {
   padding: 2rem;
   background: #fff;

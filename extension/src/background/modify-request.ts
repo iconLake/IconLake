@@ -2,13 +2,22 @@ import Browser, { DeclarativeNetRequest } from "webextension-polyfill";
 
 type Rule = DeclarativeNetRequest.Rule;
 
-async function getRequestRulesFromStorage(): Promise<Rule[]> {
-  const { requestRules = [] } = await Browser.storage.local.get('requestRules');
-  return requestRules;
+const Domains = [Browser.runtime.id, 'iconlake.com', '127.0.0.1', 'localhost'];
+
+async function getRequestRefererFromStorage(): Promise<{
+  [key: string]: string;
+}> {
+  const { requestReferers } = await Browser.storage.local.get('requestReferers');
+  return {
+    'https://huaban.com': 'https://huaban.com',
+    'https://www.iconfont.cn': 'https://www.iconfont.cn',
+    'https://www.zcool.com.cn': 'https://www.zcool.com.cn',
+    ...(requestReferers || {})
+  };
 }
 
-async function saveRequestRulesToStorage(rules: Rule[]): Promise<void> {
-  await Browser.storage.local.set({ requestRules: rules });
+async function saveRequestReferersToStorage(requestReferers: { [key: string]: string }): Promise<void> {
+  await Browser.storage.local.set({ requestReferers });
 }
 
 async function updateRequestRules(rules: Rule[]): Promise<void> {
@@ -18,72 +27,65 @@ async function updateRequestRules(rules: Rule[]): Promise<void> {
   });
 }
 
+function getRules(requestReferers: { [key: string]: string }) {
+  const rules: Rule[] = [];
+  for (const [target, referer] of Object.entries(requestReferers)) {
+    rules.push({
+      id: rules.length + 1,
+      priority: 1,
+      action: {
+        requestHeaders: [
+          { header: 'Referer', operation: 'set', value: referer },
+          { header: 'Origin', operation: 'set', value: referer },
+        ],
+        type: 'modifyHeaders'
+      },
+      condition: {
+        domains: Domains,
+        urlFilter: target,
+        resourceTypes: ['image', 'media', 'xmlhttprequest'],
+      }
+    } as Rule);
+  }
+  return rules;
+}
+
 export function initModifyRequest() {
   Browser.runtime.onInstalled.addListener(async () => {
-    const storedRules = await getRequestRulesFromStorage();
-    if (storedRules.length > 0) {
-      await updateRequestRules(storedRules);
-      await saveRequestRulesToStorage(storedRules);
+    const referers = await getRequestRefererFromStorage();
+    if (Object.keys(referers).length > 0) {
+      await updateRequestRules(getRules(referers));
     }
   });
 }
 
-export async function handleModifyRequestReferer(message: {
-  type: 'ModifyRequestReferer';
-  data: {
-    url: string;
-    referer: string;
-  }[];
-}) {
-  if (message.type !== 'ModifyRequestReferer') {
-    return;
-  }
-
-  const data = message.data as {
-    url: string;
-    referer: string;
-  }[];
-  const existingRules = await getRequestRulesFromStorage();
-
-  const rules: Rule[] = [...existingRules];
+export async function handleModifyRequestReferer(data: {
+  url: string;
+  referer: string;
+}[]) {
+  const referers = await getRequestRefererFromStorage();
+  let isNew = false;
 
   data.forEach(e => {
-    const urlFilter = new URL(e.url).hostname;
+    const target = new URL(e.url).origin;
     const referer = new URL(e.referer).origin;
 
-    if (!urlFilter || !referer) {
+    if (!target || !referer) {
       return;
     }
 
-    if (rules.length > 0 && rules.some(r => {
-      if (r.condition.urlFilter === urlFilter) {
-        if (r.action?.requestHeaders?.some(h => h.header === 'Referer' && h.value === referer)) {
-          return true;
-        }
-      }
-      return false;
-    })) {
-      return;
+    if (!referers[target]) {
+      referers[target] = referer;
+      isNew = true;
     }
-
-    rules.push({
-      id: rules.length + 1,
-      priority: 1,
-      action: { requestHeaders: [{ header: 'Referer', operation: 'set', value: referer }], type: 'modifyHeaders' },
-      condition: {
-        domains: [Browser.runtime.id],
-        urlFilter,
-        resourceTypes: ['image', 'media', 'xmlhttprequest'],
-      }
-    } as Rule);
   });
 
-  if (rules.length === existingRules.length) {
-    return { message: 'No rules to add.' };
+  if (!isNew) {
+    return { message: 'Existed.' };
   }
 
-  await updateRequestRules(rules);
-  await saveRequestRulesToStorage(rules);
+  await updateRequestRules(getRules(referers));
+  await saveRequestReferersToStorage(referers);
 
-  return { message: 'Rule added.' };
+  return { message: 'Added.' };
 };

@@ -7,6 +7,6 @@
 <style scoped>
 .loading {
   display: inline-block;
-  line-height: 0;
+  line-height: 1;
 }
 </style>

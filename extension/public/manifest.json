@@ -1,8 +1,7 @@
 {
-  "id": "iconlake",
   "name": "iconLake",
   "description": "iconLake Extension",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "manifest_version": 3,
   "icons": {
     "16": "images/logo-16.png",
@@ -36,7 +35,8 @@
     "tabs",
     "declarativeNetRequestFeedback",
     "declarativeNetRequestWithHostAccess",
-    "storage"
+    "storage",
+    "cookies"
   ],
   "host_permissions": [
     "*://*/*"

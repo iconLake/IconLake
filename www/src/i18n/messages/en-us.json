@@ -193,5 +193,15 @@
   "basedOnOpenSourceToDiyTheme": "Based on our open-source theme, you can develop a custom theme.",
   "uploading": "Uploading...",
   "exhibitionTheme": "Exhibition Theme",
-  "iconListTheme": "List Style of Icon Management Page"
+  "iconListTheme": "List Style of Icon Management Page",
+  "previousBtn": "Previous (Press key: ←)",
+  "nextBtn": "Next (Press key: →)",
+  "closeBtn": "Close (Click empty area or press key: ESC)",
+  "workFrom": "The following works are from: ",
+  "more": "More",
+  "searching": "Searching",
+  "installExtension&gotoStore": "Install the iconLake browser extension to get other website works. Go to the store to install: ",
+  "saveToProject": "Upload to current project (Press key: ↑, if only download to local, press: ↓)",
+  "searchErrorGuide": "Something went wrong and the work could not be retrieved. Please go to {name} to check! Or try again!",
+  "searchErrorUnauthorized": "Please log in first to search. Go to {name} to log in. Please log in and try again!"
 }

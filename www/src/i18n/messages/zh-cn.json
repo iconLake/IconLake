@@ -195,5 +195,15 @@
   "basedOnOpenSourceToDiyTheme": "基于我们的开源主题，可以开发自定义主题。",
   "uploading": "上传中...",
   "exhibitionTheme": "展览主题",
-  "iconListTheme": "管理作品页列表展示风格"
+  "iconListTheme": "管理作品页列表展示风格",
+  "previousBtn": "上一个（按键：←）",
+  "nextBtn": "下一个（按键：→）",
+  "closeBtn": "关闭（点击空白区域或按键：ESC）",
+  "workFrom": "以下作品来自：",
+  "more": "更多",
+  "searching": "搜索中",
+  "installExtension&gotoStore": "安装iconLake浏览器扩展，获取其他网站作品。前往商店安装：",
+  "saveToProject": "上传到当前项目（按键：↑，若想仅下载到本地，请按：↓）",
+  "searchErrorGuide": "出了点小状况，无法获取作品，去{name}看看！或者重试一下吧！",
+  "searchErrorUnauthorized": "登录后才能搜索，请前往{name}登录。登录后再试一下吧！"
 }
