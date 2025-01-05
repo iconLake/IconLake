@@ -1,3 +1,4 @@
+import { handleModifyRequestReferer } from "../modify-request";
 import { Media, SearchError, SearchParams, SearchResult } from "./types";
 
 export async function handleZcool(params: SearchParams): Promise<SearchResult|SearchError> {
@@ -66,6 +67,12 @@ export async function handleZcool(params: SearchParams): Promise<SearchResult|Se
       referer: 'https://www.zcool.com.cn',
     })
   })
+  await handleModifyRequestReferer(list.map((e) => {
+    return {
+      url: e.img!.url,
+      referer: e.referer,
+    }
+  }))
   return {
     list,
     total: res.count,

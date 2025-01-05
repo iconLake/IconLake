@@ -1,5 +1,5 @@
 import { handleModifyRequestReferer } from "../modify-request"
-import { SearchError, SearchParams, SearchResult } from "./types"
+import { Media, SearchError, SearchParams, SearchResult } from "./types"
 
 let seq = ''
 
@@ -28,7 +28,7 @@ export async function handleHuaban(params: SearchParams): Promise<SearchResult|S
     }
   }
   const originalList = isFeeds ? res.feeds : res.pins
-  const list = originalList.map((e: { file: { bucket: string, key: string }, raw_text: string, pin_id: string }) => {
+  const list: Media[] = originalList.map((e: { file: { bucket: string, key: string }, raw_text: string, pin_id: string }) => {
     return {
       mimeType: 'image/webp',
       img: {
@@ -43,9 +43,9 @@ export async function handleHuaban(params: SearchParams): Promise<SearchResult|S
   if (isFeeds) {
     seq = originalList[originalList.length - 1].seq
   }
-  handleModifyRequestReferer(list.map((e: { img: { url: string }; referer: string }) => {
+  await handleModifyRequestReferer(list.map((e) => {
     return {
-      url: e.img.url,
+      url: e.img!.url,
       referer: e.referer,
     }
   }))
