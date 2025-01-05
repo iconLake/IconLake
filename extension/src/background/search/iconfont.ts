@@ -1,5 +1,6 @@
 import Browser from "webextension-polyfill";
-import { SearchError, SearchParams, SearchResult } from "./types";
+import { Media, SearchError, SearchParams, SearchResult } from "./types";
+import { handleModifyRequestReferer } from "../modify-request";
 
 export async function handleIconfont(params: SearchParams): Promise<SearchResult|SearchError> {
   const cookies = await Browser.cookies.getAll({
@@ -36,7 +37,7 @@ export async function handleIconfont(params: SearchParams): Promise<SearchResult
       error: res.err.toString()
     }
   }
-  const list = await Promise.all(
+  const list: Media[] = await Promise.all(
     res.data.icons.map(async (e: { show_svg: string; name: string; unicode: string; }) => {
       const url = await new Promise<string>((resolve, reject) => {
         const fileReader = new FileReader()
@@ -59,6 +60,12 @@ export async function handleIconfont(params: SearchParams): Promise<SearchResult
       }
     })
   )
+  await handleModifyRequestReferer(list.map((e) => {
+    return {
+      url: e.svg!.url,
+      referer: e.referer,
+    }
+  }))
   return {
     list,
     total: res.data.count,
