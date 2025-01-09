@@ -54,6 +54,8 @@
   "deleteDone": "Delete Done",
   "fillProjectNameAndDescription": "Please fill in the project name and description",
   "projectType": "Project Type",
+  "projectTypeSvg": "SVG, such as: font icons, badges, etc.",
+  "projectTypeImg": "Image, such as: drawing, photographs, digital art, etc.",
   "projectName": "Project Name",
   "projectDescription": "Project Description",
   "createNow": "CREATE",
@@ -117,6 +119,7 @@
   "nDaysExpire": "Expires after {n} days",
   "validity": "Validity",
   "fail": "Operation Failed",
+  "success": "Operation Success",
   "userNotLogin": "You haven't logged in, please log in first",
   "tokenExpired": "Your login information has expired, please login again",
   "batchDownload": "Batch Download",
@@ -203,5 +206,11 @@
   "installExtension&gotoStore": "Install the iconLake browser extension to get other website works. Go to the store to install: ",
   "saveToProject": "Upload to current project (Press key: ↑, if only download to local, press: ↓)",
   "searchErrorGuide": "Something went wrong and the work could not be retrieved. Please go to {name} to check! Or try again!",
-  "searchErrorUnauthorized": "Please log in first to search. Go to {name} to log in. Please log in and try again!"
+  "searchErrorUnauthorized": "Please log in first to search. Go to {name} to log in. Please log in and try again!",
+  "bind": "Bind",
+  "unbind": "Unbind",
+  "notBound": "Not bound",
+  "blockchain": "Blockchain",
+  "mySettings": "My Settings",
+  "bindRequiredAccount": "You must bind a Gitee account to use this feature"
 }

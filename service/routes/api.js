@@ -4,6 +4,7 @@ import { login as oauthGitee } from '../controllers/oauth/gitee.js'
 import { login as oauthCode } from '../controllers/oauth/code.js'
 import { login as oauthBlockchain } from '../controllers/oauth/blockchain.js'
 import * as userInfo from '../controllers/user/info.js'
+import * as userSetting from '../controllers/user/setting.js'
 import userMiddleware from '../controllers/user/middleware.js'
 import * as projectInfo from '../controllers/project/info.js'
 import * as projectList from '../controllers/project/list.js'
@@ -34,6 +35,8 @@ router.post('/oauth/blockchain', oauthBlockchain)
 
 router.get('/user/info', userMiddleware, userInfo.info)
 router.get('/user/logout', userMiddleware, userInfo.logout)
+
+router.get('/user/setting/unbind', userMiddleware, userSetting.unbind)
 
 router.get('/project/list', userMiddleware, projectList.list)
 router.get('/project/info/:id', projectInfo.info)

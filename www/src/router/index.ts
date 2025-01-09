@@ -96,6 +96,21 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/user/assets/drop/Init.vue')
   },
   {
+    path: '/user/setting',
+    name: 'userSetting',
+    component: () => import('../views/user/Setting.vue'),
+    redirect: () => {
+      return '/user/setting/bind'
+    },
+    children: [
+      {
+        path: 'bind',
+        name: 'userSettingBind',
+        component: () => import('../views/user/setting/Bind.vue')
+      },
+    ]
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/home'
   }
