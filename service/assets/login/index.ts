@@ -100,7 +100,8 @@
         fetch('/api/oauth/blockchain', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json;charset=UTF-8'
+            'Content-Type': 'application/json;charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest'
           },
           body: JSON.stringify({
             msg,
