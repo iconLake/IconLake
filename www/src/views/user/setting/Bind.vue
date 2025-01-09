@@ -62,7 +62,7 @@ async function bind(type: LoginType) {
   }
   if (type === LoginType.Github) {
     document.cookie = `referer=${location.href};path=/`
-    location.href = `https://gitee.com/oauth/authorize?client_id=${loginParams.value.clientId.gitee}&redirect_uri=${loginParams.value.domain}%2Fapi%2Foauth%2Fgitee&response_type=code`
+    location.href = `https://github.com/login/oauth/authorize?client_id=${loginParams.value.clientId.github}&redirect_uri=${loginParams.value.domain}%2Fapi%2Foauth%2Fgithub`
     return
   }
   if (type === LoginType.Code) {
