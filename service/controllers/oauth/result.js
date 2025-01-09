@@ -96,7 +96,7 @@ export async function success (userInfo, req, res) {
       referer = req.cookies.referer
       res.clearCookie('referer')
     }
-    if (userInfo.responseType === 'json') {
+    if (req.xhr) {
       res.json({
         redirect: referer,
         userId: user._id

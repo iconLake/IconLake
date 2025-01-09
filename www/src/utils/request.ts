@@ -20,9 +20,15 @@ function showErrorMsg (res: any) {
   }
 }
 
+const axiosInstance = axios.create({
+  headers: {
+    'X-Requested-With': 'XMLHttpRequest'
+  }
+})
+
 export default function q(options: AxiosRequestConfig) {
   return new Promise((resolve, reject) => {
-    axios(options).then(res => {
+    axiosInstance(options).then(res => {
       handleResponse(res, resolve, reject)
     }).catch(err => {
       showErrorMsg(err)

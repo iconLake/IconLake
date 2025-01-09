@@ -126,6 +126,12 @@ function clearCachedData() {
       >
         {{ t('myProjects') }}
       </RouterLink>
+      <RouterLink
+        class="item flex"
+        to="/user/setting"
+      >
+        {{ t('mySettings') }}
+      </RouterLink>
       <div
         class="item flex"
         @click="toggleLocale"

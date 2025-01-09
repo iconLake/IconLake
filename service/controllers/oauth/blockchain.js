@@ -38,8 +38,7 @@ export async function login (req, res) {
       if (isSigOk) {
         success({
           id: signer,
-          from: 'blockchain',
-          responseType: 'json'
+          from: 'blockchain'
         }, req, res)
         return
       }

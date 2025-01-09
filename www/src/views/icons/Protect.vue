@@ -15,6 +15,7 @@ import { ONLINE_DOMAIN, IS_PRODUCTION } from '@/utils/const'
 import { usePageLoading } from '@/hooks/router'
 import { getIconUrl } from '@/utils/icon'
 import type { MsgMint } from '@iconlake/client/types/iconlake.icon/module'
+import i18n from '@/i18n'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -63,6 +64,10 @@ async function getIconInfo() {
 
 async function publish() {
   if (isPending.value) {
+    return
+  }
+  if (!userInfo.value?.gitee?.id && i18n.global.locale.value === 'zh-cn') {
+    toast.error(t('bindRequiredAccount'))
     return
   }
   isPending.value = true

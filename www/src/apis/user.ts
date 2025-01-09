@@ -6,11 +6,26 @@ export interface UserInfo {
   blockchain?: {
     id: string
   }
+  gitee?: {
+    id: string
+  }
+  github?: {
+    id: string
+  }
+  code?: {
+    id: string
+  }
+}
+
+export enum LoginType {
+  Gitee = 'gitee',
+  Github = 'github',
+  Code = 'code',
+  Blockchain = 'blockchain',
 }
 
 import { cache } from '@/utils/cache'
 import request from '../utils/request'
-import { ONE_DAY_SECONDS } from '@/utils/const'
 
 const baseURL = '/api/user/'
 
@@ -19,7 +34,6 @@ let userId = ''
 export const userApis = {
   get info() {
     return cache.user.enable({
-      maxAge: ONE_DAY_SECONDS,
       executor: info
     })
   },
@@ -28,7 +42,18 @@ export const userApis = {
   },
   get userId() {
     return getUserId
-  }
+  },
+  get loginParams() {
+    return cache.user.enable({
+      // maxAge: ONE_DAY_SECONDS,
+      executor: loginParams
+    })
+  },
+
+  unbind,
+  logout,
+  loginByBlockchain,
+  loginByCode,
 }
 
 /**
@@ -82,10 +107,60 @@ export function loginByBlockchain(data: {
     url: '/api/oauth/blockchain',
     method: 'POST',
     data
-  }) as Promise<loginByBlockchainRes>
+  }) as Promise<loginRes>
 }
 
-export interface loginByBlockchainRes {
+export function loginByCode(data: {
+  code: string
+}) {
+  return request({
+    url: '/api/oauth/code',
+    method: 'GET',
+    params: {
+      id: data.code
+    }
+  }) as Promise<loginRes>
+}
+
+export interface loginRes {
   error?: string
   userId?: string
+}
+
+export interface LoginParams {
+  clientId: {
+    gitee: string
+    github: string
+  }
+  domain: string
+  login: {
+    gitee: boolean
+    github: boolean
+    keplr: boolean
+    code: boolean
+  }
+}
+
+/**
+ * 获取登陆参数
+ */
+export function loginParams() {
+  return request({
+    url: '/api/login/params',
+    method: 'GET',
+  }) as Promise<LoginParams>
+}
+
+/**
+ * 解除绑定
+ */
+export function unbind(type: string) {
+  return request({
+    url: '/setting/unbind',
+    method: 'GET',
+    params: {
+      type
+    },
+    baseURL,
+  }) as Promise<void>
 }

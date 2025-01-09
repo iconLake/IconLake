@@ -119,6 +119,7 @@
   "nDaysExpire": "{n}天后失效",
   "validity": "有效期",
   "fail": "操作失败",
+  "success": "操作成功",
   "userNotLogin": "你还没有登录，请先登录",
   "tokenExpired": "你的登录信息已失效，请重新登录",
   "batchDownload": "批量下载",
@@ -205,5 +206,11 @@
   "installExtension&gotoStore": "安装iconLake浏览器扩展，获取其他网站作品。前往商店安装：",
   "saveToProject": "上传到当前项目（按键：↑，若想仅下载到本地，请按：↓）",
   "searchErrorGuide": "出了点小状况，无法获取作品，去{name}看看！或者重试一下吧！",
-  "searchErrorUnauthorized": "登录后才能搜索，请前往{name}登录。登录后再试一下吧！"
+  "searchErrorUnauthorized": "登录后才能搜索，请前往{name}登录。登录后再试一下吧！",
+  "bind": "绑定",
+  "unbind": "解除绑定",
+  "notBound": "未绑定",
+  "blockchain": "区块链",
+  "mySettings": "我的设置",
+  "bindRequiredAccount": "必须绑定Gitee账户才能使用此功能"
 }
