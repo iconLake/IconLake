@@ -6,9 +6,28 @@ import { completeURL } from '../../utils/file.js'
  * @api {get} /user/info 获取用户信息
  */
 export async function info (req, res) {
-  const user = (await User.findById(req.user._id, 'name avatar tokenExpire blockchain.id gitee.id github.id code.id')).toJSON()
+  const fields = [
+    'name',
+    'avatar',
+    'tokenExpire',
+    'blockchain.id',
+    'gitee.id',
+    'gitee.name',
+    'gitee.avatar',
+    'github.id',
+    'github.name',
+    'github.avatar',
+    'code.id'
+  ]
+  const user = (await User.findById(req.user._id, fields.join(' '))).toJSON()
   if (user.avatar) {
     user.avatar = completeURL(user.avatar)
+  }
+  if (user.gitee?.avatar) {
+    user.gitee.avatar = completeURL(user.gitee.avatar)
+  }
+  if (user.github?.avatar) {
+    user.github.avatar = completeURL(user.github.avatar)
   }
   res.json(user)
 }

@@ -182,7 +182,15 @@ async function deal(type: LoginType) {
       Gitee
     </div>
     <div class="item-value flex">
-      <span>{{ userInfo?.gitee?.id || t('notBound') }}</span>
+      <div class="flex center">
+        <img
+          v-if="userInfo?.gitee?.avatar"
+          :src="userInfo?.gitee?.avatar"
+          :alt="userInfo?.gitee?.name"
+          class="avatar"
+        >
+        <span>{{ userInfo?.gitee?.name || userInfo?.gitee?.id || t('notBound') }}</span>
+      </div>
       <div
         class="btn"
         @click="deal(LoginType.Gitee)"
@@ -202,7 +210,15 @@ async function deal(type: LoginType) {
       Github
     </div>
     <div class="item-value flex">
-      <span>{{ userInfo?.github?.id || t('notBound') }}</span>
+      <div class="flex center">
+        <img
+          v-if="userInfo?.github?.avatar"
+          :src="userInfo?.github?.avatar"
+          :alt="userInfo?.github?.name"
+          class="avatar"
+        >
+        <span>{{ userInfo?.github?.name || userInfo?.github?.id || t('notBound') }}</span>
+      </div>
       <div
         class="btn"
         @click="deal(LoginType.Github)"
@@ -249,6 +265,17 @@ async function deal(type: LoginType) {
 
   .item-label {
     margin-bottom: 1.5rem;
+  }
+
+  .item-value {
+    font-size: 1.2rem;
+  }
+
+  .avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 1.25rem;
+    margin-right: 1.5rem;
   }
 }
 
