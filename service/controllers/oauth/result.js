@@ -113,5 +113,14 @@ export async function success (userInfo, req, res) {
 }
 
 export function fail (error, req, res) {
-  res.json(error)
+  let referer = '/manage/'
+  if (req.cookies.referer) {
+    referer = req.cookies.referer
+    res.clearCookie('referer')
+  }
+  if (req.xhr) {
+    res.json(error)
+  } else {
+    res.redirect(referer)
+  }
 }

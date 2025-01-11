@@ -8,9 +8,13 @@ export interface UserInfo {
   }
   gitee?: {
     id: string
+    name?: string
+    avatar?: string
   }
   github?: {
     id: string
+    name?: string
+    avatar?: string
   }
   code?: {
     id: string

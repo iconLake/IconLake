@@ -18,7 +18,7 @@ const { t } = useI18n()
         active-class="active"
         to="/user/setting/bind"
       >
-        <i class="iconfont icon-setting" />
+        <i class="iconfont icon-bind" />
         <span>{{ t('bind') }}</span>
       </RouterLink>
     </div>
