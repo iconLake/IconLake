@@ -19,14 +19,6 @@ service Query {
     option (google.api.http).get = "/iconlake/icon/params";
   }
 
-  // Queries hash of a uri.
-  rpc Hash (QueryHashRequest) returns (QueryHashResponse) {
-    option (google.api.http) = {
-      post: "/iconlake/icon/hash"
-      body: "*"
-    };
-  }
-
   // Queries a NFT info.
   rpc NFT (QueryNFTRequest) returns (QueryNFTResponse) {
     option (google.api.http).get = "/iconlake/icon/nft";
@@ -55,16 +47,6 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryHashRequest {
-  string hash_type = 1;
-  string uri       = 2;
-}
-
-message QueryHashResponse {
-  string graph_hash = 1;
-  string file_hash  = 2;
 }
 
 message NFT {
