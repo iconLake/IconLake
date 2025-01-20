@@ -31,11 +31,15 @@ class GrayScaleConverter {
     const arr = new Uint8ClampedArray(imgData.length / 4);
 
     for (let i = 0; i < imgData.length; i += 4) {
-      arr[i >> 2] = Math.round((imgData[i] * 299 / 1000 + imgData[i + 1] * 587 / 1000 + imgData[i + 2] * 114 / 1000))
+      arr[i >> 2] = Math.round(
+        (imgData[i] * 299) / 1000 +
+        (imgData[i + 1] * 587) / 1000 +
+        (imgData[i + 2] * 114) / 1000
+      );
     }
 
     return arr;
   }
 }
 
-export const grayScaleConverter = new GrayScaleConverter()
+export const grayScaleConverter = new GrayScaleConverter();
