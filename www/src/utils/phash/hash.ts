@@ -5,119 +5,34 @@ export class ImageHash {
     this.binArray = binArray;
   }
 
-  static fromBase64(s: string) {
-    const buf = Uint8Array.from(atob(s), c => c.charCodeAt(0));
-    return new ImageHash(new Uint8ClampedArray(buf.buffer));
-  }
-
-  static fromHexStringReversed(s: string) {
-    if (s.length % 2 !== 0) {
-      throw Error("hex string length must be a multiple of 2");
-    }
-    const arr = new Uint8ClampedArray((s.length / 2) * 8);
-
-    for (let i = 0; i < s.length; i += 2) {
-      const c = Number.parseInt(s.slice(i, i + 2), 16);
-
-      if (Number.isNaN(c)) {
-        throw Error("Invalid hex string");
-      }
-
-      arr[(i / 2) * 8] = (c & 0x80) >> 7;
-      arr[(i / 2) * 8 + 1] = (c & 0x40) >> 6;
-      arr[(i / 2) * 8 + 2] = (c & 0x20) >> 5;
-      arr[(i / 2) * 8 + 3] = (c & 0x10) >> 4;
-      arr[(i / 2) * 8 + 4] = (c & 0x08) >> 3;
-      arr[(i / 2) * 8 + 5] = (c & 0x04) >> 2;
-      arr[(i / 2) * 8 + 6] = (c & 0x02) >> 1;
-      arr[(i / 2) * 8 + 7] = (c & 0x01);
-    }
-
-    return new ImageHash(arr);
-  }
-
   static fromHexString(s: string) {
     if (s.length % 2 !== 0) {
       throw Error("hex string length must be a multiple of 2");
     }
-    const arr = new Uint8ClampedArray((s.length / 2) * 8);
+    const arr = new Uint8ClampedArray(s.length / 2 * 8);
+    let binaryStr = '';
+    for (let i = 0; i < s.length; i++) {
+      const hexChar = s[i];
+      const binaryChunk = parseInt(hexChar, 16).toString(2).padStart(4, '0');
+      binaryStr += binaryChunk;
+    }
 
-    for (let i = 0; i < s.length; i += 2) {
-      const c = Number.parseInt(s.slice(i, i + 2), 16);
-
-      if (Number.isNaN(c)) {
-        throw Error("Invalid hex string");
-      }
-
-      arr[(i / 2) * 8] = (c & 0x01);
-      arr[(i / 2) * 8 + 1] = (c & 0x02) >> 1;
-      arr[(i / 2) * 8 + 2] = (c & 0x04) >> 2;
-      arr[(i / 2) * 8 + 3] = (c & 0x08) >> 3;
-      arr[(i / 2) * 8 + 4] = (c & 0x10) >> 4;
-      arr[(i / 2) * 8 + 5] = (c & 0x20) >> 5;
-      arr[(i / 2) * 8 + 6] = (c & 0x40) >> 6;
-      arr[(i / 2) * 8 + 7] = (c & 0x80) >> 7;
+    for (let i = 0; i < binaryStr.length; i++) {
+      arr[i] = parseInt(binaryStr[i]);
     }
 
     return new ImageHash(arr);
   }
 
-  toHexStringReversed() {
-    let str = "";
-
-    for (let i = 0; i < this.binArray.length; i += 8) {
-      const c =
-        (this.binArray[i] << 7) |
-        (this.binArray[i + 1] << 6) |
-        (this.binArray[i + 2] << 5) |
-        (this.binArray[i + 3] << 4) |
-        (this.binArray[i + 4] << 3) |
-        (this.binArray[i + 5] << 2) |
-        (this.binArray[i + 6] << 1) |
-        this.binArray[i + 7];
-
-      str += c.toString(16).padStart(2, "0");
-    }
-
-    return str;
-  }
-
   toHexString() {
-    let str = "";
-
-    for (let i = 0; i < this.binArray.length; i += 8) {
-      const c =
-        this.binArray[i] |
-        (this.binArray[i + 1] << 1) |
-        (this.binArray[i + 2] << 2) |
-        (this.binArray[i + 3] << 3) |
-        (this.binArray[i + 4] << 4) |
-        (this.binArray[i + 5] << 5) |
-        (this.binArray[i + 6] << 6) |
-        (this.binArray[i + 7] << 7);
-
-      str += c.toString(16).padStart(2, "0");
+    const binaryStr = this.binArray.join('');
+    let hexStr = '';
+    for (let i = 0; i < binaryStr.length; i += 4) {
+      const binaryChunk = binaryStr.substring(i, i + 4);
+      const hexChunk = parseInt(binaryChunk, 2).toString(16);
+      hexStr += hexChunk;
     }
-
-    return str;
-  }
-
-  toBase64() {
-    const buf = new Uint8Array(this.binArray.length / 8);
-
-    for (let i = 0; i < this.binArray.length; i += 8) {
-      buf[i / 8] =
-        this.binArray[i] |
-        (this.binArray[i + 1] << 1) |
-        (this.binArray[i + 2] << 2) |
-        (this.binArray[i + 3] << 3) |
-        (this.binArray[i + 4] << 4) |
-        (this.binArray[i + 5] << 5) |
-        (this.binArray[i + 6] << 6) |
-        (this.binArray[i + 7] << 7);
-    }
-
-    return btoa(String.fromCharCode(...buf));
+    return hexStr;
   }
 
   hammingDistance(hash: ImageHash) {

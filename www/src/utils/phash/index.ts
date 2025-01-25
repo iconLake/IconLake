@@ -37,9 +37,7 @@ function dctTransform(matrix: Uint8ClampedArray) {
         }
       }
 
-      const cu = u === 0 ? 1 / Math.sqrt(2) : 1;
-      const cv = v === 0 ? 1 / Math.sqrt(2) : 1;
-      dct[u * L + v] = (sum * cu * cv) / L;
+      dct[u * L + v] = sum;
     }
   }
 
@@ -47,28 +45,19 @@ function dctTransform(matrix: Uint8ClampedArray) {
 }
 
 function median(values: Float64Array) {
-  const quickselect = (arr: Float64Array, k: number): number => {
-    const pivot = arr[Math.floor(Math.random() * arr.length)];
-    const lows = arr.filter(x => x < pivot);
-    const highs = arr.filter(x => x > pivot);
-    const pivots = arr.filter(x => x === pivot);
-
-    if (k < lows.length) {
-      return quickselect(new Float64Array(lows), k);
-    } else if (k < lows.length + pivots.length) {
-      return pivot;
-    } else {
-      return quickselect(new Float64Array(highs), k - lows.length - pivots.length);
-    }
-  };
-
-  return quickselect(values, Math.floor(values.length / 2));
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  if (sorted.length % 2 === 0) {
+    return (sorted[mid - 1] + sorted[mid]) / 2;
+  }
+  return sorted[mid];
 }
 
 export async function phash(image: HTMLImageElement, size = 8, highFrequencyFactor = 4) {
   const imageSize = size * highFrequencyFactor;
 
-  const pixels = grayScaleConverter.convert(await canvasUtil.resizeImageAndGetData(image, imageSize, imageSize));
+  const imgData = await canvasUtil.resizeImageAndGetData(image, imageSize, imageSize)
+  const pixels = grayScaleConverter.convert(imgData);
 
   const dctOut = dctTransform(pixels);
 
@@ -88,12 +77,12 @@ export async function phash(image: HTMLImageElement, size = 8, highFrequencyFact
   }
 
   const med = median(sorted);
-
   const hash = new Uint8ClampedArray(size * size);
 
   for (let i = 0; i < hash.length; ++i) {
     hash[i] = dctLowFreq[i] > med ? 1 : 0;
   }
+  console.log(Array.from(hash).join(''));
 
   return new ImageHash(hash);
 }
