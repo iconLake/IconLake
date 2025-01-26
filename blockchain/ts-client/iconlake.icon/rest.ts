@@ -36,16 +36,6 @@ export type IconMsgUpdateClassResponse = object;
  */
 export type IconParams = object;
 
-export interface IconQueryHashRequest {
-  hash_type?: string;
-  uri?: string;
-}
-
-export interface IconQueryHashResponse {
-  graph_hash?: string;
-  file_hash?: string;
-}
-
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
@@ -467,24 +457,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       path: `/iconlake/icon/classes`,
       method: "GET",
       query: query,
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryHash
-   * @summary Queries hash of a uri.
-   * @request POST:/iconlake/icon/hash
-   */
-  queryHash = (body: IconQueryHashRequest, params: RequestParams = {}) =>
-    this.request<IconQueryHashResponse, RpcStatus>({
-      path: `/iconlake/icon/hash`,
-      method: "POST",
-      body: body,
-      type: ContentType.Json,
       format: "json",
       ...params,
     });

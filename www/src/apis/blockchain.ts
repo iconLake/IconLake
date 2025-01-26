@@ -6,6 +6,7 @@ import { SHA256, lib } from 'crypto-js'
 import i18n from '@/i18n'
 import { toast } from '@/utils'
 import camelcaseKeys from 'camelcase-keys'
+import { phash } from '@/utils/phash'
 
 const baseURL = '/api/blockchain/'
 
@@ -152,14 +153,31 @@ export async function signMsg(msg: string) {
 }
 
 export async function getHash(uri: string) {
-  const res = await client.IconlakeIcon.query.queryHash({
-    hash_type: 'p',
-    uri
-  }).catch((err) => {
-    console.error(err)
-    return undefined
+  const blob = await fetch(uri).then(res => res.blob())
+  const fileReader = new FileReader()
+  fileReader.readAsDataURL(blob)
+  const dataUrl = await new Promise<string>((resolve) => {
+    fileReader.onload = () => {
+      resolve(fileReader.result as string)
+    }
   })
-  return res?.data
+  const img = new Image()
+  img.src = dataUrl
+  await new Promise<void>(resolve => {
+    img.onload = () => {
+      resolve()
+    }
+  })
+  const graphHash = await phash(img)
+
+  const buf = await blob.arrayBuffer()
+  const words = lib.WordArray.create()
+  ;(words as any).init(buf)
+  const fileHash = SHA256(words)
+  return {
+    graphHash: `p:${graphHash.toHexString()}`,
+    fileHash: fileHash.toString(),
+  }
 }
 
 export async function mintIcon(value: MsgMintIcon) {
