@@ -7,7 +7,6 @@ import i18n from '@/i18n'
 import { toast } from '@/utils'
 import camelcaseKeys from 'camelcase-keys'
 import { phash } from '@/utils/phash'
-import { ImageHash } from '@/utils/phash/hash'
 
 const baseURL = '/api/blockchain/'
 
