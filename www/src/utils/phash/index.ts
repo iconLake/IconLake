@@ -82,7 +82,6 @@ export async function phash(image: HTMLImageElement, size = 8, highFrequencyFact
   for (let i = 0; i < hash.length; ++i) {
     hash[i] = dctLowFreq[i] > med ? 1 : 0;
   }
-  console.log(Array.from(hash).join(''));
 
   return new ImageHash(hash);
 }

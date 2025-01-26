@@ -171,8 +171,6 @@ export async function getHash(uri: string) {
   })
   const graphHash = await phash(img)
 
-  console.log('hanming distance to d2ff6f20001a6fe2', graphHash.hammingDistance(ImageHash.fromHexString('d2ff6f20001a6fe2')))
-
   const buf = await blob.arrayBuffer()
   const words = lib.WordArray.create()
   ;(words as any).init(buf)

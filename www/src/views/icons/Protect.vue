@@ -77,7 +77,7 @@ async function publish() {
     isPending.value = false
     return
   }
-  const hash = await getHash(uri)
+  const hash = await getHash(uri.replace(/\?.*/, ''))
   if (!hash || !userInfo.value || !userInfo.value.blockchain?.id) {
     toast.error(t('fail'))
     isPending.value = false
@@ -86,9 +86,9 @@ async function publish() {
   const res = await mintIcon({
     creator: userInfo.value.blockchain?.id,
     classId: projectId.value,
-    id: hash.graph_hash ?? '',
+    id: hash.graphHash ?? '',
     uri,
-    uriHash: hash.file_hash ?? '',
+    uriHash: hash.fileHash ?? '',
     name: iconInfo.code,
     description: iconInfo.name,
     supply: '1',
