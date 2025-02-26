@@ -4,11 +4,12 @@ import IconVue from '@/components/Icon.vue';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import CollectVue from './search/Collect.vue';
+import { SearchedIcon } from '@/apis/extension';
 
 const { t } = useI18n();
 
 const props = defineProps<{
-  icon: Icon
+  icon: SearchedIcon
   projectId: string
   projectType: number
   onClose: () => void
@@ -52,10 +53,21 @@ onBeforeUnmount(() => {
     class="review flex center column"
     @click.self="onClose"
   >
-    <IconVue
-      v-if="isImgShow"
-      :info="icon"
-    />
+    <template v-if="isImgShow">
+      <template
+        v-if="icon.imgs?.length"
+      >
+        <IconVue
+          v-for="(img, i) in icon.imgs"
+          :key="i"
+          :info="{...icon, img}"
+        />
+      </template>
+      <IconVue
+        v-else-if="icon.img?.url"
+        :info="icon"
+      />
+    </template>
     <div class="name">
       {{ icon.name }}
     </div>
@@ -125,6 +137,7 @@ onBeforeUnmount(() => {
     height: auto;
     max-width: 98vw;
     max-height: 92vh;
+    margin-bottom: 0.8rem;
     :deep(img) {
       min-height: 50vh;
     }

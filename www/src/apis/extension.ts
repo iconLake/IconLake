@@ -71,6 +71,19 @@ export function search(params: {
   return requestExtension({type: 'search', params})
 }
 
+export function detail(params: {
+  site: string
+  url: string
+}): Promise<{
+  imgs: {
+    url: string
+  }[]
+  html?: string
+  error?: string
+}> {
+  return requestExtension({type: 'detail', params})
+}
+
 export async function getExtensionInfo() {
   await new Promise((resolve, reject) => {
     const timer = setInterval(() => {
@@ -95,9 +108,15 @@ export interface SearchedIcon extends Icon {
     url: string
     originalUrl?: string
   }
+  imgs?: {
+    url: string
+    originalUrl?: string
+  }[]
+  html?: string
 }
 
 export const extensionApis = {
   search,
+  detail,
   getExtensionInfo,
 }

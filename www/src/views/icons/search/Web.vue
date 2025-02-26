@@ -117,6 +117,13 @@ const reviewIndex = ref(0)
 const site = ref('')
 const isExtensionReady = ref(false)
 const error = ref('')
+const reviewIcon = ref<SearchedIcon>({
+  _id: '',
+  code: '',
+  name: '',
+  tags: [],
+  groupId: '',
+})
 
 const { t } = useI18n()
 
@@ -132,7 +139,7 @@ watch(() => site.value, (v) => {
   storage.setProjectDefaultSearchSite(props.projectId, v)
 })
 
-const reviewIcon = computed(() => {
+watch(() => reviewIndex.value, async () => {
   let index = reviewIndex.value
   if (index < 0) {
     index = 0
@@ -145,7 +152,27 @@ const reviewIcon = computed(() => {
   if (icon.img?.originalUrl) {
     icon.img.url = icon.img.originalUrl
   }
-  return icon
+  if (siteInfo.value?.isDetailNeedFetch) {
+    icon.img = {
+      url: ''
+    }
+  }
+  reviewIcon.value = icon
+  if (siteInfo.value?.isDetailNeedFetch) {
+    const data = await extensionApis.detail({
+      site: site.value,
+      url: list.value[index].code
+    })
+    if (!data.error) {
+      reviewIcon.value.img = {
+        url: ''
+      }
+      const icon = JSON.parse(JSON.stringify(list.value[index]))
+      icon.imgs = data.imgs
+      icon.html = data.html
+      reviewIcon.value = icon
+    }
+  }
 })
 
 const siteInfo = computed(() => {
@@ -195,21 +222,21 @@ function review (index: number) {
 
 async function search(params: { site: string; keywords: string; page: number; }) {
   loading.value = true
-    if (params.page === 1) {
-      list.value = []
-    }
-    const res = await extensionApis.search(params).catch((err) => {
-      console.error(err)
-      loading.value = false
-      error.value = err.toString()
-      return {
-        list: [],
-        error: err.toString()
-      }
-    })
-    list.value = list.value.concat(res.list)
+  if (params.page === 1) {
+    list.value = []
+  }
+  const res = await extensionApis.search(params).catch((err) => {
+    console.error(err)
     loading.value = false
-    error.value = res.error
+    error.value = err.toString()
+    return {
+      list: [],
+      error: err.toString()
+    }
+  })
+  list.value = list.value.concat(res.list)
+  loading.value = false
+  error.value = res.error
 }
 
 async function loadMore() {

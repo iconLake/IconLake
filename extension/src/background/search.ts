@@ -1,22 +1,37 @@
-import { SearchError, SearchParams, SearchResult } from "./search/types"
+import { DetailParams, DetailResult, SearchError, SearchParams, SearchResult } from "./search/types"
 import { Site } from "./search/types"
 import { handleHuaban } from "./search/huaban"
 import { handleIconfont } from "./search/iconfont"
 import { handleZcool } from "./search/zcool"
+import { handleGracg, handleGracgDetail } from "./search/gracg"
 
-const sites: { [key: string]: (params: SearchParams) => Promise<SearchResult|SearchError> } = {
+const searchSites: { [key: string]: (params: SearchParams) => Promise<SearchResult|SearchError> } = {
   [Site.huaban]: handleHuaban,
   [Site.iconfont]: handleIconfont,
   [Site.zcool]: handleZcool,
+  [Site.gracg]: handleGracg,
 }
 
 export async function handleSearch(params: SearchParams): Promise<SearchResult | SearchError> {
-  if (!sites[params.site]) {
+  if (!searchSites[params.site]) {
     return {
       error: 'site not supported'
     }
   }
-  return await sites[params.site](params)
+  return await searchSites[params.site](params)
+}
+
+const detailSites: { [key: string]: (params: DetailParams) => Promise<DetailResult|SearchError> } = {
+  [Site.gracg]: handleGracgDetail
+}
+
+export async function handleDetail(params: DetailParams): Promise<DetailResult | SearchError> {
+  if (!detailSites[params.site]) {
+    return {
+      error: 'site not supported'
+    }
+  }
+  return await detailSites[params.site](params)
 }
 
 export function initSearch() {

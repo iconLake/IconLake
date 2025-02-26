@@ -16,6 +16,7 @@ export enum Site {
   iconfont = 'iconfont',
   huaban = 'huaban',
   zcool = 'zcool',
+  gracg = 'gracg',
 }
 
 export interface SearchParams {
@@ -32,4 +33,16 @@ export interface SearchResult {
 
 export interface SearchError {
   error: string
+}
+
+export interface DetailParams {
+  url: string
+  site: string
+}
+
+export interface DetailResult {
+  imgs: {
+    url: string
+  }[]
+  html: string
 }
