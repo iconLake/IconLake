@@ -152,11 +152,6 @@ watch(() => reviewIndex.value, async () => {
   if (icon.img?.originalUrl) {
     icon.img.url = icon.img.originalUrl
   }
-  if (siteInfo.value?.isDetailNeedFetch) {
-    icon.img = {
-      url: ''
-    }
-  }
   reviewIcon.value = icon
   if (siteInfo.value?.isDetailNeedFetch) {
     const data = await extensionApis.detail({
