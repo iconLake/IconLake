@@ -57,6 +57,6 @@ export const NOT_COMPRESS_EXTS: Record<string, boolean> = {
 export const SEARCH_SITES = [
   { name: 'iconfont', code: 'iconfont', url: 'https://www.iconfont.cn/' },
   { name: '花瓣', code: 'huaban', url: 'https://huaban.com/' },
-  { name: '站酷', code: 'zcool', url: 'https://www.zcool.com.cn/' },
+  { name: '站酷', code: 'zcool', url: 'https://www.zcool.com.cn/', isDetailNeedFetch: true },
   { name: '涂鸦王国', code: 'gracg', url: 'https://www.gracg.com/', isDetailNeedFetch: true },
 ]

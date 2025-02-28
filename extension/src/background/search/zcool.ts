@@ -1,5 +1,6 @@
+import { parseHTML } from "linkedom";
 import { handleModifyRequestReferer } from "../modify-request";
-import { Media, SearchError, SearchParams, SearchResult } from "./types";
+import { DetailParams, DetailResult, Media, SearchError, SearchParams, SearchResult } from "./types";
 
 export async function handleZcool(params: SearchParams): Promise<SearchResult|SearchError> {
   let res
@@ -77,5 +78,43 @@ export async function handleZcool(params: SearchParams): Promise<SearchResult|Se
     list,
     total: res.count,
     page: params.page
+  }
+}
+
+export async function handleZoolDetail(params: DetailParams): Promise<DetailResult|SearchError> {
+  const res = await fetch(params.url)
+    .then(e => e.text())
+    .then(e => {
+      return {
+        err: 0,
+        html: e,
+      }
+    })
+    .catch(err => {
+      console.error(err)
+      return {
+        err: 1,
+        msg: err.message || 'Unknown Error',
+        html: '',
+      }
+    })
+  if (res.err || !res.html) {
+    return {
+      error: res.err === 401 ? 'Unauthorized' : res.err.toString()
+    }
+  }
+  const parser = parseHTML(res.html)
+  if (!parser) {
+    return {
+      error: 'Invalid url'
+    }
+  }
+  const dom = parser.window.document
+  const imgs = Array.from(dom.querySelectorAll('#newContent img')).map((e: any) => ({
+    url: e.dataset.src,
+  }))
+  return {
+    imgs,
+    html: '',
   }
 }

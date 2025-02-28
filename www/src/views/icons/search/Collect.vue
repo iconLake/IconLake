@@ -10,12 +10,13 @@ import { useI18n } from 'vue-i18n'
 import LoadingVue from '@/components/Loading.vue';
 import { saveAs } from 'file-saver'
 import { event } from '@/utils/event';
+import { SearchedIcon } from '@/apis/extension';
 
 const { t } = useI18n()
 const isSaving = ref(false)
 
 const props = defineProps<{
-  icon: Icon
+  icon: SearchedIcon
   projectId: string
   projectType: number
 }>()
@@ -24,41 +25,45 @@ async function collect(isDownload: boolean = false) {
   if (isSaving.value) {
     return
   }
-  const url = getIconUrl(props.icon)
-  if (!url) {
-    return
-  }
-  isSaving.value = true
-  try {
-    const imgBlob = await fetch(url).then(res => res.blob())
-    const buf = await imgBlob.arrayBuffer()
-    const hash = MD5(lib.WordArray.create(Array.from(new Uint8Array(buf)))).toString()
-    const code  = `${hash}.${getExtByMimeType(imgBlob.type)}`
-    if (isDownload) {
-      saveAs(imgBlob, code)
-      isSaving.value = false
-      return
+  
+  const urls = props.icon.imgs ? props.icon.imgs.map(img => img.url) : [getIconUrl(props.icon)]
+  for (const url of urls) {
+    if (!url) {
+      continue
     }
-    const res = await uploadFile({
-      projectId: props.projectId,
-      _id: code,
-      data: imgBlob
-    })
-    await addIcon(props.projectId, [{
-      name: props.icon.name,
-      code: props.icon.code,
-      [PROJECT_TYPE_STRING[props.projectType]]: {
-        url: res.key
+    isSaving.value = true
+    try {
+      const imgBlob = await fetch(url).then(res => res.blob())
+      const buf = await imgBlob.arrayBuffer()
+      const hash = MD5(lib.WordArray.create(Array.from(new Uint8Array(buf)))).toString()
+      const code  = `${hash}.${getExtByMimeType(imgBlob.type)}`
+      if (isDownload) {
+        saveAs(imgBlob, code)
+        isSaving.value = false
+        continue
       }
-    }])
-    toast.success(t('saveDone'))
-    event.emit(event.EventType.IconCollected, {
-      id: props.projectId,
-    })
-  } catch (error) {
-    console.error(error)
-    toast.error(t('fail'))
+      const res = await uploadFile({
+        projectId: props.projectId,
+        _id: code,
+        data: imgBlob
+      })
+      await addIcon(props.projectId, [{
+        name: props.icon.name,
+        code: props.icon.code,
+        [PROJECT_TYPE_STRING[props.projectType]]: {
+          url: res.key
+        }
+      }])
+      toast.success(t('saveDone'))
+      event.emit(event.EventType.IconCollected, {
+        id: props.projectId,
+      })
+    } catch (error) {
+      console.error(error)
+      toast.error(t('fail'))
+    }
   }
+  
   isSaving.value = false
 }
 

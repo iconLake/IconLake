@@ -2,7 +2,7 @@ import { DetailParams, DetailResult, SearchError, SearchParams, SearchResult } f
 import { Site } from "./search/types"
 import { handleHuaban } from "./search/huaban"
 import { handleIconfont } from "./search/iconfont"
-import { handleZcool } from "./search/zcool"
+import { handleZcool, handleZoolDetail } from "./search/zcool"
 import { handleGracg, handleGracgDetail } from "./search/gracg"
 
 const searchSites: { [key: string]: (params: SearchParams) => Promise<SearchResult|SearchError> } = {
@@ -22,7 +22,8 @@ export async function handleSearch(params: SearchParams): Promise<SearchResult |
 }
 
 const detailSites: { [key: string]: (params: DetailParams) => Promise<DetailResult|SearchError> } = {
-  [Site.gracg]: handleGracgDetail
+  [Site.gracg]: handleGracgDetail,
+  [Site.zcool]: handleZoolDetail,
 }
 
 export async function handleDetail(params: DetailParams): Promise<DetailResult | SearchError> {
