@@ -1,7 +1,7 @@
 {
   "name": "extension",
   "description": "iconLake Extension",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "type": "module",
   "scripts": {
     "serve": "vite",
@@ -20,6 +20,7 @@
   "dependencies": {
     "crypto-js": "^4.2.0",
     "element-plus": "^2.7.7",
+    "linkedom": "^0.18.9",
     "vue": "^3.4.33",
     "webextension-polyfill": "^0.12.0"
   },
