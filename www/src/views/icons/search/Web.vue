@@ -317,6 +317,7 @@ onMounted(async () => {
 }
 
 .group-title {
+  margin-bottom: 1rem;
   a {
     text-decoration: underline;
     text-underline-offset: 0.3rem;
