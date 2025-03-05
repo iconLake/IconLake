@@ -1,5 +1,5 @@
 import { handleModifyRequestReferer } from "../modify-request"
-import { Media, SearchError, SearchParams, SearchResult } from "./types"
+import { Media, OptionResult, SearchError, SearchParams, SearchResult } from "./types"
 
 let seq = ''
 
@@ -7,11 +7,15 @@ export async function handleHuaban(params: SearchParams): Promise<SearchResult|S
   let isFeeds = false
   let url = `https://huaban.com/v3/search/file?text=${params.keywords}&sort=all&limit=40&page=${params.page}&position=search_pin&fields=pins:PIN%7Ctotal,facets,split_words,relations,rec_topic_material,topics`
   if (!params.keywords) {
-    url = 'https://huaban.com/v3/feeds/list?limit=40&fields=feeds:FEEDS'
-    if (params.page > 1) {
-      url += `&max=${seq}`
+    if (params.extra?.type === 'discovery') {
+      url = `https://huaban.com/v3/pins/recommend/winnow?page_num=${params.page}&page_size=40&position=discovery_recommend&fields=pins:PIN`
+    } else {
+      url = 'https://huaban.com/v3/feeds/list?limit=40&fields=feeds:FEEDS'
+      if (params.page > 1) {
+        url += `&max=${seq}`
+      }
+      isFeeds = true
     }
-    isFeeds = true
   }
   const res = await fetch(url)
     .then(e => e.json())
@@ -53,5 +57,26 @@ export async function handleHuaban(params: SearchParams): Promise<SearchResult|S
     list,
     total: res.total,
     page: params.page,
+  }
+}
+
+export async function handleHuabanOptions(): Promise<OptionResult> {
+  return {
+    options: [
+      {
+        label: '类型',
+        name: 'type',
+        value: 'follow',
+        children: [
+          {
+            label: '关注',
+            value: 'follow'
+          }, {
+            label: '发现',
+            value: 'discovery'
+          }
+        ]
+      }
+    ]
   }
 }

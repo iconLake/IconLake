@@ -106,7 +106,7 @@ onBeforeUnmount(() => {
 
 .collect {
   position: fixed;
-  z-index: 100;
+  z-index: 210;
   bottom: 0;
   right: 0;
   cursor: pointer;

@@ -1,5 +1,5 @@
 import Browser from "webextension-polyfill";
-import { Media, SearchError, SearchParams, SearchResult } from "./types";
+import { Media, SearchError, OptionGroup, SearchParams, SearchResult, OptionResult } from "./types";
 import { handleModifyRequestReferer } from "../modify-request";
 
 export async function handleIconfont(params: SearchParams): Promise<SearchResult|SearchError> {
@@ -18,6 +18,9 @@ export async function handleIconfont(params: SearchParams): Promise<SearchResult
   body.append('fills', '')
   body.append('t', `${Date.now()}`)
   body.append('ctoken', ctoken)
+  if (params.extra && params.extra.tag) {
+    body.append(params.extra.tag, '1')
+  }
   const res = await fetch('https://www.iconfont.cn/api/icon/search.json', {
     method: 'POST',
     body,
@@ -70,5 +73,41 @@ export async function handleIconfont(params: SearchParams): Promise<SearchResult
     list,
     total: res.data.count,
     page: params.page
+  }
+}
+
+export async function handleIconfontOptions(): Promise<OptionResult> {
+  return {
+    options: [
+      {
+        label: '标签',
+        name: 'tag',
+        value: '',
+        children: [
+          {
+            label: '全部',
+            value: ''
+          }, {
+            label: '线性',
+            value: 'line'
+          }, {
+            label: '面性',
+            value: 'fill'
+          }, {
+            label: '扁平',
+            value: 'flat'
+          }, {
+            label: '手绘',
+            value: 'hand'
+          }, {
+            label: '简约',
+            value: 'simple'
+          }, {
+            label: '精美',
+            value: 'complex'
+          }
+        ]
+      }
+    ]
   }
 }

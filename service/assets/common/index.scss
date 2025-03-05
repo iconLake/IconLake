@@ -4,6 +4,7 @@
 body {
   --color-main: #{$color-main};
   --color-danger: #{$color-danger};
+  --color-bg: #{$color-bg};
   --font-family: #{$font-family};
   --padding: #{$padding};
   --transition: #{$transition};
@@ -16,7 +17,7 @@ body {
   margin: 0;
   font-family: var(--font-family);
   line-height: 1;
-  background: #eff3ff;
+  background: var(--color-bg);
 }
 
 html {
@@ -293,6 +294,15 @@ $align: left, center, right;
   }
 }
 
+@keyframes blur-up {
+  0% {
+    backdrop-filter: blur(0px);
+  }
+  100% {
+    backdrop-filter: blur(20px);
+  }
+}
+
 // confirm
 .confirm {
   background: #fff;
@@ -300,7 +310,6 @@ $align: left, center, right;
 	border-radius: 3rem;
   width: 33rem;
   box-sizing: border-box;
-  padding: 5.2rem;
   &-container {
     position: fixed;
     z-index: 88;
@@ -312,23 +321,28 @@ $align: left, center, right;
     justify-content: center;
     align-items: center;
     background: rgba($color: #000000, $alpha: 0.05);
+    backdrop-filter: blur(20px);
+    animation: blur-up 10s ease 0s 1;
   }
   &-body {
     font-size: 1.4rem;
     line-height: 1.4;
     text-align: center;
+    padding: 5.2rem;
   }
   &-footer {
     display: flex;
     justify-content: center;
-    margin-top: 5.2rem;
+    padding: 2rem;
+    background: var(--color-bg);
+    border-bottom-left-radius: 3rem;
+    border-bottom-right-radius: 3rem;
   }
   &-btn {
     display: flex;
     align-items: center;
     height: 3rem;
     padding: 0 2rem;
-    text-align: center;
     font-size: 1.4rem;
     cursor: pointer;
     border-radius: 1.5rem;
@@ -337,7 +351,8 @@ $align: left, center, right;
     margin: 0 1rem;
   }
   &-cancel {
-    background: #cfd5e6;
+    color: #505050;
+    background: #fff;
   }
 }
 

@@ -62,6 +62,9 @@ export function search(params: {
   site: string
   keywords: string
   page: number
+  extra?: {
+    [key: string]: string
+  }
 }): Promise<{
   list: SearchedIcon[]
   total: number
@@ -82,6 +85,28 @@ export function detail(params: {
   error?: string
 }> {
   return requestExtension({type: 'detail', params})
+}
+
+interface Option {
+  label?: string
+  value: string
+  children?: OptionGroup[]
+}
+
+export interface OptionGroup {
+  label?: string
+  name: string
+  value: string
+  children: Option[]
+}
+
+export function option(params: {
+  site: string
+}): Promise<{
+  options: OptionGroup[]
+  error?: string
+}> {
+  return requestExtension({type: 'option', params})
 }
 
 export async function getExtensionInfo() {
@@ -118,5 +143,6 @@ export interface SearchedIcon extends Icon {
 export const extensionApis = {
   search,
   detail,
+  option,
   getExtensionInfo,
 }

@@ -403,6 +403,7 @@ async function handleUpload(file: UploadFile) {
   box-shadow: rgba($color: #000000, $alpha: 0.1) 0 0 2rem;
   transition: opacity 0.1s ease-in-out;
   opacity: v-bind(opacity);
+  z-index: 200;
   .icon {
     width: 13.375rem;
     height: 13.375rem;

@@ -260,7 +260,7 @@ async function batchGroup() {
     })
     await batchGroupIcon(data._id, ids, data.batchGroupId)
     data.selectedIcons.clear()
-    toast(t('batchGroupDone'))
+    toast(t('groupDone'))
     getIcons()
   })
 }
@@ -404,7 +404,7 @@ watch(() => data.keywords, () => {
         class="operate-item flex"
         @click="data.isBatching=!data.isBatching"
       >
-        <span>{{ t(data.isBatching ? 'cancelBatchOperation' : 'batchOperation') }}</span>
+        <span>{{ t(data.isBatching ? 'cancelManage' : 'manage') }}</span>
         <i class="iconfont icon-batch" />
       </div>
       <router-link
@@ -426,7 +426,7 @@ watch(() => data.keywords, () => {
         :disabled="data.selectedIcons.size===0"
         @click="batchDelete"
       >
-        <span>{{ t('batchDelete') }}</span>
+        <span>{{ t('delete') }}</span>
         <i class="iconfont icon-delete" />
       </button>
       <button
@@ -435,7 +435,7 @@ watch(() => data.keywords, () => {
         :disabled="data.selectedIcons.size===0"
         @click="batchGroup"
       >
-        <span>{{ t('batchGroup') }}</span>
+        <span>{{ t('group') }}</span>
         <i class="iconfont icon-group-open" />
       </button>
       <button
@@ -443,7 +443,7 @@ watch(() => data.keywords, () => {
         :disabled="data.selectedIcons.size===0"
         @click="batchDownload"
       >
-        <span>{{ t('batchDownload') }}</span>
+        <span>{{ t('download') }}</span>
         <Loading v-if="isDownloading" />
         <i
           v-else
@@ -633,7 +633,7 @@ watch(() => data.keywords, () => {
 .group-select {
   display: none;
   .label {
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
   }
   .select {
     width: 15rem;

@@ -1,12 +1,16 @@
 import { handleModifyRequestReferer } from "../modify-request"
-import { DetailParams, DetailResult, Media, SearchError, SearchParams, SearchResult } from "./types"
+import { DetailParams, DetailResult, Media, OptionResult, SearchError, SearchParams, SearchResult } from "./types"
 
 let seq = ''
 
 export async function handleGracg(params: SearchParams): Promise<SearchResult|SearchError> {
   let url = `https://www.gracg.com/search?tag=${params.keywords}&page=${params.page}&sort=score`
   if (!params.keywords) {
-    url = `https://www.gracg.com/followwork?page=${params.page}`
+    if (params.extra?.type === 'gallery') {
+      url = `https://www.gracg.com/gallery/selected?page=${params.page}`
+    } else {
+      url = `https://www.gracg.com/followwork?page=${params.page}`
+    }
   }
   const res = await fetch(url)
     .then(e => e.text())
@@ -101,5 +105,26 @@ export async function handleGracgDetail(params: DetailParams): Promise<DetailRes
       url: `${e.Photourl}_1200w.jpg`
     })),
     html: '',
+  }
+}
+
+export async function handleGracgOptions(): Promise<OptionResult> {
+  return {
+    options: [
+      {
+        label: '类型',
+        name: 'type',
+        value: 'follow',
+        children: [
+          {
+            label: '关注',
+            value: 'follow'
+          }, {
+            label: '精选',
+            value: 'gallery'
+          }
+        ]
+      }
+    ]
   }
 }
