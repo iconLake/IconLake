@@ -1,11 +1,17 @@
 import { parseHTML } from "linkedom";
 import { handleModifyRequestReferer } from "../modify-request";
-import { DetailParams, DetailResult, Media, SearchError, SearchParams, SearchResult } from "./types";
+import { DetailParams, DetailResult, Media, OptionResult, SearchError, SearchParams, SearchResult } from "./types";
 
 export async function handleZcool(params: SearchParams): Promise<SearchResult|SearchError> {
   let res
   if (!params.keywords) {
-    res = await fetch(`https://www.zcool.com.cn/p1/discover/first?p=${params.page}&ps=20&column=4`)
+    let url = `https://www.zcool.com.cn/p1/index/focus?type=3,8,20&p=${params.page}&ps=40`
+    if (params.extra?.type === 'recommend') {
+      url = `https://www.zcool.com.cn/p1/discover/first?p=${params.page}&ps=20&column=4`
+    } else if (params.extra?.type === 'home') {
+      url = `https://www.zcool.com.cn/p1/index/data?p=${params.page}&ps=20&column=4&ad=true`
+    }
+    res = await fetch(url)
       .then(e => e.json())
       .catch(err => {
         console.error(err)
@@ -116,5 +122,29 @@ export async function handleZoolDetail(params: DetailParams): Promise<DetailResu
   return {
     imgs,
     html: '',
+  }
+}
+
+export async function handleZcoolOptions(): Promise<OptionResult> {
+  return {
+    options: [
+      {
+        label: '类型',
+        name: 'type',
+        value: 'focus',
+        children: [
+          {
+            label: '关注',
+            value: 'focus'
+          }, {
+            label: '首推',
+            value: 'recommend'
+          }, {
+            label: '推荐',
+            value: 'home'
+          }
+        ]
+      }
+    ]
   }
 }

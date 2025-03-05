@@ -1,9 +1,9 @@
-import { DetailParams, DetailResult, SearchError, SearchParams, SearchResult } from "./search/types"
+import { DetailParams, DetailResult, OptionParams, OptionResult, SearchError, SearchParams, SearchResult } from "./search/types"
 import { Site } from "./search/types"
-import { handleHuaban } from "./search/huaban"
-import { handleIconfont } from "./search/iconfont"
-import { handleZcool, handleZoolDetail } from "./search/zcool"
-import { handleGracg, handleGracgDetail } from "./search/gracg"
+import { handleHuaban, handleHuabanOptions } from "./search/huaban"
+import { handleIconfont, handleIconfontOptions } from "./search/iconfont"
+import { handleZcool, handleZcoolOptions, handleZoolDetail } from "./search/zcool"
+import { handleGracg, handleGracgDetail, handleGracgOptions } from "./search/gracg"
 
 const searchSites: { [key: string]: (params: SearchParams) => Promise<SearchResult|SearchError> } = {
   [Site.huaban]: handleHuaban,
@@ -33,6 +33,22 @@ export async function handleDetail(params: DetailParams): Promise<DetailResult |
     }
   }
   return await detailSites[params.site](params)
+}
+
+const optionSites: { [key: string]: (params: OptionParams) => Promise<OptionResult | SearchError> } = {
+  [Site.iconfont]: handleIconfontOptions,
+  [Site.huaban]: handleHuabanOptions,
+  [Site.zcool]: handleZcoolOptions,
+  [Site.gracg]: handleGracgOptions,
+}
+
+export async function handleOption(params: OptionParams): Promise<OptionResult | SearchError> {
+  if (!optionSites[params.site]) {
+    return {
+      error: 'site not supported'
+    }
+  }
+  return await optionSites[params.site](params)
 }
 
 export function initSearch() {

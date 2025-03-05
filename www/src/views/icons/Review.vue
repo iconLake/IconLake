@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Icon } from '@/apis/project';
 import IconVue from '@/components/Icon.vue';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import CollectVue from './search/Collect.vue';
 import { SearchedIcon } from '@/apis/extension';
+import { getIconUrl } from '@/utils/icon';
 
 const { t } = useI18n();
 
@@ -64,7 +64,7 @@ onBeforeUnmount(() => {
         />
       </template>
       <IconVue
-        v-else-if="icon.img?.url"
+        v-else-if="getIconUrl(icon)"
         :info="icon"
       />
     </template>
@@ -121,7 +121,7 @@ onBeforeUnmount(() => {
 
 .review {
   position: fixed;
-  z-index: 99;
+  z-index: 200;
   top: 0;
   left: 0;
   right: 0;

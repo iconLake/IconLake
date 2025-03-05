@@ -1,6 +1,6 @@
 import Browser from 'webextension-polyfill'
 import { initModifyRequest, handleModifyRequestReferer } from './background/modify-request'
-import { handleDetail, handleSearch, initSearch } from './background/search'
+import { handleDetail, handleOption, handleSearch, initSearch } from './background/search'
 import { MsgType } from './background/types'
 
 if (import.meta.env.DEV) {
@@ -45,6 +45,9 @@ Browser.runtime.onMessage.addListener(async (message, sender) => {
       break
     case MsgType.Detail.toString().toLowerCase():
       result = await handleDetail(params[0])
+      break
+    case MsgType.Option.toString().toLowerCase():
+      result = await handleOption(params[0])
       break
     case MsgType.Ping.toString().toLowerCase():
       result = { timestamp: Date.now() }

@@ -22,6 +22,19 @@
         </div>
       </div>
       <div
+        v-if="options.length"
+        class="options flex end"
+      >
+        <Select
+          v-for="option in options"
+          :key="option.name"
+          v-model="option.value"
+          :options="option.children"
+          :placeholder="option.label"
+          @change="reload"
+        />
+      </div>
+      <div
         v-if="isExtensionReady"
       >
         <div
@@ -97,12 +110,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import IconVue from '@/components/Icon.vue'
-import { extensionApis, SearchedIcon } from '@/apis/extension';
+import { extensionApis, OptionGroup, SearchedIcon } from '@/apis/extension';
 import ReviewVue from '../Review.vue';
 import LoadingVue from '@/components/Loading.vue';
 import { PROJECT_TYPE, SEARCH_SITES } from '@/utils/const';
 import { useI18n } from 'vue-i18n';
 import { storage } from '@/utils/storage';
+import Select from '@/components/Select.vue';
 
 const props = defineProps<{
   keywords: string
@@ -124,8 +138,22 @@ const reviewIcon = ref<SearchedIcon>({
   tags: [],
   groupId: '',
 })
+const options = ref<OptionGroup[]>([])
 
 const { t } = useI18n()
+
+const getOptions = async () => {
+  const res = await extensionApis.option({
+    site: site.value
+  }).catch((err) => {
+    console.error(err)
+    return {
+      options: [],
+      error: err.toString()
+    }
+  })
+  options.value = res.error ? [] : res.options
+}
 
 watch(() => props.projectType, (v) => {
   let storedSite = storage.getProjectDefaultSearchSite(props.projectId)
@@ -137,6 +165,7 @@ watch(() => props.projectType, (v) => {
 
 watch(() => site.value, (v) => {
   storage.setProjectDefaultSearchSite(props.projectId, v)
+  getOptions()
 })
 
 watch(() => reviewIndex.value, async () => {
@@ -153,20 +182,26 @@ watch(() => reviewIndex.value, async () => {
     icon.img.url = icon.img.originalUrl
   }
   reviewIcon.value = icon
-  if (siteInfo.value?.isDetailNeedFetch) {
-    const data = await extensionApis.detail({
-      site: site.value,
-      url: list.value[index].code
-    })
-    if (!data.error) {
-      reviewIcon.value.img = {
-        url: ''
-      }
-      const icon = JSON.parse(JSON.stringify(list.value[index]))
-      icon.imgs = data.imgs
-      icon.html = data.html
-      reviewIcon.value = icon
+  // fetch detail
+  const data = await extensionApis.detail({
+    site: site.value,
+    url: list.value[index].code
+  }).catch((err) => {
+    console.error(err)
+    return {
+      imgs: [],
+      html: '',
+      error: err.toString()
     }
+  })
+  if (!data.error) {
+    reviewIcon.value.img = {
+      url: ''
+    }
+    const icon = JSON.parse(JSON.stringify(list.value[index]))
+    icon.imgs = data.imgs
+    icon.html = data.html
+    reviewIcon.value = icon
   }
 })
 
@@ -184,15 +219,6 @@ const loadMoreText = computed(() => {
   }
   return `${t('more')}...`
 })
-
-const reload = () => {
-  page.value = 1
-  search({
-    site: site.value,
-    keywords: props.keywords,
-    page: page.value
-  })
-}
 
 let keywordsTimer: NodeJS.Timeout
 watch(
@@ -215,7 +241,14 @@ function review (index: number) {
   reviewIndex.value = index
 }
 
-async function search(params: { site: string; keywords: string; page: number; }) {
+async function search(params: {
+  site: string
+  keywords: string
+  page: number
+  extra?: {
+    [x: string]: string
+  }
+}) {
   loading.value = true
   if (params.page === 1) {
     list.value = []
@@ -234,15 +267,33 @@ async function search(params: { site: string; keywords: string; page: number; })
   error.value = res.error
 }
 
-async function loadMore() {
-  if (!error.value) {
-    page.value++
+async function load() {
+  const extra: {[x: string]: string} = {}
+  if (options.value.length) {
+    options.value.forEach(e => {
+      if (e.value) {
+        extra[e.name] = e.value
+      }
+    })
   }
   search({
     site: site.value,
     keywords: props.keywords,
-    page: page.value
+    page: page.value,
+    extra,
   })
+}
+
+async function loadMore() {
+  if (!error.value) {
+    page.value++
+  }
+  load()
+}
+
+async function reload() {
+  page.value = 1
+  load()
 }
 
 onMounted(async () => {
@@ -308,6 +359,27 @@ onMounted(async () => {
   }
   img {
     height: 2rem;
+  }
+}
+
+.options {
+  margin-bottom: 1rem;
+  .select {
+    height: 3rem;
+    width: 10rem;
+    opacity: 0.5;
+    transition: var(--transition);
+    &:hover {
+      opacity: 1;
+    }
+    :deep(.text) {
+      border: none;
+      text-align: right;
+      padding-right: 2rem;
+      border-radius: 0;
+      background: transparent;
+      border-bottom: #fff 2px solid;
+    }
   }
 }
 </style>

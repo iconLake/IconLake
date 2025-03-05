@@ -633,7 +633,7 @@ watch(() => data.keywords, () => {
 .group-select {
   display: none;
   .label {
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
   }
   .select {
     width: 15rem;

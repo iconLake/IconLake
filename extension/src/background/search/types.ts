@@ -23,6 +23,9 @@ export interface SearchParams {
   keywords: string
   page: number
   site: string
+  extra?: {
+    [key: string]: string
+  }
 }
 
 export interface SearchResult {
@@ -45,4 +48,25 @@ export interface DetailResult {
     url: string
   }[]
   html: string
+}
+
+export interface Option {
+  label: string
+  value: string
+  children?: OptionGroup[]
+}
+
+export interface OptionGroup {
+  label?: string
+  name: string
+  value: string
+  children: Option[]
+}
+
+export interface OptionParams {
+  site: string
+}
+
+export interface OptionResult {
+  options: OptionGroup[]
 }
