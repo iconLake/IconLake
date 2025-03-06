@@ -226,7 +226,7 @@ onMounted(async () => {
         <img :src="item.img.url" />
       </div>
     </div>
-    <div v-if="icons.length === 0" class="empty">野渡无人舟自横</div>
+    <div v-if="icons.length === 0" class="empty">没有找到{{ projectType === ProjectTypes.SVG ? 'SVG' : '图片' }}</div>
   </div>
   <div class="operate">
     <ElSelect v-model="projectId" placeholder="选择项目" no-data-text="你还没有创建项目">
@@ -335,6 +335,9 @@ onMounted(async () => {
   &.img {
     .item {
       width: 50%;
+    }
+    .empty {
+      height: calc(100% - 94px);
     }
   }
 }
