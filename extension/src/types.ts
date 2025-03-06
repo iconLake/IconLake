@@ -21,6 +21,8 @@ export interface Icon {
   svg?: SVG
   img?: {
     url: string
+    width: number
+    height: number
   }
   name: string
 }

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch, computed } from 'vue'
 import Browser from 'webextension-polyfill'
 import { ButtonTooltipType, Icon, Project, SVG, MsgType, IconResource, ProjectTypes } from '../types'
-import { ElSelect, ElOption } from 'element-plus'
+import { ElSelect, ElOption, ElSlider } from 'element-plus'
 import { list, addIcon, uploadFile } from '../apis/project'
 import ButtonVue from '../components/Button.vue'
 import { domain } from '../apis/request'
@@ -23,6 +23,14 @@ const tooltip = reactive({
 })
 const tooltipType = ref(ButtonTooltipType.Default)
 const projectType = ref(ProjectTypes.SVG)
+const minSize = ref(100)
+
+const sizeMarks = {
+  100: '100px',
+  300: '300px',
+  500: '500px',
+  800: '800px',
+}
 
 async function getIcons (type?: ProjectTypes) {
   const [tab] = await Browser.tabs.query({
@@ -74,6 +82,15 @@ watch(projectType, async (value) => {
   await saveProjectType()
 }, {
   immediate: true
+})
+
+const filteredIcons = computed(() => {
+  return icons.value.filter(item => {
+    if (projectType.value === ProjectTypes.Img && item.img) {
+      return item.img.width >= minSize.value && item.img.height >= minSize.value
+    }
+    return true
+  })
 })
 
 let lastSelectedIndex = -1
@@ -191,13 +208,25 @@ onMounted(async () => {
       <div class="item" :class="{active: projectType === ProjectTypes.SVG}" @click="projectType = ProjectTypes.SVG">SVG</div>
       <div class="item" :class="{active: projectType === ProjectTypes.Img}" @click="projectType = ProjectTypes.Img">图片</div>
     </div>
-    <div class="item" :class="{selected: item.isSelected}" v-for="(item, i) in icons" :key="i" @click="setSelected(item, i, $event)">
+    <div class="width-filter" v-if="projectType === ProjectTypes.Img">
+      <ElSlider
+        v-model="minSize"
+        :min="0"
+        :max="1000"
+        :step="50"
+        input-size="small"
+        placement="bottom"
+        :format-tooltip="value => `${value}px`"
+        :marks="sizeMarks"
+      />
+    </div>
+    <div class="item" :class="{selected: item.isSelected}" v-for="(item, i) in filteredIcons" :key="i" @click="setSelected(item, i, $event)">
       <div class="wrapper svg" v-if="item.svg" v-html="genSVG(item.svg)"></div>
       <div class="wrapper img" v-if="item.img">
         <img :src="item.img.url" />
       </div>
     </div>
-    <div v-if="icons.length === 0" class="empty">野渡无人舟自横</div>
+    <div v-if="icons.length === 0" class="empty">没有找到{{ projectType === ProjectTypes.SVG ? 'SVG' : '图片' }}</div>
   </div>
   <div class="operate">
     <ElSelect v-model="projectId" placeholder="选择项目" no-data-text="你还没有创建项目">
@@ -228,6 +257,22 @@ onMounted(async () => {
     &.active {
       color: #fff;
       background: var(--el-color-primary);
+    }
+  }
+}
+
+.width-filter {
+  width: 100%;
+  margin-bottom: 10px;
+  .el-slider {
+    :deep(.el-slider__marks) {
+      opacity: 0;
+      transition: var(--transition);
+    }
+    &:hover {
+      :deep(.el-slider__marks) {
+        opacity: 1;
+      }
     }
   }
 }
@@ -290,6 +335,9 @@ onMounted(async () => {
   &.img {
     .item {
       width: 50%;
+    }
+    .empty {
+      height: calc(100% - 94px);
     }
   }
 }
