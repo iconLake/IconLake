@@ -1,3 +1,4 @@
+import { handleSearchMsg } from './msg/search'
 import { ResponseMsgType } from './types'
 
 interface Msg {
@@ -45,7 +46,8 @@ const handler = {
       icons,
       url: location.href
     }
-  }
+  },
+  [ResponseMsgType.Search]: handleSearchMsg,
 }
 
 export function initMsg() {
@@ -53,6 +55,6 @@ export function initMsg() {
     if (typeof msg.type !== 'string' || !(msg.type in handler)) {
       throw new Error('Message Type is unknown.')
     }
-    return await handler[msg.type]()
+    return await handler[msg.type](msg.data)
   })
 }

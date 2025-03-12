@@ -7,6 +7,7 @@ import { list, addIcon, uploadFile } from '../apis/project'
 import ButtonVue from '../components/Button.vue'
 import { domain } from '../apis/request'
 import { lib, MD5 } from 'crypto-js'
+import { getSettings, updateSettings } from '../apis/settings'
 
 interface Item extends Icon {
   isSelected?: boolean
@@ -79,9 +80,20 @@ watch(projectType, async (value) => {
   getIcons(value)
   projectId.value = ''
   projectList.value = await getProjects(value)
-  await saveProjectType()
 }, {
   immediate: true
+})
+
+watch(minSize, async (v) => {
+  await updateSettings({
+    imgMinSize: v
+  })
+})
+
+watch(projectType, async (v) => {
+  await updateSettings({
+    projectType: v
+  })
 })
 
 const filteredIcons = computed(() => {
@@ -186,19 +198,14 @@ async function save () {
   setTimeout(gotoProject, 1000)
 }
 
-async function getSavedProjectType() {
-  const { projectType: type } = await Browser.storage.local.get('projectType')
-  if (type) {
-    projectType.value = type
-  }
-}
-
-async function saveProjectType () {
-  await Browser.storage.local.set({ projectType: projectType.value })
+async function init() {
+  const settings = await getSettings()
+  projectType.value = settings.projectType
+  minSize.value = settings.imgMinSize
 }
 
 onMounted(async () => {
-  await getSavedProjectType()
+  await init()
 })
 </script>
 
