@@ -59,4 +59,5 @@ export const SEARCH_SITES = [
   { name: '花瓣', code: 'huaban', url: 'https://huaban.com/' },
   { name: '站酷', code: 'zcool', url: 'https://www.zcool.com.cn/' },
   { name: '涂鸦王国', code: 'gracg', url: 'https://www.gracg.com/' },
+  { name: 'X', code: 'x', url: 'https://x.com/' },
 ]

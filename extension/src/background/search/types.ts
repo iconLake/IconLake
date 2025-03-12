@@ -17,6 +17,7 @@ export enum Site {
   huaban = 'huaban',
   zcool = 'zcool',
   gracg = 'gracg',
+  x = 'x',
 }
 
 export interface SearchParams {

@@ -5,4 +5,5 @@ export enum RequestMsgType {
 export enum ResponseMsgType {
   GetSvgs = 'getSvgs',
   GetImgs = 'getImgs',
+  Search = 'search',
 }
