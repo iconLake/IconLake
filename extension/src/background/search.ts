@@ -5,6 +5,7 @@ import { handleIconfont, handleIconfontOptions } from "./search/iconfont"
 import { handleZcool, handleZcoolOptions, handleZoolDetail } from "./search/zcool"
 import { handleGracg, handleGracgDetail, handleGracgOptions } from "./search/gracg"
 import { handleX, handleXOptions } from "./search/x"
+import { handlePinterest, handlePinterestOptions } from "./search/pinterest"
 
 const searchSites: { [key: string]: (params: SearchParams) => Promise<SearchResult|SearchError> } = {
   [Site.huaban]: handleHuaban,
@@ -12,6 +13,7 @@ const searchSites: { [key: string]: (params: SearchParams) => Promise<SearchResu
   [Site.zcool]: handleZcool,
   [Site.gracg]: handleGracg,
   [Site.x]: handleX,
+  [Site.pinterest]: handlePinterest,
 }
 
 export async function handleSearch(params: SearchParams): Promise<SearchResult | SearchError> {
@@ -43,6 +45,7 @@ const optionSites: { [key: string]: (params: OptionParams) => Promise<OptionResu
   [Site.zcool]: handleZcoolOptions,
   [Site.gracg]: handleGracgOptions,
   [Site.x]: handleXOptions,
+  [Site.pinterest]: handlePinterestOptions,
 }
 
 export async function handleOption(params: OptionParams): Promise<OptionResult | SearchError> {

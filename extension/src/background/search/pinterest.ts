@@ -4,7 +4,7 @@ import { Media, OptionResult, SearchError, SearchParams, SearchResult } from "./
 
 const cachedImgs = new Set()
 
-export async function handleX(params: SearchParams): Promise<SearchResult|SearchError> {
+export async function handlePinterest(params: SearchParams): Promise<SearchResult|SearchError> {
   if (params.page === 1) {
     cachedImgs.clear()
   }
@@ -12,7 +12,7 @@ export async function handleX(params: SearchParams): Promise<SearchResult|Search
     active: true,
   })
   const isSearch = !!params.keywords
-  const url = isSearch ? `https://x.com/search?q=${params.keywords}&src=typed_query&f=top` : 'https://x.com'
+  const url = isSearch ? `https://www.pinterest.com/search/pins/?q=${params.keywords}` : 'https://www.pinterest.com/'
   const win = await Browser.windows.create({
     focused: true,
     url,
@@ -35,14 +35,10 @@ export async function handleX(params: SearchParams): Promise<SearchResult|Search
   const res = await Browser.tabs.sendMessage(tabId, {
     type: 'search',
     data: {
-      init: isSearch ? {} : {
-        click: `[data-testid="ScrollSnap-List"]>div:nth-child(${params.extra?.type === 'follow' ? 2 : 1})>a`,
-      },
       selector: {
-        item: '[data-testid="tweet"]',
-        img: '[data-testid="tweetPhoto"] img',
-        title: '[data-testid="tweetText"]',
-        link: 'a[href*="/status/"]',
+        item: '[data-test-id="pinWrapper"]',
+        img: '[data-test-id="non-story-pin-image"] img',
+        link: 'a[href*="/pin/"]',
       },
       count: 20,
       nextPage: 'scroll',
@@ -58,8 +54,8 @@ export async function handleX(params: SearchParams): Promise<SearchResult|Search
     return {
       img: {
         ...e.img,
-        url: e.img.url.replace(/&name=[^&]*/, '&name=900x900'),
-        originalUrl: e.img.url.replace(/&name=[^&]*/, '&name=large'),
+        url: e.img.url.replace(/\/\d*x\//, '/236x/'),
+        originalUrl: e.img.url.replace(/\/\d*x\//, '/originals/'),
       },
       referer: e.referer,
       name: e.title || '',
@@ -79,23 +75,8 @@ export async function handleX(params: SearchParams): Promise<SearchResult|Search
   }
 }
 
-export async function handleXOptions(): Promise<OptionResult> {
+export async function handlePinterestOptions(): Promise<OptionResult> {
   return {
-    options: [
-      {
-        label: '类型',
-        name: 'type',
-        value: 'recommend',
-        children: [
-          {
-            label: '推荐',
-            value: 'recommend'
-          }, {
-            label: '关注',
-            value: 'follow'
-          }
-        ]
-      }
-    ]
+    options: []
   }
 }

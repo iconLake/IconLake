@@ -18,6 +18,7 @@ export enum Site {
   zcool = 'zcool',
   gracg = 'gracg',
   x = 'x',
+  pinterest = 'pinterest',
 }
 
 export interface SearchParams {
