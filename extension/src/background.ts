@@ -2,6 +2,7 @@ import Browser from 'webextension-polyfill'
 import { initModifyRequest, handleModifyRequestReferer } from './background/modify-request'
 import { handleDetail, handleOption, handleSearch, initSearch } from './background/search'
 import { MsgType } from './background/types'
+import { Site } from './background/search/types'
 
 if (import.meta.env.DEV) {
   const ws = new WebSocket('ws://127.0.0.1:35729')
@@ -50,7 +51,12 @@ Browser.runtime.onMessage.addListener(async (message, sender) => {
       result = await handleOption(params[0])
       break
     case MsgType.Ping.toString().toLowerCase():
-      result = { timestamp: Date.now() }
+      result = {
+        timestamp: Date.now(),
+        search: {
+          sites: Object.values(Site)
+        }
+      }
       break
     default:
       result = {

@@ -11,7 +11,7 @@
         </div>
         <div class="sites flex center">
           <div
-            v-for="item in SEARCH_SITES"
+            v-for="item in sites"
             :key="item.code"
             class="site-item"
             :class="site === item.code ? 'active' : ''"
@@ -113,7 +113,7 @@ import IconVue from '@/components/Icon.vue'
 import { extensionApis, OptionGroup, SearchedIcon } from '@/apis/extension';
 import ReviewVue from '../Review.vue';
 import LoadingVue from '@/components/Loading.vue';
-import { PROJECT_TYPE, SEARCH_SITES } from '@/utils/const';
+import { PROJECT_TYPE, SEARCH_SITES, SearchSite } from '@/utils/const';
 import { useI18n } from 'vue-i18n';
 import { storage } from '@/utils/storage';
 import Select from '@/components/Select.vue';
@@ -129,6 +129,7 @@ const page = ref(1)
 const isReview = ref(false)
 const reviewIndex = ref(-1)
 const site = ref('')
+const sites = ref<SearchSite[]>([])
 const isExtensionReady = ref(false)
 const error = ref('')
 const reviewIcon = ref<SearchedIcon>({
@@ -299,6 +300,11 @@ async function reload() {
 onMounted(async () => {
   const extensionInfo = await extensionApis.getExtensionInfo()
   isExtensionReady.value = extensionInfo.isReady
+  if (extensionInfo.search?.sites) {
+    sites.value = SEARCH_SITES.filter(e => extensionInfo.search?.sites.includes(e.code))
+  } else {
+    sites.value = SEARCH_SITES.filter(e => e.active)
+  }
 })
 </script>
 

@@ -54,11 +54,18 @@ export const NOT_COMPRESS_EXTS: Record<string, boolean> = {
   '.svg': true,
 }
 
-export const SEARCH_SITES = [
-  { name: 'iconfont', code: 'iconfont', url: 'https://www.iconfont.cn/' },
-  { name: '花瓣', code: 'huaban', url: 'https://huaban.com/' },
-  { name: '站酷', code: 'zcool', url: 'https://www.zcool.com.cn/' },
-  { name: '涂鸦王国', code: 'gracg', url: 'https://www.gracg.com/' },
+export interface SearchSite {
+  name: string
+  code: string
+  url: string
+  active?: boolean
+}
+
+export const SEARCH_SITES: SearchSite[] = [
+  { name: 'iconfont', code: 'iconfont', url: 'https://www.iconfont.cn/', active: true },
+  { name: '花瓣', code: 'huaban', url: 'https://huaban.com/', active: true },
+  { name: '站酷', code: 'zcool', url: 'https://www.zcool.com.cn/', active: true },
+  { name: '涂鸦王国', code: 'gracg', url: 'https://www.gracg.com/', active: true },
   { name: 'X', code: 'x', url: 'https://x.com/' },
   { name: 'Pinterest', code: 'pinterest', url: 'https://www.pinterest.com/' },
   { name: 'Instagram', code: 'instagram', url: 'https://www.instagram.com/' },
