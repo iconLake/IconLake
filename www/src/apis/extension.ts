@@ -1,6 +1,14 @@
 import { Icon } from './project'
 
+interface PingResult {
+  timestamp: number
+  search?: {
+    sites: string[]
+  }
+}
+
 let isExtensionReady = false
+let pingResult: PingResult | undefined
 
 const IconlakeRequestMsgTypePrefix = 'iconlakeRequest:'
 const IconlakeResponseMsgTypePrefix = 'iconlakeResponse:'
@@ -10,9 +18,10 @@ const pingTimer = setInterval(() => {
     type: 'ping',
     ignoreReady: true,
     timeout: 200,
-  }).then(() => {
+  }).then((res: PingResult) => {
     clearInterval(pingTimer)
     isExtensionReady = true
+    pingResult = res
   }).catch(console.error)
 }, 200)
 
@@ -124,7 +133,8 @@ export async function getExtensionInfo() {
     }, 3000)
   })
   return {
-    isReady: isExtensionReady
+    isReady: isExtensionReady,
+    search: pingResult?.search,
   }
 }
 
