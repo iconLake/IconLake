@@ -4,7 +4,7 @@ import { Media, OptionResult, SearchError, SearchParams, SearchResult } from "./
 
 const cachedImgs = new Set()
 
-export async function handlePinterest(params: SearchParams): Promise<SearchResult|SearchError> {
+export async function handleInstagram(params: SearchParams): Promise<SearchResult|SearchError> {
   if (params.page === 1) {
     cachedImgs.clear()
   }
@@ -12,7 +12,7 @@ export async function handlePinterest(params: SearchParams): Promise<SearchResul
     active: true,
   })
   const isSearch = !!params.keywords
-  const url = isSearch ? `https://www.pinterest.com/search/pins/?q=${params.keywords}` : 'https://www.pinterest.com/'
+  const url = isSearch ? `https://www.instagram.com/explore/search/keyword/?q=${params.keywords}` : 'https://www.instagram.com/'
   const win = await Browser.windows.create({
     focused: true,
     url,
@@ -35,10 +35,14 @@ export async function handlePinterest(params: SearchParams): Promise<SearchResul
   const res = await Browser.tabs.sendMessage(tabId, {
     type: 'search',
     data: {
-      selector: {
-        item: '[data-test-id="pinWrapper"]',
-        img: '[data-test-id="non-story-pin-image"] img',
-        link: 'a[href*="/pin/"]',
+      selector: isSearch ? {
+        item: 'main>div>div>div>div>div',
+        img: 'img',
+        link: 'a',
+      } : {
+        item: 'article',
+        img: 'div>img',
+        link: 'a[href*="/p/"]',
       },
       count: 20,
       nextPage: 'scroll',
@@ -54,12 +58,11 @@ export async function handlePinterest(params: SearchParams): Promise<SearchResul
     return {
       img: {
         ...e.img,
-        url: e.img.url.replace(/\/\d*x\//, '/236x/'),
-        originalUrl: e.img.url.replace(/\/\d*x\//, '/originals/'),
+        url: e.img.url,
       },
       referer: e.referer,
       name: e.title || '',
-      code: e.link || '',
+      code: (e.link || '').replace(/liked_by\/?/, ''),
     }
   })
   await handleModifyRequestReferer(list.map((e) => {
@@ -75,7 +78,7 @@ export async function handlePinterest(params: SearchParams): Promise<SearchResul
   }
 }
 
-export async function handlePinterestOptions(): Promise<OptionResult> {
+export async function handleInstagramOptions(): Promise<OptionResult> {
   return {
     options: []
   }

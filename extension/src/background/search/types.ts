@@ -19,6 +19,7 @@ export enum Site {
   gracg = 'gracg',
   x = 'x',
   pinterest = 'pinterest',
+  instagram = 'instagram',
 }
 
 export interface SearchParams {

@@ -54,7 +54,7 @@ export async function handleSearchMsg(params: SearchParams) {
       for (const img of Array.from(imgs)) {
         const url = img.getAttribute('src')
         if (url) {
-          if (oldImgs.has(url)) {
+          if (oldImgs.has(url.replace(/\?.*/, ''))) {
             continue
           }
           list.set(url, {
