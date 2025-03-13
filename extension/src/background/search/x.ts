@@ -54,7 +54,7 @@ export async function handleX(params: SearchParams): Promise<SearchResult|Search
     focused: true,
   })
   const list: Media[] = res.map((e: any) => {
-    cachedImgs.add(e.img.url)
+    cachedImgs.add(e.img.url.replace(/\?.*/, ''))
     return {
       img: {
         ...e.img,
