@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 import { User } from '../../models/user.js'
-import { completeURL } from '../../utils/file.js'
+import { completeURL, slimURL } from '../../utils/file.js'
 
 /**
  * @api {get} /user/info 获取用户信息
@@ -8,7 +8,12 @@ import { completeURL } from '../../utils/file.js'
 export async function info (req, res) {
   const fields = [
     'name',
+    'desc',
     'avatar',
+    'medias',
+    'sex',
+    'birthday',
+    'addr',
     'tokenExpire',
     'blockchain.id',
     'gitee.id',
@@ -30,6 +35,34 @@ export async function info (req, res) {
     user.github.avatar = completeURL(user.github.avatar)
   }
   res.json(user)
+}
+
+/**
+ * @api {post} /user/info/edit 更新用户信息
+ */
+export async function edit (req, res) {
+  const user = await User.findById(req.user._id)
+  let isChanged = false
+  const keys = ['name', 'desc', 'avatar', 'sex', 'birthday', 'addr']
+  keys.forEach(key => {
+    if (req.body[key] && user[key] !== req.body[key]) {
+      isChanged = true
+      user[key] = req.body[key]
+    }
+  })
+  if (req.body.medias && JSON.stringify(user.medias) !== JSON.stringify(req.body.medias)) {
+    isChanged = true
+    user.medias = req.body.medias.map((m) => {
+      return {
+        name: m.name,
+        content: slimURL(m.content)
+      }
+    })
+  }
+  if (isChanged) {
+    await user.save()
+  }
+  res.json({})
 }
 
 /**

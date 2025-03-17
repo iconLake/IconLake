@@ -100,13 +100,18 @@ const routes: Array<RouteRecordRaw> = [
     name: 'userSetting',
     component: () => import('../views/user/Setting.vue'),
     redirect: () => {
-      return '/user/setting/bind'
+      return '/user/setting/info'
     },
     children: [
       {
         path: 'bind',
         name: 'userSettingBind',
         component: () => import('../views/user/setting/Bind.vue')
+      },
+      {
+        path: 'info',
+        name: 'userSettingInfo',
+        component: () => import('../views/user/setting/Info.vue')
       },
     ]
   },

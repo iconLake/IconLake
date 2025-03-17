@@ -210,5 +210,13 @@
   "notBound": "未绑定",
   "blockchain": "区块链",
   "mySettings": "我的设置",
-  "bindRequiredAccount": "必须绑定Gitee账户才能使用此功能"
+  "bindRequiredAccount": "必须绑定Gitee账户才能使用此功能",
+  "info": "信息",
+  "userName": "姓名",
+  "userDesc": "简介",
+  "avatar": "头像",
+  "userMedias": "社交媒体",
+  "userSex": "性别",
+  "userBirthday": "生日",
+  "userAddr": "地址"
 }

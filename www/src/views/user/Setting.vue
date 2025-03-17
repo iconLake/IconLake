@@ -16,6 +16,14 @@ const { t } = useI18n()
       <RouterLink
         class="item"
         active-class="active"
+        to="/user/setting/info"
+      >
+        <i class="iconfont icon-user" />
+        <span>{{ t('info') }}</span>
+      </RouterLink>
+      <RouterLink
+        class="item"
+        active-class="active"
         to="/user/setting/bind"
       >
         <i class="iconfont icon-bind" />
@@ -55,6 +63,11 @@ const { t } = useI18n()
     .iconfont {
       font-size: 1.6rem;
       margin-right: 2.9rem;
+      width: 2rem;
+      text-align: center;
+      &.icon-bind {
+        font-size: 1.3rem;
+      }
     }
 
     &:hover,

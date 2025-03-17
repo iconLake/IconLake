@@ -210,5 +210,13 @@
   "notBound": "Not bound",
   "blockchain": "Blockchain",
   "mySettings": "My Settings",
-  "bindRequiredAccount": "You must bind a Gitee account to use this feature"
+  "bindRequiredAccount": "You must bind a Gitee account to use this feature",
+  "info": "Information",
+  "userName": "Name",
+  "userDesc": "Description",
+  "avatar": "Avatar",
+  "userMedias": "Social Medias",
+  "userSex": "Sex",
+  "userBirthday": "Birthday",
+  "userAddr": "Address"
 }

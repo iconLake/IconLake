@@ -82,7 +82,7 @@ onMounted(() => {
               class="grow"
               autocomplete="off"
               autofocus
-              maxlength="15"
+              maxlength="64"
               type="text"
               name="name"
             >

@@ -3,7 +3,15 @@ const { Schema, model } = mongoose
 
 export const UserSchema = new Schema({
   name: String,
+  desc: String,
   avatar: String,
+  medias: [{
+    name: String,
+    content: String
+  }],
+  sex: String,
+  birthday: String,
+  addr: String,
   token: String,
   tokenExpire: Date,
   github: {

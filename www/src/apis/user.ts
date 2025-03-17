@@ -1,7 +1,15 @@
 export interface UserInfo {
   _id: string
-  name: string
-  avatar: string
+  name?: string
+  desc?: string
+  avatar?: string
+  medias?: {
+    name: string
+    content: string
+  }[]
+  sex?: string
+  birthday?: string
+  addr?: string
   tokenExpire: Date
   blockchain?: {
     id: string
@@ -30,6 +38,7 @@ export enum LoginType {
 
 import { cache } from '@/utils/cache'
 import request from '../utils/request'
+import { Res } from './project'
 
 const baseURL = '/api/user/'
 
@@ -58,6 +67,7 @@ export const userApis = {
   logout,
   loginByBlockchain,
   loginByCode,
+  editInfo,
 }
 
 /**
@@ -167,4 +177,45 @@ export function unbind(type: string) {
     },
     baseURL,
   }) as Promise<void>
+}
+
+export function editInfo(data: {
+  name?: string
+  desc?: string
+  avatar?: string
+  medias?: {
+    name?: string
+    content: string
+  }[]
+  sex?: string
+  birthday?: string
+  addr?: string
+}) {
+  return <Promise<Res>>request({
+    method: 'POST',
+    url: '/info/edit',
+    baseURL,
+    data,
+  })
+}
+
+export function uploadFile(params: {
+  _id: string
+  data: string | ArrayBuffer | Blob
+  dir?: string
+}) {
+  return <Promise<{key: string, url: string}>>request({
+    method: 'POST',
+    url: '/file/upload',
+    baseURL,
+    headers: {
+      'Content-Type': typeof params.data === 'string' ? 'text/plain; charset=utf-8' : 'application/octet-stream'
+    },
+    params: {
+      _id: params._id,
+      dir: params.dir,
+    },
+    data: params.data,
+    timeout: 1000 * 60 * 3,
+  })
 }
