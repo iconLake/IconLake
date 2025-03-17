@@ -1,0 +1,9 @@
+syntax = "proto3";
+package iconlake.icon;
+
+option go_package = "iconlake/x/icon/types";
+
+message Media {
+  string name = 1; 
+  string content = 2; 
+}
