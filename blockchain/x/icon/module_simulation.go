@@ -3,14 +3,15 @@ package icon
 import (
 	"math/rand"
 
+	"iconlake/testutil/sample"
+	iconsimulation "iconlake/x/icon/simulation"
+	"iconlake/x/icon/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"iconlake/testutil/sample"
-	iconsimulation "iconlake/x/icon/simulation"
-	"iconlake/x/icon/types"
 )
 
 // avoid unused import issue
@@ -35,6 +36,14 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgBurn int = 100
 
+	opWeightMsgUpdateCreator = "op_weight_msg_creator"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateCreator int = 100
+
+	opWeightMsgDeleteCreator = "op_weight_msg_creator"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgDeleteCreator int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -46,6 +55,14 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	}
 	iconGenesis := types.GenesisState{
 		Params: types.DefaultParams(),
+		CreatorList: []types.Creator{
+			{
+				Address: sample.AccAddress(),
+			},
+			{
+				Address: sample.AccAddress(),
+			},
+		},
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&iconGenesis)
@@ -96,6 +113,28 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		iconsimulation.SimulateMsgBurn(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
+	var weightMsgUpdateCreator int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateCreator, &weightMsgUpdateCreator, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateCreator = defaultWeightMsgUpdateCreator
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateCreator,
+		iconsimulation.SimulateMsgUpdateCreator(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgDeleteCreator int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteCreator, &weightMsgDeleteCreator, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteCreator = defaultWeightMsgDeleteCreator
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteCreator,
+		iconsimulation.SimulateMsgDeleteCreator(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
@@ -125,6 +164,22 @@ func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.Wei
 			defaultWeightMsgBurn,
 			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
 				iconsimulation.SimulateMsgBurn(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgUpdateCreator,
+			defaultWeightMsgUpdateCreator,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				iconsimulation.SimulateMsgUpdateCreator(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgDeleteCreator,
+			defaultWeightMsgDeleteCreator,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				iconsimulation.SimulateMsgDeleteCreator(am.accountKeeper, am.bankKeeper, am.keeper)
 				return nil
 			},
 		),

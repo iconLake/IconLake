@@ -1,0 +1,30 @@
+syntax = "proto3";
+package iconlake.icon;
+
+import "iconlake/icon/media.proto";
+
+option go_package = "iconlake/x/icon/types";
+
+message CreatorRaw {
+           bytes  address     = 1; 
+           string name        = 2; 
+           string description = 3; 
+           string avatar      = 4; 
+           string avatarHash  = 5; 
+  repeated Media  medias      = 6; 
+           string sex         = 7; 
+           string birthday    = 8; 
+           string location    = 9; 
+}
+
+message Creator {
+           string address     = 1; 
+           string name        = 2; 
+           string description = 3; 
+           string avatar      = 4; 
+           string avatarHash  = 5; 
+  repeated Media  medias      = 6; 
+           string sex         = 7; 
+           string birthday    = 8; 
+           string location    = 9; 
+}
