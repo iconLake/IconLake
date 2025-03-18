@@ -8,10 +8,10 @@ import (
 	"iconlake/x/icon/types"
 )
 
-func CmdListCreator() *cobra.Command {
+func CmdCreators() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "creators",
-		Short: "list all creator",
+		Short: "list all creators",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -25,11 +25,11 @@ func CmdListCreator() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllCreatorRequest{
+			params := &types.QueryCreatorsRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.CreatorAll(cmd.Context(), params)
+			res, err := queryClient.Creators(cmd.Context(), params)
 			if err != nil {
 				return err
 			}
@@ -44,7 +44,7 @@ func CmdListCreator() *cobra.Command {
 	return cmd
 }
 
-func CmdShowCreator() *cobra.Command {
+func CmdCreator() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "creator [address]",
 		Short: "shows a creator",

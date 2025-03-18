@@ -51,7 +51,7 @@ service Query {
     option (google.api.http).get = "/iconlake/icon/creator/{address}";
   
   }
-  rpc CreatorAll (QueryAllCreatorRequest) returns (QueryAllCreatorResponse) {
+  rpc Creators (QueryCreatorsRequest) returns (QueryCreatorsResponse) {
     option (google.api.http).get = "/iconlake/icon/creator";
   
   }
@@ -119,11 +119,11 @@ message QueryGetCreatorResponse {
   Creator creator = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryAllCreatorRequest {
+message QueryCreatorsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryAllCreatorResponse {
-  repeated Creator                                creator    = 1 [(gogoproto.nullable) = false];
+message QueryCreatorsResponse {
+  repeated Creator                                creators   = 1 [(gogoproto.nullable) = false];
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

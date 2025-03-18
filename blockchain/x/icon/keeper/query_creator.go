@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) CreatorAll(goCtx context.Context, req *types.QueryAllCreatorRequest) (*types.QueryAllCreatorResponse, error) {
+func (k Keeper) Creators(goCtx context.Context, req *types.QueryCreatorsRequest) (*types.QueryCreatorsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -47,7 +47,7 @@ func (k Keeper) CreatorAll(goCtx context.Context, req *types.QueryAllCreatorRequ
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllCreatorResponse{Creator: creators, Pagination: pageRes}, nil
+	return &types.QueryCreatorsResponse{Creators: creators, Pagination: pageRes}, nil
 }
 
 func (k Keeper) Creator(goCtx context.Context, req *types.QueryGetCreatorRequest) (*types.QueryGetCreatorResponse, error) {
