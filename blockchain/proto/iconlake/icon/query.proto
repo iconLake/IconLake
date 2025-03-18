@@ -52,7 +52,7 @@ service Query {
   
   }
   rpc Creators (QueryCreatorsRequest) returns (QueryCreatorsResponse) {
-    option (google.api.http).get = "/iconlake/icon/creator";
+    option (google.api.http).get = "/iconlake/icon/creators";
   
   }
 }

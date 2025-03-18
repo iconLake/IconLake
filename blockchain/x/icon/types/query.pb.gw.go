@@ -650,7 +650,7 @@ var (
 
 	pattern_Query_Creator_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"iconlake", "icon", "creator", "address"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Creators_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"iconlake", "icon", "creator"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Creators_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"iconlake", "icon", "creators"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

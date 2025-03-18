@@ -1,6 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
+import { Media } from "./media";
 
 export const protobufPackage = "iconlake.icon";
 
@@ -38,6 +39,28 @@ export interface MsgBurn {
 }
 
 export interface MsgBurnResponse {
+}
+
+export interface MsgUpdateCreator {
+  address: string;
+  name: string;
+  description: string;
+  avatar: string;
+  avatarHash: string;
+  medias: Media[];
+  sex: string;
+  birthday: string;
+  location: string;
+}
+
+export interface MsgUpdateCreatorResponse {
+}
+
+export interface MsgDeleteCreator {
+  address: string;
+}
+
+export interface MsgDeleteCreatorResponse {
 }
 
 function createBaseMsgMint(): MsgMint {
@@ -439,11 +462,273 @@ export const MsgBurnResponse = {
   },
 };
 
+function createBaseMsgUpdateCreator(): MsgUpdateCreator {
+  return {
+    address: "",
+    name: "",
+    description: "",
+    avatar: "",
+    avatarHash: "",
+    medias: [],
+    sex: "",
+    birthday: "",
+    location: "",
+  };
+}
+
+export const MsgUpdateCreator = {
+  encode(message: MsgUpdateCreator, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
+    }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    if (message.description !== "") {
+      writer.uint32(26).string(message.description);
+    }
+    if (message.avatar !== "") {
+      writer.uint32(34).string(message.avatar);
+    }
+    if (message.avatarHash !== "") {
+      writer.uint32(42).string(message.avatarHash);
+    }
+    for (const v of message.medias) {
+      Media.encode(v!, writer.uint32(50).fork()).ldelim();
+    }
+    if (message.sex !== "") {
+      writer.uint32(58).string(message.sex);
+    }
+    if (message.birthday !== "") {
+      writer.uint32(66).string(message.birthday);
+    }
+    if (message.location !== "") {
+      writer.uint32(74).string(message.location);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateCreator {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateCreator();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.address = reader.string();
+          break;
+        case 2:
+          message.name = reader.string();
+          break;
+        case 3:
+          message.description = reader.string();
+          break;
+        case 4:
+          message.avatar = reader.string();
+          break;
+        case 5:
+          message.avatarHash = reader.string();
+          break;
+        case 6:
+          message.medias.push(Media.decode(reader, reader.uint32()));
+          break;
+        case 7:
+          message.sex = reader.string();
+          break;
+        case 8:
+          message.birthday = reader.string();
+          break;
+        case 9:
+          message.location = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgUpdateCreator {
+    return {
+      address: isSet(object.address) ? String(object.address) : "",
+      name: isSet(object.name) ? String(object.name) : "",
+      description: isSet(object.description) ? String(object.description) : "",
+      avatar: isSet(object.avatar) ? String(object.avatar) : "",
+      avatarHash: isSet(object.avatarHash) ? String(object.avatarHash) : "",
+      medias: Array.isArray(object?.medias) ? object.medias.map((e: any) => Media.fromJSON(e)) : [],
+      sex: isSet(object.sex) ? String(object.sex) : "",
+      birthday: isSet(object.birthday) ? String(object.birthday) : "",
+      location: isSet(object.location) ? String(object.location) : "",
+    };
+  },
+
+  toJSON(message: MsgUpdateCreator): unknown {
+    const obj: any = {};
+    message.address !== undefined && (obj.address = message.address);
+    message.name !== undefined && (obj.name = message.name);
+    message.description !== undefined && (obj.description = message.description);
+    message.avatar !== undefined && (obj.avatar = message.avatar);
+    message.avatarHash !== undefined && (obj.avatarHash = message.avatarHash);
+    if (message.medias) {
+      obj.medias = message.medias.map((e) => e ? Media.toJSON(e) : undefined);
+    } else {
+      obj.medias = [];
+    }
+    message.sex !== undefined && (obj.sex = message.sex);
+    message.birthday !== undefined && (obj.birthday = message.birthday);
+    message.location !== undefined && (obj.location = message.location);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateCreator>, I>>(object: I): MsgUpdateCreator {
+    const message = createBaseMsgUpdateCreator();
+    message.address = object.address ?? "";
+    message.name = object.name ?? "";
+    message.description = object.description ?? "";
+    message.avatar = object.avatar ?? "";
+    message.avatarHash = object.avatarHash ?? "";
+    message.medias = object.medias?.map((e) => Media.fromPartial(e)) || [];
+    message.sex = object.sex ?? "";
+    message.birthday = object.birthday ?? "";
+    message.location = object.location ?? "";
+    return message;
+  },
+};
+
+function createBaseMsgUpdateCreatorResponse(): MsgUpdateCreatorResponse {
+  return {};
+}
+
+export const MsgUpdateCreatorResponse = {
+  encode(_: MsgUpdateCreatorResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateCreatorResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateCreatorResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgUpdateCreatorResponse {
+    return {};
+  },
+
+  toJSON(_: MsgUpdateCreatorResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateCreatorResponse>, I>>(_: I): MsgUpdateCreatorResponse {
+    const message = createBaseMsgUpdateCreatorResponse();
+    return message;
+  },
+};
+
+function createBaseMsgDeleteCreator(): MsgDeleteCreator {
+  return { address: "" };
+}
+
+export const MsgDeleteCreator = {
+  encode(message: MsgDeleteCreator, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteCreator {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgDeleteCreator();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.address = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgDeleteCreator {
+    return { address: isSet(object.address) ? String(object.address) : "" };
+  },
+
+  toJSON(message: MsgDeleteCreator): unknown {
+    const obj: any = {};
+    message.address !== undefined && (obj.address = message.address);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgDeleteCreator>, I>>(object: I): MsgDeleteCreator {
+    const message = createBaseMsgDeleteCreator();
+    message.address = object.address ?? "";
+    return message;
+  },
+};
+
+function createBaseMsgDeleteCreatorResponse(): MsgDeleteCreatorResponse {
+  return {};
+}
+
+export const MsgDeleteCreatorResponse = {
+  encode(_: MsgDeleteCreatorResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteCreatorResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgDeleteCreatorResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgDeleteCreatorResponse {
+    return {};
+  },
+
+  toJSON(_: MsgDeleteCreatorResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgDeleteCreatorResponse>, I>>(_: I): MsgDeleteCreatorResponse {
+    const message = createBaseMsgDeleteCreatorResponse();
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   Mint(request: MsgMint): Promise<MsgMintResponse>;
   UpdateClass(request: MsgUpdateClass): Promise<MsgUpdateClassResponse>;
   Burn(request: MsgBurn): Promise<MsgBurnResponse>;
+  UpdateCreator(request: MsgUpdateCreator): Promise<MsgUpdateCreatorResponse>;
+  DeleteCreator(request: MsgDeleteCreator): Promise<MsgDeleteCreatorResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -453,6 +738,8 @@ export class MsgClientImpl implements Msg {
     this.Mint = this.Mint.bind(this);
     this.UpdateClass = this.UpdateClass.bind(this);
     this.Burn = this.Burn.bind(this);
+    this.UpdateCreator = this.UpdateCreator.bind(this);
+    this.DeleteCreator = this.DeleteCreator.bind(this);
   }
   Mint(request: MsgMint): Promise<MsgMintResponse> {
     const data = MsgMint.encode(request).finish();
@@ -470,6 +757,18 @@ export class MsgClientImpl implements Msg {
     const data = MsgBurn.encode(request).finish();
     const promise = this.rpc.request("iconlake.icon.Msg", "Burn", data);
     return promise.then((data) => MsgBurnResponse.decode(new _m0.Reader(data)));
+  }
+
+  UpdateCreator(request: MsgUpdateCreator): Promise<MsgUpdateCreatorResponse> {
+    const data = MsgUpdateCreator.encode(request).finish();
+    const promise = this.rpc.request("iconlake.icon.Msg", "UpdateCreator", data);
+    return promise.then((data) => MsgUpdateCreatorResponse.decode(new _m0.Reader(data)));
+  }
+
+  DeleteCreator(request: MsgDeleteCreator): Promise<MsgDeleteCreatorResponse> {
+    const data = MsgDeleteCreator.encode(request).finish();
+    const promise = this.rpc.request("iconlake.icon.Msg", "DeleteCreator", data);
+    return promise.then((data) => MsgDeleteCreatorResponse.decode(new _m0.Reader(data)));
   }
 }
 
