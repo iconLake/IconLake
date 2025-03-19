@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, toRaw, toValue } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getExt, toast } from '../../../utils'
 import { ElUpload } from 'element-plus'
 import type { UploadFile } from 'element-plus'
-import { UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT, ONLINE_DOMAIN } from '@/utils/const'
+import { UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
 import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
 import { uploadFile, userApis, UserInfo } from '@/apis/user'
-import { getCreator, getHash, updateCreator } from '@/apis/blockchain'
+import { event } from '@/utils/event'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -23,8 +23,6 @@ const info = ref<UserInfo>({
 })
 const isCoverUploading = ref(false)
 const isSaving = ref(false)
-const isDiffFromChain = ref(false)
-const isUpdatingChain = ref(false)
 
 async function save() {
   if (!info.value.name || isSaving.value) {
@@ -47,7 +45,9 @@ async function save() {
   }
   toast(t('saveDone'))
   isSaving.value = false
-  getInfoOnChain()
+  event.emit(event.EventType.UserInfoChange, {
+    userInfo: info.value,
+  })
 }
 
 async function handleUpload(file: UploadFile) {
@@ -90,69 +90,6 @@ const delMedia = (index: number) => {
   info.value.medias!.splice(index, 1)
 }
 
-async function updateChain(e: Event) {
-  e.preventDefault()
-  const avatar = info.value.avatar
-  if (!avatar) {
-    toast(t('setAvatarFirst'))
-    return
-  }
-  if (isUpdatingChain.value) {
-    return
-  }
-  isUpdatingChain.value = true
-  const hash = await getHash(avatar)
-  if (!hash) {
-    toast.error(t('fail'))
-    isUpdatingChain.value = false
-    return
-  }
-  let user: UserInfo|undefined
-  await userApis.info().onUpdate(async (info) => {
-    user = info
-  })
-  if (!user?.blockchain?.id) {
-    toast.error(t('bindBlockchainFirst'))
-    isUpdatingChain.value = false
-    return
-  }
-  const res = await updateCreator({
-    address: user.blockchain?.id,
-    name: info.value.name ?? '',
-    description: info.value.desc ?? '',
-    avatar,
-    avatarHash: hash.fileHash ?? '',
-    medias: info.value.medias ?? [],
-    sex: info.value.sex ?? '',
-    birthday: info.value.birthday ?? '',
-    location: info.value.location ?? '',
-  })
-  if (res) {
-    if (res?.code === 0) {
-      toast(t('updateCompleted'))
-      isDiffFromChain.value = false
-    } else {
-      toast(res?.rawLog ?? t('updateFailed'))
-    }
-  }
-  isUpdatingChain.value = false
-}
-
-async function getInfoOnChain() {
-  if (!info.value.blockchain?.id) {
-    return
-  }
-  const infoOnChain = await getCreator(info.value.blockchain?.id)
-  isDiffFromChain.value = !infoOnChain
-    || infoOnChain.creator?.name !== info.value.name
-    || infoOnChain.creator?.description !== info.value.desc
-    || infoOnChain.creator?.avatar !== info.value.avatar
-    || JSON.stringify(infoOnChain.creator?.medias) !== JSON.stringify(info.value.medias?.map(e => ({ name: e.name, content: e.content })))
-    || infoOnChain.creator?.sex !== info.value.sex
-    || infoOnChain.creator?.birthday !== info.value.birthday
-    || infoOnChain.creator?.location !== info.value.location
-}
-
 onMounted(async () => {
   await userApis.info().onUpdate(async (user) => {
     pageLoading.end()
@@ -161,41 +98,10 @@ onMounted(async () => {
       medias: (!user.medias || user.medias.length === 0) ? [{ name: '', content: '' }] : user.medias,
     }
   })
-  await getInfoOnChain()
 })
 </script>
 
 <template>
-  <a
-    v-if="info.name || info.avatar"
-    class="info preview flex"
-    :class="{ changed: isDiffFromChain }"
-    :href="info.blockchain?.id ? `${ONLINE_DOMAIN}/exhibition/creator/${info.blockchain?.id}` : ''"
-  >
-    <div
-      v-if="info.avatar"
-      class="avatar"
-      :style="{ backgroundImage: `url(${info.avatar})` }"
-    />
-    <div>
-      <div class="name">
-        {{ info.name }}
-      </div>
-      <div class="desc">
-        {{ info.desc }}
-      </div>
-    </div>
-    <div
-      v-if="isDiffFromChain"
-      class="btn update-chain"
-      @click="updateChain"
-    >
-      <Loading v-if="isUpdatingChain" />
-      <span v-else>
-        {{ t('UpdateOnchainInformation') }}
-      </span>
-    </div>
-  </a>
   <form
     class="info"
     @submit.prevent=""
@@ -318,38 +224,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.preview {
-  justify-content: flex-start;
-  gap: 4rem;
-  position: relative;
-  &.changed {
-    padding-bottom: 5.3rem;
-  }
-  .avatar {
-    width: 8rem;
-    min-width: 8rem;
-    height: 8rem;
-    border-radius: 4rem;
-    background-size: cover;
-  }
-  .desc {
-    font-size: 1.2rem;
-    color: #666;
-    margin-top: 1.6rem;
-    line-height: 1.4;
-    white-space: pre-wrap;
-  }
-  .update-chain {
-    box-shadow: 0.075rem 0.369rem 0.413rem 0.025rem rgba(0, 0, 0, 0.2);
-    position: absolute;
-    right: 1.125rem;
-    bottom: 1.125rem;
-    .loading {
-      margin-left: 0;
-    }
-  }
-}
-
 .info {
   background-color: #fff;
   border-radius: 0.4rem;

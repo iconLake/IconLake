@@ -3,6 +3,7 @@ import { RouterView } from 'vue-router'
 import HeaderVue from '@/components/Header.vue'
 import UserVue from '@/components/User.vue'
 import { useI18n } from 'vue-i18n'
+import InfoCard from './setting/InfoCard.vue'
 
 const { t } = useI18n()
 
@@ -24,6 +25,14 @@ const { t } = useI18n()
       <RouterLink
         class="item"
         active-class="active"
+        to="./theme"
+      >
+        <i class="iconfont icon-theme" />
+        <span>{{ t('theme') }}</span>
+      </RouterLink>
+      <RouterLink
+        class="item"
+        active-class="active"
         to="/user/setting/bind"
       >
         <i class="iconfont icon-bind" />
@@ -31,6 +40,7 @@ const { t } = useI18n()
       </RouterLink>
     </div>
     <div class="view">
+      <InfoCard />
       <RouterView />
     </div>
   </div>

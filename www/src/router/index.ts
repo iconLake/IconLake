@@ -113,6 +113,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'userSettingInfo',
         component: () => import('../views/user/setting/Info.vue')
       },
+      {
+        path: 'theme',
+        name: 'userSettingTheme',
+        component: () => import('../views/user/setting/Theme.vue')
+      },
     ]
   },
   {

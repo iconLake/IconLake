@@ -27,6 +27,9 @@ export interface UserInfo {
   code?: {
     id: string
   }
+  theme?: {
+    creator?: string
+  }
 }
 
 export enum LoginType {
@@ -68,6 +71,9 @@ export const userApis = {
   loginByBlockchain,
   loginByCode,
   editInfo,
+  uploadFile,
+  editTheme,
+  getTheme,
 }
 
 /**
@@ -217,5 +223,27 @@ export function uploadFile(params: {
     },
     data: params.data,
     timeout: 1000 * 60 * 3,
+  })
+}
+
+export function editTheme(data: {
+  creator?: string
+}) {
+  return <Promise<Res>>request({
+    method: 'POST',
+    url: '/theme/edit',
+    baseURL,
+    data,
+  })
+}
+
+export function getTheme(data: {
+  address: string
+}) {
+  return <Promise<Res>>request({
+    method: 'GET',
+    url: '/theme/info',
+    baseURL,
+    data,
   })
 }

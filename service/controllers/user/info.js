@@ -22,7 +22,8 @@ export async function info (req, res) {
     'github.id',
     'github.name',
     'github.avatar',
-    'code.id'
+    'code.id',
+    'theme'
   ]
   const user = (await User.findById(req.user._id, fields.join(' '))).toJSON()
   if (user.avatar) {

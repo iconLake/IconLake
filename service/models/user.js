@@ -31,6 +31,9 @@ export const UserSchema = new Schema({
   },
   blockchain: {
     id: String
+  },
+  theme: {
+    creator: String
   }
 })
 

@@ -7,7 +7,7 @@ import { completeURL, save } from '../../utils/file.js'
 export async function upload (req, res) {
   const _id = req.query._id
   const dirs = {
-    cover: true,
+    theme: true,
     avatar: true
   }
   const data = await save(_id, req.body, `${(req.query.dir && dirs[req.query.dir]) ? req.query.dir : 'avatar'}/${req.user._id}/`).catch((e) => {
