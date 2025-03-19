@@ -216,7 +216,11 @@
   "userDesc": "Description",
   "avatar": "Avatar",
   "userMedias": "Social Medias",
+  "userMediaNamePlaceholder": "Name, such as: X",
+  "userMediaContentPlaceholder": "Link or ID",
   "userSex": "Sex",
   "userBirthday": "Birthday",
-  "userAddr": "Address"
+  "userLocation": "Location",
+  "setAvatarFirst": "Please set the avatar first",
+  "bindBlockchainFirst": "Please bind your blockchain account first"
 }

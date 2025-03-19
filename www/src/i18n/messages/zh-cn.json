@@ -216,7 +216,11 @@
   "userDesc": "简介",
   "avatar": "头像",
   "userMedias": "社交媒体",
+  "userMediaNamePlaceholder": "名称，如：微博",
+  "userMediaContentPlaceholder": "链接或者ID",
   "userSex": "性别",
   "userBirthday": "生日",
-  "userAddr": "地址"
+  "userLocation": "位置",
+  "setAvatarFirst": "请先设置头像",
+  "bindBlockchainFirst": "请先绑定区块链账户"
 }

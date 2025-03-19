@@ -8,6 +8,7 @@ import { UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT, ONLINE_DOMAIN } from '@/utils/const
 import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
 import { uploadFile, userApis, UserInfo } from '@/apis/user'
+import { getCreator, getHash, updateCreator } from '@/apis/blockchain'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -22,7 +23,7 @@ const info = ref<UserInfo>({
 })
 const isCoverUploading = ref(false)
 const isSaving = ref(false)
-const isDiffFromChain = ref(true)
+const isDiffFromChain = ref(false)
 const isUpdatingChain = ref(false)
 
 async function save() {
@@ -38,7 +39,7 @@ async function save() {
       medias: info.value.medias?.filter(e => e.content),
       sex: info.value.sex,
       birthday: info.value.birthday,
-      addr: info.value.addr
+      location: info.value.location,
     })
   } catch (err) {
     isSaving.value = false
@@ -46,6 +47,7 @@ async function save() {
   }
   toast(t('saveDone'))
   isSaving.value = false
+  getInfoOnChain()
 }
 
 async function handleUpload(file: UploadFile) {
@@ -88,30 +90,90 @@ const delMedia = (index: number) => {
   info.value.medias!.splice(index, 1)
 }
 
-const updateChain = async () => {
+async function updateChain(e: Event) {
+  e.preventDefault()
+  const avatar = info.value.avatar
+  if (!avatar) {
+    toast(t('setAvatarFirst'))
+    return
+  }
+  if (isUpdatingChain.value) {
+    return
+  }
   isUpdatingChain.value = true
-  // await userApis.updateChain()
+  const hash = await getHash(avatar)
+  if (!hash) {
+    toast.error(t('fail'))
+    isUpdatingChain.value = false
+    return
+  }
+  let user: UserInfo|undefined
+  await userApis.info().onUpdate(async (info) => {
+    user = info
+  })
+  if (!user?.blockchain?.id) {
+    toast.error(t('bindBlockchainFirst'))
+    isUpdatingChain.value = false
+    return
+  }
+  const res = await updateCreator({
+    address: user.blockchain?.id,
+    name: info.value.name ?? '',
+    description: info.value.desc ?? '',
+    avatar,
+    avatarHash: hash.fileHash ?? '',
+    medias: info.value.medias ?? [],
+    sex: info.value.sex ?? '',
+    birthday: info.value.birthday ?? '',
+    location: info.value.location ?? '',
+  })
+  if (res) {
+    if (res?.code === 0) {
+      toast(t('updateCompleted'))
+      isDiffFromChain.value = false
+    } else {
+      toast(res?.rawLog ?? t('updateFailed'))
+    }
+  }
   isUpdatingChain.value = false
 }
 
-onMounted(() => {
-  userApis.info().onUpdate(async (user) => {
+async function getInfoOnChain() {
+  if (!info.value.blockchain?.id) {
+    return
+  }
+  const infoOnChain = await getCreator(info.value.blockchain?.id)
+  isDiffFromChain.value = !infoOnChain
+    || infoOnChain.creator?.name !== info.value.name
+    || infoOnChain.creator?.description !== info.value.desc
+    || infoOnChain.creator?.avatar !== info.value.avatar
+    || JSON.stringify(infoOnChain.creator?.medias) !== JSON.stringify(info.value.medias?.map(e => ({ name: e.name, content: e.content })))
+    || infoOnChain.creator?.sex !== info.value.sex
+    || infoOnChain.creator?.birthday !== info.value.birthday
+    || infoOnChain.creator?.location !== info.value.location
+}
+
+onMounted(async () => {
+  await userApis.info().onUpdate(async (user) => {
     pageLoading.end()
     info.value = {
       ...user,
       medias: (!user.medias || user.medias.length === 0) ? [{ name: '', content: '' }] : user.medias,
     }
   })
+  await getInfoOnChain()
 })
 </script>
 
 <template>
   <a
+    v-if="info.name || info.avatar"
     class="info preview flex"
     :class="{ changed: isDiffFromChain }"
-    :href="info.blockchain?.id ? `${ONLINE_DOMAIN}/exhibition/${info.blockchain?.id}` : ''"
+    :href="info.blockchain?.id ? `${ONLINE_DOMAIN}/exhibition/creator/${info.blockchain?.id}` : ''"
   >
     <div
+      v-if="info.avatar"
       class="avatar"
       :style="{ backgroundImage: `url(${info.avatar})` }"
     />
@@ -202,14 +264,14 @@ onMounted(() => {
             v-model="media.name"
             type="text"
             class="input name"
-            placeholder="名称，如：微博"
+            :placeholder="t('userMediaNamePlaceholder')"
             maxlength="16"
           >
           <input
             v-model="media.content"
             type="text"
             class="input"
-            placeholder="链接或者ID"
+            :placeholder="t('userMediaContentPlaceholder')"
             maxlength="128"
           >
           <button
@@ -234,9 +296,9 @@ onMounted(() => {
       class="input"
       maxlength="32"
     >
-    <p>{{ t('userAddr') }}</p>
+    <p>{{ t('userLocation') }}</p>
     <input
-      v-model="info.addr"
+      v-model="info.location"
       type="text"
       class="input"
       maxlength="64"
@@ -282,6 +344,9 @@ onMounted(() => {
     position: absolute;
     right: 1.125rem;
     bottom: 1.125rem;
+    .loading {
+      margin-left: 0;
+    }
   }
 }
 

@@ -11,7 +11,7 @@ export const UserSchema = new Schema({
   }],
   sex: String,
   birthday: String,
-  addr: String,
+  location: String,
   token: String,
   tokenExpire: Date,
   github: {

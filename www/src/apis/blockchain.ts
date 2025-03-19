@@ -1,7 +1,7 @@
 import { CHAIN_ID, DROP_DENOM_MINI, IS_PRODUCTION } from '@/utils/const'
 import request from '@/utils/request'
 import { Client } from '@iconlake/client'
-import type { MsgMint as MsgMintIcon, MsgBurn as MsgBurnIcon, MsgUpdateClass, MsgMint } from '@iconlake/client/types/iconlake.icon/module'
+import type { MsgMint as MsgMintIcon, MsgBurn as MsgBurnIcon, MsgUpdateClass, MsgMint, MsgUpdateCreator, MsgDeleteCreator } from '@iconlake/client/types/iconlake.icon/module'
 import { SHA256, lib } from 'crypto-js'
 import i18n from '@/i18n'
 import { toast } from '@/utils'
@@ -292,6 +292,46 @@ export async function updateClass(value: MsgUpdateClass) {
   }).catch((err) => {
     console.error(err)
     toast.error(err.message ?? t('updateFailed'))
+    return undefined
+  })
+  return res
+}
+
+export async function getCreator(address: string) {
+  const res = await client.IconlakeIcon.query.queryCreator(address).catch((e) => {
+    console.error(e)
+    return undefined
+  })
+  return res?.data
+}
+
+export async function updateCreator(value: MsgUpdateCreator) {
+  await detectKeplr()
+  const account = await getAccount(value.address)
+  if (!account) {
+    return undefined
+  }
+  const res = await client.IconlakeIcon.tx.sendMsgUpdateCreator({
+    value
+  }).catch((err) => {
+    console.error(err)
+    toast.error(err.message ?? t('updateFailed'))
+    return undefined
+  })
+  return res
+}
+
+export async function deleteCreator(value: MsgDeleteCreator) {
+  await detectKeplr()
+  const account = await getAccount(value.address)
+  if (!account) {
+    return undefined
+  }
+  const res = await client.IconlakeIcon.tx.sendMsgDeleteCreator({
+    value
+  }).catch((err) => {
+    console.error(err)
+    toast.error(err.message ?? t('deleteFailed'))
     return undefined
   })
   return res

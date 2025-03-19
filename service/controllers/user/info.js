@@ -13,7 +13,7 @@ export async function info (req, res) {
     'medias',
     'sex',
     'birthday',
-    'addr',
+    'location',
     'tokenExpire',
     'blockchain.id',
     'gitee.id',
@@ -43,7 +43,7 @@ export async function info (req, res) {
 export async function edit (req, res) {
   const user = await User.findById(req.user._id)
   let isChanged = false
-  const keys = ['name', 'desc', 'avatar', 'sex', 'birthday', 'addr']
+  const keys = ['name', 'desc', 'avatar', 'sex', 'birthday', 'location']
   keys.forEach(key => {
     if (req.body[key] && user[key] !== req.body[key]) {
       isChanged = true

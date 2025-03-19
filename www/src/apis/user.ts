@@ -9,7 +9,7 @@ export interface UserInfo {
   }[]
   sex?: string
   birthday?: string
-  addr?: string
+  location?: string
   tokenExpire: Date
   blockchain?: {
     id: string
@@ -189,7 +189,7 @@ export function editInfo(data: {
   }[]
   sex?: string
   birthday?: string
-  addr?: string
+  location?: string
 }) {
   return <Promise<Res>>request({
     method: 'POST',

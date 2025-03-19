@@ -897,5 +897,56 @@ export function createIconAminoConverters() {
         return obj;
       },
     },
+    '/iconlake.icon.MsgUpdateCreator': {
+      aminoType: 'icon/UpdateCreator',
+  
+      fromAmino(object: any): MsgUpdateCreator {
+        return MsgUpdateCreator.fromPartial({
+          address: object.address,
+          name: object.name,
+          description: object.description,
+          avatar: object.avatar,
+          avatarHash: object.avatar_hash,
+          medias: object.medias,
+          sex: object.sex,
+          birthday: object.birthday,
+          location: object.location,
+        });
+      },
+  
+      toAmino(message: MsgUpdateCreator): unknown {
+        const obj: any = {};
+        message.address !== undefined && (obj.address = message.address);
+        message.name !== undefined && (obj.name = message.name);
+        message.description !== undefined && (obj.description = message.description);
+        message.avatar !== undefined && (obj.avatar = message.avatar);
+        message.avatarHash !== undefined && (obj.avatar_hash = message.avatarHash);
+        if (message.medias !== undefined) {
+          obj.medias = message.medias.map((e) => ({
+            name: e.name,
+            content: e.content,
+          }));
+        }
+        message.sex !== undefined && (obj.sex = message.sex);
+        message.birthday !== undefined && (obj.birthday = message.birthday);
+        message.location !== undefined && (obj.location = message.location);
+        return obj;
+      },
+    },
+    '/iconlake.icon.MsgDeleteCreator': {
+      aminoType: 'icon/DeleteCreator',
+  
+      fromAmino(object: any): MsgDeleteCreator {
+        return MsgDeleteCreator.fromPartial({
+          address: object.address,
+        });
+      },
+  
+      toAmino(message: MsgDeleteCreator): unknown {
+        const obj: any = {};
+        message.address !== undefined && (obj.address = message.address);
+        return obj;
+      },
+    },
   }
 }
