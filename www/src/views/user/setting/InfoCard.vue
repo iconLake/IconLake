@@ -95,6 +95,7 @@ onMounted(async () => {
 
   event.on(event.EventType.UserInfoChange, async (data) => {
     info.value = data.userInfo
+    await getInfoOnChain()
   })
 })
 </script>
