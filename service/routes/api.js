@@ -4,7 +4,9 @@ import { login as oauthGitee } from '../controllers/oauth/gitee.js'
 import { login as oauthCode } from '../controllers/oauth/code.js'
 import { login as oauthBlockchain } from '../controllers/oauth/blockchain.js'
 import * as userInfo from '../controllers/user/info.js'
+import * as userTheme from '../controllers/user/theme.js'
 import * as userSetting from '../controllers/user/setting.js'
+import * as userFile from '../controllers/user/file.js'
 import userMiddleware from '../controllers/user/middleware.js'
 import * as projectInfo from '../controllers/project/info.js'
 import * as projectList from '../controllers/project/list.js'
@@ -34,9 +36,14 @@ router.get('/oauth/code', oauthCode)
 router.post('/oauth/blockchain', oauthBlockchain)
 
 router.get('/user/info', userMiddleware, userInfo.info)
+router.post('/user/info/edit', userMiddleware, userInfo.edit)
 router.get('/user/logout', userMiddleware, userInfo.logout)
 
 router.get('/user/setting/unbind', userMiddleware, userSetting.unbind)
+router.post('/user/file/upload', userMiddleware, userFile.upload)
+
+router.post('/user/theme/edit', userMiddleware, userTheme.edit)
+router.get('/user/theme/info', userTheme.info)
 
 router.get('/project/list', userMiddleware, projectList.list)
 router.get('/project/info/:id', projectInfo.info)

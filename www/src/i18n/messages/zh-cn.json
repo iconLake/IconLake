@@ -191,6 +191,7 @@
   "selectFileAndExample": "选择文件，例如：",
   "uploadExhibitionIndexComponent": "上传展览首页主题",
   "uploadExhibitionNftComponent": "上传展览作品页主题",
+  "uploadExhibitionCreatorComponent": "上传展览创作者页主题",
   "basedOnOpenSourceToDiyTheme": "基于我们的开源主题，可以开发自定义主题。",
   "uploading": "上传中...",
   "exhibitionTheme": "展览主题",
@@ -210,5 +211,17 @@
   "notBound": "未绑定",
   "blockchain": "区块链",
   "mySettings": "我的设置",
-  "bindRequiredAccount": "必须绑定Gitee账户才能使用此功能"
+  "bindRequiredAccount": "必须绑定Gitee账户才能使用此功能",
+  "info": "信息",
+  "userName": "姓名",
+  "userDesc": "简介",
+  "avatar": "头像",
+  "userMedias": "社交媒体",
+  "userMediaNamePlaceholder": "名称，如：微博",
+  "userMediaContentPlaceholder": "链接或者ID",
+  "userSex": "性别",
+  "userBirthday": "生日",
+  "userLocation": "位置",
+  "setAvatarFirst": "请先设置头像",
+  "bindBlockchainFirst": "请先绑定区块链账户"
 }

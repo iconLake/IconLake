@@ -8,7 +8,12 @@ import { completeURL } from '../../utils/file.js'
 export async function info (req, res) {
   const fields = [
     'name',
+    'desc',
     'avatar',
+    'medias',
+    'sex',
+    'birthday',
+    'location',
     'tokenExpire',
     'blockchain.id',
     'gitee.id',
@@ -17,7 +22,8 @@ export async function info (req, res) {
     'github.id',
     'github.name',
     'github.avatar',
-    'code.id'
+    'code.id',
+    'theme'
   ]
   const user = (await User.findById(req.user._id, fields.join(' '))).toJSON()
   if (user.avatar) {
@@ -30,6 +36,34 @@ export async function info (req, res) {
     user.github.avatar = completeURL(user.github.avatar)
   }
   res.json(user)
+}
+
+/**
+ * @api {post} /user/info/edit 更新用户信息
+ */
+export async function edit (req, res) {
+  const user = await User.findById(req.user._id)
+  let isChanged = false
+  const keys = ['name', 'desc', 'avatar', 'sex', 'birthday', 'location']
+  keys.forEach(key => {
+    if (typeof req.body[key] === 'string' && user[key] !== req.body[key]) {
+      isChanged = true
+      user[key] = req.body[key]
+    }
+  })
+  if (req.body.medias && JSON.stringify(user.medias) !== JSON.stringify(req.body.medias)) {
+    isChanged = true
+    user.medias = req.body.medias.map((m) => {
+      return {
+        name: typeof m.name === 'string' ? m.name : '',
+        content: typeof m.content === 'string' ? m.content : ''
+      }
+    })
+  }
+  if (isChanged) {
+    await user.save()
+  }
+  res.json({})
 }
 
 /**

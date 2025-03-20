@@ -10,7 +10,7 @@ import { getHash, updateClass, getNftClass } from '@/apis/blockchain'
 import Loading from '@/components/Loading.vue'
 import { toast } from '@/utils'
 import { usePageLoading } from '@/hooks/router'
-import { PROJECT_TYPE } from '@/utils/const'
+import { PROJECT_TYPE, ONLINE_DOMAIN } from '@/utils/const'
 import { event } from '@/utils/event'
 
 const { t } = useI18n()
@@ -73,7 +73,7 @@ async function updateChain(e: Event) {
     description: project.value.desc,
     symbol: project.value.class,
     uri,
-    uriHash: hash.file_hash ?? '',
+    uriHash: hash.fileHash ?? '',
   })
   if (res) {
     if (res?.code === 0) {
@@ -161,8 +161,9 @@ onUnmounted(() => {
       </router-link>
     </div>
     <div class="content grow">
-      <router-link
-        to="./info"
+      <a
+        :href="`${ONLINE_DOMAIN}/exhibition/${projectId}`"
+        target="_blank"
         class="flex info"
         :style="{
           'background-image': `url(${project.cover})`
@@ -192,7 +193,7 @@ onUnmounted(() => {
             {{ t('UpdateOnchainInformation') }}
           </span>
         </div>
-      </router-link>
+      </a>
       <router-view />
     </div>
   </div>
@@ -242,15 +243,14 @@ onUnmounted(() => {
   position: relative;
   .title {
     font-size: 1.8rem;
-    font-weight: bold;
   }
   .icon-edit {
     font-size: 1.4rem;
   }
   .desc {
-    color: #4d4d4d;
-    font-size: 1.4rem;
-    line-height: 2rem;
+    color: #666;
+    font-size: 1.3rem;
+    line-height: 1.4;
     margin-top: 1.5rem;
     word-break: break-all;
   }

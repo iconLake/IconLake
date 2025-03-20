@@ -20,6 +20,7 @@ export const UPLOAD_DIR = {
   COVER: 'cover',
   ICON: 'icon',
   THEME: 'theme',
+  AVATAR: 'avatar',
 }
 
 export const PUBLIC_PAGES = [

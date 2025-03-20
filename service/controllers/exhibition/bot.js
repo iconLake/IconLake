@@ -67,3 +67,32 @@ export async function renderNft (req, res) {
   </body>
   </html>`)
 }
+
+export async function renderCreator (req, res) {
+  const creator = await fetch(
+    `${config.blockchain.public.lcd}/iconlake/icon/creator/${req.params.address}`
+  ).then((res) => res.json()).then(res => res.creator)
+  res.send(`<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${creator.name}</title>
+    <meta name="description" content="${creator.description}">
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="${creator.name}" />
+    <meta property="og:description" content="${creator.description}" />
+    <meta property="og:image" content="${creator.avatar}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${creator.name}" />
+    <meta name="twitter:description" content="${creator.description}" />
+    <meta name="twitter:image" content="${creator.avatar}" />
+  </head>
+  <body>
+    <img src="${creator.avatar}" alt="${creator.name}">
+    <h1>${creator.name}</h1>
+    <h2>${creator.description}</h2>
+    <h3>${creator.address}</h3>
+  </body>
+  </html>`)
+}

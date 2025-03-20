@@ -7,23 +7,40 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { Api } from "./rest";
 import { createIconAminoConverters, MsgUpdateClass } from "./types/iconlake/icon/tx";
+import { MsgUpdateCreator } from "./types/iconlake/icon/tx";
+import { MsgDeleteCreator } from "./types/iconlake/icon/tx";
 import { MsgBurn } from "./types/iconlake/icon/tx";
 import { MsgMint } from "./types/iconlake/icon/tx";
 
 import { ClassData as typeClassData} from "./types"
 import { ClassDataRaw as typeClassDataRaw} from "./types"
+import { CreatorRaw as typeCreatorRaw} from "./types"
+import { Creator as typeCreator} from "./types"
 import { IconData as typeIconData} from "./types"
 import { IconDataRaw as typeIconDataRaw} from "./types"
+import { Media as typeMedia} from "./types"
 import { Params as typeParams} from "./types"
 import { NFT as typeNFT} from "./types"
 import { QueryNFTsResponse as typeQueryNFTsResponse} from "./types"
 import { Class as typeClass} from "./types"
 import { QueryClassesResponse as typeQueryClassesResponse} from "./types"
 
-export { MsgUpdateClass, MsgBurn, MsgMint };
+export { MsgUpdateClass, MsgUpdateCreator, MsgDeleteCreator, MsgBurn, MsgMint };
 
 type sendMsgUpdateClassParams = {
   value: MsgUpdateClass,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgUpdateCreatorParams = {
+  value: MsgUpdateCreator,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgDeleteCreatorParams = {
+  value: MsgDeleteCreator,
   fee?: StdFee,
   memo?: string
 };
@@ -43,6 +60,14 @@ type sendMsgMintParams = {
 
 type msgUpdateClassParams = {
   value: MsgUpdateClass,
+};
+
+type msgUpdateCreatorParams = {
+  value: MsgUpdateCreator,
+};
+
+type msgDeleteCreatorParams = {
+  value: MsgDeleteCreator,
 };
 
 type msgBurnParams = {
@@ -97,6 +122,34 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+		async sendMsgUpdateCreator({ value, fee, memo }: sendMsgUpdateCreatorParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgUpdateCreator: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix, aminoTypes: new AminoTypes(createIconAminoConverters())});
+				let msg = this.msgUpdateCreator({ value: MsgUpdateCreator.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgUpdateCreator: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgDeleteCreator({ value, fee, memo }: sendMsgDeleteCreatorParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgDeleteCreator: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix, aminoTypes: new AminoTypes(createIconAminoConverters())});
+				let msg = this.msgDeleteCreator({ value: MsgDeleteCreator.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgDeleteCreator: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
 		async sendMsgBurn({ value, fee, memo }: sendMsgBurnParams): Promise<DeliverTxResponse> {
 			if (!signer) {
 					throw new Error('TxClient:sendMsgBurn: Unable to sign Tx. Signer is not present.')
@@ -131,6 +184,22 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 				return { typeUrl: "/iconlake.icon.MsgUpdateClass", value: MsgUpdateClass.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgUpdateClass: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgUpdateCreator({ value }: msgUpdateCreatorParams): EncodeObject {
+			try {
+				return { typeUrl: "/iconlake.icon.MsgUpdateCreator", value: MsgUpdateCreator.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgUpdateCreator: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgDeleteCreator({ value }: msgDeleteCreatorParams): EncodeObject {
+			try {
+				return { typeUrl: "/iconlake.icon.MsgDeleteCreator", value: MsgDeleteCreator.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgDeleteCreator: Could not create message: ' + e.message)
 			}
 		},
 		
@@ -174,8 +243,11 @@ class SDKModule {
 		this.structure =  {
 						ClassData: getStructure(typeClassData.fromPartial({})),
 						ClassDataRaw: getStructure(typeClassDataRaw.fromPartial({})),
+						CreatorRaw: getStructure(typeCreatorRaw.fromPartial({})),
+						Creator: getStructure(typeCreator.fromPartial({})),
 						IconData: getStructure(typeIconData.fromPartial({})),
 						IconDataRaw: getStructure(typeIconDataRaw.fromPartial({})),
+						Media: getStructure(typeMedia.fromPartial({})),
 						Params: getStructure(typeParams.fromPartial({})),
 						NFT: getStructure(typeNFT.fromPartial({})),
 						QueryNFTsResponse: getStructure(typeQueryNFTsResponse.fromPartial({})),

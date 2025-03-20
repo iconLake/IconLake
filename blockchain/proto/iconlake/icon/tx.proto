@@ -3,14 +3,18 @@ syntax = "proto3";
 package iconlake.icon;
 
 import "iconlake/icon/icon_data.proto";
+import "iconlake/icon/creator.proto";
+import "iconlake/icon/media.proto";
 
 option go_package = "iconlake/x/icon/types";
 
 // Msg defines the Msg service.
 service Msg {
-  rpc Mint        (MsgMint       ) returns (MsgMintResponse       );
-  rpc UpdateClass (MsgUpdateClass) returns (MsgUpdateClassResponse);
-  rpc Burn        (MsgBurn       ) returns (MsgBurnResponse       );
+  rpc Mint          (MsgMint         ) returns (MsgMintResponse         );
+  rpc UpdateClass   (MsgUpdateClass  ) returns (MsgUpdateClassResponse  );
+  rpc Burn          (MsgBurn         ) returns (MsgBurnResponse         );
+  rpc UpdateCreator (MsgUpdateCreator) returns (MsgUpdateCreatorResponse);
+  rpc DeleteCreator (MsgDeleteCreator) returns (MsgDeleteCreatorResponse);
 }
 
 message MsgMint {
@@ -45,3 +49,23 @@ message MsgBurn {
 }
 
 message MsgBurnResponse {}
+
+message MsgUpdateCreator {
+           string address     =  1;
+           string name        =  2;
+           string description =  3;
+           string avatar      =  4;
+           string avatarHash  =  5;
+  repeated Media  medias      =  6;
+           string sex         =  7;
+           string birthday    =  8;
+           string location    =  9;
+}
+
+message MsgUpdateCreatorResponse {}
+
+message MsgDeleteCreator {
+  string address = 1;
+}
+
+message MsgDeleteCreatorResponse {}

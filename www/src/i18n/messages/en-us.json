@@ -191,6 +191,7 @@
   "selectFileAndExample": "Select File, for example: ",
   "uploadExhibitionIndexComponent": "Upload Exhibition Theme of Index Page",
   "uploadExhibitionNftComponent": "Upload Exhibition Theme of Work Page",
+  "uploadExhibitionCreatorComponent": "Upload Exhibition Theme of Creator Page",
   "basedOnOpenSourceToDiyTheme": "Based on our open-source theme, you can develop a custom theme.",
   "uploading": "Uploading...",
   "exhibitionTheme": "Exhibition Theme",
@@ -210,5 +211,17 @@
   "notBound": "Not bound",
   "blockchain": "Blockchain",
   "mySettings": "My Settings",
-  "bindRequiredAccount": "You must bind a Gitee account to use this feature"
+  "bindRequiredAccount": "You must bind a Gitee account to use this feature",
+  "info": "Information",
+  "userName": "Name",
+  "userDesc": "Description",
+  "avatar": "Avatar",
+  "userMedias": "Social Medias",
+  "userMediaNamePlaceholder": "Name, such as: X",
+  "userMediaContentPlaceholder": "Link or ID",
+  "userSex": "Sex",
+  "userBirthday": "Birthday",
+  "userLocation": "Location",
+  "setAvatarFirst": "Please set the avatar first",
+  "bindBlockchainFirst": "Please bind your blockchain account first"
 }

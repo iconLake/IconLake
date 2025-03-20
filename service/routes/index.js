@@ -4,6 +4,7 @@ import { ROOT as root, RESOURCE_MAX_AGE as maxAge } from '../utils/const.js'
 import loginIndex from '../controllers/login/index.js'
 import { info as exhibitionIndexInfo } from '../controllers/exhibition/index.js'
 import { info as exhibitionNftInfo } from '../controllers/exhibition/nft.js'
+import { info as exhibitionCreatorInfo } from '../controllers/exhibition/creator.js'
 
 const router = Router()
 
@@ -25,8 +26,8 @@ router.get('/docs/:id', (req, res) => {
 
 router.get('/login', loginIndex)
 
+router.get('/exhibition/creator/:address', express.static('public', { maxAge }), exhibitionCreatorInfo)
 router.get('/exhibition/:projectId/:nftId', express.static('public', { maxAge }), exhibitionNftInfo)
-
 router.get('/exhibition/:projectId', express.static('public', { maxAge }), exhibitionIndexInfo)
 
 router.use('/', express.static('public', { maxAge }), (req, res, next) => {

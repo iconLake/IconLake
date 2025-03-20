@@ -94,7 +94,7 @@ onMounted(() => {
       v-model="project.name"
       type="text"
       class="input"
-      maxlength="15"
+      maxlength="64"
     >
     <p>{{ t('desc') }}</p>
     <textarea
@@ -193,6 +193,11 @@ onMounted(() => {
     border: #ccc 1px solid;
     border-radius: 0.625rem;
     color: var(--el-color-black);
+    &:hover {
+      transition: var(--transition);
+      color: var(--color-main);
+      border-color: var(--color-main);
+    }
     .loading {
       color: var(--color-main);
     }

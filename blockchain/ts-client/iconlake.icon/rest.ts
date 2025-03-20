@@ -16,6 +16,18 @@ export interface IconClassData {
   create_time?: string;
 }
 
+export interface IconCreator {
+  address?: string;
+  name?: string;
+  description?: string;
+  avatar?: string;
+  avatarHash?: string;
+  medias?: IconMedia[];
+  sex?: string;
+  birthday?: string;
+  location?: string;
+}
+
 export interface IconIconData {
   author?: string;
   name?: string;
@@ -25,16 +37,44 @@ export interface IconIconData {
   create_time?: string;
 }
 
+export interface IconMedia {
+  name?: string;
+  content?: string;
+}
+
 export type IconMsgBurnResponse = object;
+
+export type IconMsgDeleteCreatorResponse = object;
 
 export type IconMsgMintResponse = object;
 
 export type IconMsgUpdateClassResponse = object;
 
+export type IconMsgUpdateCreatorResponse = object;
+
 /**
  * Params defines the parameters for the module.
  */
 export type IconParams = object;
+
+export interface IconQueryCreatorsResponse {
+  creators?: IconCreator[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface IconQueryGetCreatorResponse {
+  creator?: IconCreator;
+}
 
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
@@ -455,6 +495,47 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   ) =>
     this.request<IconlakeiconQueryClassesResponse, RpcStatus>({
       path: `/iconlake/icon/classes`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryCreator
+   * @summary Queries a list of Creator items.
+   * @request GET:/iconlake/icon/creator/{address}
+   */
+  queryCreator = (address: string, params: RequestParams = {}) =>
+    this.request<IconQueryGetCreatorResponse, RpcStatus>({
+      path: `/iconlake/icon/creator/${address}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryCreators
+   * @request GET:/iconlake/icon/creators
+   */
+  queryCreators = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<IconQueryCreatorsResponse, RpcStatus>({
+      path: `/iconlake/icon/creators`,
       method: "GET",
       query: query,
       format: "json",

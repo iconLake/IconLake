@@ -1,8 +1,9 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
-import { PageResponse } from "../../cosmos/base/query/v1beta1/pagination";
+import { PageRequest, PageResponse } from "../../cosmos/base/query/v1beta1/pagination";
 import { QueryClassesRequest, QueryNFTsRequest } from "../../cosmos/nft/v1beta1/query";
 import { ClassData } from "./class_data";
+import { Creator } from "./creator";
 import { IconData } from "./icon_data";
 import { Params } from "./params";
 
@@ -60,6 +61,23 @@ export interface QueryClassResponse {
 
 export interface QueryClassesResponse {
   classes: Class[];
+  pagination: PageResponse | undefined;
+}
+
+export interface QueryGetCreatorRequest {
+  address: string;
+}
+
+export interface QueryGetCreatorResponse {
+  creator: Creator | undefined;
+}
+
+export interface QueryCreatorsRequest {
+  pagination: PageRequest | undefined;
+}
+
+export interface QueryCreatorsResponse {
+  creators: Creator[];
   pagination: PageResponse | undefined;
 }
 
@@ -668,6 +686,217 @@ export const QueryClassesResponse = {
   },
 };
 
+function createBaseQueryGetCreatorRequest(): QueryGetCreatorRequest {
+  return { address: "" };
+}
+
+export const QueryGetCreatorRequest = {
+  encode(message: QueryGetCreatorRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetCreatorRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryGetCreatorRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.address = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetCreatorRequest {
+    return { address: isSet(object.address) ? String(object.address) : "" };
+  },
+
+  toJSON(message: QueryGetCreatorRequest): unknown {
+    const obj: any = {};
+    message.address !== undefined && (obj.address = message.address);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryGetCreatorRequest>, I>>(object: I): QueryGetCreatorRequest {
+    const message = createBaseQueryGetCreatorRequest();
+    message.address = object.address ?? "";
+    return message;
+  },
+};
+
+function createBaseQueryGetCreatorResponse(): QueryGetCreatorResponse {
+  return { creator: undefined };
+}
+
+export const QueryGetCreatorResponse = {
+  encode(message: QueryGetCreatorResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creator !== undefined) {
+      Creator.encode(message.creator, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetCreatorResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryGetCreatorResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = Creator.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetCreatorResponse {
+    return { creator: isSet(object.creator) ? Creator.fromJSON(object.creator) : undefined };
+  },
+
+  toJSON(message: QueryGetCreatorResponse): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator ? Creator.toJSON(message.creator) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryGetCreatorResponse>, I>>(object: I): QueryGetCreatorResponse {
+    const message = createBaseQueryGetCreatorResponse();
+    message.creator = (object.creator !== undefined && object.creator !== null)
+      ? Creator.fromPartial(object.creator)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryCreatorsRequest(): QueryCreatorsRequest {
+  return { pagination: undefined };
+}
+
+export const QueryCreatorsRequest = {
+  encode(message: QueryCreatorsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreatorsRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryCreatorsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryCreatorsRequest {
+    return { pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined };
+  },
+
+  toJSON(message: QueryCreatorsRequest): unknown {
+    const obj: any = {};
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryCreatorsRequest>, I>>(object: I): QueryCreatorsRequest {
+    const message = createBaseQueryCreatorsRequest();
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageRequest.fromPartial(object.pagination)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryCreatorsResponse(): QueryCreatorsResponse {
+  return { creators: [], pagination: undefined };
+}
+
+export const QueryCreatorsResponse = {
+  encode(message: QueryCreatorsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.creators) {
+      Creator.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreatorsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryCreatorsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creators.push(Creator.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryCreatorsResponse {
+    return {
+      creators: Array.isArray(object?.creators) ? object.creators.map((e: any) => Creator.fromJSON(e)) : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined,
+    };
+  },
+
+  toJSON(message: QueryCreatorsResponse): unknown {
+    const obj: any = {};
+    if (message.creators) {
+      obj.creators = message.creators.map((e) => e ? Creator.toJSON(e) : undefined);
+    } else {
+      obj.creators = [];
+    }
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryCreatorsResponse>, I>>(object: I): QueryCreatorsResponse {
+    const message = createBaseQueryCreatorsResponse();
+    message.creators = object.creators?.map((e) => Creator.fromPartial(e)) || [];
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageResponse.fromPartial(object.pagination)
+      : undefined;
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
@@ -680,6 +909,9 @@ export interface Query {
   Class(request: QueryClassRequest): Promise<QueryClassResponse>;
   /** Queries a list of Class items. */
   Classes(request: QueryClassesRequest): Promise<QueryClassesResponse>;
+  /** Queries a list of Creator items. */
+  Creator(request: QueryGetCreatorRequest): Promise<QueryGetCreatorResponse>;
+  Creators(request: QueryCreatorsRequest): Promise<QueryCreatorsResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -691,6 +923,8 @@ export class QueryClientImpl implements Query {
     this.NFTs = this.NFTs.bind(this);
     this.Class = this.Class.bind(this);
     this.Classes = this.Classes.bind(this);
+    this.Creator = this.Creator.bind(this);
+    this.Creators = this.Creators.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
@@ -720,6 +954,18 @@ export class QueryClientImpl implements Query {
     const data = QueryClassesRequest.encode(request).finish();
     const promise = this.rpc.request("iconlake.icon.Query", "Classes", data);
     return promise.then((data) => QueryClassesResponse.decode(new _m0.Reader(data)));
+  }
+
+  Creator(request: QueryGetCreatorRequest): Promise<QueryGetCreatorResponse> {
+    const data = QueryGetCreatorRequest.encode(request).finish();
+    const promise = this.rpc.request("iconlake.icon.Query", "Creator", data);
+    return promise.then((data) => QueryGetCreatorResponse.decode(new _m0.Reader(data)));
+  }
+
+  Creators(request: QueryCreatorsRequest): Promise<QueryCreatorsResponse> {
+    const data = QueryCreatorsRequest.encode(request).finish();
+    const promise = this.rpc.request("iconlake.icon.Query", "Creators", data);
+    return promise.then((data) => QueryCreatorsResponse.decode(new _m0.Reader(data)));
   }
 }
 

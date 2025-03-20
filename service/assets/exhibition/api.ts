@@ -41,6 +41,21 @@ export interface ShareInfo {
   description: string
 }
 
+export interface Creator {
+  address: string
+  avatar: string
+  avatarHash: string
+  name: string
+  description: string
+  sex: string
+  location: string
+  birthday: string
+  medias: {
+    name: string
+    content: string
+  }[]
+}
+
 export interface IconlakeAPI {
   version: number
   isProduction: boolean
@@ -64,6 +79,10 @@ export interface IconlakeAPI {
   nft: {
     id: string
     getInfo: (id?: string) => Promise<Nft>
+  }
+  creator: {
+    address: string
+    getInfo: (address?: string) => Promise<Creator>
   }
   share: {
     load: (container: string, options?: { nftId?: string, classId?: string }) => Promise<void>
@@ -180,6 +199,33 @@ export interface Sharethis {
   }
 
   /**
+   * Creator
+   */
+  const creatorAPI = {
+    address: ''
+  } as IconlakeAPI['creator']
+  Object.defineProperties(creatorAPI, {
+    address: {
+      get () {
+        const matches = location.pathname.match(/^\/exhibition\/creator\/([^/?#]+).*/)
+        return matches?.[1]
+      },
+      set () {
+        console.log('address is readonly')
+      }
+    }
+  })
+  creatorAPI.getInfo = async (address?: string) => {
+    const addr = address ?? creatorAPI.address
+    return await fetch(`${lcd}/iconlake/icon/creator/${addr}`).then(res => res.json()).then(res => {
+      if (res.error) {
+        throw new Error(res.error)
+      }
+      return transferKey(res.creator)
+    })
+  }
+
+  /**
    * Share
    */
   const shareAPI = {
@@ -232,6 +278,12 @@ export interface Sharethis {
           shareInfo.image = classInfo.uri
           shareInfo.title = classInfo.name
           shareInfo.description = classInfo.description
+        } else if (options.creator) {
+          const creator = await creatorAPI.getInfo(options.creator)
+          shareInfo.url = window.location.href
+          shareInfo.image = creator.avatar
+          shareInfo.title = creator.name
+          shareInfo.description = creator.description
         }
       }
       globalThis.__sharethis__.load('inline-share-buttons', {
@@ -273,6 +325,7 @@ export interface Sharethis {
     loading,
     class: classAPI,
     nft: nftAPI,
+    creator: creatorAPI,
     share: shareAPI,
     verifyHash
   }

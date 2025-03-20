@@ -1,12 +1,15 @@
 syntax = "proto3";
+
 package iconlake.icon;
 
 import "gogoproto/gogo.proto";
 import "iconlake/icon/params.proto";
+import "iconlake/icon/creator.proto";
 
 option go_package = "iconlake/x/icon/types";
 
 // GenesisState defines the icon module's genesis state.
 message GenesisState {
-  Params params = 1 [(gogoproto.nullable) = false];
+           Params  params      = 1 [(gogoproto.nullable) = false];
+  repeated Creator creatorList = 2 [(gogoproto.nullable) = false];
 }
