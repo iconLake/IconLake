@@ -43,7 +43,7 @@ import type { IconlakeAPI } from './api';
     document.body.appendChild(blockIcon)
   }
 
-  let themeUrl = '/themes/default/creator-Bfk1WGjm.js'
+  let themeUrl = '/themes/default/creator.js'
   if (!iconlakeAPI.isProduction || (iconlakeAPI.isProduction && location.origin !== iconlakeAPI.domain.master)) {
     const diyTheme = await fetch(`/api/user/theme/info?address=${info.address}`).then((e) => e.json())
     if (diyTheme?.creator) {
