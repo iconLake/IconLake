@@ -8,7 +8,6 @@ import (
 )
 
 const (
-	TypeMsgCreateCreator = "create_creator"
 	TypeMsgUpdateCreator = "update_creator"
 	TypeMsgDeleteCreator = "delete_creator"
 )

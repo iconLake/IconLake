@@ -7,6 +7,12 @@ import { User } from '../../models/user.js'
  */
 export async function edit (req, res) {
   const theme = includeKeys(req.body, ['creator'])
+  if (typeof theme.creator !== 'string') {
+    res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+    return
+  }
   const result = await User.updateOne({
     _id: req.user._id
   }, {
@@ -26,7 +32,7 @@ export async function edit (req, res) {
  */
 export async function info (req, res) {
   const address = req.query.address
-  if (!address) {
+  if (!address || typeof address !== 'string') {
     res.json({
       error: ERROR_CODE.ARGS_ERROR
     })
