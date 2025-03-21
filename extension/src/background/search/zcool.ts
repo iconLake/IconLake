@@ -49,9 +49,9 @@ export async function handleZcool(params: SearchParams): Promise<SearchResult|Se
         }
       })
   }
-  if (res.err) {
+  if (res.errorCode !== '0') {
     return {
-      error: res.err.toString()
+      error: res.errorCode === 'no login' ? 'Unauthorized' : res.errorCode.toString()
     }
   }
   const list: Media[] = []
