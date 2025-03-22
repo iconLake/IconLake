@@ -46,7 +46,7 @@ import type { IconlakeAPI } from './api'
     document.body.appendChild(blockIcon)
   }
 
-  let themeUrl = '/themes/default/exhibition-ctUyeXaI.js'
+  let themeUrl = '/themes/default/exhibition.js'
   if (!iconlakeAPI.isProduction || (iconlakeAPI.isProduction && location.origin !== iconlakeAPI.domain.master)) {
     const diyTheme = await fetch(`/api/project/theme/info?id=${iconlakeAPI.class.id}`).then((e) => e.json())
     if (diyTheme?.class) {

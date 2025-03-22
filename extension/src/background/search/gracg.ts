@@ -28,9 +28,9 @@ export async function handleGracg(params: SearchParams): Promise<SearchResult|Se
         html: '',
       }
     })
-  if (res.err || !res.html) {
+  if (!res.html || /该版块需要登录查看！/.test(res.html)) {
     return {
-      error: res.err === 401 ? 'Unauthorized' : res.err.toString()
+      error: 'Unauthorized'
     }
   }
   let reg = "background-image: url\\('([^']*)'\\);"
