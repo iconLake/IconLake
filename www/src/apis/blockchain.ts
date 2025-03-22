@@ -1,4 +1,4 @@
-import { CHAIN_ID, DROP_DENOM_MINI, IS_PRODUCTION } from '@/utils/const'
+import { CHAIN_ID, DROP_DENOM_MINI, IS_PRODUCTION, LAKE_DENOM_MINI } from '@/utils/const'
 import request from '@/utils/request'
 import { Client } from '@iconlake/client'
 import type { MsgMint as MsgMintIcon, MsgBurn as MsgBurnIcon, MsgUpdateClass, MsgMint, MsgUpdateCreator, MsgDeleteCreator } from '@iconlake/client/types/iconlake.icon/module'
@@ -7,6 +7,7 @@ import i18n from '@/i18n'
 import { toast } from '@/utils'
 import camelcaseKeys from 'camelcase-keys'
 import { phash } from '@/utils/phash'
+import type { V1Beta1SignMode } from '@iconlake/client/types/cosmos.tx.v1beta1/rest'
 
 const baseURL = '/api/blockchain/'
 
@@ -64,7 +65,7 @@ export async function detectKeplr() {
   return window.keplr
 }
 
-export async function getBalance(address: string, denom: string) {
+export async function getBalance(address: string, denom?: string) {
   const res = await fetch(`${apiURL}/cosmos/bank/v1beta1/balances/${address}?denom=${denom}`).then<{
     balances: {
       amount: string;
@@ -74,7 +75,7 @@ export async function getBalance(address: string, denom: string) {
     console.error(e)
     return { balances: [] }
   })
-  return res.balances.find(balance => balance.denom === denom)
+  return denom ? res.balances.find(balance => balance.denom === denom) : res.balances
 }
 
 export async function getAccount(address?: string) {
@@ -115,21 +116,94 @@ export async function getChainAccount(address: string) {
   return res.account && camelcaseKeys(res.account)
 }
 
+export async function simulate({
+  msg,
+  address,
+  feeDenom,
+}: {
+  msg: any
+  address: string
+  feeDenom?: string
+}) {
+  const account = await getChainAccount(address)
+  const balance = await getBalance(address, feeDenom)
+  const res = await client.CosmosTxV1Beta1.query.serviceSimulate({
+    tx: {
+      body: {
+        messages: [
+          msg,
+        ]
+      },
+      auth_info: {
+        signer_infos: [
+          {
+            public_key: {
+              '@type': '/cosmos.crypto.secp256k1.PubKey',
+              ...{
+                key: account?.pubKey.value,
+              }
+            },
+            mode_info: {
+              single: {
+                mode: 'SIGN_MODE_DIRECT' as V1Beta1SignMode
+              }
+            },
+            sequence: account?.sequence,
+          }
+        ],
+        fee: {
+          gas_limit: '1000000',
+          amount: balance ? (balance instanceof Array ? balance : [balance]) : [],
+        },
+      },
+      signatures: [Buffer.from('').toString('base64')],
+    }
+  }).catch((e) => {
+    console.error(e)
+    return {
+      data: {
+        gas_info: {
+          gas_used: '',
+        }
+      }
+    }
+  })
+  return {
+    gas: res.data.gas_info?.gas_used,
+    data: res.data,
+  }
+}
+
 export async function mintDrop(address: string, amount: string) {
   await detectKeplr()
   const account = await getAccount(address)
   if (!account) {
     return undefined
   }
-  const res = await client.IconlakeDrop.tx.sendMsgMint({
-    value: {
-      creator: address,
+  const value = {
+    creator: address,
+    amount: {
+      amount,
+      denom: DROP_DENOM_MINI
+    }
+  }
+  const sim = await simulate({
+    msg: {
+      '@type': '/iconlake.drop.MsgMint',
+      ...value,
       amount: {
-        amount,
-        denom: DROP_DENOM_MINI
+        ...value.amount,
+        amount: '10000',
       }
     },
-    fee
+    address,
+  })
+  const res = await client.IconlakeDrop.tx.sendMsgMint({
+    value,
+    fee: {
+      amount: [],
+      gas: sim.gas || '100000',
+    }
   }).catch((err) => {
     console.error(err)
     toast.error(err.message ?? t('fail'))
@@ -186,9 +260,19 @@ export async function mintIcon(value: MsgMintIcon) {
   if (!account) {
     return undefined
   }
+  const sim = await simulate({
+    msg: {
+      '@type': '/iconlake.icon.MsgMint',
+      ...value,
+    },
+    address: value.creator,
+  })
   const res = await client.IconlakeIcon.tx.sendMsgMint({
     value,
-    fee
+    fee: {
+      amount: [],
+      gas: sim.gas || '100000',
+    }
   }).catch((err) => {
     console.error(err)
     toast.error(err.message ?? t('fail'))
@@ -203,9 +287,19 @@ export async function burnIcon(value: MsgBurnIcon) {
   if (!account) {
     return undefined
   }
+  const sim = await simulate({
+    msg: {
+      '@type': '/iconlake.icon.MsgBurn',
+      ...value,
+    },
+    address: value.creator,
+  })
   const res = await client.IconlakeIcon.tx.sendMsgBurn({
     value,
-    fee
+    fee: {
+      amount: [],
+      gas: sim.gas || '80000',
+    }
   }).catch((err) => {
     console.error(err)
     toast.error(err.message ?? t('fail'))
@@ -241,10 +335,25 @@ export async function initDrop(creator: string, address: string, isBackendServic
   if (!account) {
     return undefined
   }
+  const sim = await simulate({
+    msg: {
+      '@type': '/iconlake.drop.MsgInit',
+      ...{
+        creator,
+        address,
+      }
+    },
+    address: creator,
+    feeDenom: LAKE_DENOM_MINI,
+  })
   return await client.IconlakeDrop.tx.sendMsgInit({
     value: {
       creator,
       address,
+    },
+    fee: {
+      amount: [],
+      gas: sim.gas || '100000',
     }
   }).catch((err) => {
     console.error(err)
@@ -287,8 +396,19 @@ export async function updateClass(value: MsgUpdateClass) {
   if (!account) {
     return undefined
   }
+  const sim = await simulate({
+    msg: {
+      '@type': '/iconlake.icon.MsgUpdateClass',
+      ...value,
+    },
+    address: value.creator,
+  })
   const res = await client.IconlakeIcon.tx.sendMsgUpdateClass({
-    value
+    value,
+    fee: {
+      amount: [],
+      gas: sim.gas || '100000',
+    },
   }).catch((err) => {
     console.error(err)
     toast.error(err.message ?? t('updateFailed'))
@@ -311,8 +431,19 @@ export async function updateCreator(value: MsgUpdateCreator) {
   if (!account) {
     return undefined
   }
+  const sim = await simulate({
+    msg: {
+      '@type': '/iconlake.icon.MsgUpdateCreator',
+      ...value,
+    },
+    address: value.address,
+  })
   const res = await client.IconlakeIcon.tx.sendMsgUpdateCreator({
-    value
+    value,
+    fee: {
+      amount: [],
+      gas: sim.gas || '100000',
+    },
   }).catch((err) => {
     console.error(err)
     toast.error(err.message ?? t('updateFailed'))
@@ -327,8 +458,19 @@ export async function deleteCreator(value: MsgDeleteCreator) {
   if (!account) {
     return undefined
   }
+  const sim = await simulate({
+    msg: {
+      '@type': '/iconlake.icon.MsgMsgDeleteCreator',
+      ...value,
+    },
+    address: value.address,
+  })
   const res = await client.IconlakeIcon.tx.sendMsgDeleteCreator({
-    value
+    value,
+    fee: {
+      amount: [],
+      gas: sim.gas || '80000',
+    },
   }).catch((err) => {
     console.error(err)
     toast.error(err.message ?? t('deleteFailed'))
