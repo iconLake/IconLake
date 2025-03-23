@@ -99,7 +99,7 @@ export function detail(params: {
 interface Option {
   label?: string
   value: string
-  children?: OptionGroup[]
+  options?: OptionGroup[]
 }
 
 export interface OptionGroup {

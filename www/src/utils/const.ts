@@ -70,4 +70,5 @@ export const SEARCH_SITES: SearchSite[] = [
   { name: 'X', code: 'x', url: 'https://x.com/' },
   { name: 'Pinterest', code: 'pinterest', url: 'https://www.pinterest.com/' },
   { name: 'Instagram', code: 'instagram', url: 'https://www.instagram.com/' },
+  { name: 'Pixiv', code: 'pixiv', url: 'https://www.pixiv.net/' },
 ]

@@ -20,6 +20,7 @@ export enum Site {
   x = 'x',
   pinterest = 'pinterest',
   instagram = 'instagram',
+  pixiv = 'pixiv',
 }
 
 export interface SearchParams {
@@ -56,7 +57,7 @@ export interface DetailResult {
 export interface Option {
   label: string
   value: string
-  children?: OptionGroup[]
+  options?: OptionGroup[]
 }
 
 export interface OptionGroup {

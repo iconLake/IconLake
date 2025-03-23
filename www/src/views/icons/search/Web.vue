@@ -25,14 +25,29 @@
         v-if="options.length"
         class="options flex end"
       >
-        <Select
+        <template
           v-for="option in options"
           :key="option.name"
-          v-model="option.value"
-          :options="option.children"
-          :placeholder="option.label"
-          @change="reload"
-        />
+        >
+          <Select
+            v-model="option.value"
+            :options="option.children"
+            :placeholder="option.label"
+            @change="reload"
+          />
+          <template
+            v-if="getSubOptions(option).length"
+          >
+            <Select
+              v-for="sub in getSubOptions(option)"
+              :key="sub.name"
+              v-model="sub.value"
+              :options="sub.children"
+              :placeholder="sub.label"
+              @change="reload"
+            />
+          </template>
+        </template>
       </div>
       <div
         v-if="isExtensionReady"
@@ -156,6 +171,11 @@ const getOptions = async () => {
   options.value = res.error ? [] : res.options
 }
 
+const getSubOptions = (option: OptionGroup) => {
+  const child = option.children.find(e => e.value === option.value)
+  return (child && child.options) ? child.options : []
+}
+
 watch(() => props.projectType, (v) => {
   let storedSite = storage.getProjectDefaultSearchSite(props.projectId)
   if (SEARCH_SITES.find(e => e.code === storedSite) === undefined) {
@@ -274,6 +294,12 @@ async function load() {
     options.value.forEach(e => {
       if (e.value) {
         extra[e.name] = e.value
+        const child = e.children.find(c => c.value === e.value)
+        if (child && child.options) {
+          child.options.forEach(e => {
+            extra[e.name] = e.value
+          })
+        }
       }
     })
   }
@@ -371,9 +397,10 @@ onMounted(async () => {
 
 .options {
   margin-bottom: 1rem;
+  gap: 0.8rem;
   .select {
     height: 3rem;
-    width: 10rem;
+    width: 11rem;
     opacity: 0.5;
     transition: var(--transition);
     &:hover {
