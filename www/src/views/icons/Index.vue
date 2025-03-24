@@ -630,6 +630,12 @@ watch(() => data.keywords, () => {
   }
 }
 
+.group-title {
+  position: sticky;
+  top: 0;
+  background: var(--color-bg);
+}
+
 .group-select {
   display: none;
   .label {
