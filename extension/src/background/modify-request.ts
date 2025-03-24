@@ -38,6 +38,9 @@ function getRules(requestReferers: { [key: string]: string }) {
           { header: 'Referer', operation: 'set', value: referer },
           { header: 'Origin', operation: 'set', value: referer },
         ],
+        responseHeaders: [
+          { header: 'Access-Control-Allow-Origin', operation: 'set', value: '*' },
+        ],
         type: 'modifyHeaders'
       },
       condition: {

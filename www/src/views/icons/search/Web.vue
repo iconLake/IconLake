@@ -1,53 +1,55 @@
 <template>
   <div class="search list">
     <div class="group">
-      <div class="group-title flex">
-        <div>
-          {{ t('workFrom') }}
-          <a
-            :href="siteInfo?.url"
-            target="_blank"
-          >{{ siteInfo?.name }}</a>
-        </div>
-        <div class="sites flex center">
-          <div
-            v-for="item in sites"
-            :key="item.code"
-            class="site-item"
-            :class="site === item.code ? 'active' : ''"
-            @click="site = item.code"
-          >
-            {{ item.name }}
+      <div class="group-header">
+        <div class="group-title flex">
+          <div>
+            {{ t('workFrom') }}
+            <a
+              :href="siteInfo?.url"
+              target="_blank"
+            >{{ siteInfo?.name }}</a>
+          </div>
+          <div class="sites flex center">
+            <div
+              v-for="item in sites"
+              :key="item.code"
+              class="site-item"
+              :class="site === item.code ? 'active' : ''"
+              @click="site = item.code"
+            >
+              {{ item.name }}
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        v-if="options.length"
-        class="options flex end"
-      >
-        <template
-          v-for="option in options"
-          :key="option.name"
+        <div
+          v-if="options.length"
+          class="options flex end"
         >
-          <Select
-            v-model="option.value"
-            :options="option.children"
-            :placeholder="option.label"
-            @change="reload"
-          />
           <template
-            v-if="getSubOptions(option).length"
+            v-for="option in options"
+            :key="option.name"
           >
             <Select
-              v-for="sub in getSubOptions(option)"
-              :key="sub.name"
-              v-model="sub.value"
-              :options="sub.children"
-              :placeholder="sub.label"
+              v-model="option.value"
+              :options="option.children"
+              :placeholder="option.label"
               @change="reload"
             />
+            <template
+              v-if="getSubOptions(option).length"
+            >
+              <Select
+                v-for="sub in getSubOptions(option)"
+                :key="sub.name"
+                v-model="sub.value"
+                :options="sub.children"
+                :placeholder="sub.label"
+                @change="reload"
+              />
+            </template>
           </template>
-        </template>
+        </div>
       </div>
       <div
         v-if="isExtensionReady"
@@ -346,6 +348,12 @@ onMounted(async () => {
     margin-top: 2rem;
     cursor: pointer;
   }
+}
+
+.group-header {
+  background: var(--color-bg);
+  position: sticky;
+  top: 0;
 }
 
 .group-title {
