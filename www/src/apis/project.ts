@@ -1,5 +1,6 @@
 import { cache } from '@/utils/cache'
 import request from '@/utils/request'
+import { storage, StorageMethod } from './extension'
 
 const baseURL = '/api/project/'
 
@@ -449,27 +450,97 @@ export function setExpire(projectId: string, fileId: string, fileType: 'css'|'js
   })
 }
 
-export function uploadFile(params: {
+export async function getStorageInfo(projectId?: string) {
+  return <Promise<{
+    limit: number
+    free?: string
+    icon: {
+      count: number
+      size: string
+    }
+    cover: {
+      count: number
+      size: string
+    }
+    theme: {
+      count: number
+      size: string
+    }
+  }>>request({
+    method: 'GET',
+    url: '/file/storageInfo',
+    baseURL,
+    params: {
+      projectId,
+    },
+  })
+}
+
+async function uploadFileToLocal(params: {
   projectId: string
   _id: string
   data: string | ArrayBuffer | Blob
   dir?: string
 }) {
-  return <Promise<{key: string, url: string}>>request({
-    method: 'POST',
-    url: '/file/upload',
-    baseURL,
-    headers: {
-      'Content-Type': typeof params.data === 'string' ? 'text/plain; charset=utf-8' : 'application/octet-stream'
-    },
+  let data = params.data
+  if (data instanceof Blob) {
+    data = `data:${data.type};base64,${Buffer.from(await data.arrayBuffer()).toString('base64')}`
+  } else if (data instanceof ArrayBuffer) {
+    data = `data:application/octet-stream;base64,${Buffer.from(data).toString('base64')}`
+  } else {
+    data = `data:image/svg+xml;base64,${Buffer.from(data).toString('base64')}`
+  }
+  const res = await storage({
+    method: StorageMethod.SaveFiles,
     params: {
-      projectId: params.projectId,
-      _id: params._id,
-      dir: params.dir,
+      files: [{
+        key: `${params.dir || 'icon'}/${params.projectId}/${params._id}`,
+        data,
+      }]
     },
-    data: params.data,
-    timeout: 1000 * 60 * 3,
   })
+  if (res.files?.length === 0) {
+    throw new Error('upload file failed')
+  }
+  return res.files![0]
+}
+
+export async function uploadFile(params: {
+  projectId: string
+  _id: string
+  data: string | ArrayBuffer | Blob
+  dir?: string
+}, options?: {
+  storageType?: 'iconlake' | 'local'
+}) {
+  let storageType = options?.storageType
+  if (!storageType) {
+    const storageInfo = await getStorageInfo()
+    if (storageInfo.free && BigInt(storageInfo.free) > 0) {
+      storageType = 'iconlake'
+    }
+  }
+  let res
+  if (storageType === 'iconlake') {
+    res = await request<{key: string, url: string}>({
+      method: 'POST',
+      url: '/file/upload',
+      baseURL,
+      headers: {
+        'Content-Type': typeof params.data === 'string' ? 'text/plain; charset=utf-8' : 'application/octet-stream'
+      },
+      params: {
+        projectId: params.projectId,
+        _id: params._id,
+        dir: params.dir,
+      },
+      data: params.data,
+      timeout: 1000 * 60 * 3,
+    })
+  } else {
+    res = await uploadFileToLocal(params)
+  }
+  return res
 }
 
 export function editTheme(projectId: string, theme: Theme) {

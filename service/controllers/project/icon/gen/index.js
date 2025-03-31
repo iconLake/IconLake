@@ -320,9 +320,11 @@ export const deleteProjectDir = isCosActive ? deleteProjectCloudDir : deleteProj
  * @param {string} projectId
  */
 async function deleteProjectCloudDir (projectId) {
-  const data = await getBucket(`src/${projectId}/`)
-  if (data.contents.length > 0) {
-    await deleteObjects(data.contents.map(e => e.key))
+  for (const cat of ['icon', 'theme', 'cover']) {
+    const data = await getBucket(`${cat}/${projectId}/`)
+    if (data.contents.length > 0) {
+      await deleteObjects(data.contents.map(e => e.key))
+    }
   }
 }
 
@@ -331,11 +333,13 @@ async function deleteProjectCloudDir (projectId) {
  * @param {string} projectId
  */
 async function deleteProjectLocalDir (projectId) {
-  const dir = new URL(projectId, srcPath)
-  if (fs.existsSync(dir)) {
-    await rm(dir, {
-      recursive: true,
-      force: true
-    })
+  for (const cat of ['icon', 'theme', 'cover']) {
+    const dir = new URL(`${cat}/${projectId}`, srcPath)
+    if (fs.existsSync(dir)) {
+      await rm(dir, {
+        recursive: true,
+        force: true
+      })
+    }
   }
 }

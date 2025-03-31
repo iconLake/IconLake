@@ -23,7 +23,7 @@ const pingTimer = setInterval(() => {
     isExtensionReady = true
     pingResult = res
   }).catch(console.error)
-}, 200)
+}, 50)
 
 export async function requestExtension({type, params, timeout = 300000, ignoreReady}: {
   type: string
@@ -118,6 +118,64 @@ export function option(params: {
   return requestExtension({type: 'option', params})
 }
 
+export enum StorageMethod {
+  SaveFiles = 'saveFiles',
+  GetFiles = 'getFiles',
+}
+
+export interface StorageParams {
+  files?: {
+    key: string
+    data?: string
+  }[]
+  keys?: string[]
+}
+
+export interface StorageResult {
+  error?: string
+  files?: {
+    key: string
+    url?: string
+    data?: string
+  }[]
+}
+
+export function storage(params: {
+  method: StorageMethod
+  params: StorageParams
+}): Promise<StorageResult> {
+  return requestExtension({type: 'storage', params})
+}
+
+storage.getFile = async ({key}: {key: string}) => {
+  const res = await storage({
+    method: StorageMethod.GetFiles,
+    params: {
+      keys: [key]
+    },
+  })
+  if (!res.files || res.files?.length === 0) {
+    throw new Error('get file failed')
+  }
+  return res.files[0]
+}
+
+storage.saveFile = async ({key, data}: {key: string, data: string}) => {
+  const res = await storage({
+    method: StorageMethod.SaveFiles,
+    params: {
+      files: [{
+        key,
+        data,
+      }]
+    },
+  })
+  if (!res.files || res.files?.length === 0) {
+    throw new Error('upload file failed')
+  }
+  return res.files[0]
+}
+
 export async function getExtensionInfo() {
   await new Promise((resolve, reject) => {
     const timer = setInterval(() => {
@@ -138,6 +196,23 @@ export async function getExtensionInfo() {
   }
 }
 
+export function isReady() {
+  return isExtensionReady
+}
+
+export function onReady(callback: Function) {
+  if (isExtensionReady) {
+    callback()
+  } else {
+    const timer = setInterval(() => {
+      if (isExtensionReady) {
+        clearInterval(timer)
+        callback()
+      }
+    }, 50)
+  }
+}
+
 export interface SearchedIcon extends Icon {
   img?: {
     url: string
@@ -155,4 +230,7 @@ export const extensionApis = {
   detail,
   option,
   getExtensionInfo,
+  storage,
+  isReady,
+  onReady,
 }

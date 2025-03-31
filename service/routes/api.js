@@ -68,6 +68,7 @@ router.post('/project/icon/batchGroup', userMiddleware, projectIcon.batchGroup)
 router.post('/project/icon/gen', userMiddleware, projectIcon.gen)
 router.post('/project/icon/setExpire', userMiddleware, projectIcon.setExpire)
 router.post('/project/file/upload', userMiddleware, projectFile.upload)
+router.get('/project/file/storageInfo', userMiddleware, projectFile.storageInfo)
 router.post('/project/theme/edit', userMiddleware, projectTheme.edit)
 router.get('/project/theme/info', projectTheme.info)
 

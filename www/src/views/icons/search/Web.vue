@@ -95,6 +95,7 @@
           >
         </a>
         <a
+          v-if="false"
           href="https://addons.mozilla.org/zh-CN/firefox/addon/iconlake/"
           target="_blank"
         >

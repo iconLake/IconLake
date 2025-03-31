@@ -11,6 +11,7 @@ import { usePageLoading } from '@/hooks/router'
 import { PROJECT_TYPE, PROJECT_TYPE_STRING, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
 import Loading from '@/components/Loading.vue'
 import { isImgFile, isSvgFile } from '@/utils/file'
+import Icon from '@/components/Icon.vue'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -333,7 +334,14 @@ const uploadedIconCount = computed(() => data.icons.filter(e => e.uploadStatus =
         :key="item.code"
         class="item"
       >
-        <img :src="item.svg?.url || item.img?.url">
+        <Icon
+          :info="{
+            _id: '',
+            groupId: '',
+            tags: [],
+            ...item,
+          }"
+        />
         <div
           v-if="item.name && item.code !== item.name"
           class="name"
@@ -529,12 +537,17 @@ const uploadedIconCount = computed(() => data.icons.filter(e => e.uploadStatus =
     flex-wrap: wrap;
     min-height: calc(100vh - 40rem);
 
+    .icon {
+      margin: 0 auto;
+    }
+
     &.type-img {
       .item {
         width: 30rem;
       }
-      img {
+      .icon {
         height: 16rem;
+        width: 100%;
       }
     }
 

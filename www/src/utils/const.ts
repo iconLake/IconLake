@@ -72,3 +72,5 @@ export const SEARCH_SITES: SearchSite[] = [
   { name: 'Instagram', code: 'instagram', url: 'https://www.instagram.com/' },
   { name: 'Pixiv', code: 'pixiv', url: 'https://www.pixiv.net/' },
 ]
+
+export const DFS_PREFIX = 'https://dfs.iconlake.com/'

@@ -3,6 +3,7 @@ import { initModifyRequest, handleModifyRequestReferer } from './background/modi
 import { handleDetail, handleOption, handleSearch, initSearch } from './background/search'
 import { MsgType } from './background/types'
 import { Site } from './background/search/types'
+import { handleStorage } from './background/storage'
 
 if (import.meta.env.DEV) {
   const ws = new WebSocket('ws://127.0.0.1:35729')
@@ -57,6 +58,9 @@ Browser.runtime.onMessage.addListener(async (message, sender) => {
           sites: Object.values(Site)
         }
       }
+      break
+    case MsgType.Storage.toString().toLowerCase():
+      result = await handleStorage(params[0])
       break
     default:
       result = {
