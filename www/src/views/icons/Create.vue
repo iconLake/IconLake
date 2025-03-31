@@ -453,7 +453,10 @@ const uploadedIconCount = computed(() => data.icons.filter(e => e.uploadStatus =
             >{{ t('webStore') }}</a>
           </p>
         </div>
-        <div class="item">
+        <div
+          v-if="false"
+          class="item"
+        >
           <h3>
             <img
               class="browser"
