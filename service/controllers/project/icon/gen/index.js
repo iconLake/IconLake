@@ -204,7 +204,9 @@ export async function genJS (req, res, projectId, project) {
  */
 export async function genVUE (req, res, projectId, project) {
   const icons = await Promise.all(project.icons.filter(icon => icon.svg.url).map(async icon => {
-    const svgContent = await getText(icon.svg.url)
+    const svgContent = await getText(icon.svg.url).catch(err => {
+      console.error('Cannot get svg content:', `${icon.code}.svg`, icon.svg.url, err)
+    })
     return [icon.code, svgContent]
   }))
   const data = JSON.stringify(icons)
@@ -220,7 +222,9 @@ export async function genVUE (req, res, projectId, project) {
  */
 export async function genReact (req, res, projectId, project) {
   const icons = await Promise.all(project.icons.filter(icon => icon.svg.url).map(async icon => {
-    const svgContent = await getText(icon.svg.url)
+    const svgContent = await getText(icon.svg.url).catch(err => {
+      console.error('Cannot get svg content:', `${icon.code}.svg`, icon.svg.url, err)
+    })
     return [icon.code, svgContent]
   }))
   const data = JSON.stringify(icons)
