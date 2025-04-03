@@ -38,6 +38,14 @@ const { t } = useI18n()
         <i class="iconfont icon-bind" />
         <span>{{ t('bind') }}</span>
       </RouterLink>
+      <RouterLink
+        class="item"
+        active-class="active"
+        to="/user/setting/storage"
+      >
+        <i class="iconfont icon-storage" />
+        <span>{{ t('storage') }}</span>
+      </RouterLink>
     </div>
     <div class="view">
       <InfoCard />

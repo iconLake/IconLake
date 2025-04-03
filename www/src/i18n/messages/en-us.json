@@ -223,5 +223,10 @@
   "userBirthday": "Birthday",
   "userLocation": "Location",
   "setAvatarFirst": "Please set the avatar first",
-  "bindBlockchainFirst": "Please bind your blockchain account first"
+  "bindBlockchainFirst": "Please bind your blockchain account first",
+  "storage": "Storage",
+  "cloudStorage": "Cloud Storage",
+  "freeStorage": "Free Storage Space",
+  "getMoreStorageMsg": "When the cloud storage is used up, your files will be stored on your local computer. If you need to purchase more storage space, please contact us through the following channels.",
+  "storageLimited": "Cloud storage space has been used up"
 }

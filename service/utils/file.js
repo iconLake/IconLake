@@ -117,12 +117,12 @@ export function slimURL (url) {
  */
 export async function countDir (dir) {
   let count = 0
-  let size = BigInt(0)
+  let size = 0
   if (isActive) {
     const data = await getBucket(dir)
     if (data.contents.length > 0) {
       count += data.contents.length
-      size += data.contents.reduce((a, b) => a + BigInt(b.size), BigInt(0))
+      size += data.contents.reduce((a, b) => a + Number(b.size), 0)
     }
   } else {
     const dirPath = new URL(dir, publicPath)
@@ -132,10 +132,10 @@ export async function countDir (dir) {
       if (fs.statSync(p).isDirectory()) {
         const data = await countDir(`${dir}/${file}`)
         count += data.count
-        size += BigInt(data.size)
+        size += data.size
       } else {
         count++
-        size += BigInt(fs.statSync(p).size)
+        size += fs.statSync(p).size
       }
     }
   }

@@ -58,7 +58,8 @@ export const ERROR_CODE = {
   PERMISSION_DENIED: 'permissionDenied',
   NOT_EXIST: 'notExist',
   INTERNAL_ERROR: 'internalError',
-  NOT_ENABLED: 'notEnabled'
+  NOT_ENABLED: 'notEnabled',
+  STORAGE_LIMITED: 'storageLimited'
 }
 
 /**

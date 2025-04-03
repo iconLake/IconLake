@@ -21,12 +21,13 @@ const getImgFromDFS = (url: string) => {
   extensionApis.onReady(async () => {
     const file = await storage.getFile({
       key: url.substring(DFS_PREFIX.length),
-    })
+    }).catch(() => ({ data: '' }))
     imgUrl.value = file.data || '/imgs/img-error.svg'
   })
 }
 
 watch(() => props.info, async () => {
+  isError.value = false
   const url = getIconUrl(props.info)
   if (!url) {
     imgUrl.value = ''
@@ -36,7 +37,7 @@ watch(() => props.info, async () => {
     getImgFromDFS(url)
     return
   }
-  if (!isError.value && props.compress) {
+  if (props.compress) {
     imgUrl.value = addCompressParams(url, props.compress)
     return
   }
