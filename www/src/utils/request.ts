@@ -26,10 +26,10 @@ const axiosInstance = axios.create({
   }
 })
 
-export default function q(options: AxiosRequestConfig) {
-  return new Promise((resolve, reject) => {
+export default function q<T>(options: AxiosRequestConfig) {
+  return new Promise<T>((resolve, reject) => {
     axiosInstance(options).then(res => {
-      handleResponse(res, resolve, reject)
+      handleResponse<T>(res, resolve, reject)
     }).catch(err => {
       showErrorMsg(err)
       reject(err)

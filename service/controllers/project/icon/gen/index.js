@@ -204,7 +204,9 @@ export async function genJS (req, res, projectId, project) {
  */
 export async function genVUE (req, res, projectId, project) {
   const icons = await Promise.all(project.icons.filter(icon => icon.svg.url).map(async icon => {
-    const svgContent = await getText(icon.svg.url)
+    const svgContent = await getText(icon.svg.url).catch(err => {
+      console.error('Cannot get svg content:', `${icon.code}.svg`, icon.svg.url, err)
+    })
     return [icon.code, svgContent]
   }))
   const data = JSON.stringify(icons)
@@ -220,7 +222,9 @@ export async function genVUE (req, res, projectId, project) {
  */
 export async function genReact (req, res, projectId, project) {
   const icons = await Promise.all(project.icons.filter(icon => icon.svg.url).map(async icon => {
-    const svgContent = await getText(icon.svg.url)
+    const svgContent = await getText(icon.svg.url).catch(err => {
+      console.error('Cannot get svg content:', `${icon.code}.svg`, icon.svg.url, err)
+    })
     return [icon.code, svgContent]
   }))
   const data = JSON.stringify(icons)
@@ -320,9 +324,11 @@ export const deleteProjectDir = isCosActive ? deleteProjectCloudDir : deleteProj
  * @param {string} projectId
  */
 async function deleteProjectCloudDir (projectId) {
-  const data = await getBucket(`src/${projectId}/`)
-  if (data.contents.length > 0) {
-    await deleteObjects(data.contents.map(e => e.key))
+  for (const cat of ['icon', 'theme', 'cover']) {
+    const data = await getBucket(`${cat}/${projectId}/`)
+    if (data.contents.length > 0) {
+      await deleteObjects(data.contents.map(e => e.key))
+    }
   }
 }
 
@@ -331,11 +337,13 @@ async function deleteProjectCloudDir (projectId) {
  * @param {string} projectId
  */
 async function deleteProjectLocalDir (projectId) {
-  const dir = new URL(projectId, srcPath)
-  if (fs.existsSync(dir)) {
-    await rm(dir, {
-      recursive: true,
-      force: true
-    })
+  for (const cat of ['icon', 'theme', 'cover']) {
+    const dir = new URL(`${cat}/${projectId}`, srcPath)
+    if (fs.existsSync(dir)) {
+      await rm(dir, {
+        recursive: true,
+        force: true
+      })
+    }
   }
 }

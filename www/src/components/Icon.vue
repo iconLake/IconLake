@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { getIconUrl } from '@/utils/icon';
 import { Icon } from "../apis/project"
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { addCompressParams } from '@/utils';
+import { DFS_PREFIX } from '@/utils/const';
+import { extensionApis, storage } from '@/apis/extension';
 
 const props = defineProps<{
   info: Icon
@@ -13,17 +15,34 @@ const props = defineProps<{
 }>()
 
 const isError = ref(false)
+const imgUrl = ref('')
 
-const imgUrl = computed(() => {
+const getImgFromDFS = (url: string) => {
+  extensionApis.onReady(async () => {
+    const file = await storage.getFile({
+      key: url.substring(DFS_PREFIX.length),
+    }).catch(() => ({ data: '' }))
+    imgUrl.value = file.data || '/imgs/img-error.svg'
+  })
+}
+
+watch(() => props.info, async () => {
+  isError.value = false
   const url = getIconUrl(props.info)
   if (!url) {
-    return ''
+    imgUrl.value = ''
+    return
   }
-  if (!isError.value && props.compress) {
-    return addCompressParams(url, props.compress)
+  if (url.startsWith(DFS_PREFIX)) {
+    getImgFromDFS(url)
+    return
   }
-  return url
-})
+  if (props.compress) {
+    imgUrl.value = addCompressParams(url, props.compress)
+    return
+  }
+  imgUrl.value = url
+}, { immediate: true })
 
 const iconType = computed(() => {
   if (props.info.svg && props.info.svg.url) {
@@ -33,6 +52,12 @@ const iconType = computed(() => {
     return 'img'
   }
   return 'unknown'
+})
+
+watch(() => isError.value, () => {
+  if (isError.value) {
+    imgUrl.value = '/imgs/img-error.svg'
+  }
 })
 </script>
 

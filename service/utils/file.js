@@ -3,10 +3,12 @@ import fs, { createWriteStream } from 'fs'
 import { writeFile } from 'fs/promises'
 import fetch from 'node-fetch'
 import { pipeline } from 'stream/promises'
-import { getObject, isActive, putObject } from './cos.js'
+import { getObject, isActive, putObject, getBucket } from './cos.js'
 import { getConfig } from '../config/index.js'
 
 const config = getConfig()
+
+const publicPath = new URL('../public/', import.meta.url)
 
 /**
  * 保存文件
@@ -19,7 +21,7 @@ export async function save (name, data, path = 'file/') {
   if (isActive) {
     await putObject(key, data)
   } else {
-    const dir = new URL(path, new URL('../public/', import.meta.url))
+    const dir = new URL(path, publicPath)
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, {
         recursive: true
@@ -40,7 +42,7 @@ export async function getData (key) {
   if (isActive) {
     return await getObject(key)
   } else {
-    const p = new URL(key, new URL('../public/', import.meta.url))
+    const p = new URL(key, publicPath)
     if (!fs.existsSync(p)) {
       return null
     }
@@ -106,4 +108,39 @@ export function slimURL (url) {
   }
   const prefix = new RegExp(`^${isActive ? config.cos.domain : ''}/`, 'i')
   return url.replace(prefix, '')
+}
+
+/**
+ * 统计文件夹
+ * @param {string} dir
+ * @returns {Promise<{count: number, size: number}>}
+ */
+export async function countDir (dir) {
+  let count = 0
+  let size = 0
+  if (isActive) {
+    const data = await getBucket(dir)
+    if (data.contents.length > 0) {
+      count += data.contents.length
+      size += data.contents.reduce((a, b) => a + Number(b.size), 0)
+    }
+  } else {
+    const dirPath = new URL(dir, publicPath)
+    const files = await fs.promises.readdir(dirPath)
+    for (const file of files) {
+      const p = new URL(file, dirPath)
+      if (fs.statSync(p).isDirectory()) {
+        const data = await countDir(`${dir}/${file}`)
+        count += data.count
+        size += data.size
+      } else {
+        count++
+        size += fs.statSync(p).size
+      }
+    }
+  }
+  return {
+    count,
+    size
+  }
 }

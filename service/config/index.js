@@ -70,6 +70,9 @@ export const configs = {
  *    admin: {\
  *      userIds: string[]\
  *    }\
+ *    storage: {\
+ *      limit: number\
+ *    }\
  *  }}
  */
 export function getConfig (env) {

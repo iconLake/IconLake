@@ -128,7 +128,7 @@ function clearCachedData() {
       </RouterLink>
       <RouterLink
         class="item flex"
-        to="/user/setting"
+        to="/user/setting/info"
       >
         {{ t('mySettings') }}
       </RouterLink>

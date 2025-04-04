@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { editIcon, projectApis, Icon as IconType } from '@/apis/project'
-import { getHash, mintIcon, getTx, getChainAccount, burnIcon, getNftByTxHash } from '@/apis/blockchain'
+import { editIcon, projectApis, Icon as IconType, uploadFile } from '@/apis/project'
+import { getHash, mintIcon, getChainAccount, burnIcon, getNftByTxHash } from '@/apis/blockchain'
 import Header from '@/components/Header.vue'
 import Icon from '@/components/Icon.vue'
 import User from '@/components/User.vue'
@@ -11,11 +11,12 @@ import { userApis } from '@/apis/user'
 import type { UserInfo } from '@/apis/user'
 import LoadingVue from '@/components/Loading.vue'
 import { useI18n } from 'vue-i18n'
-import { ONLINE_DOMAIN, IS_PRODUCTION } from '@/utils/const'
+import { ONLINE_DOMAIN, IS_PRODUCTION, DFS_PREFIX, UPLOAD_DIR } from '@/utils/const'
 import { usePageLoading } from '@/hooks/router'
 import { getIconUrl } from '@/utils/icon'
 import type { MsgMint } from '@iconlake/client/types/iconlake.icon/module'
 import i18n from '@/i18n'
+import { storage } from '@/apis/extension'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -71,11 +72,35 @@ async function publish() {
     return
   }
   isPending.value = true
-  const uri = getIconUrl(iconInfo)
+  let uri = getIconUrl(iconInfo)
   if (!uri) {
     toast.error(t('fail'))
     isPending.value = false
     return
+  }
+  if (uri.startsWith(DFS_PREFIX)) {
+    const file = await storage.getFile({
+      key: uri.substring(DFS_PREFIX.length),
+    })
+    if (!file.data) {
+      toast.error(t('fail'))
+      isPending.value = false
+      return
+    }
+    const res = await uploadFile({
+      projectId: projectId.value,
+      _id: file.key.replace(`${UPLOAD_DIR.ICON}/`, ''),
+      data: file.data,
+      dir: UPLOAD_DIR.ICON
+    }, {
+      storageType: 'iconlake',
+    })
+    if (!res || !res.url) {
+      toast.error(t('fail'))
+      isPending.value = false
+      return
+    }
+    uri = res.url
   }
   const hash = await getHash(uri.replace(/\?.*/, ''))
   if (!hash || !userInfo.value || !userInfo.value.blockchain?.id) {
@@ -259,9 +284,15 @@ onMounted(() => {
       height: auto;
     }
   }
+  h1 {
+    word-break: break-all;
+    line-height: 1.4;
+  }
   h2 {
+    word-break: break-all;
     font-size: 1.5rem;
-    line-height: 1;
+    line-height: 1.5;
+    margin-top: 0.8rem;
   }
   h3 {
     font-size: 1rem;

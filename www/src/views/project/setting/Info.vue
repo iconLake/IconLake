@@ -72,7 +72,7 @@ async function handleUpload(file: UploadFile) {
     toast(t('fileUploadFailed'))
   })
   isCoverUploading.value = false
-  if (res) {
+  if (res && res.url) {
     project.value.cover = res.url
   }
 }

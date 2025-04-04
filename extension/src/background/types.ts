@@ -4,4 +4,5 @@ export enum MsgType {
   Detail = 'Detail',
   Option = 'Option',
   Ping = 'Ping',
+  Storage = 'Storage',
 }

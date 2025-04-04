@@ -51,7 +51,7 @@ async function collect(isDownload: boolean = false) {
         name: props.icon.name,
         code: props.icon.code,
         [PROJECT_TYPE_STRING[props.projectType]]: {
-          url: res.key
+          url: res.url
         }
       }])
       toast.success(t('saveDone'))

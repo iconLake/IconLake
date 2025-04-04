@@ -51,5 +51,8 @@
   },
   "admin": {
     "userIds": []
+  },
+  "storage": {
+    "limit": 10485760
   }
 }
