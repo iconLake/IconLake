@@ -92,6 +92,7 @@ onMounted(() => {
               <IconVue
                 :info="icon"
                 :compress="{ maxWidth: 60, maxHeight: 60 }"
+                :lazy="true"
               />
             </div>
           </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getIconUrl } from '@/utils/icon';
 import { Icon } from "../apis/project"
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { addCompressParams } from '@/utils';
 import { DFS_PREFIX } from '@/utils/const';
 import { extensionApis, storage } from '@/apis/extension';
@@ -12,10 +12,12 @@ const props = defineProps<{
     maxWidth?: number
     maxHeight?: number
   }
+  lazy?: boolean
 }>()
 
 const isError = ref(false)
 const imgUrl = ref('')
+const imgDom = ref()
 
 const getImgFromDFS = (url: string) => {
   extensionApis.onReady(async () => {
@@ -59,14 +61,34 @@ watch(() => isError.value, () => {
     imgUrl.value = '/imgs/img-error.svg'
   }
 })
+
+onMounted(() => {
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        const img = entry.target as HTMLImageElement
+        if (img.dataset.src) {
+          img.src = img.dataset.src
+        }
+        observer.unobserve(img)
+      }
+    }
+  })
+  if (imgDom.value && props.lazy) {
+    observer.observe(imgDom.value)
+  }
+})
 </script>
 
 <template>
   <div :class="`icon type-${iconType}`">
     <img
       v-if="imgUrl"
+      ref="imgDom"
       :class="`icon-${iconType}`"
-      :src="imgUrl"
+      :data-src="imgUrl"
+      :src="lazy ? undefined : imgUrl"
+      loading="lazy"
       @error="isError = true"
     >
   </div>

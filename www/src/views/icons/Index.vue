@@ -482,6 +482,7 @@ watch(() => data.keywords, () => {
             <IconVue
               :info="icon"
               :compress="{ maxWidth: 600, maxHeight: 600}"
+              :lazy="true"
             />
             <div class="name">
               {{ icon.name }}
