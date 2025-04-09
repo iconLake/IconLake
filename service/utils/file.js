@@ -1,9 +1,9 @@
 import crypto from 'crypto'
 import fs, { createWriteStream } from 'fs'
-import { writeFile } from 'fs/promises'
+import { writeFile, access, unlink } from 'fs/promises'
 import fetch from 'node-fetch'
 import { pipeline } from 'stream/promises'
-import { getObject, isActive, putObject, getBucket } from './cos.js'
+import { getObject, isActive, putObject, getBucket, deleteObjects } from './cos.js'
 import { getConfig } from '../config/index.js'
 
 const config = getConfig()
@@ -83,6 +83,33 @@ export async function download (url, path = 'tmp/', fetchOptions) {
   }
   await pipeline(res.body, createWriteStream(file))
   return file
+}
+
+/**
+ * 删除文件
+ * @param {string[]} keys
+ */
+export async function remove (keys) {
+  const _keys = keys.map(e => {
+    if (e.startsWith('http')) {
+      if (e.startsWith(config.cos.domain)) {
+        return slimURL(e)
+      } else {
+        return false
+      }
+    }
+    return e
+  }).filter(Boolean)
+  if (isActive) {
+    return await deleteObjects(_keys)
+  } else {
+    for (const key of _keys) {
+      const p = new URL(key, publicPath)
+      if (await access(p).then(() => true, () => false)) {
+        await unlink(p)
+      }
+    }
+  }
 }
 
 /**

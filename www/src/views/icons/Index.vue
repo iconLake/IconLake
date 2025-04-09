@@ -278,10 +278,7 @@ function updateIcon(eData: {
   if (!icon) {
     return
   }
-  Object.assign(icon, eData)
-  if ('groupId' in eData) {
-    getList()
-  }
+  getIcons()
 }
 
 async function saveGroup(name:string) {
@@ -485,6 +482,7 @@ watch(() => data.keywords, () => {
             <IconVue
               :info="icon"
               :compress="{ maxWidth: 600, maxHeight: 600}"
+              :lazy="true"
             />
             <div class="name">
               {{ icon.name }}

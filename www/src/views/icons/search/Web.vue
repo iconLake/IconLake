@@ -63,7 +63,10 @@
             class="icon-item"
             @click="review(i)"
           >
-            <IconVue :info="icon" />
+            <IconVue
+              :info="icon"
+              :lazy="true"
+            />
           </div>
         </div>
         <div
