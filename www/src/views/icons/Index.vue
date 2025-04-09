@@ -278,10 +278,7 @@ function updateIcon(eData: {
   if (!icon) {
     return
   }
-  Object.assign(icon, eData)
-  if ('groupId' in eData) {
-    getList()
-  }
+  getIcons()
 }
 
 async function saveGroup(name:string) {

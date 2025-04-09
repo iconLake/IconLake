@@ -26,7 +26,7 @@ const percent = computed(() => {
     return 100
   }
   const p = storageInfo.value.free / storageInfo.value.limit
-  return (p > 1 ? 1 : p) * 100
+  return 100 - (p > 1 ? 1 : p) * 100
 })
 
 const getInfo = async () => {

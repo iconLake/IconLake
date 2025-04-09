@@ -2,7 +2,7 @@ import { Analyse } from '../../models/analyse.js'
 import { History } from '../../models/history.js'
 import { Project } from '../../models/project.js'
 import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM, PERMANENT_FILE_EXPIRE } from '../../utils/const.js'
-import { completeURL, slimURL } from '../../utils/file.js'
+import { completeURL, remove, slimURL } from '../../utils/file.js'
 import { genCSS, genJS, genReact, genVUE } from './icon/gen/index.js'
 import { middleware as userMiddleware } from '../user/middleware.js'
 
@@ -67,8 +67,11 @@ export async function add (req, res) {
   const startIndex = project.iconIndex
   icons.forEach((e, i) => {
     e.unicode = (startIndex + i).toString(16)
-    if (e.svg && e.svg.url) {
+    if (typeof e.svg?.url === 'string') {
       e.svg.url = slimURL(e.svg.url)
+    }
+    if (typeof e.img?.url === 'string') {
+      e.img.url = slimURL(e.img.url)
     }
   })
   const result = await Project.updateOne({
@@ -141,11 +144,26 @@ export async function del (req, res) {
     })
     return
   }
-  // 记录历史
+  res.json({})
+  // 删除的icon
   const icons = []
   _ids.forEach(e => {
     icons.push(project.icons.id(e))
   })
+  // 删除文件
+  const files = []
+  icons.forEach(e => {
+    if (typeof e.svg?.url === 'string') {
+      files.push(e.svg.url)
+    }
+    if (typeof e.img?.url === 'string') {
+      files.push(e.img.url)
+    }
+  })
+  if (files.length > 0) {
+    await remove(files)
+  }
+  // 记录历史
   await History.updateOne({
     _id: projectId
   }, {
@@ -155,7 +173,6 @@ export async function del (req, res) {
       }
     }
   })
-  res.json({})
 }
 
 /**
@@ -203,6 +220,18 @@ export async function edit (req, res) {
     res.json({})
     return
   }
+  // 旧文件
+  const oldFiles = []
+  if (typeof req.body.svg?.url === 'string' || typeof req.body.img?.url === 'string') {
+    const oldProject = await Project.findById(req.body.projectId, 'icons')
+    const icon = oldProject.icons.id(req.body._id)
+    if (typeof req.body.svg?.url === 'string' && icon.svg?.url && req.body.svg?.url !== icon.svg.url) {
+      oldFiles.push(icon.svg.url)
+    }
+    if (typeof req.body.img?.url === 'string' && icon.img?.url && req.body.img?.url !== icon.img.url) {
+      oldFiles.push(icon.img.url)
+    }
+  }
   const result = await Project.updateOne({
     _id: req.body.projectId,
     members: {
@@ -216,6 +245,10 @@ export async function edit (req, res) {
     $set
   })
   res.json(result.matchedCount > 0 ? {} : { error: ERROR_CODE.PERMISSION_DENIED })
+  // 删除旧文件
+  if (oldFiles.length) {
+    await remove(oldFiles)
+  }
 }
 
 /**

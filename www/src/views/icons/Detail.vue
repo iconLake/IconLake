@@ -217,7 +217,7 @@ async function handleUpload(file: UploadFile) {
       console.error(err)
       toast.error(t('fileUploadFailed'))
     })
-    if (!res) {
+    if (!res || !res.url) {
       return
     }
     url = res.url
@@ -235,7 +235,7 @@ async function handleUpload(file: UploadFile) {
       console.error(err)
       toast.error(t('fileUploadFailed'))
     })
-    if (!res) {
+    if (!res || !res.url) {
       return
     }
     url = res.url
