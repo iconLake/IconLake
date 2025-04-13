@@ -66,7 +66,7 @@ export async function getText (key) {
  * 下载文件
  * @param {string} url
  * @param {string} path
- * @returns {URL}
+ * @returns {Promise<URL>}
  */
 export async function download (url, path = 'tmp/', fetchOptions) {
   const name = crypto.createHash('sha1').update(url).digest('hex')

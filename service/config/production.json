@@ -20,6 +20,10 @@
     "clientId": "",
     "clientSecret": ""
   },
+  "google": {
+    "clientId": "",
+    "clientSecret": ""
+  },
   "center": {
     "domain": "http://127.0.0.1:9999"
   },
@@ -35,7 +39,8 @@
     "code": false,
     "gitee": true,
     "github": true,
-    "keplr": true
+    "keplr": true,
+    "google": false
   },
   "blockchain": {
     "public": {
