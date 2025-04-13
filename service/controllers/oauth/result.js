@@ -42,7 +42,7 @@ export function setToken (res, user) {
  * @param {string} uid
  * @param {string} url
  * @param {string} oldAvatar
- * @returns {string}
+ * @returns {Promise<string>}
  */
 export async function saveAvatar (uid, url, oldAvatar) {
   const path = `${AVATAR_PATH}${uid}/`
@@ -60,6 +60,12 @@ export async function saveAvatar (uid, url, oldAvatar) {
   return newAvatar
 }
 
+/**
+ * 登录成功
+ * @param {{ id: string; name: string; from: string; avatar: string; }} userInfo
+ * @param {Request} req
+ * @param {Response} res
+ */
 export async function success (userInfo, req, res) {
   if (userInfo.id && userInfo.from) {
     const { token, tokenExpire } = generateToken()

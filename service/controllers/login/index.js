@@ -2,6 +2,7 @@ import { getLocale, setLocale } from '../../utils/index.js'
 import { ROOT, RESOURCE_MAX_AGE } from '../../utils/const.js'
 import { getConfig } from '../../config/index.js'
 import { checkLogin } from '../user/middleware.js'
+import crypto from 'crypto'
 
 const config = getConfig()
 const hostname = new URL(config.domain).hostname
@@ -32,11 +33,18 @@ export default async function index (req, res) {
  * @api {get} /login/params
  */
 export async function params (req, res) {
+  const nonce = crypto.randomBytes(16).toString('hex')
+  res.cookie('loginNonce', nonce, {
+    path: '/',
+    httpOnly: true
+  })
   res.json({
     domain: config.domain,
+    nonce,
     clientId: {
       gitee: config.gitee.clientId,
-      github: config.github.clientId
+      github: config.github.clientId,
+      google: config.google.clientId
     },
     login: config.login
   })

@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { login as oauthGithub } from '../controllers/oauth/github.js'
 import { login as oauthGitee } from '../controllers/oauth/gitee.js'
+import { login as oauthGoogle } from '../controllers/oauth/google.js'
 import { login as oauthCode } from '../controllers/oauth/code.js'
 import { login as oauthBlockchain } from '../controllers/oauth/blockchain.js'
 import * as userInfo from '../controllers/user/info.js'
@@ -32,6 +33,7 @@ router.get('/login/params', loginParams)
 
 router.get('/oauth/github', oauthGithub)
 router.get('/oauth/gitee', oauthGitee)
+router.get('/oauth/google', oauthGoogle)
 router.get('/oauth/code', oauthCode)
 router.post('/oauth/blockchain', oauthBlockchain)
 

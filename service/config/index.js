@@ -16,64 +16,7 @@ export const configs = {
 /**
  * 获取配置
  * @param {string} [env] 默认当前环境
- * @returns {{\
- *    domain: string\
- *    http: {\
- *      port: number\
- *    }\
- *    https: {\
- *      port: number\
- *      ca: string\
- *      key: string\
- *      cert: string\
- *    }\
- *    mongodb: {\
- *      uri: string\
- *    }\
- *    gitee: {\
- *      clientId: string\
- *      clientSecret: string\
- *    }\
- *    github: {\
- *      clientId: string,\
- *      clientSecret: string\
- *    }\
- *    center: {\
- *      domain: string\
- *    }\
- *    cos: {\
- *      domain: string\
- *      type: string\
- *      secretId: string\
- *      secretKey: string\
- *      bucket: string\
- *      region: string\
- *    }\
- *    login: {\
- *      code: boolean\
- *      gitee: boolean\
- *      github: boolean\
- *      keplr: boolean\
- *    }\
- *    blockchain: {\
- *      public: {\
- *        rpc: string\
- *        lcd: string\
- *        backendService: {\
- *          initDROP: boolean\
- *        }\
- *      }\
- *      private: {\
- *        mnemonic: string\
- *      }\
- *    }\
- *    admin: {\
- *      userIds: string[]\
- *    }\
- *    storage: {\
- *      limit: number\
- *    }\
- *  }}
+ * @returns {{domain: string; http: { port: number; } https: { port: number; ca: string; key: string; cert: string; } mongodb: { uri: string; } gitee: { clientId: string; clientSecret: string; } github: { clientId: string; clientSecret: string; } google: { clientId: string; clientSecret: string; } center: { domain: string; } cos: { domain: string; type: string; secretId: string; secretKey: string; bucket: string; region: string; } login: { code: boolean; gitee: boolean; github: boolean; keplr: boolean; google: boolean; } blockchain: { public: { rpc: string; lcd: string; backendService: { initDROP: boolean; } } private: { mnemonic: string; } } admin: { userIds: string[]; } storage: { limit: number; } }}
  */
 export function getConfig (env) {
   const config = configs[env || NODE_ENV]

@@ -14,15 +14,18 @@
   // 获取参数
   const params: {
     domain: string
+    nonce: string
     clientId: {
       gitee: string
       github: string
+      google: string
     }
     login: {
       code: boolean
       gitee: boolean
       github: boolean
       keplr: boolean
+      google: boolean
     }
   } = await fetch('/api/login/params').then(res => res.json())
 
@@ -54,6 +57,17 @@
     })
   } else {
     githubDom.style.display = 'none'
+  }
+
+  // login with google
+  const googleDom = document.querySelector('.auth .google') as HTMLDivElement
+  if (params.login.google) {
+    googleDom.classList.add('active')
+    googleDom.addEventListener('click', () => {
+      location.href = `https://accounts.google.com/o/oauth2/v2/auth?scope=${encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile')}&access_type=offline&include_granted_scopes=true&response_type=code&state=${params.nonce}&client_id=${encodeURIComponent(params.clientId.google)}&redirect_uri=${domain}%2Fapi%2Foauth%2Fgoogle`
+    })
+  } else {
+    googleDom.style.display = 'none'
   }
 
   // login with code
