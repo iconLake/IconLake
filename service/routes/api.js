@@ -42,6 +42,7 @@ router.post('/user/info/edit', userMiddleware, userInfo.edit)
 router.get('/user/logout', userMiddleware, userInfo.logout)
 
 router.get('/user/setting/unbind', userMiddleware, userSetting.unbind)
+router.get('/user/setting/regenAccessKey', userMiddleware, userSetting.regenAccessKey)
 router.post('/user/file/upload', userMiddleware, userFile.upload)
 
 router.post('/user/theme/edit', userMiddleware, userTheme.edit)

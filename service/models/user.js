@@ -34,6 +34,9 @@ export const UserSchema = new Schema({
   },
   theme: {
     creator: String
+  },
+  accessKey: {
+    id: String
   }
 })
 

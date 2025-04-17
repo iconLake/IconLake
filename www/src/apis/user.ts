@@ -27,6 +27,9 @@ export interface UserInfo {
   code?: {
     id: string
   }
+  accessKey?: {
+    id: string
+  }
   theme?: {
     creator?: string
   }
@@ -67,6 +70,7 @@ export const userApis = {
   },
 
   unbind,
+  regenAccessKey,
   logout,
   loginByBlockchain,
   loginByCode,
@@ -183,6 +187,14 @@ export function unbind(type: string) {
     },
     baseURL,
   }) as Promise<void>
+}
+
+export function regenAccessKey() {
+  return <Promise<Res>>request({
+    method: 'GET',
+    url: '/setting/regenAccessKey',
+    baseURL,
+  })
 }
 
 export function editInfo(data: {
