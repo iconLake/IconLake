@@ -6,7 +6,7 @@ import { getEnvs, query, upload } from "./utils.js"
 
 const server = new McpServer({
   name: "iconLake MCP server",
-  version: "0.1.3"
+  version: "0.1.6",
 })
 
 server.tool(

@@ -1,6 +1,6 @@
 {
   "name": "@iconlake/mcp",
-  "version": "0.1.3",
+  "version": "0.1.6",
   "description": "iconLake MCP server",
   "bin": {
     "mcp-server-iconlake": "dist/index.js"

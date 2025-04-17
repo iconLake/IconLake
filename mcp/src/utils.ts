@@ -43,7 +43,7 @@ export async function upload({
     if (!img.startsWith('data:image/')) {
       throw new Error('Invalid image. Must be a image of data URL format.')
     }
-    buf = Buffer.from(img.replace(/^data:image\/\w+;base64,/, ''), 'base64')
+    buf = Buffer.from(img.replace(/^data:image\/[^;]+;base64,/i, ''), 'base64')
   } else {
     throw new Error('Image or SVG is required.')
   }
