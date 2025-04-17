@@ -27,6 +27,20 @@ export default middleware
  * @returns {Promise<{error?: string, user?: object}>}
  */
 export async function checkLogin (req) {
+  if (req.headers['iconlake-access-key']) {
+    const user = await User.findOne({
+      'accessKey.id': req.headers['iconlake-access-key']
+    })
+    if (user) {
+      return {
+        user
+      }
+    } else {
+      return {
+        error: ERROR_CODE.USER_NOT_LOGIN
+      }
+    }
+  }
   if (!req.cookies.token) {
     return {
       error: ERROR_CODE.USER_NOT_LOGIN

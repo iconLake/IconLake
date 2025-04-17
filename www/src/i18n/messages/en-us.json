@@ -228,5 +228,6 @@
   "cloudStorage": "Cloud Storage",
   "freeStorage": "Free Storage Space",
   "getMoreStorageMsg": "When the cloud storage is used up, your files will be stored on your local computer. If you need to purchase more storage space, please contact us through the following channels.",
-  "storageLimited": "Cloud storage space has been used up"
+  "storageLimited": "Cloud storage space has been used up",
+  "regen": "Regenerate"
 }

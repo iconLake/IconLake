@@ -1,0 +1,35 @@
+{
+  "name": "@iconlake/mcp",
+  "version": "0.1.3",
+  "description": "iconLake MCP server",
+  "bin": {
+    "mcp-server-iconlake": "dist/index.js"
+  },
+  "type": "module",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc --build tsconfig.json",
+    "build:watch": "tsc --build tsconfig.json --watch",
+    "serve": "npx @modelcontextprotocol/inspector node dist/index.js",
+    "dev": "run-p serve build:watch"
+  },
+  "keywords": ["modelcontextprotocol", "iconlake", "mcp"],
+  "author": "iconLake",
+  "license": "MIT",
+  "packageManager": "pnpm@9.15.4",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.9.0",
+    "file-type": "^20.4.1",
+    "tailwindcss": "^4.1.4",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/inspector": "^0.8.2",
+    "@types/node": "^22.14.1",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

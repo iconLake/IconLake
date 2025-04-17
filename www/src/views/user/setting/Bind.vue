@@ -18,6 +18,7 @@ const isDealing = reactive({
   github: false,
   blockchain: false,
   code: false,
+  accessKey: false,
 })
 
 const pageLoading = usePageLoading()
@@ -147,6 +148,21 @@ async function deal(type: LoginType) {
   }
   isDealing[type] = false
 }
+
+async function regenAccessKey() {
+  isDealing.accessKey = true
+  try {
+    await userApis.regenAccessKey()
+    toast.success(t('success'))
+    userApis.info().onUpdate(async info => {
+      userInfo.value = info
+    })
+  } catch (e) {
+    console.error(e)
+    toast.error(t('fail'))
+  }
+  isDealing.accessKey = false
+}
 </script>
 
 <template>
@@ -246,6 +262,25 @@ async function deal(type: LoginType) {
         <LoadingVue v-if="isDealing.code" />
         <template v-else>
           {{ t(userInfo?.code?.id ? 'unbind' : 'bind') }}
+        </template>
+      </div>
+    </div>
+  </div>
+  <div
+    class="item"
+  >
+    <div class="item-label">
+      AccessKey
+    </div>
+    <div class="item-value flex">
+      <span>{{ userInfo?.accessKey?.id || t('notBound') }}</span>
+      <div
+        class="btn"
+        @click="regenAccessKey"
+      >
+        <LoadingVue v-if="isDealing.accessKey" />
+        <template v-else>
+          {{ t('regen') }}
         </template>
       </div>
     </div>

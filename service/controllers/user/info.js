@@ -23,6 +23,7 @@ export async function info (req, res) {
     'github.name',
     'github.avatar',
     'code.id',
+    'accessKey.id',
     'theme'
   ]
   const user = (await User.findById(req.user._id, fields.join(' '))).toJSON()
