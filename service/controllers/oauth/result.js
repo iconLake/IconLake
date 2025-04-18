@@ -73,7 +73,7 @@ export async function success (userInfo, req, res) {
       [`${userInfo.from}.id`]: userInfo.id
     })
     if (user) {
-      userInfo.name && (user.name = userInfo.name)
+      userInfo.name && !user.name && (user.name = userInfo.name)
       user.token = token
       user.tokenExpire = tokenExpire
       user[userInfo.from] = userInfo
@@ -92,7 +92,7 @@ export async function success (userInfo, req, res) {
         })
       }
     }
-    if (userInfo.avatar) {
+    if (userInfo.avatar && !user.avatar) {
       user.avatar = await saveAvatar(user.id, userInfo.avatar, user.avatar)
     }
     await user.save()
