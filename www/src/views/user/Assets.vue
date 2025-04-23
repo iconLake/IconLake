@@ -63,14 +63,14 @@ const shareMsg = computed(() => `${t('helpToInitMintingDROP')} ${location.origin
 async function getAssets() {
   const uInfo = userInfo.value
   if (uInfo?.blockchain) {
-    getBalance(uInfo.blockchain.id, LAKE_DENOM_MINI).then(balance => {
+    getBalance(uInfo.blockchain.id, LAKE_DENOM_MINI).then((balance: any) => {
       if (balance?.amount) {
         lakeAmount.value = +balance?.amount
       }
     }).finally(() => {
       isLAKEAmountLoaded.value = true
     })
-    getBalance(uInfo.blockchain.id, DROP_DENOM_MINI).then(balance => {
+    getBalance(uInfo.blockchain.id, DROP_DENOM_MINI).then((balance: any) => {
       if (balance?.amount) {
         comfirmedDropAmount.value = +balance?.amount
       }

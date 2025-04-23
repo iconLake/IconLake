@@ -60,7 +60,7 @@ async function getInfo() {
     return
   }
   await Promise.all([
-    getBalance(userInfo.value.blockchain.id, LAKE_DENOM_MINI).then(res => {
+    getBalance(userInfo.value.blockchain.id, LAKE_DENOM_MINI).then((res: any) => {
       if (res?.amount) {
         lakeAmount.value = +res?.amount
       }
