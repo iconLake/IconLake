@@ -26,6 +26,7 @@ export default defineConfig({
       '/login': proxyDomain,
       '/common': proxyDomain,
       '/imgs': proxyDomain,
+      '/font': proxyDomain,
       '/exts': proxyDomain,
       '/avatar': proxyDomain,
       '/icon': proxyDomain,

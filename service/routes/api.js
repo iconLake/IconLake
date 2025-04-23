@@ -26,6 +26,7 @@ import { add as addBlacklist, del as delBlacklist } from '../controllers/blackli
 import adminMiddleware from '../controllers/admin/middleware.js'
 import { verify as verifyAdmin } from '../controllers/admin/info.js'
 import { verifyNFT, verifyProject, verifyAddress } from '../controllers/blacklist/verify.js'
+import * as appreciate from '../controllers/icon/appreciate.js'
 
 const router = Router()
 
@@ -74,6 +75,8 @@ router.post('/project/file/upload', userMiddleware, projectFile.upload)
 router.get('/project/file/storageInfo', userMiddleware, projectFile.storageInfo)
 router.post('/project/theme/edit', userMiddleware, projectTheme.edit)
 router.get('/project/theme/info', projectTheme.info)
+
+router.get('/icon/appreciate/list', appreciate.list)
 
 router.post('/icon/info/edit', userMiddleware, iconInfo.edit)
 

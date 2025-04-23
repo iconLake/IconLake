@@ -18,6 +18,7 @@ const props = defineProps<{
 const isError = ref(false)
 const imgUrl = ref('')
 const imgDom = ref()
+const isLazyLoaded = ref(false)
 
 const getImgFromDFS = (url: string) => {
   extensionApis.onReady(async () => {
@@ -69,6 +70,7 @@ onMounted(() => {
         const img = entry.target as HTMLImageElement
         if (img.dataset.src) {
           img.src = img.dataset.src
+          isLazyLoaded.value = true
         }
         observer.unobserve(img)
       }
@@ -87,7 +89,7 @@ onMounted(() => {
       ref="imgDom"
       :class="`icon-${iconType}`"
       :data-src="imgUrl"
-      :src="lazy ? undefined : imgUrl"
+      :src="(lazy && !isLazyLoaded) ? undefined : imgUrl"
       loading="lazy"
       @error="isError = true"
     >
