@@ -60,7 +60,8 @@ export async function list (req, res) {
       text: await aiAppreciate({
         model: 'hunyuan',
         imgUrl: completeURL(icon.img?.url ?? icon.svg?.url),
-        type: req.query.type
+        type: req.query.type,
+        locale: req.cookies.locale
       }),
       ai: 'hunyuan'
     }

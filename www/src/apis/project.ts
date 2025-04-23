@@ -572,9 +572,9 @@ export interface Appreciate {
 }
 
 export function getAppreciateList (params: {
-  projectId: string;
-  iconId: string;
-  type: AppreciateType;
+  projectId: string
+  iconId: string
+  type: AppreciateType
   update?: boolean
 }) {
   return request<{
@@ -583,6 +583,6 @@ export function getAppreciateList (params: {
     method: 'GET',
     url: '/icon/appreciate/list',
     baseURL: '/api',
-    params
+    params,
   })
 }

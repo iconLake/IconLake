@@ -431,7 +431,7 @@ async function handleUpload(file: UploadFile) {
     .iconfont {
       font-size: 1.45rem;
       vertical-align: baseline;
-      margin-right: 0.2rem;
+      margin-right: 0.4rem;
     }
     span {
       font-size: 1.15rem;

@@ -52,7 +52,7 @@ async function getData(update?: boolean) {
     projectId: projectId.value,
     iconId: id.value,
     type,
-    update
+    update,
   })
   comments[type] = res.list.reverse()
 }
