@@ -11,6 +11,7 @@ export interface OriginalIcon {
 export interface BaseIcon {
   name: string
   code: string
+  desc?: string
   svg?: {
     url: string
     /**
@@ -552,5 +553,36 @@ export function editTheme(projectId: string, theme: Theme) {
       projectId,
       ...theme
     },
+  })
+}
+
+export enum AppreciateType {
+  Great = 'great',
+  Good = 'good',
+  Normal = 'normal',
+  Bad = 'bad'
+}
+
+export interface Appreciate {
+  _id: string
+  url?: string
+  text: string
+  ai?: string
+  createTime: string
+}
+
+export function getAppreciateList (params: {
+  projectId: string
+  iconId: string
+  type: AppreciateType
+  update?: boolean
+}) {
+  return request<{
+    list: Appreciate[]
+  }>({
+    method: 'GET',
+    url: '/icon/appreciate/list',
+    baseURL: '/api',
+    params,
   })
 }

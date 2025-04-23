@@ -46,8 +46,10 @@
     "mongoose": "^8.4.4",
     "nanoid": "^4.0.2",
     "node-fetch": "^3.3.1",
+    "openai": "^4.95.1",
     "uglify-js": "^3.17.4",
-    "webfont": "^11.2.26"
+    "webfont": "^11.2.26",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",

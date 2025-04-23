@@ -229,5 +229,14 @@
   "freeStorage": "可用存储空间",
   "getMoreStorageMsg": "云端存储用完后，你的文件将会被存储在你本机，如需购买更多存储空间，请通过以下途径联系我们。",
   "storageLimited": "云存储空间已用完",
-  "regen": "重新生成"
+  "regen": "重新生成",
+  "greatAppreciate": "马屁精",
+  "goodAppreciate": "好评",
+  "normalAppreciate": "中评",
+  "badAppreciate": "差评",
+  "hunyuan": "腾讯混元",
+  "appreciating": "正在撰写点评……",
+  "appreciate": "点评",
+  "internalError": "服务出错了！请联系我们进行处理。",
+  "imageFormatNotSupported": "图片格式不支持"
 }

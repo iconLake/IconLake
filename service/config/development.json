@@ -59,5 +59,11 @@
   },
   "storage": {
     "limit": 10485760
+  },
+  "ai": {
+    "hunyuan": {
+      "apiKey": "",
+      "endpoint": "https://api.hunyuan.cloud.tencent.com/v1"
+    }
   }
 }

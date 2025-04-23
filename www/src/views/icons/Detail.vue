@@ -198,9 +198,11 @@ async function handleUpload(file: UploadFile) {
     return
   }
   const _id = props.info._id
+  const projectId = props.projectId
+  const projectType = props.projectType
   const oldUrl = getIconUrl(props.info) || ''
   let url = oldUrl
-  if (props.projectType === PROJECT_TYPE.SVG) {
+  if (projectType === PROJECT_TYPE.SVG) {
     const svgText = await readFileAsText(file.raw)
     const hash = MD5(svgText).toString()
     const fileName = `${hash}.svg`
@@ -209,7 +211,7 @@ async function handleUpload(file: UploadFile) {
       return
     }
     const res = await uploadFile({
-      projectId: props.projectId,
+      projectId,
       _id: fileName,
       data: svgText,
       dir: UPLOAD_DIR.ICON
@@ -221,13 +223,13 @@ async function handleUpload(file: UploadFile) {
       return
     }
     url = res.url
-  } else if (props.projectType === PROJECT_TYPE.IMG) {
+  } else if (projectType === PROJECT_TYPE.IMG) {
     const imgBlob = await readFileAsBlob(file.raw)
     const buf = await imgBlob.arrayBuffer()
     const hash = MD5(lib.WordArray.create(Array.from(new Uint8Array(buf)))).toString()
     const code  = `${hash}.${file.name.substring(file.name.lastIndexOf('.') + 1)}`
     const res = await uploadFile({
-      projectId: props.projectId,
+      projectId,
       _id: code,
       data: imgBlob,
       dir: UPLOAD_DIR.ICON
@@ -243,14 +245,14 @@ async function handleUpload(file: UploadFile) {
     toast.error(t('notSupported'))
     return
   }
-  const key = PROJECT_TYPE_STRING[props.projectType]
+  const key = PROJECT_TYPE_STRING[projectType]
   const data = {
     _id,
     [key]: {
       url
     }
   }
-  await editIcon(props.projectId, props.info._id, { [key]: data[key] })
+  await editIcon(projectId, _id, { [key]: data[key] })
   toast(t('saveDone'))
   emit('update', data)
 }
@@ -292,6 +294,14 @@ async function handleUpload(file: UploadFile) {
           class="count-use c-main"
         >
           {{ t('pageReferer') }}{{ (typeof info.analyse?.pageCount === 'number') ? ` ${info.analyse.pageCount}` : '' }}
+        </router-link>
+        <router-link
+          v-if="projectType === PROJECT_TYPE.IMG"
+          :to="`/icons/${projectId}/appreciate/${info._id}`"
+          class="appreciate c-main"
+        >
+          <i class="iconfont icon-ai" />
+          <span>{{ t('appreciate') }}</span>
         </router-link>
       </div>
       <div class="info grow">
@@ -413,6 +423,20 @@ async function handleUpload(file: UploadFile) {
     margin-top: 1.5rem;
     font-size: 1rem;
     text-align: center;
+  }
+  .appreciate {
+    display: block;
+    margin-top: 1.5rem;
+    text-align: center;
+    .iconfont {
+      font-size: 1.45rem;
+      vertical-align: baseline;
+      margin-right: 0.4rem;
+    }
+    span {
+      font-size: 1.15rem;
+      position: relative;
+    }
   }
   .info {
     margin-left: 4rem;

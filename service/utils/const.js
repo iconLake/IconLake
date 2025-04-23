@@ -59,7 +59,8 @@ export const ERROR_CODE = {
   NOT_EXIST: 'notExist',
   INTERNAL_ERROR: 'internalError',
   NOT_ENABLED: 'notEnabled',
-  STORAGE_LIMITED: 'storageLimited'
+  STORAGE_LIMITED: 'storageLimited',
+  IMAGE_FORMAT_NOT_SUPPORTED: 'imageFormatNotSupported'
 }
 
 /**
