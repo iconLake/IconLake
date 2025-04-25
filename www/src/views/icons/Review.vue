@@ -15,6 +15,7 @@ const props = defineProps<{
   onClose: () => void
   onPrev: () => void
   onNext: () => void
+  collectable?: boolean
 }>()
 
 const isImgShow = ref(true)
@@ -110,6 +111,7 @@ onBeforeUnmount(() => {
     </div>
   </div>
   <CollectVue
+    v-if="collectable"
     :icon="icon"
     :project-id="projectId"
     :project-type="projectType"
@@ -130,7 +132,7 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(20px);
   overflow: auto;
   padding: 1.5rem;
-  justify-content: flex-start;
+  justify-content: safe center;  
 
   .icon {
     width: auto;
@@ -147,12 +149,14 @@ onBeforeUnmount(() => {
     margin-top: 1.5rem;
     font-size: 1.5rem;
     line-height: 1.5;
+    word-break: break-all;
   }
 
   .code {
     margin-top: 0.5rem;
     font-size: 1.2rem;
     color: #666;
+    word-break: break-all;
   }
 
   .btns {

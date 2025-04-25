@@ -19,6 +19,7 @@ import { getIconUrl } from '@/utils/icon'
 import { ONLINE_DOMAIN, PROJECT_TYPE, PROJECT_TYPE_STRING, PROJECT_STYLE, PROJECT_STYLE_STRING } from '@/utils/const'
 import SearchWebVue from './search/Web.vue'
 import { event } from '@/utils/event'
+import Review from './Review.vue'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -26,6 +27,8 @@ const pageLoading = usePageLoading()
 const $route = useRoute()
 
 const userInfo = ref({} as UserInfo)
+const isReview = ref(false)
+const reviewIndex = ref([-1, -1])
 
 const data = reactive({
   _id: $route.params.id as string,
@@ -65,6 +68,40 @@ const editable = computed(() => {
   }
   return data.members.some(e => e.userId === userInfo.value._id)
 })
+
+const reviewIcon = computed(() => {
+  return data.list[reviewIndex.value[0]]?.icons[reviewIndex.value[1]]
+})
+
+function review (icon: Icon) {
+  let index = -1
+  const gIndex = data.list.findIndex(e => e.icons.some((f, i) => {
+    if (f._id === icon._id) {
+      index = i
+      return true
+    }
+  }))
+  isReview.value = true
+  reviewIndex.value = [gIndex, index]
+}
+
+function reviewNext () {
+  const index = reviewIndex.value[1] + 1
+  if (index < data.list[reviewIndex.value[0]]?.icons.length) {
+    reviewIndex.value = [reviewIndex.value[0], index]
+  } else if (reviewIndex.value[0] + 1 < data.list.length) {
+    reviewIndex.value = [reviewIndex.value[0] + 1, 0]
+  }
+}
+
+function reviewPrev () {
+  const index = reviewIndex.value[1] - 1
+  if (index >= 0) {
+    reviewIndex.value = [reviewIndex.value[0], index]
+  } else if (reviewIndex.value[0] > 0) {
+    reviewIndex.value = [reviewIndex.value[0] - 1, data.list[reviewIndex.value[0] - 1].icons.length - 1]
+  }
+}
 
 async function getIcons () {
   await projectApis.info(data._id, 'type name icons groups style').onUpdate(async res => {
@@ -200,6 +237,7 @@ onBeforeUnmount(() => {
 
 function selectIcon(icon:Icon, e:MouseEvent) {
   if (!data.isBatching) {
+    review(icon)
     return
   }
   if (data.selectedIcons.has(icon._id)) {
@@ -534,6 +572,16 @@ watch(() => data.keywords, () => {
       @add="saveGroup"
     />
   </div>
+  <!-- review -->
+  <Review
+    v-if="isReview"
+    :icon="reviewIcon"
+    :project-id="data._id"
+    :project-type="data.type"
+    @close="isReview = false"
+    @prev="reviewPrev"
+    @next="reviewNext"
+  />
 </template>
 
 <style lang="scss" scoped>

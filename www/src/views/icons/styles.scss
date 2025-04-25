@@ -22,10 +22,10 @@
   border-radius: 0.4rem;
   box-sizing: border-box;
   border: solid 0.1rem transparent;
+  cursor: pointer;
   &.selectable {
     background: #e5ecff;
     user-select: none;
-    cursor: pointer;
     &.selected {
       border-color: $color-main;
       background: #fff;
