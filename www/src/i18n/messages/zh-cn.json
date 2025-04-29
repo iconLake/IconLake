@@ -238,5 +238,6 @@
   "appreciating": "正在撰写点评……",
   "appreciate": "点评",
   "internalError": "服务出错了！请联系我们进行处理。",
-  "imageFormatNotSupported": "图片格式不支持"
+  "imageFormatNotSupported": "图片格式不支持",
+  "resourceExhausted": "你的资源已耗尽，请购买更多。"
 }

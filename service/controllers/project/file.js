@@ -35,7 +35,7 @@ export async function upload (req, res) {
   const storageUsage = await getStorageInfo({
     userId: req.user._id
   })
-  if (storageUsage.icon.size + storageUsage.cover.size + storageUsage.theme.size >= config.storage.limit) {
+  if (storageUsage.icon.size + storageUsage.cover.size + storageUsage.theme.size >= config.storage.freeQuota) {
     res.json({
       error: ERROR_CODE.STORAGE_LIMITED
     })
@@ -68,8 +68,8 @@ export async function storageInfo (req, res) {
     projectId: req.query.projectId
   })
   res.json({
-    limit: config.storage.limit,
-    free: req.query.projectId ? undefined : config.storage.limit - usage.icon.size - usage.cover.size - usage.theme.size,
+    limit: config.storage.freeQuota,
+    free: req.query.projectId ? undefined : config.storage.freeQuota - usage.icon.size - usage.cover.size - usage.theme.size,
     icon: {
       count: usage.icon.count,
       size: usage.icon.size

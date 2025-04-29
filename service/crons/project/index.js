@@ -4,7 +4,7 @@ import { center as fetchCenter } from '../../utils/fetch.js'
 import { analyseProject } from './analyse.js'
 import { clearExpiredFiles } from './clear.js'
 import { migrate } from './migrate.js'
-import moment from 'moment'
+import { format } from 'date-fns'
 
 const job = new CronJob('0 0 3 * * *', () => {
   start()
@@ -24,7 +24,7 @@ export function start () {
     return
   }
   startTime = Date.now()
-  console.log(`start project tasks ${moment(startTime).format()}`)
+  console.log(`start project tasks ${format(startTime, 'yyyy-MM-dd HH:mm:ss')}`)
   getList(() => {
     endTime = Date.now()
     const milliseconds = endTime - startTime
@@ -32,7 +32,7 @@ export function start () {
     const minutes = Math.floor(milliseconds % 3600000 / 60000)
     const seconds = Math.floor((milliseconds % 60000) / 1000)
     const remainingMilliseconds = milliseconds % 1000
-    console.log(`finish project tasks ${moment(endTime).format()}, cost ${hours}h ${minutes}m ${seconds}s ${remainingMilliseconds}ms`)
+    console.log(`finish project tasks ${format(endTime, 'yyyy-MM-dd HH:mm:ss')}, cost ${hours}h ${minutes}m ${seconds}s ${remainingMilliseconds}ms`)
   })
 }
 

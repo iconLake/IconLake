@@ -238,5 +238,6 @@
   "appreciating": "Appreciating...",
   "appreciate": "Appreciation",
   "internalError": "Something went wrong. Please contact us for assistance.",
-  "imageFormatNotSupported": "Image format not supported"
+  "imageFormatNotSupported": "Image format not supported",
+  "resourceExhausted": "Your resources are exhausted, please buy more."
 }
