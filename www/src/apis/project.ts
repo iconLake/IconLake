@@ -451,23 +451,26 @@ export function setExpire(projectId: string, fileId: string, fileType: 'css'|'js
   })
 }
 
+export interface StorageUsage {
+  total: number
+  free: number
+  used: number
+  icon: {
+    count: number
+    size: number
+  }
+  cover: {
+    count: number
+    size: number
+  }
+  theme: {
+    count: number
+    size: number
+  }
+}
+
 export async function getStorageInfo(projectId?: string) {
-  return <Promise<{
-    limit: number
-    free?: number
-    icon: {
-      count: number
-      size: number
-    }
-    cover: {
-      count: number
-      size: number
-    }
-    theme: {
-      count: number
-      size: number
-    }
-  }>>request({
+  return <Promise<StorageUsage>>request({
     method: 'GET',
     url: '/file/storageInfo',
     baseURL,
@@ -517,7 +520,7 @@ export async function uploadFile(params: {
   let storageType = options?.storageType
   if (!storageType) {
     const storageInfo = await getStorageInfo()
-    if (storageInfo.free && storageInfo.free > 0) {
+    if (storageInfo.free > 0) {
       storageType = 'iconlake'
     }
   }

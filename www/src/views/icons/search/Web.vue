@@ -122,6 +122,7 @@
     :icon="reviewIcon"
     :project-id="projectId"
     :project-type="projectType"
+    :collectable="true"
     @close="isReview = false"
     @prev="reviewIndex--"
     @next="reviewIndex++"

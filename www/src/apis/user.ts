@@ -44,7 +44,7 @@ export enum LoginType {
 
 import { cache } from '@/utils/cache'
 import request from '../utils/request'
-import { Res } from './project'
+import { Res, StorageUsage } from './project'
 
 const baseURL = '/api/user/'
 
@@ -78,6 +78,7 @@ export const userApis = {
   uploadFile,
   editTheme,
   getTheme,
+  getUsage,
 }
 
 /**
@@ -257,5 +258,23 @@ export function getTheme(data: {
     url: '/theme/info',
     baseURL,
     data,
+  })
+}
+
+export interface AIUsage {
+  tokens: {
+    used: number
+    total: number
+  }
+}
+
+export function getUsage() {
+  return <Promise<{
+    storage: StorageUsage
+    ai: AIUsage
+  }>>request({
+    method: 'GET',
+    url: '/info/usage',
+    baseURL,
   })
 }

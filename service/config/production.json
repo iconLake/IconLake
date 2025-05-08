@@ -58,12 +58,13 @@
     "userIds": []
   },
   "storage": {
-    "limit": 104857600
+    "freeQuota": 104857600
   },
   "ai": {
     "hunyuan": {
       "apiKey": "",
-      "endpoint": "https://api.hunyuan.cloud.tencent.com/v1"
+      "endpoint": "https://api.hunyuan.cloud.tencent.com/v1",
+      "freeQuota": 10000
     }
   }
 }

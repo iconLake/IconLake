@@ -41,10 +41,10 @@ const { t } = useI18n()
       <RouterLink
         class="item"
         active-class="active"
-        to="/user/setting/storage"
+        to="/user/setting/usage"
       >
-        <i class="iconfont icon-storage" />
-        <span>{{ t('storage') }}</span>
+        <i class="iconfont icon-usage" />
+        <span>{{ t('usage') }}</span>
       </RouterLink>
     </div>
     <div class="view">

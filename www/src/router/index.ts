@@ -124,9 +124,9 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/user/setting/Theme.vue')
       },
       {
-        path: 'storage',
-        name: 'userSettingStorage',
-        component: () => import('../views/user/setting/Storage.vue')
+        path: 'usage',
+        name: 'userSettingUsage',
+        component: () => import('../views/user/setting/Usage.vue')
       },
     ]
   },

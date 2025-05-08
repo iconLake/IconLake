@@ -1,6 +1,8 @@
 import { nanoid } from 'nanoid'
 import { User } from '../../models/user.js'
 import { completeURL } from '../../utils/file.js'
+import { getStorageInfo } from './file.js'
+import { getAIUsage } from '../../utils/ai.js'
 
 /**
  * @api {get} /user/info 获取用户信息
@@ -76,4 +78,19 @@ export async function logout (req, res) {
   await req.user.save()
   res.clearCookie('token')
   res.json({})
+}
+
+/**
+ * @api {get} /user/info/usage 获取用户使用情况
+ */
+export async function usage (req, res) {
+  const params = {
+    userId: req.user._id
+  }
+  const storageInfo = await getStorageInfo(params)
+  const aiInfo = await getAIUsage({ ...params, fields: 'ai.tokens' })
+  res.json({
+    storage: storageInfo,
+    ai: aiInfo
+  })
 }

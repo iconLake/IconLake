@@ -1,6 +1,6 @@
 import { Appreciate } from '../../models/appreciate.js'
 import { Project } from '../../models/project.js'
-import { aiAppreciate } from '../../utils/ai.js'
+import { AI_MODELS, aiAppreciate } from '../../utils/ai.js'
 import { ERROR_CODE } from '../../utils/const.js'
 import { completeURL } from '../../utils/file.js'
 import { middleware as userMiddleware } from '../user/middleware.js'
@@ -31,14 +31,20 @@ export async function list (req, res) {
     })
     return
   }
-  if (!project.isPublic) {
+
+  const forceLogin = async () => {
     await userMiddleware(req, res, () => {})
     if (!project.members.some(e => e.userId.toString() === req.user._id.toString())) {
       res.json({
         error: ERROR_CODE.PERMISSION_DENIED
       })
-      return
+      return false
     }
+    return true
+  }
+
+  if (!project.isPublic && !await forceLogin()) {
+    return
   }
 
   const icon = project.icons.id(req.query.iconId)
@@ -58,12 +64,13 @@ export async function list (req, res) {
     return {
       url: icon.img?.url ?? icon.svg?.url,
       text: await aiAppreciate({
-        model: 'hunyuan',
+        model: AI_MODELS.HUNYUAN,
         imgUrl: completeURL(icon.img?.url ?? icon.svg?.url),
         type: req.query.type,
-        locale: req.cookies.locale
+        locale: req.cookies.locale,
+        userId: req.user._id
       }),
-      ai: 'hunyuan'
+      ai: AI_MODELS.HUNYUAN
     }
   }
 
@@ -75,6 +82,9 @@ export async function list (req, res) {
         bad: [],
         great: []
       }
+      if (!await forceLogin()) {
+        return
+      }
       content[req.query.type].push(await appreciateByAI())
       info = new Appreciate({
         projectId: req.query.projectId,
@@ -83,6 +93,9 @@ export async function list (req, res) {
       })
       await info.save()
     } else if (info.content[req.query.type].length === 0 || req.query.update) {
+      if (!await forceLogin()) {
+        return
+      }
       const content = await appreciateByAI()
       info.content[req.query.type].push(content)
       await Appreciate.updateOne({
@@ -97,14 +110,14 @@ export async function list (req, res) {
       list: info.content[req.query.type]
     })
   } catch (e) {
-    if (e.error.code === '4003') {
+    if (e.error?.code === '4003') {
       return res.json({
         error: ERROR_CODE.IMAGE_FORMAT_NOT_SUPPORTED
       })
     }
     console.error(e)
     res.json({
-      error: ERROR_CODE.INTERNAL_ERROR
+      error: e.message || ERROR_CODE.INTERNAL_ERROR
     })
   }
 }

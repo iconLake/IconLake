@@ -15,6 +15,9 @@ export function usePageLoading() {
       setTimeout(() => {
         status.value = 2
       })
+    },
+    isLoading() {
+      return status.value === 0 || status.value === 1
     }
   }
 }
