@@ -424,6 +424,11 @@ watch(() => data.keywords, () => {
           type="text"
           :placeholder="t('search')"
         >
+        <i
+          v-if="data.keywords"
+          class="iconfont icon-close"
+          @click="data.keywords=''"
+        />
       </div>
     </div>
     <div class="operate flex">
@@ -633,6 +638,19 @@ watch(() => data.keywords, () => {
       top: 1.5rem;
       left: 4rem;
       font-size: 2rem;
+      &.icon-close {
+        top: 0rem;
+        right: 2rem;
+        left: auto;
+        font-size: 1.4rem;
+        padding: 1.8rem;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: var(--transition);
+        &:hover {
+          opacity: 1;
+        }
+      }
     }
     input {
       width: 100%;
