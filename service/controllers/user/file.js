@@ -67,8 +67,8 @@ export async function getStorageInfo ({ userId, projectId }) {
     }
     usage.used = usage.icon.size + usage.cover.size + usage.theme.size
   } else {
-    const { storage } = await Usage.findOne({ user: userId }, 'storage')
-    Object.assign(usage, storage)
+    const res = await Usage.findOne({ user: userId }, 'storage')
+    res && Object.assign(usage, res.storage)
   }
   if (!usage.total) {
     usage.total = config.storage.freeQuota
