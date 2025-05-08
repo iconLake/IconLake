@@ -5,6 +5,7 @@ import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM, PERMANENT_FILE_EXPIRE } from '../.
 import { completeURL, remove, slimURL } from '../../utils/file.js'
 import { genCSS, genJS, genReact, genVUE } from './icon/gen/index.js'
 import { middleware as userMiddleware } from '../user/middleware.js'
+import { updateStorageInfo } from '../user/file.js'
 
 /**
  * @api {get} /project/icon/info 获取图标信息
@@ -162,6 +163,9 @@ export async function del (req, res) {
   })
   if (files.length > 0) {
     await remove(files)
+    updateStorageInfo({
+      userId: req.user._id
+    })
   }
   // 记录历史
   await History.updateOne({
