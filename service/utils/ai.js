@@ -24,11 +24,14 @@ export function getAI (model) {
   return model ? models[model] : models
 }
 
-export async function getAIUsage ({ userId }) {
-  let usage = await Usage.findOne({ user: userId }, 'ai.tokens ai.monthly ai.daily')
+export async function getAIUsage ({ userId, fields }) {
+  let usage = await Usage.findOne({ user: userId }, fields || 'ai.tokens ai.monthly ai.daily')
   if (!usage) {
     usage = new Usage({ user: userId })
     await usage.save()
+  }
+  if (!usage.ai.tokens.total) {
+    usage.ai.tokens.total = config.ai.hunyuan.freeQuota
   }
   return usage.ai
 }
@@ -78,8 +81,8 @@ export async function aiAppreciate ({ model, imgUrl, type, locale, userId }) {
     throw new Error('AI model not found')
   }
 
-  const aiUsage = await getAIUsage({ userId })
-  const totalTokens = aiUsage.tokens.total || config.ai.hunyuan.freeQuota
+  const aiUsage = await getAIUsage({ userId, fields: 'ai.tokens' })
+  const totalTokens = aiUsage.tokens.total
   if (totalTokens <= aiUsage.tokens.used) {
     throw new Error('resourceExhausted')
   }

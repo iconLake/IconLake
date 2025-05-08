@@ -1,6 +1,10 @@
+import { getConfig } from '../../config/index.js'
 import { Project } from '../../models/project.js'
+import { Usage } from '../../models/usage.js'
 import { ERROR_CODE } from '../../utils/const.js'
 import { completeURL, countDir, save } from '../../utils/file.js'
+
+const config = getConfig()
 
 /**
  * @api {post} /user/file/upload 上传
@@ -27,6 +31,9 @@ export async function upload (req, res) {
 
 export async function getStorageInfo ({ userId, projectId }) {
   const usage = {
+    total: 0,
+    free: 0,
+    used: 0,
     icon: {
       count: 0,
       size: 0
@@ -50,14 +57,54 @@ export async function getStorageInfo ({ userId, projectId }) {
   }
   if (projectId) {
     q._id = projectId
+    const projects = await Project.find(q, '_id')
+    for (const project of projects) {
+      for (const cat of ['icon', 'cover', 'theme']) {
+        const data = await countDir(`${cat}/${project._id}/`)
+        usage[cat].count += data.count
+        usage[cat].size += data.size
+      }
+    }
+    usage.used = usage.icon.size + usage.cover.size + usage.theme.size
+  } else {
+    const { storage } = await Usage.findOne({ user: userId }, 'storage')
+    Object.assign(usage, storage)
   }
-  const projects = await Project.find(q, '_id')
-  for (const project of projects) {
-    for (const cat of Object.keys(usage)) {
-      const data = await countDir(`${cat}/${project._id}/`)
-      usage[cat].count += data.count
-      usage[cat].size += data.size
+  if (!usage.total) {
+    usage.total = config.storage.freeQuota
+  }
+  usage.free = usage.total - usage.used
+  return usage
+}
+
+export async function updateStorageInfo ({ userId }) {
+  const q = {
+    members: {
+      $elemMatch: {
+        userId,
+        isAdmin: true
+      }
     }
   }
-  return usage
+  const projects = await Project.find(q, '_id')
+  const $set = {
+    'storage.used': 0,
+    'storage.icon.count': 0,
+    'storage.icon.size': 0,
+    'storage.cover.count': 0,
+    'storage.cover.size': 0,
+    'storage.theme.count': 0,
+    'storage.theme.size': 0
+  }
+  for (const project of projects) {
+    for (const cat of ['icon', 'cover', 'theme']) {
+      const data = await countDir(`${cat}/${project._id}/`)
+      $set[`storage.${cat}.count`] += data.count
+      $set[`storage.${cat}.size`] += data.size
+      $set['storage.used'] += data.size
+    }
+  }
+  await Usage.updateOne({ user: userId }, {
+    $set
+  })
 }

@@ -40,6 +40,7 @@ router.post('/oauth/blockchain', oauthBlockchain)
 
 router.get('/user/info', userMiddleware, userInfo.info)
 router.post('/user/info/edit', userMiddleware, userInfo.edit)
+router.get('/user/info/usage', userMiddleware, userInfo.usage)
 router.get('/user/logout', userMiddleware, userInfo.logout)
 
 router.get('/user/setting/unbind', userMiddleware, userSetting.unbind)

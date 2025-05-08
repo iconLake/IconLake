@@ -2,15 +2,22 @@
 import { computed, onMounted, ref } from 'vue'
 import { usePageLoading } from '@/hooks/router'
 import { useI18n } from 'vue-i18n'
-import { getStorageInfo } from '@/apis/project'
+import { userApis } from '@/apis/user'
 
 const pageLoading = usePageLoading()
 const { t } = useI18n()
 const storageInfo = ref<{
-  limit: number
-  free?: number
+  total: number
+  free: number
 }>({
-  limit: 1024 * 1024 * 100,
+  total: 1024 * 1024 * 100,
+  free: 0,
+})
+const aiTokens = ref<{
+  total: number
+  free: number
+}>({
+  total: 10000,
   free: 0,
 })
 
@@ -19,18 +26,35 @@ const toMB = (size?: number) => {
 }
 
 const percent = computed(() => {
-  if (!storageInfo.value.free) {
+  if (pageLoading.isLoading()) {
     return 0
   }
-  if (storageInfo.value.free < 0) {
+  if (!storageInfo.value.free || storageInfo.value.free <= 0) {
     return 100
   }
-  const p = storageInfo.value.free / storageInfo.value.limit
+  const p = storageInfo.value.free / storageInfo.value.total
+  return 100 - (p > 1 ? 1 : p) * 100
+})
+
+const aiTokensPercent = computed(() => {
+  if (pageLoading.isLoading()) {
+    return 0
+  }
+  if (!aiTokens.value.free || aiTokens.value.free <= 0) {
+    return 100
+  }
+  const p = aiTokens.value.free / aiTokens.value.total
   return 100 - (p > 1 ? 1 : p) * 100
 })
 
 const getInfo = async () => {
-  storageInfo.value = await getStorageInfo()
+  const usage = await userApis.getUsage()
+  storageInfo.value = usage.storage
+  aiTokens.value = {
+    total: usage.ai.tokens.total,
+    free: usage.ai.tokens.total - usage.ai.tokens.used,
+  }
+  return usage
 }
 
 onMounted(async () => {
@@ -43,7 +67,7 @@ onMounted(async () => {
   <div class="container">
     <div class="flex">
       <span class="title">{{ t('cloudStorage') }}</span>
-      <span class="title-sub">{{ t('freeStorage') }}: {{ toMB(storageInfo.free) }}MB/{{ toMB(storageInfo.limit) }}MB</span>
+      <span class="title-sub">{{ t('freeStorage') }}: {{ toMB(storageInfo.free) }}MB/{{ toMB(storageInfo.total) }}MB</span>
     </div>
     <div class="bar">
       <div
@@ -53,6 +77,22 @@ onMounted(async () => {
     </div>
     <div class="msg">
       <p>{{ t('getMoreStorageMsg') }}</p>
+    </div>
+    <div class="flex">
+      <span class="title">{{ t('aiTokens') }}</span>
+      <span class="title-sub">{{ t('freeAITokens') }}: {{ aiTokens.free }}/{{ aiTokens.total }}</span>
+    </div>
+    <div class="bar">
+      <div
+        class="progress"
+        :style="{ width: `${aiTokensPercent}%` }"
+      />
+    </div>
+    <div class="msg">
+      <p>{{ t('getMoreAITokensMsg') }}</p>
+    </div>
+    <div class="msg">
+      <p>{{ t('getMoreUsageMsg') }}</p>
       <p>
         <a
           target="_blank"
@@ -105,7 +145,7 @@ onMounted(async () => {
   height: 2rem;
   background-color: var(--color-bg);
   border-radius: 0.25rem;
-  margin-top: 2rem;
+  margin: 2rem 0 2.2rem;
   .progress {
     height: 100%;
     background-color: var(--color-main);
@@ -113,8 +153,11 @@ onMounted(async () => {
   }
 }
 .msg {
-  margin-top: 2rem;
+  margin-bottom: 5rem;
   font-size: 1.2rem;
+  &:last-child {
+    margin-bottom: 0;
+  }
   p {
     margin-bottom: 1rem;
   }

@@ -1,10 +1,7 @@
 import { ERROR_CODE } from '../../utils/const.js'
 import { completeURL, save } from '../../utils/file.js'
 import { Project } from '../../models/project.js'
-import { getConfig } from '../../config/index.js'
-import { getStorageInfo } from '../user/file.js'
-
-const config = getConfig()
+import { getStorageInfo, updateStorageInfo } from '../user/file.js'
 
 /**
  * @api {post} /project/file/upload 上传
@@ -35,7 +32,7 @@ export async function upload (req, res) {
   const storageUsage = await getStorageInfo({
     userId: req.user._id
   })
-  if (storageUsage.icon.size + storageUsage.cover.size + storageUsage.theme.size >= config.storage.freeQuota) {
+  if (storageUsage.free <= 0) {
     res.json({
       error: ERROR_CODE.STORAGE_LIMITED
     })
@@ -48,7 +45,8 @@ export async function upload (req, res) {
     cover: true,
     theme: true
   }
-  const data = await save(_id, req.body, `${(req.query.dir && dirs[req.query.dir]) ? req.query.dir : 'icon'}/${projectId}/`).catch((e) => {
+  const dir = `${(req.query.dir && dirs[req.query.dir]) ? req.query.dir : 'icon'}`
+  const data = await save(_id, req.body, `${dir}/${projectId}/`).catch((e) => {
     console.error(e)
     res.json({
       error: ERROR_CODE.FAIL
@@ -59,6 +57,9 @@ export async function upload (req, res) {
       key: data.key,
       url: completeURL(data.key)
     })
+    updateStorageInfo({
+      userId: req.user._id
+    })
   }
 }
 
@@ -67,20 +68,5 @@ export async function storageInfo (req, res) {
     userId: req.user._id,
     projectId: req.query.projectId
   })
-  res.json({
-    limit: config.storage.freeQuota,
-    free: req.query.projectId ? undefined : config.storage.freeQuota - usage.icon.size - usage.cover.size - usage.theme.size,
-    icon: {
-      count: usage.icon.count,
-      size: usage.icon.size
-    },
-    cover: {
-      count: usage.cover.count,
-      size: usage.cover.size
-    },
-    theme: {
-      count: usage.theme.count,
-      size: usage.theme.size
-    }
-  })
+  res.json(usage)
 }

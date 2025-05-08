@@ -63,6 +63,42 @@ export const UsageSchema = new Schema({
     },
     expiresAt: {
       type: Date
+    },
+    icon: {
+      count: {
+        type: Number,
+        default: 0,
+        min: 0
+      },
+      size: {
+        type: Number,
+        default: 0,
+        min: 0
+      }
+    },
+    cover: {
+      count: {
+        type: Number,
+        default: 0,
+        min: 0
+      },
+      size: {
+        type: Number,
+        default: 0,
+        min: 0
+      }
+    },
+    theme: {
+      count: {
+        type: Number,
+        default: 0,
+        min: 0
+      },
+      size: {
+        type: Number,
+        default: 0,
+        min: 0
+      }
     }
   }
 })
