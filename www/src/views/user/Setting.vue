@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
 import HeaderVue from '@/components/Header.vue'
 import UserVue from '@/components/User.vue'
 import { useI18n } from 'vue-i18n'
@@ -7,10 +7,11 @@ import InfoCard from './setting/InfoCard.vue'
 
 const { t } = useI18n()
 
+const referer = (useRoute().meta.referer as string) || '/'
 </script>
 
 <template>
-  <HeaderVue :back="true" />
+  <HeaderVue :back="referer" />
   <UserVue />
   <div class="flex start main">
     <div class="menu">
