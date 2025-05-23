@@ -3,11 +3,12 @@ import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router'
 import { ElUpload, UploadFile } from 'element-plus'
-import { toast } from '@/utils';
-import { PROJECT_STYLE, UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const';
-import { editInfo, editTheme, projectApis, uploadFile } from '@/apis/project';
-import { useRoute } from 'vue-router';
-import Loading from '@/components/Loading.vue';
+import { toast } from '@/utils'
+import { PROJECT_STYLE, UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
+import { editInfo, editTheme, projectApis, uploadFile } from '@/apis/project'
+import { useRoute } from 'vue-router'
+import Loading from '@/components/Loading.vue'
+import AIGenerate from '@/views/theme/AIGenerate.vue'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
@@ -17,6 +18,7 @@ const $route = useRoute()
 const projectId = $route.params.id as string
 
 const isDiy = ref(false)
+const isAIGenerate = ref(false)
 const isUploading = reactive({
   class: false,
   nft: false,
@@ -115,6 +117,10 @@ async function handleSelectStyle(type: number) {
   })
   toast(t('saveDone'))
 }
+
+function aiGenTheme(type: string) {
+  isAIGenerate.value = true
+}
 </script>
 
 <template>
@@ -192,6 +198,12 @@ async function handleSelectStyle(type: number) {
           >
           <Loading v-if="isUploading.class" />
         </ElUpload>
+        <div
+          class="ai flex center"
+          @click="aiGenTheme('exhibition')"
+        >
+          <i class="iconfont icon-ai" />
+        </div>
       </div>
       <div class="input-item">
         <p class="label">
@@ -212,6 +224,12 @@ async function handleSelectStyle(type: number) {
           >
           <Loading v-if="isUploading.nft" />
         </ElUpload>
+        <div
+          class="ai flex center"
+          @click="aiGenTheme('nft')"
+        >
+          <i class="iconfont icon-ai" />
+        </div>
       </div>
       <div class="flex center">
         <button
@@ -225,6 +243,11 @@ async function handleSelectStyle(type: number) {
       </div>
     </div>
   </div>
+  <AIGenerate
+    v-if="isAIGenerate"
+    :on-finish="console.log"
+    type="exhibition"
+  />
 </template>
 
 <style lang="scss" scoped>
@@ -288,6 +311,7 @@ async function handleSelectStyle(type: number) {
 }
 .input-item {
   margin-bottom: 2.4rem;
+  position: relative;
   .label {
     margin-bottom: 0.8rem;
   }
@@ -302,6 +326,18 @@ async function handleSelectStyle(type: number) {
   }
   .loading {
     margin-left: 0.8rem;
+  }
+  .ai {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 4rem;
+    height: 4rem;
+    cursor: pointer;
+    color: var(--color-main);
+    .iconfont {
+      font-size: 1.8rem;
+    }
   }
 }
 </style>

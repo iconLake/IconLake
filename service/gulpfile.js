@@ -46,7 +46,8 @@ export function js () {
   return gulp.src(tsFiles, srcOptions)
     .pipe(typescript({
       module: 'esnext',
-      target: 'es6'
+      target: 'es6',
+      moduleResolution: 'nodenext'
     }))
     .pipe(uglify())
     .pipe(gulp.dest(destPath))
