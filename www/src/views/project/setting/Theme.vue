@@ -10,6 +10,11 @@ import { useRoute } from 'vue-router'
 import Loading from '@/components/Loading.vue'
 import AIGenerate from '@/views/theme/AIGenerate.vue'
 
+enum ThemeType {
+  Class = 'class',
+  NFT = 'nft',
+}
+
 const { t } = useI18n()
 const pageLoading = usePageLoading()
 
@@ -18,7 +23,7 @@ const $route = useRoute()
 const projectId = $route.params.id as string
 
 const isDiy = ref(false)
-const isAIGenerate = ref(false)
+const aiGenerateType = ref<ThemeType | ''>('')
 const isUploading = reactive({
   class: false,
   nft: false,
@@ -56,7 +61,7 @@ function switchDiy() {
   }
 }
 
-async function handleUpload(file: UploadFile, type: 'class' | 'nft') {
+async function handleUpload(file: UploadFile, type: ThemeType) {
   if (!file.raw || !/^text\/javascript$/i.test(file.raw?.type)) {
     toast(t('pleaseSelectFile', { type: 'js' }))
     return
@@ -80,12 +85,31 @@ async function handleUpload(file: UploadFile, type: 'class' | 'nft') {
   }
 }
 
+async function handleUploadContent(content: string, type: ThemeType) {
+  if (!content) {
+    return
+  }
+  isUploading[type] = true
+  const res = await uploadFile({
+    projectId,
+    _id: `${type}-${Date.now()}.js`,
+    data: content,
+    dir: UPLOAD_DIR.THEME
+  }).catch(() => {
+    toast(t('fileUploadFailed'))
+  })
+  isUploading[type] = false
+  if (res) {
+    fm[type] = res.key
+  }
+}
+
 async function handleUploadClass(file: UploadFile) {
-  await handleUpload(file, 'class')
+  await handleUpload(file, ThemeType.Class)
 }
 
 async function handleUploadNft(file: UploadFile) {
-  await handleUpload(file, 'nft')
+  await handleUpload(file, ThemeType.NFT)
 }
 
 async function save() {
@@ -118,8 +142,20 @@ async function handleSelectStyle(type: number) {
   toast(t('saveDone'))
 }
 
-function aiGenTheme(type: string) {
-  isAIGenerate.value = true
+function aiGenTheme(type: ThemeType) {
+  aiGenerateType.value = type
+}
+
+function onAIGenerateFinish(text: string) {
+  if (!aiGenerateType.value) {
+    return
+  }
+  handleUploadContent(text, aiGenerateType.value)
+  aiGenerateType.value = ''
+}
+
+function onAIGenerateCancel() {
+  aiGenerateType.value = ''
 }
 </script>
 
@@ -200,7 +236,7 @@ function aiGenTheme(type: string) {
         </ElUpload>
         <div
           class="ai flex center"
-          @click="aiGenTheme('exhibition')"
+          @click="aiGenTheme(ThemeType.Class)"
         >
           <i class="iconfont icon-ai" />
         </div>
@@ -226,7 +262,7 @@ function aiGenTheme(type: string) {
         </ElUpload>
         <div
           class="ai flex center"
-          @click="aiGenTheme('nft')"
+          @click="aiGenTheme(ThemeType.NFT)"
         >
           <i class="iconfont icon-ai" />
         </div>
@@ -244,9 +280,11 @@ function aiGenTheme(type: string) {
     </div>
   </div>
   <AIGenerate
-    v-if="isAIGenerate"
-    :on-finish="console.log"
-    type="exhibition"
+    v-if="aiGenerateType"
+    :on-finish="onAIGenerateFinish"
+    :on-cancel="onAIGenerateCancel"
+    :type="aiGenerateType"
+    :project-id="projectId"
   />
 </template>
 

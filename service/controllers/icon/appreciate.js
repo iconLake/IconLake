@@ -64,13 +64,13 @@ export async function list (req, res) {
     return {
       url: icon.img?.url ?? icon.svg?.url,
       text: await aiAppreciate({
-        model: AI_MODELS.HUNYUAN,
+        model: AI_MODELS.APPRECIATE,
         imgUrl: completeURL(icon.img?.url ?? icon.svg?.url),
         type: req.query.type,
         locale: req.cookies.locale,
         userId: req.user._id
       }),
-      ai: AI_MODELS.HUNYUAN
+      ai: AI_MODELS.APPRECIATE
     }
   }
 

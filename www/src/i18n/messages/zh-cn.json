@@ -244,5 +244,15 @@
   "freeAITokens": "可用 AI Tokens",
   "getMoreAITokensMsg": "当AI Tokens用完后，你将无法使用AI服务。",
   "getMoreUsageMsg": "如需购买更多云端存储空间 / AI Tokens，请通过以下途径联系我们。",
-  "usage": "用量"
+  "usage": "用量",
+  "aiGenerateExhibition": "AI生成展览页主题",
+  "aiGenerateNft": "AI生成作品页主题",
+  "aiGenerateCreator": "AI生成创作者页主题",
+  "generate": "生成",
+  "coding": "正在生成代码",
+  "generatedCodes": "生成的代码",
+  "preview": "预览",
+  "generateThemeByOthers": "也可以复制以上内容，让其他AI帮你生成。",
+  "previewInNewWindow": "新窗口打开预览",
+  "confirmUseThisTheme": "确定使用这个主题"
 }

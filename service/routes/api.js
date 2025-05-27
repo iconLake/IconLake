@@ -48,6 +48,7 @@ router.get('/user/setting/regenAccessKey', userMiddleware, userSetting.regenAcce
 router.post('/user/file/upload', userMiddleware, userFile.upload)
 
 router.post('/user/theme/edit', userMiddleware, userTheme.edit)
+router.post('/user/theme/generate', userMiddleware, userTheme.generate)
 router.get('/user/theme/info', userTheme.info)
 
 router.get('/project/list', userMiddleware, projectList.list)

@@ -97,7 +97,7 @@ export interface Sharethis {
 ((globalThis: Window & { iconlakeAPI: IconlakeAPI, __sharethis__: Sharethis }) => {
   const isProduction = !/test|localhost|127\.0\.0\.1/i.test(location.href)
   const lcd = isProduction ? 'https://lcd.iconlake.com' : 'https://lcd.testnet.iconlake.com'
-  const cdn = isProduction ? 'https://cdn.iconlake.com' : 'https://iconlake-hk-test-1304929357.cos.ap-hongkong.myqcloud.com'
+  const cdn = isProduction ? 'https://cdn.iconlake.com' : 'https://iconlake-sh-test-1304929357.cos.ap-shanghai.myqcloud.com'
 
   const domain = {
     master: isProduction ? 'https://iconlake.com' : location.origin,

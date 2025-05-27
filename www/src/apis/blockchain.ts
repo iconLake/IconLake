@@ -363,10 +363,12 @@ export async function initDrop(creator: string, address: string, isBackendServic
 }
 
 export async function getNFTs(q: {
-  owner: string
+  owner?: string
+  classId?: string
 }) {
   const res = await client.IconlakeIcon.query.queryNFTs({
-    owner: q.owner
+    owner: q.owner,
+    class_id: q.classId
   }).catch((e) => {
     console.error(e)
     return undefined

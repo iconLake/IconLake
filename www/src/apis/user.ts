@@ -79,6 +79,7 @@ export const userApis = {
   editTheme,
   getTheme,
   getUsage,
+  generateTheme,
 }
 
 /**
@@ -258,6 +259,21 @@ export function getTheme(data: {
     url: '/theme/info',
     baseURL,
     data,
+  })
+}
+
+export function generateTheme({ prompt }: {
+  prompt: string
+}) {
+  return <Promise<{
+    codes: string
+  }>>request({
+    method: 'POST',
+    url: '/theme/generate',
+    baseURL,
+    data: {
+      prompt
+    }
   })
 }
 

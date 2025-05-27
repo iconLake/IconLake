@@ -65,6 +65,11 @@
       "apiKey": "",
       "endpoint": "https://api.hunyuan.cloud.tencent.com/v1",
       "freeQuota": 10000
+    },
+    "qwen": {
+      "apiKey": "",
+      "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "freeQuota": 10000
     }
   }
 }

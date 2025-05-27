@@ -244,5 +244,15 @@
   "freeAITokens": "Free AI Tokens",
   "getMoreAITokensMsg": "When the AI Tokens are used up, you will cannot use AI services.",
   "getMoreUsageMsg": "If you need to purchase more storage space / AI Tokens, please contact us through the following channels.",
-  "usage": "Usage"
+  "usage": "Usage",
+  "aiGenerateExhibition": "AI Generate Exhibition Page Theme",
+  "aiGenerateNft": "AI Generate Work Page Theme",
+  "aiGenerateCreator": "AI Generate Creator Page Theme",
+  "generate": "Generate",
+  "coding": "Coding",
+  "generatedCodes": "Generated Codes",
+  "preview": "Preview",
+  "generateThemeByOthers": "You can also copy the above content and let other AI help you generate.",
+  "previewInNewWindow": "Preview in New Window",
+  "confirmUseThisTheme": "Confirm to use this theme"
 }
