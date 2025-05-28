@@ -171,12 +171,18 @@ onMounted(async () => {
       class="aigenerate-desc"
     >
       <p>
-        桌面版可以实时构建主题文件，网页版需要通过 <a
+        <a
+          href="/download"
+          target="_blank"
+          class="link"
+        >桌面版</a> 可以实时构建主题文件，网页版需要通过 <a
           :href="`https://stackblitz.com/github/iconLake/Theme?file=src%2F${themeFileName}%2FApp.vue`"
           target="_blank"
+          class="link"
         >StackBlitz</a> 或者 <a
           :href="`https://codesandbox.io/p/github/iconLake/Theme/master?file=%2Fsrc%2F${themeFileName}%2FApp.vue`"
           target="_blank"
+          class="link"
         >codeSandbox</a> 构建
       </p>
     </div>
@@ -188,9 +194,11 @@ onMounted(async () => {
         第一步：复制AI生成的代码到 <a
           :href="`https://stackblitz.com/github/iconLake/Theme?file=src%2F${themeFileName}%2FApp.vue`"
           target="_blank"
+          class="link"
         ><b>StackBlitz</b></a> 里的 <a
           :href="`https://stackblitz.com/github/iconLake/Theme?file=src%2F${themeFileName}%2FApp.vue`"
           target="_blank"
+          class="link"
         ><b>src/{{ themeFileName }}/App.vue</b></a>，然后按 <b>Ctrl/Command + S</b> 或 点击左上角 <b>Save</b> 保存。此时，预览窗口已自动刷新并显示最新主题效果；
       </p>
       <p>第二步：在 <b>Terminal</b> 窗口键入 <b>q + Enter</b> 或 <b>Ctrl/Command + C</b> 以终止预览，然后键入 <b>pnpm run build</b> 开始构建主题文件；</p>
@@ -306,6 +314,15 @@ onMounted(async () => {
     width: 100%;
     height: 100%;
   }
+  .link {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    text-decoration-color: var(--color-bg);
+    transition: var(--transition);
+    &:hover {
+      text-decoration-color: var(--color-main);
+    }
+  }
   .guide {
     width: 50vw;
     margin: 0 auto;
@@ -313,6 +330,7 @@ onMounted(async () => {
     margin-top: 5rem;
     p {
       margin-bottom: 1rem;
+      line-height: 1.8;
     }
   }
   &-footer {
