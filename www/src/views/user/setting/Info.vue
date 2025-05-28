@@ -7,7 +7,7 @@ import type { UploadFile } from 'element-plus'
 import { UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
 import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
-import { uploadFile, userApis, UserInfo } from '@/apis/user'
+import { uploadFile, userApis, type UserInfo } from '@/apis/user'
 import { event } from '@/utils/event'
 
 const { t } = useI18n()

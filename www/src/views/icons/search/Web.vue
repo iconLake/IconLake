@@ -132,10 +132,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import IconVue from '@/components/Icon.vue'
-import { extensionApis, OptionGroup, SearchedIcon } from '@/apis/extension';
+import { extensionApis, type OptionGroup, type SearchedIcon } from '@/apis/extension';
 import ReviewVue from '../Review.vue';
 import LoadingVue from '@/components/Loading.vue';
-import { PROJECT_TYPE, SEARCH_SITES, SearchSite } from '@/utils/const';
+import { PROJECT_TYPE, SEARCH_SITES, type SearchSite } from '@/utils/const';
 import { useI18n } from 'vue-i18n';
 import { storage } from '@/utils/storage';
 import Select from '@/components/Select.vue';

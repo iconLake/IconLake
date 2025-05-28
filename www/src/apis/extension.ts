@@ -1,4 +1,4 @@
-import { Icon } from './project'
+import type { Icon } from './project'
 
 interface PingResult {
   timestamp: number
@@ -227,6 +227,16 @@ export interface SearchedIcon extends Icon {
   html?: string
 }
 
+export function buildTheme(params: {
+  codes: string
+  type: string
+}): Promise<{
+  codes?: string
+  error?: string
+}> {
+  return requestExtension({type: 'buildTheme', params})
+}
+
 export const extensionApis = {
   search,
   detail,
@@ -235,4 +245,5 @@ export const extensionApis = {
   storage,
   isReady,
   onReady,
+  buildTheme,
 }

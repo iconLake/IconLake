@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { projectApis, Project } from '../../apis/project'
+import { projectApis, type Project } from '../../apis/project'
 import IconVue from '../../components/Icon.vue'
 import UserVue from '../../components/User.vue'
 import { usePageLoading } from '@/hooks/router'

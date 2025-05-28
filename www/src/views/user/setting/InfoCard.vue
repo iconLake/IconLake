@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { toast } from '../../../utils'
 import { ONLINE_DOMAIN } from '@/utils/const'
 import Loading from '@/components/Loading.vue'
-import { userApis, UserInfo } from '@/apis/user'
+import { userApis, type UserInfo } from '@/apis/user'
 import { getCreator, getHash, updateCreator } from '@/apis/blockchain'
 import { event } from '@/utils/event'
 

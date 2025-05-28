@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router';
-import { editMonitor, projectApis, Monitor } from '../../../apis/project'
+import { editMonitor, projectApis, type Monitor } from '../../../apis/project'
 import { copy, toast } from '../../../utils'
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router';

@@ -1,4 +1,4 @@
-import { UserInfo } from '@/apis/user'
+import type { UserInfo } from '@/apis/user'
 
 const EVENT_PREFIX = 'iconlake:'
 

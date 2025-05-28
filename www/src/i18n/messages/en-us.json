@@ -250,9 +250,10 @@
   "aiGenerateCreator": "AI Generate Creator Page Theme",
   "generate": "Generate",
   "coding": "Coding",
-  "generatedCodes": "Generated Codes",
+  "generatedCodes": "Generate Codes",
   "preview": "Preview",
   "generateThemeByOthers": "You can also copy the above content and let other AI help you generate.",
   "previewInNewWindow": "Preview in New Window",
-  "confirmUseThisTheme": "Confirm to use this theme"
+  "confirmUseThisTheme": "Confirm to use this theme",
+  "builtCodes": "Build Codes"
 }

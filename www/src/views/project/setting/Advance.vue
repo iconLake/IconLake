@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
-import { del as delProject, clean as cleanProject, projectApis, Project } from '../../../apis/project'
+import { del as delProject, clean as cleanProject, projectApis, type Project } from '../../../apis/project'
 import { toast } from '../../../utils';
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router';

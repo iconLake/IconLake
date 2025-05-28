@@ -5,7 +5,7 @@ import UserVue from '../../components/User.vue'
 import HeaderVue from '../../components/Header.vue'
 import { useI18n } from 'vue-i18n'
 import { projectApis } from '@/apis/project';
-import { userApis, UserInfo } from '@/apis/user';
+import { userApis, type UserInfo } from '@/apis/user';
 import { getHash, updateClass, getNftClass } from '@/apis/blockchain'
 import Loading from '@/components/Loading.vue'
 import { toast } from '@/utils'

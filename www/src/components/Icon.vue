@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getIconUrl } from '@/utils/icon';
-import { Icon } from "../apis/project"
+import type { Icon } from "../apis/project";
 import { computed, onMounted, ref, watch } from 'vue';
 import { addCompressParams } from '@/utils';
 import { DFS_PREFIX } from '@/utils/const';

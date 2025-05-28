@@ -12,8 +12,7 @@ contextBridge.exposeInMainWorld('iconlake', {
 contextBridge.executeInMainWorld({
   func: () => {
     window.addEventListener('message', (e) => {
-      console.log('message', e.data)
-      if (e.data?.type.startsWith('iconlakeRequest:')) {
+      if (e.data?.type?.startsWith('iconlakeRequest:')) {
         iconlake?.sendMessage(e.data)
       }
     })

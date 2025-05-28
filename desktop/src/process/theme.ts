@@ -4,6 +4,12 @@ import { codesPath, themeCodesPath } from "../utils"
 import * as path from "path"
 import { spawn } from 'child_process'
 
+export enum ThemeType {
+  exhibition = 'exhibition',
+  nft = 'nft',
+  creator = 'creator'
+}
+
 export async function downloadThemeCodes() {
   const buf = await fetch('https://gitee.com/iconLake/Theme/repository/archive/master.zip').then(res => res.arrayBuffer())
   const admZip = new AdmZip(Buffer.from(buf))
@@ -42,8 +48,9 @@ export async function installDeps() {
   })
 }
 
-export async function buildTheme({ code, page }: { code: string, page: 'exhibition'|'nft'|'creator' }) {
+export async function buildTheme({ codes, type }: { codes: string, type: ThemeType }) {
   await checkThemeCodes()
+  fs.writeFileSync(path.join(themeCodesPath, `src/${type}/App.vue`), codes)
   await installDeps()
   const p = spawn('npm', ['run', 'build'], {
     detached: true,

@@ -1,7 +1,12 @@
+import { handleBuildTheme } from "./message/theme"
+
 export interface InternalMessage {
   type: string
-  data: any
   id: string
+  data?: any
+  params?: any
+  response?: any
+  error?: any
 }
 
 export const requestMessagePrefix = 'iconlakeRequest:'
@@ -12,9 +17,46 @@ export function getMessageType(type: string) {
 }
 
 export async function dealMessage(m: InternalMessage): Promise<InternalMessage> {
+  const msgType = getMessageType(m.type)
+  const params = m.params && m.params instanceof Array ? m.params : [m.params]
+  const handlers: Record<string, Function> = {
+    ping: handlePing,
+    buildTheme: handleBuildTheme,
+  }
+
+  let response = null
+  let error = null
+
+  if (msgType in handlers) {
+    try {
+      response = await handlers[msgType](...params)
+    } catch (e) {
+      error = e?.message || 'unknown error'
+    }
+  } else {
+    error = 'unknown message type'
+  }
+
   return {
-    type: `${responseMessagePrefix}${getMessageType(m.type)}`,
-    data: 'test',
-    id: m.id
+    type: `${responseMessagePrefix}${msgType}`,
+    response,
+    id: m.id,
+    error
+  }
+}
+
+async function handlePing(): Promise<{
+  timestemp: number
+  search: {
+    sites: string[]
+  }
+  isDesktop: boolean
+}> {
+  return {
+    timestemp: Date.now(),
+    search: {
+      sites: []
+    },
+    isDesktop: true
   }
 }

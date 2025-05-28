@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { addIcon, Icon, uploadFile } from '@/apis/project';
+import { addIcon, uploadFile } from '@/apis/project';
 import { toast } from '@/utils';
 import { PROJECT_TYPE_STRING } from '@/utils/const';
 import { getExtByMimeType } from '@/utils/file';
@@ -10,7 +10,7 @@ import { useI18n } from 'vue-i18n'
 import LoadingVue from '@/components/Loading.vue';
 import { saveAs } from 'file-saver'
 import { event } from '@/utils/event';
-import { SearchedIcon } from '@/apis/extension';
+import type { SearchedIcon } from '@/apis/extension';
 
 const { t } = useI18n()
 const isSaving = ref(false)

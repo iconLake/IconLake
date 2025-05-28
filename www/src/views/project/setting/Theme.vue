@@ -2,7 +2,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router'
-import { ElUpload, UploadFile } from 'element-plus'
+import { ElUpload, type UploadFile } from 'element-plus'
 import { toast } from '@/utils'
 import { PROJECT_STYLE, UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
 import { editInfo, editTheme, projectApis, uploadFile } from '@/apis/project'

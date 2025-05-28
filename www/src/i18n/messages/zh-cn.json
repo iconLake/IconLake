@@ -250,9 +250,10 @@
   "aiGenerateCreator": "AI生成创作者页主题",
   "generate": "生成",
   "coding": "正在生成代码",
-  "generatedCodes": "生成的代码",
+  "generatedCodes": "生成代码",
   "preview": "预览",
   "generateThemeByOthers": "也可以复制以上内容，让其他AI帮你生成。",
   "previewInNewWindow": "新窗口打开预览",
-  "confirmUseThisTheme": "确定使用这个主题"
+  "confirmUseThisTheme": "确定使用这个主题",
+  "builtCodes": "构建代码"
 }

@@ -44,7 +44,7 @@ export enum LoginType {
 
 import { cache } from '@/utils/cache'
 import request from '../utils/request'
-import { Res, StorageUsage } from './project'
+import type { Res, StorageUsage } from './project'
 
 const baseURL = '/api/user/'
 

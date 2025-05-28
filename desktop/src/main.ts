@@ -40,6 +40,5 @@ app.on("window-all-closed", () => {
 })
 
 ipcMain.on('iconlakeRequest', async (e, data) => {
-  console.log('iconlakeRequest', data)
   e.reply('iconlakeResponse', await dealMessage(data))
 })

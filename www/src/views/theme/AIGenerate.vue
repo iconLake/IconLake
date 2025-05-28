@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Loading from '@/components/Loading.vue'
 import { userApis } from '@/apis/user'
@@ -8,6 +8,7 @@ import nftBaseCodes from './codes/nft.txt?raw'
 import creatorBaseCodes from './codes/creator.txt?raw'
 import { extensionApis } from '@/apis/extension'
 import { getNFTs } from '@/apis/blockchain'
+import { copy, toast } from '@/utils'
 
 const { t } = useI18n()
 const $props = defineProps<{
@@ -20,12 +21,16 @@ const $props = defineProps<{
 
 const prompt = ref(``)
 const isGenerating = ref(false)
+const isBuilding = ref(false)
 const codes = ref('')
 const compressedCodes = ref('')
 const themeUrl = ref('')
 const promptInputDom = ref()
 const isDesktop = ref(false)
 const nftId = ref('')
+const generatedCodesDom = ref()
+const compressedCodesDom = ref()
+const previewDom = ref()
 
 const title = computed(() => {
   switch ($props.type) {
@@ -81,6 +86,13 @@ const genTheme = async () => {
   }
   isGenerating.value = true
   codes.value = 'Coding...'
+  generatedCodesDom.value.scrollIntoView({ behavior: 'smooth' })
+  const timer = setInterval(() => {
+    if (codes.value.length >= 100) {
+      clearInterval(timer)
+    }
+    codes.value += '.'
+  }, 1000)
   const res = await userApis.generateTheme({
     prompt: prompt.value,
   }).catch(() => {
@@ -89,8 +101,36 @@ const genTheme = async () => {
       codes: 'Error'
     }
   })
-  codes.value = res.codes
+  clearInterval(timer)
   isGenerating.value = false
+  codes.value = res.codes
+}
+
+const buildTheme = async () => {
+  if (isBuilding.value) {
+    return
+  }
+  isBuilding.value = true
+  compressedCodes.value = 'Building...'
+  compressedCodesDom.value.scrollIntoView({ behavior: 'smooth' })
+  const timer = setInterval(() => {
+    if (compressedCodes.value.length >= 100) {
+      clearInterval(timer)
+    }
+    compressedCodes.value += '.'
+  }, 1000)
+  const res = await extensionApis.buildTheme({
+    codes: codes.value,
+    type: $props.type === 'class' ? 'exhibition' : $props.type
+  }).catch(() => {
+    isBuilding.value = false
+    return {
+      codes: 'Error'
+    }
+  })
+  clearInterval(timer)
+  compressedCodes.value = res.codes || 'Error'
+  isBuilding.value = false
 }
 
 const previewTheme = async () => {
@@ -99,6 +139,7 @@ const previewTheme = async () => {
   }
   const blob = new Blob([compressedCodes.value], { type: 'text/javascript' })
   themeUrl.value = URL.createObjectURL(blob)
+  previewDom.value.scrollIntoView({ behavior: 'smooth' })
 }
 
 const finish = () => {
@@ -111,6 +152,19 @@ const getNftId = async () => {
   })
   return res?.nfts?.[0].id || ''
 }
+
+function copyPrompt () {
+  copy(prompt.value)
+  toast(t('copyDone'))
+}
+
+watch(() => codes.value, () => {
+  !isGenerating.value && buildTheme()
+})
+
+watch(() => compressedCodes.value, () => {
+  !isBuilding.value && previewTheme()
+})
 
 onMounted(async () => {
   await initPrompt()
@@ -143,7 +197,13 @@ onMounted(async () => {
         class="input-prompt"
       />
       <div class="btn-wrap">
-        <span class="msg">{{ t('generateThemeByOthers') }}</span>
+        <span
+          class="msg"
+          @click="copyPrompt"
+        >
+          <i class="iconfont icon-copy" />
+          {{ t('generateThemeByOthers') }}
+        </span>
         <button
           type="submit"
           class="btn"
@@ -154,7 +214,10 @@ onMounted(async () => {
         </button>
       </div>
     </div>
-    <div class="aigenerate-title">
+    <div
+      ref="generatedCodesDom"
+      class="aigenerate-title"
+    >
       {{ t('generatedCodes') }}
     </div>
     <div class="aigenerate-codes-wrap">
@@ -163,8 +226,11 @@ onMounted(async () => {
         class="aigenerate-codes"
       />
     </div>
-    <div class="aigenerate-title">
-      {{ t('preview') }}
+    <div
+      ref="compressedCodesDom"
+      class="aigenerate-title"
+    >
+      {{ t('builtCodes') }}
     </div>
     <div
       v-if="!isDesktop"
@@ -186,7 +252,10 @@ onMounted(async () => {
         >codeSandbox</a> 构建
       </p>
     </div>
-    <div class="guide">
+    <div
+      v-if="!isDesktop"
+      class="guide"
+    >
       <p>
         使用StackBlitz进行预览并构建主题文件的操作步骤如下：
       </p>
@@ -207,9 +276,14 @@ onMounted(async () => {
     <div class="aigenerate-codes-wrap">
       <textarea
         v-model="compressedCodes"
-        class="aigenerate-codes"
-        @change="previewTheme"
+        class="aigenerate-codes compressed"
       />
+    </div>
+    <div
+      ref="previewDom"
+      class="aigenerate-title"
+    >
+      {{ t('preview') }}
     </div>
     <div class="aigenerate-preview-wrap">
       <iframe
@@ -257,7 +331,7 @@ onMounted(async () => {
   text-align: center;
   &-title {
     font-size: 2rem;
-    margin: 5rem 0 1.6rem;
+    padding: 5rem 0 1.6rem;
   }
   &-input {
     position: relative;
@@ -285,6 +359,7 @@ onMounted(async () => {
         vertical-align: bottom;
         position: relative;
         bottom: 0.5rem;
+        cursor: pointer;
       }
     }
   }
@@ -301,11 +376,14 @@ onMounted(async () => {
     height: 60vh;
     border: none;
     background-color: transparent;
+    &.compressed {
+      height: 30vh;
+    }
   }
   &-preview-wrap {
     width: 80vw;
     height: 90vh;
-    margin: 3rem auto;
+    margin: 0 auto;
     background-color: var(--color-bg);
     border-radius: 1.875rem;
     overflow: hidden;
