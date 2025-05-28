@@ -6,7 +6,6 @@ import * as path from "path"
 const app = express()
 
 app.use((req, res, next) => {
-  console.log(new Date(), req.url)
   if (req.url.startsWith('/desktop')) {
     res.sendFile(path.join(__dirname, '../../index.html'))
   } else {

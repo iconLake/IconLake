@@ -9,6 +9,6 @@ export const themeCodesPath = path.join(codesPath, 'theme')
 
 export const servicePort = 19090
 
-export const mainPageUrl = `http://127.0.0.1:${servicePort}/api/oauth/code?id=local`
+export const mainPageUrl = `http://127.0.0.1:${servicePort}/login`
 
 export const proxyTarget = isProduction ? 'https://iconlake.com' : 'http://127.0.0.1:8080'
