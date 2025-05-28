@@ -77,7 +77,7 @@ const initPrompt = async () => {
     nft: nftBaseCodes,
     creator: creatorBaseCodes
   }[$props.type]
-  prompt.value = baseCodes + '\n\n重新设计UI，仅输出完整代码，设计要求如下：\n1. '
+  prompt.value = `${baseCodes}\n\n${t('redesignAndRequirement')}\n1. \n2. `
 }
 
 const genTheme = async () => {
@@ -236,42 +236,82 @@ onMounted(async () => {
       v-if="!isDesktop"
       class="aigenerate-desc"
     >
-      <p>
-        <a
-          href="/download"
-          target="_blank"
-          class="link"
-        >桌面版</a> 可以实时构建主题文件，网页版需要通过 <a
-          :href="`https://stackblitz.com/github/iconLake/Theme?file=src%2F${themeFileName}%2FApp.vue`"
-          target="_blank"
-          class="link"
-        >StackBlitz</a> 或者 <a
-          :href="`https://codesandbox.io/p/github/iconLake/Theme/master?file=%2Fsrc%2F${themeFileName}%2FApp.vue`"
-          target="_blank"
-          class="link"
-        >codeSandbox</a> 构建
-      </p>
+      <i18n-t keypath="builtCodesDesc">
+        <template #desktop>
+          <a
+            href="/download"
+            target="_blank"
+            class="link"
+          >{{ t('desktopVersion') }}</a>
+        </template>
+        <template #sbz>
+          <a
+            :href="`https://stackblitz.com/github/iconLake/Theme?file=src%2F${themeFileName}%2FApp.vue`"
+            target="_blank"
+            class="link"
+          >StackBlitz</a>
+        </template>
+        <template #csb>
+          <a
+            :href="`https://codesandbox.io/p/github/iconLake/Theme/master?file=%2Fsrc%2F${themeFileName}%2FApp.vue`"
+            target="_blank"
+            class="link"
+          >codeSandbox</a>
+        </template>
+      </i18n-t>
     </div>
     <div
       v-if="!isDesktop"
       class="guide"
     >
+      <p>{{ t('sbzBuildSteps') }}</p>
       <p>
-        使用StackBlitz进行预览并构建主题文件的操作步骤如下：
+        <i18n-t keypath="sbzBuildStep1">
+          <template #sbz>
+            <a
+              :href="`https://stackblitz.com/github/iconLake/Theme?file=src%2F${themeFileName}%2FApp.vue`"
+              target="_blank"
+              class="link"
+            ><b>StackBlitz</b></a>
+          </template>
+          <template #filename>
+            <a
+              :href="`https://stackblitz.com/github/iconLake/Theme?file=src%2F${themeFileName}%2FApp.vue`"
+              target="_blank"
+              class="link"
+            ><b>src/{{ themeFileName }}/App.vue</b></a>
+          </template>
+          <template #command>
+            <b>Ctrl/Command + S</b>
+          </template>
+          <template #save>
+            <b>Save</b>
+          </template>
+        </i18n-t>
       </p>
       <p>
-        第一步：复制AI生成的代码到 <a
-          :href="`https://stackblitz.com/github/iconLake/Theme?file=src%2F${themeFileName}%2FApp.vue`"
-          target="_blank"
-          class="link"
-        ><b>StackBlitz</b></a> 里的 <a
-          :href="`https://stackblitz.com/github/iconLake/Theme?file=src%2F${themeFileName}%2FApp.vue`"
-          target="_blank"
-          class="link"
-        ><b>src/{{ themeFileName }}/App.vue</b></a>，然后按 <b>Ctrl/Command + S</b> 或 点击左上角 <b>Save</b> 保存。此时，预览窗口已自动刷新并显示最新主题效果；
+        <i18n-t keypath="sbzBuildStep2">
+          <template #terminal>
+            <b>Terminal</b>
+          </template>
+          <template #q>
+            <b>q + Enter</b>
+          </template>
+          <template #command>
+            <b>Ctrl/Command + C</b>
+          </template>
+          <template #build>
+            <b>pnpm run build</b>
+          </template>
+        </i18n-t>
       </p>
-      <p>第二步：在 <b>Terminal</b> 窗口键入 <b>q + Enter</b> 或 <b>Ctrl/Command + C</b> 以终止预览，然后键入 <b>pnpm run build</b> 开始构建主题文件；</p>
-      <p>第三步：复制 <b>dist/assets/{{ themeFileName }}-xxxxxx.js</b> 里的内容，粘贴到下方输入框里。</p>
+      <p>
+        <i18n-t keypath="sbzBuildStep3">
+          <template #filename>
+            <b>dist/assets/{{ themeFileName }}-xxxxxx.js</b>
+          </template>
+        </i18n-t>
+      </p>
     </div>
     <div class="aigenerate-codes-wrap">
       <textarea
@@ -402,7 +442,7 @@ onMounted(async () => {
     }
   }
   .guide {
-    width: 50vw;
+    width: 70vw;
     margin: 0 auto;
     text-align: left;
     margin-top: 5rem;
