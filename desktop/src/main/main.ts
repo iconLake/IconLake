@@ -3,8 +3,9 @@ import * as path from "path"
 import { mainPageUrl, isProduction } from "./utils"
 import { startService } from "./service"
 import { dealMessage } from "./service/message"
+import { setMenu } from "./app/menu"
 
-function createWindow() {
+async function createWindow() {
   const workArea = screen.getPrimaryDisplay().workAreaSize
   const mainWindow = new BrowserWindow({
     height: workArea.height,
@@ -23,7 +24,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
   startService()
-
+  setMenu()
   createWindow()
 
   app.on("activate", function () {

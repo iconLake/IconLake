@@ -2,3 +2,4 @@ node_modules/
 dist/
 source/
 resources/service/
+.parcel-cache/

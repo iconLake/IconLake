@@ -37,7 +37,6 @@ export async function checkThemeCodes() {
 
 export async function installDeps() {
   const p = spawn('npm', ['install'], {
-    detached: true,
     stdio: 'inherit',
     cwd: themeCodesPath,
     env: process.env
@@ -53,9 +52,19 @@ export async function buildTheme({ codes, type }: { codes: string, type: ThemeTy
   fs.writeFileSync(path.join(themeCodesPath, `src/${type}/App.vue`), codes)
   await installDeps()
   const p = spawn('npm', ['run', 'build'], {
-    detached: true,
     stdio: 'inherit',
     cwd: themeCodesPath,
+    env: process.env
+  })
+  await new Promise((resolve, reject) => {
+    p.on('close', resolve)
+    p.on('error', reject)
+  })
+}
+
+export async function checkNodejs() {
+  const p = spawn('node', ['-v'], {
+    stdio: 'inherit',
     env: process.env
   })
   await new Promise((resolve, reject) => {

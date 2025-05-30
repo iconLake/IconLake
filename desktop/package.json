@@ -2,13 +2,17 @@
   "name": "desktop",
   "version": "1.0.0",
   "description": "iconLake desktop",
-  "main": "./source/main.js",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
+    "dev:ts": "tsc -w",
+    "build:ts": "tsc --sourceMap false",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "dev": "pnpm run build && electron ./source/main.js",
-    "publish": "pnpm run build && electron-builder"
+    "dev:renderer": "parcel src/renderer/index.html -p 19091 --dist-dir source/renderer --public-url /desktop/ --host 127.0.0.1",
+    "build:renderer": "parcel build src/renderer/index.html --dist-dir source/renderer --public-url /desktop/ --no-source-maps",
+    "dev:main": "electron source/main/main.js",
+    "build:main": "electron-builder",
+    "dev": "run-p dev:renderer dev:ts dev:main",
+    "prebuild": "rimraf source",
+    "build": "run-s prebuild build:renderer build:ts build:main"
   },
   "keywords": [
     "iconLake",
@@ -18,8 +22,14 @@
   "author": "iconLake",
   "license": "AGPLv3",
   "packageManager": "pnpm@9.15.4",
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "express": "^5.1.0",
+    "http-proxy-middleware": "^3.0.5"
+  },
   "devDependencies": {
     "@electron-forge/cli": "^7.8.1",
+    "@parcel/transformer-vue": "2.15.2",
     "@types/adm-zip": "^0.5.7",
     "@types/express": "^5.0.2",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
@@ -27,11 +37,20 @@
     "electron": "^36.2.0",
     "electron-builder": "^26.0.12",
     "eslint": "^9.26.0",
-    "typescript": "^5.8.3"
+    "npm-run-all": "^4.1.5",
+    "parcel": "^2.15.2",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3",
+    "vue": "^3.5.16",
+    "vue-router": "^4.5.1"
   },
   "build": {
     "appId": "com.iconlake.desktop",
     "productName": "iconLake",
+    "extraMetadata": {
+      "name": "iconLake",
+      "main": "source/main/main.js"
+    },
     "win": {
       "target": [
         {
@@ -57,23 +76,20 @@
       "**/*",
       "!src/*",
       "!dist/*",
-      "!resource/theme/dist/*",
       "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
       "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
       "!**/node_modules/*.d.ts",
       "!**/node_modules/.bin",
-      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!**/.env{,.*}",
+      "!**/npm-debug.log*",
+      "!**/yarn-error.log*",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj,map}",
       "!.editorconfig",
       "!**/._*",
-      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes,.parcel-cache}",
       "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
       "!**/{appveyor.yml,.travis.yml,circle.yml}",
       "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
     ]
-  },
-  "dependencies": {
-    "adm-zip": "^0.5.16",
-    "express": "^5.1.0",
-    "http-proxy-middleware": "^3.0.5"
   }
 }
