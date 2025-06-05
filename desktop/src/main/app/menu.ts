@@ -3,7 +3,7 @@ import { createSettingsWindow } from '../utils'
 
 const isMac = process.platform === 'darwin'
 
-export function setMenu() {
+export async function setMenu() {
   const template: any = [
     ...(isMac
       ? [{

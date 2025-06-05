@@ -262,5 +262,7 @@
   "sbzBuildStep1": "第一步：复制AI生成的代码到 {sbz} 里的 {filename}，然后按 {command} 或 点击左上角 {save} 保存。此时，预览窗口已自动刷新并显示最新主题效果；",
   "sbzBuildStep2": "第二步：在 {terminal} 窗口键入 {q} 或 {command} 以终止预览，然后键入 {build} 开始构建主题文件；",
   "sbzBuildStep3": "第三步：复制 {filename} 里的内容，粘贴到下方输入框里。",
-  "redesignAndRequirement": "重新设计UI，仅输出完整代码，设计要求如下："
+  "redesignAndRequirement": "重新设计UI，仅输出完整代码，设计要求如下：",
+  "noNodejsAndGotoInstall": "你的电脑没有安装Nodejs，无法执行构建。前往 {nodejs} 下载安装。",
+  "nodejsOfficialWebsite": "Nodejs官网"
 }

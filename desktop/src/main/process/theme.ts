@@ -62,13 +62,24 @@ export async function buildTheme({ codes, type }: { codes: string, type: ThemeTy
   })
 }
 
-export async function checkNodejs() {
-  const p = spawn('node', ['-v'], {
-    stdio: 'inherit',
-    env: process.env
-  })
-  await new Promise((resolve, reject) => {
-    p.on('close', resolve)
+export async function checkNodejs(): Promise<{ version: string }> {
+  return new Promise((resolve, reject) => {
+    const p = spawn('node', ['-v'], {
+      stdio: ['ignore', 'pipe', 'inherit'],
+      env: process.env
+    })
+    let stdData = ''
+    p.stdout.on('data', (data) => {
+      stdData += data.toString()
+    })
+    p.on('close', () => {
+      const data = stdData.trim()
+      if (data.startsWith('v')) {
+        resolve({ version: data.slice(1) })
+      } else {
+        reject()
+      }
+    })
     p.on('error', reject)
   })
 }

@@ -1,3 +1,6 @@
+import { checkNodejs } from "../process/theme"
+import { handleDetail, handleOption, handleSearch } from "./message/search"
+import { Site } from "./message/search/types"
 import { handleBuildTheme } from "./message/theme"
 
 export interface InternalMessage {
@@ -22,6 +25,9 @@ export async function dealMessage(m: InternalMessage): Promise<InternalMessage> 
   const handlers: Record<string, Function> = {
     ping: handlePing,
     buildTheme: handleBuildTheme,
+    search: handleSearch,
+    option: handleOption,
+    detail: handleDetail,
   }
 
   let response = null
@@ -51,12 +57,24 @@ async function handlePing(): Promise<{
     sites: string[]
   }
   isDesktop: boolean
+  nodejs: {
+    version: string
+  }
 }> {
+  let nodejs = {
+    version: ''
+  }
+  try {
+    nodejs = await checkNodejs()
+  } catch (e) {
+    console.error(e)
+  }
   return {
     timestemp: Date.now(),
     search: {
-      sites: []
+      sites: Object.values(Site)
     },
-    isDesktop: true
+    isDesktop: true,
+    nodejs,
   }
 }

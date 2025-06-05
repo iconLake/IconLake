@@ -27,6 +27,9 @@ const compressedCodes = ref('')
 const themeUrl = ref('')
 const promptInputDom = ref()
 const isDesktop = ref(false)
+const nodejs = ref({
+  version: '',
+})
 const nftId = ref('')
 const generatedCodesDom = ref()
 const compressedCodesDom = ref()
@@ -171,6 +174,9 @@ onMounted(async () => {
   promptInputDom.value.focus()
   const extInfo = await extensionApis.getExtensionInfo()
   isDesktop.value = !!extInfo.isDesktop
+  if (isDesktop.value && extInfo.nodejs) {
+    nodejs.value = extInfo.nodejs
+  }
   if ($props.type === 'nft') {
     nftId.value = await getNftId()
   }
@@ -309,6 +315,23 @@ onMounted(async () => {
         <i18n-t keypath="sbzBuildStep3">
           <template #filename>
             <b>dist/assets/{{ themeFileName }}-xxxxxx.js</b>
+          </template>
+        </i18n-t>
+      </p>
+    </div>
+    <div
+      v-if="!nodejs.version && isDesktop"
+      class="warning"
+    >
+      <p class="c-danger">
+        <i class="iconfont icon-warn" />
+        <i18n-t keypath="noNodejsAndGotoInstall">
+          <template #nodejs>
+            <a
+              href="https://nodejs.org/"
+              target="_blank"
+              class="link"
+            >{{ t('nodejsOfficialWebsite') }}</a>
           </template>
         </i18n-t>
       </p>
@@ -455,6 +478,13 @@ onMounted(async () => {
     margin: 3rem 0;
     .btn {
       margin: 0 1rem;
+    }
+  }
+  .warning {
+    margin-bottom: 2rem;
+    .icon-warn {
+      font-size: 2.2rem;
+      vertical-align: sub;
     }
   }
 }

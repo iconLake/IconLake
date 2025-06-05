@@ -6,6 +6,9 @@ interface PingResult {
     sites: string[]
   }
   isDesktop?: boolean
+  nodejs?: {
+    version: string
+  }
 }
 
 let isExtensionReady = false
@@ -195,6 +198,7 @@ export async function getExtensionInfo() {
     isReady: isExtensionReady,
     search: pingResult?.search,
     isDesktop: pingResult?.isDesktop,
+    nodejs: pingResult?.nodejs,
   }
 }
 

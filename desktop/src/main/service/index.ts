@@ -1,5 +1,5 @@
 import * as express from "express"
-import { appRootPath, isProduction, proxyTarget, servicePort } from "../utils"
+import { rendererRootPath, isProduction, proxyTarget, servicePort } from "../utils"
 import { createProxyMiddleware } from "http-proxy-middleware/dist"
 import * as path from "path"
 import * as fs from "fs"
@@ -10,11 +10,11 @@ app.use((req, res, next) => {
   if (req.url.startsWith('/desktop')) {
     if (isProduction) {
       const filename = req.url.slice('/desktop'.length)
-      const filepath = path.join(appRootPath, 'source/renderer', filename)
+      const filepath = path.join(rendererRootPath, filename)
       if (fs.existsSync(filepath)) {
         res.sendFile(filepath)
       } else {
-        res.sendFile(path.join(appRootPath, 'source/renderer', 'index.html'))
+        res.sendFile(path.join(rendererRootPath, 'index.html'))
       }
     } else {
       createProxyMiddleware({
