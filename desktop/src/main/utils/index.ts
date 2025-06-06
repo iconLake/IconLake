@@ -19,11 +19,19 @@ export const appPath = isProduction ? app.getAppPath() : path.join(app.getAppPat
 export const mainRootPath = path.join(appPath, 'source/main')
 export const rendererRootPath = path.join(appPath, 'source/renderer')
 
-export const internalOpenDomains = ['iconlake.com', '127.0.0.1', 'localhost', 'huaban.com']
+export const internalOpenDomains = [
+  'iconlake.com',
+  '127.0.0.1',
+  'localhost',
+  'huaban.com',
+  'www.iconfont.cn',
+  'www.zcool.com.cn',
+  'ums.gaoding.com',
+]
 
 export async function createSettingsWindow() {
   const win = new BrowserWindow({
-    width: 800,
+    width: 1000,
     height: 600,
     show: false,
   })
@@ -34,26 +42,28 @@ export async function createSettingsWindow() {
   return win
 }
 
-export async function createWindow({ url }: {url?: string} = {}) {
+export async function createWindow({ url, width, height, alwaysOnTop }: {
+  url?: string
+  width?: number
+  height?: number
+  alwaysOnTop?: boolean
+} = {}) {
   const workArea = screen.getPrimaryDisplay().workAreaSize
   const win = new BrowserWindow({
-    height: workArea.height,
-    width: workArea.width,
+    height: height ?? workArea.height,
+    width: width ?? workArea.width,
     webPreferences: {
       preload: path.join(mainRootPath, "preload.js"),
     },
+    alwaysOnTop,
   })
 
   win.loadURL(url ?? mainPageUrl)
 
-  if (!isProduction) {
-    win.webContents.openDevTools()
-  }
-
   return win
 }
 
-export async function createSubWindow({ url, width = 300, height = 230, parent }: {
+export async function createSubWindow({ url, width = 200, height = 120, parent }: {
   url?: string
   width?: number
   height?: number
@@ -63,9 +73,10 @@ export async function createSubWindow({ url, width = 300, height = 230, parent }
   if (!_parent) {
     throw new Error('parent window is not found')
   }
-  const parentBounds = _parent.getBounds();
-  const x = parentBounds ? parentBounds.x + parentBounds.width - width : undefined
-  const y = parentBounds ? parentBounds.y + parentBounds.height - height : undefined
+  const parentBounds = _parent.getContentBounds()
+  const x = parentBounds ? parentBounds.width - width - 10 : undefined
+  const y = parentBounds ? parentBounds.height - height - 10 : undefined
+  const scale = Math.min(width / 1366, height / 768)
   const win = new WebContentsView({
     webPreferences: {
       devTools: true
@@ -77,12 +88,12 @@ export async function createSubWindow({ url, width = 300, height = 230, parent }
   win.webContents.on('dom-ready', () => {
     win.webContents.enableDeviceEmulation({
       screenPosition: 'desktop',
-      screenSize: { width: width * 4, height: height * 4 },
+      screenSize: { width: width / scale, height: height / scale },
       viewPosition: { x: 0, y: 0 },
-      viewSize: { width: width * 4, height: height * 4 },
+      viewSize: { width: width / scale, height: height / scale },
       deviceScaleFactor: 0,
-      scale: 0.25,
-    });
+      scale,
+    })
   })
   return win
 }

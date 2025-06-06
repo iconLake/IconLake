@@ -1,7 +1,7 @@
-import { WebContentsView } from "electron"
+import { BrowserWindow, WebContentsView } from "electron"
 import { createSubWindow, createWindow, retry } from "../../../utils"
 import { handleModifyRequestReferer } from "../../modify-request"
-import { Media, OptionResult, SearchError, SearchParams, SearchResult } from "./types"
+import { DetailParams, DetailResult, Media, OptionResult, SearchError, SearchParams, SearchResult } from "./types"
 
 let loadedImgs: {
   [key: string]: {
@@ -13,15 +13,22 @@ let win: WebContentsView
 
 const getImgsScript = `
 (() => {
-  const imgs = document.querySelectorAll(".hb-image.transparent-img-bg");
-  return Array.from(imgs).map(e => ({ src: e.src, link: e.parentNode.href, title: e.nextElementSibling.innerText }));
+  const imgs = document.querySelectorAll(".cover-img");
+  return Array.from(imgs).map(e => ({ src: e.src, link: e.parentNode.href, title: e.alt }));
 })()
+`
+
+const getDetailScript = `
+(() => {
+  const imgs = document.querySelectorAll("#newContent img");
+  return Array.from(imgs).map(e => ({ url: e.dataset.src, title: e.alt }));
+  })()
 `
 
 const notLoginScript = `
 (() => {
-  const login = document.querySelector('[data-button-name="登陆注册"]');
-  return !!login;
+  const login = document.querySelector('.emptyBtn');
+  return login && login.innerText === '去登录';
 })()
 `
 
@@ -45,14 +52,10 @@ async function scrollToBottom() {
   win.webContents.scrollToBottom()
 }
 
-export async function handleHuaban(params: SearchParams): Promise<SearchResult | SearchError> {
-  let url = `https://huaban.com/search?q=${params.keywords}`
+export async function handleZcool(params: SearchParams): Promise<SearchResult | SearchError> {
+  let url = `https://www.zcool.com.cn/search/content?word=${params.keywords}&recommendLevel=1`
   if (!params.keywords) {
-    if (params.extra?.type === 'discovery') {
-      url = 'https://huaban.com/discovery'
-    } else {
-      url = 'https://huaban.com/follow'
-    }
+    url = `https://www.zcool.com.cn/${params.extra?.type || 'focus'}`
   }
   if (!win || win.webContents.isDestroyed()) {
     win = await createSubWindow({
@@ -68,7 +71,7 @@ export async function handleHuaban(params: SearchParams): Promise<SearchResult |
     })
   } else {
     win.setVisible(true)
-    if (params.page === 1) {
+    if (url !== win.webContents.getURL() || params.page === 1) {
       win.webContents.scrollToTop()
       win.webContents.loadURL(url)
     }
@@ -115,11 +118,10 @@ export async function handleHuaban(params: SearchParams): Promise<SearchResult |
           mimeType: 'image/webp',
           img: {
             url: e.src,
-            originalUrl: e.src.replace('_fw240webp', '_fw1200webp').replace('_fw480webp', '_fw1200webp'),
           },
           name: e.title,
           code: e.link,
-          referer: 'https://huaban.com',
+          referer: 'https://www.zcool.com.cn',
         }
       }))
     }
@@ -139,20 +141,41 @@ export async function handleHuaban(params: SearchParams): Promise<SearchResult |
   }
 }
 
-export async function handleHuabanOptions(): Promise<OptionResult> {
+export async function handleZoolDetail(params: DetailParams): Promise<DetailResult|SearchError> {
+  win.webContents.scrollToTop()
+  win.setVisible(true)
+  win.webContents.loadURL(params.url)
+  const imgs = await retry(async () => {
+    const res = await win.webContents.executeJavaScript(getDetailScript, true)
+    if (!res) {
+      throw new Error('Failed to get detail')
+    }
+    return res
+  })
+  win.setVisible(false)
+  return {
+    imgs,
+    html: '',
+  }
+}
+
+export async function handleZcoolOptions(): Promise<OptionResult> {
   return {
     options: [
       {
         label: '类型',
         name: 'type',
-        value: 'follow',
+        value: 'focus',
         children: [
           {
             label: '关注',
-            value: 'follow'
+            value: 'focus'
           }, {
-            label: '发现',
-            value: 'discovery'
+            label: '首推',
+            value: 'recommend'
+          }, {
+            label: '推荐',
+            value: 'home'
           }
         ]
       }

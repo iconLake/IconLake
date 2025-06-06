@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell } from "electron"
+import { app, BrowserWindow, ipcMain, shell, screen } from "electron"
 import { internalOpenDomains, createWindow } from "./utils"
 import { startService } from "./service"
 import { dealMessage } from "./service/message"
@@ -36,7 +36,22 @@ app.on('web-contents-created', (e, contents) => {
   contents.setWindowOpenHandler((details) => {
     const domain = new URL(details.url).hostname
     if (internalOpenDomains.includes(domain)) {
-      return { action: 'allow' }
+      return {
+        action: 'allow',
+        createWindow: (options) => {
+          const win = new BrowserWindow(options)
+          const workArea = screen.getPrimaryDisplay().workAreaSize
+          const width = 1366
+          const height = 768
+          win.setBounds({
+            x: (workArea.width - width) / 2,
+            y: (workArea.height - height) / 2,
+            width,
+            height,
+          })
+          return win.webContents
+        }
+      }
     }
     shell.openExternal(details.url)
     return { action: 'deny' }

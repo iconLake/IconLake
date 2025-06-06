@@ -46,7 +46,6 @@ export async function modifyHeaders(details: Electron.OnBeforeSendHeadersListene
     return requestHeaders
   }
   const requestReferers = await getRequestRefererFromStorage()
-  console.log('modifyHeaders', referrer, requestReferers)
   const origin = new URL(url).origin
   if (requestReferers[origin]) {
     requestHeaders.referer = requestReferers[origin]
@@ -60,10 +59,6 @@ export async function initRequestHandler() {
     if (details.referrer === 'about:blank' || !details.referrer) {
       callback({ cancel: false })
       return
-    }
-    const domain = new URL(details.referrer).hostname
-    if (Domains.includes(domain)) {
-      console.log('onBeforeSendHeaders', details.url, details.referrer, details.requestHeaders)
     }
     callback({ cancel: false, requestHeaders: await modifyHeaders(details) })
   })
