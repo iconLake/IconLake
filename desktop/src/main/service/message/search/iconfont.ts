@@ -1,15 +1,6 @@
 import { WebContentsView } from "electron"
 import { createSubWindow, retry } from "../../../utils"
-import { handleModifyRequestReferer } from "../../modify-request"
 import { Media, OptionResult, SearchError, SearchParams, SearchResult } from "./types"
-
-let loadedImgs: {
-  [key: string]: {
-    src: string
-    link: string
-  }
-} = {}
-let win: WebContentsView
 
 const getImgsScript = `
 (() => {
@@ -24,7 +15,7 @@ interface OriginalImgInfo {
   title: string
 }
 
-async function getImgs() {
+async function getImgs({ win }: { win: WebContentsView }) {
   const imgs: OriginalImgInfo[] = await win.webContents
     .executeJavaScript(getImgsScript, true)
     .catch((err) => {
@@ -35,32 +26,21 @@ async function getImgs() {
 }
 
 export async function handleIconfont(params: SearchParams): Promise<SearchResult | SearchError> {
-  console.log('handleIconfont', params)
-  let url = `https://www.iconfont.cn/search/index?searchType=icon&q=${params.keywords || 'icon'}&page=${params.page || 1}`
+  let url = `https://www.iconfont.cn/search/index?searchType=icon&q=${encodeURIComponent(params.keywords) || 'icon'}&page=${params.page || 1}`
   if (params.extra) {
     if (params.extra.tag) {
       url += `&tag=${params.extra.tag}`
     }
   }
-  if (!win || win.webContents.isDestroyed()) {
-    win = await createSubWindow({
-      url,
-    })
-    await new Promise((resolve, reject) => {
-      win.webContents.on('did-finish-load', () => {
-        resolve(true)
-      })
-      win.webContents.on('did-fail-load', () => {
-        reject(new Error('Failed to load'))
-      })
-    })
-  } else {
-    win.setVisible(true)
-    win.webContents.loadURL(url)
-  }
+  const win = await createSubWindow({
+    url,
+    id: 'search:iconfont',
+  })
+  win.setVisible(true)
+  await win.webContents.loadURL(url)
   const list: Media[] = await new Promise(async (resolve, reject) => {
     const res = await retry(async () => {
-      const imgs = await getImgs()
+      const imgs = await getImgs({ win })
       if (!imgs.length) {
         throw new Error('No images')
       }

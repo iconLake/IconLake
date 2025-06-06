@@ -27,6 +27,8 @@ export const internalOpenDomains = [
   'www.iconfont.cn',
   'www.zcool.com.cn',
   'ums.gaoding.com',
+  'www.gracg.com',
+  'x.com',
 ]
 
 export async function createSettingsWindow() {
@@ -63,12 +65,18 @@ export async function createWindow({ url, width, height, alwaysOnTop }: {
   return win
 }
 
-export async function createSubWindow({ url, width = 200, height = 120, parent }: {
+const subWindows: { [key: string]: WebContentsView } = {}
+
+export async function createSubWindow({ url, width = 200, height = 120, parent, id }: {
   url?: string
   width?: number
   height?: number
   parent?: BrowserWindow
+  id?: string
 } = {}) {
+  if (id && subWindows[id] && !subWindows[id].webContents.isDestroyed()) {
+    return subWindows[id]
+  }
   const _parent = parent ?? getCurrentWindow()
   if (!_parent) {
     throw new Error('parent window is not found')
@@ -82,9 +90,20 @@ export async function createSubWindow({ url, width = 200, height = 120, parent }
       devTools: true
     }
   })
+  if (id) {
+    subWindows[id] = win
+  }
   _parent.contentView.addChildView(win)
   win.webContents.loadURL(url ?? mainPageUrl)
   win.setBounds({ width, height, x, y })
+  win.webContents.enableDeviceEmulation({
+    screenPosition: 'desktop',
+    screenSize: { width: width / scale, height: height / scale },
+    viewPosition: { x: 0, y: 0 },
+    viewSize: { width: width / scale, height: height / scale },
+    deviceScaleFactor: 0,
+    scale,
+  })
   win.webContents.on('dom-ready', () => {
     win.webContents.enableDeviceEmulation({
       screenPosition: 'desktop',
@@ -94,6 +113,11 @@ export async function createSubWindow({ url, width = 200, height = 120, parent }
       deviceScaleFactor: 0,
       scale,
     })
+  })
+  _parent.on('closed', () => {
+    if (id && subWindows[id]) {
+      delete subWindows[id]
+    }
   })
   return win
 }
@@ -110,7 +134,7 @@ export function getCurrentWindow() {
   return undefined
 }
 
-export function retry<T>(fn: () => Promise<T>, times = 10, interval = 500): Promise<T> {
+export function retry<T>(fn: () => Promise<T>, times = 20, interval = 500): Promise<T> {
   return new Promise((resolve, reject) => {
     let count = 0
     const tryFn = async () => {
@@ -118,9 +142,9 @@ export function retry<T>(fn: () => Promise<T>, times = 10, interval = 500): Prom
         const res = await fn()
         resolve(res)
       } catch (e) {
-        console.error('retry error', count, e)
         count++
         if (count >= times) {
+          console.error('retry error', count, e)
           reject(e)
         } else {
           setTimeout(tryFn, interval)

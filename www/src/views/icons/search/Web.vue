@@ -192,8 +192,10 @@ watch(() => props.projectType, (v) => {
 })
 
 watch(() => site.value, (v) => {
+  options.value = []
   storage.setProjectDefaultSearchSite(props.projectId, v)
   getOptions()
+  reload()
 })
 
 watch(() => reviewIndex.value, async () => {
@@ -257,11 +259,6 @@ watch(
       reload()
     }, 500)
   },
-)
-
-watch(
-  () => site.value,
-  reload
 )
 
 function review (index: number) {

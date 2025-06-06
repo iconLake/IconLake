@@ -1,4 +1,4 @@
-import { BrowserWindow, WebContentsView } from "electron"
+import { WebContentsView } from "electron"
 import { createSubWindow, createWindow, retry } from "../../../utils"
 import { handleModifyRequestReferer } from "../../modify-request"
 import { DetailParams, DetailResult, Media, OptionResult, SearchError, SearchParams, SearchResult } from "./types"
@@ -12,22 +12,22 @@ let loadedImgs: {
 
 const getImgsScript = `
 (() => {
-  const imgs = document.querySelectorAll(".cover-img");
-  return Array.from(imgs).map(e => ({ src: e.src, link: e.parentNode.href, title: e.alt }));
+  const imgs = document.querySelectorAll("[data-cccc='v']");
+  return Array.from(imgs).map(e => ({ src: e.style.backgroundImage.replace(/url\\("(.+)"\\)/, '$1'), link: \`https://www.gracg.com/$\{e.dataset.cccc\}/$\{e.dataset.dddd\}\`, title: e.parentNode.parentNode.querySelector('.text-truncate').innerText }));
 })()
 `
 
 const getDetailScript = `
 (() => {
-  const imgs = document.querySelectorAll("#newContent img");
-  return Array.from(imgs).map(e => ({ url: e.dataset.src, title: e.alt }));
+  const imgs = document.querySelectorAll(".img-fluid");
+  return Array.from(imgs).map(e => ({ url: e.src }));
   })()
 `
 
 const notLoginScript = `
 (() => {
-  const login = document.querySelector('.emptyBtn');
-  return login && login.innerText === '去登录';
+  const login = document.querySelector('[href="/login"]');
+  return !!login;
 })()
 `
 
@@ -47,14 +47,18 @@ async function getImgs({ win }: { win: WebContentsView }) {
   return imgs
 }
 
-export async function handleZcool(params: SearchParams): Promise<SearchResult | SearchError> {
-  let url = `https://www.zcool.com.cn/search/content?word=${encodeURIComponent(params.keywords)}&recommendLevel=1`
+export async function handleGracg(params: SearchParams): Promise<SearchResult | SearchError> {
+  let url = `https://www.gracg.com/search?tag=${encodeURIComponent(params.keywords)}&page=${params.page}&sort=score`
   if (!params.keywords) {
-    url = `https://www.zcool.com.cn/${params.extra?.type || 'focus'}`
+    if (params.extra?.type === 'gallery') {
+      url = `https://www.gracg.com/gallery/selected?page=${params.page}`
+    } else {
+      url = `https://www.gracg.com/followwork?page=${params.page}`
+    }
   }
   const win = await createSubWindow({
     url,
-    id: 'search:zcool',
+    id: 'search:gracg',
   })
   win.setVisible(true)
   if (url !== win.webContents.getURL() || params.page === 1) {
@@ -100,13 +104,13 @@ export async function handleZcool(params: SearchParams): Promise<SearchResult | 
     if (res && res.length) {
       resolve(res.map((e) => {
         return {
-          mimeType: 'image/webp',
+          mimeType: 'image/jpeg',
           img: {
             url: e.src,
           },
           name: e.title,
           code: e.link,
-          referer: 'https://www.zcool.com.cn',
+          referer: 'https://www.gracg.com',
         }
       }))
     }
@@ -126,7 +130,7 @@ export async function handleZcool(params: SearchParams): Promise<SearchResult | 
   }
 }
 
-export async function handleZoolDetail(params: DetailParams): Promise<DetailResult|SearchError> {
+export async function handleGracgDetail(params: DetailParams): Promise<DetailResult|SearchError> {
   const win = await createSubWindow({
     url: params.url,
     id: 'detail',
@@ -148,23 +152,20 @@ export async function handleZoolDetail(params: DetailParams): Promise<DetailResu
   }
 }
 
-export async function handleZcoolOptions(): Promise<OptionResult> {
+export async function handleGracgOptions(): Promise<OptionResult> {
   return {
     options: [
       {
         label: '类型',
         name: 'type',
-        value: 'focus',
+        value: 'follow',
         children: [
           {
             label: '关注',
-            value: 'focus'
+            value: 'follow'
           }, {
-            label: '首推',
-            value: 'recommend'
-          }, {
-            label: '推荐',
-            value: 'home'
+            label: '精选',
+            value: 'gallery'
           }
         ]
       }

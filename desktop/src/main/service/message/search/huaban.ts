@@ -9,7 +9,6 @@ let loadedImgs: {
     link: string
   }
 } = {}
-let win: WebContentsView
 
 const getImgsScript = `
 (() => {
@@ -31,7 +30,7 @@ interface OriginalImgInfo {
   title: string
 }
 
-async function getImgs() {
+async function getImgs({ win }: { win: WebContentsView }) {
   const imgs: OriginalImgInfo[] = await win.webContents
     .executeJavaScript(getImgsScript, true)
     .catch((err) => {
@@ -41,12 +40,8 @@ async function getImgs() {
   return imgs
 }
 
-async function scrollToBottom() {
-  win.webContents.scrollToBottom()
-}
-
 export async function handleHuaban(params: SearchParams): Promise<SearchResult | SearchError> {
-  let url = `https://huaban.com/search?q=${params.keywords}`
+  let url = `https://huaban.com/search?q=${encodeURIComponent(params.keywords)}`
   if (!params.keywords) {
     if (params.extra?.type === 'discovery') {
       url = 'https://huaban.com/discovery'
@@ -54,31 +49,21 @@ export async function handleHuaban(params: SearchParams): Promise<SearchResult |
       url = 'https://huaban.com/follow'
     }
   }
-  if (!win || win.webContents.isDestroyed()) {
-    win = await createSubWindow({
-      url,
-    })
-    await new Promise((resolve, reject) => {
-      win.webContents.on('did-finish-load', () => {
-        resolve(true)
-      })
-      win.webContents.on('did-fail-load', () => {
-        reject(new Error('Failed to load'))
-      })
-    })
-  } else {
-    win.setVisible(true)
-    if (params.page === 1) {
-      win.webContents.scrollToTop()
-      win.webContents.loadURL(url)
-    }
+  const win = await createSubWindow({
+    url,
+    id: 'search:huaban',
+  })
+  win.setVisible(true)
+  if (url !== win.webContents.getURL() || params.page === 1) {
+    win.webContents.scrollToTop()
+    await win.webContents.loadURL(url)
   }
   if (params.page === 1) {
     loadedImgs = {}
   }
   const list: Media[] = await new Promise(async (resolve, reject) => {
     const res = await retry(async () => {
-      const imgs = await getImgs()
+      const imgs = await getImgs({ win })
       if (!imgs.length) {
         if (await win.webContents.executeJavaScript(notLoginScript, true)) {
           createWindow({
@@ -90,7 +75,7 @@ export async function handleHuaban(params: SearchParams): Promise<SearchResult |
           reject(new Error('Unauthorized'))
           return
         }
-        await scrollToBottom()
+        win.webContents.scrollToBottom()
         throw new Error('No images')
       }
       const newImgs = imgs.filter((e) => {
@@ -101,7 +86,7 @@ export async function handleHuaban(params: SearchParams): Promise<SearchResult |
         return true
       })
       if (newImgs.length === 0) {
-        await scrollToBottom()
+        win.webContents.scrollToBottom()
         throw new Error('No new images')
       }
       return newImgs
