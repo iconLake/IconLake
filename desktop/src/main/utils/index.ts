@@ -29,6 +29,8 @@ export const internalOpenDomains = [
   'ums.gaoding.com',
   'www.gracg.com',
   'x.com',
+  'www.instagram.com',
+  'www.pixiv.net',
 ]
 
 export async function createSettingsWindow() {

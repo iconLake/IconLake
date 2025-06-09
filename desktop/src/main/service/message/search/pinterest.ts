@@ -10,71 +10,27 @@ let loadedImgs: {
   }
 } = {}
 
-enum TweetType {
-  Recommend = 'recommend',
-  Follow = 'follow',
-}
-
-const getImgsScript = ({ type }: { type?: TweetType }) => {
-  let prepare = ''
-  if (type) {
-    prepare += `
-if (!document.querySelector('[data-testid="ScrollSnap-List"]')) {
-    return []
-}
-`
-    let index = 0
-    switch (type) {
-      case TweetType.Recommend:
-        index = 1
-        break
-      case TweetType.Follow:
-        index = 2
-        break
-    }
-    prepare += `
-const tabDom = document.querySelector('[data-testid="ScrollSnap-List"]>div:nth-child(${index})>a');
-if (tabDom.getAttribute('aria-selected') !== 'true') {
-  tabDom.click();
-}
-`
-  }
-  return `
+const getImgsScript = `
 (() => {
-  ${prepare}
-  const items = document.querySelectorAll('[data-testid="tweet"]');
-  const imgs = [];
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i];
-    const link = item.querySelector('a[href*="/status/"]').href;
-    const title = item.querySelector('[data-testid="tweetText"]')?.innerText;
-    const imgDoms = item.querySelectorAll('[data-testid="tweetPhoto"] img');
-    for (let j = 0; j < imgDoms.length; j++) {
-      const img = imgDoms[j];
-      imgs.push({
-        src: img.src,
-        link,
-        title,
-      });
-    }
-  }
-  return imgs;
+  const items = document.querySelectorAll('[data-test-id="pinWrapper"]');
+  return Array.from(items).map(e => {
+    const img = e.querySelector('img');
+    return { src: img.src, link: e.querySelector('a[href*="/pin/"]').href, title: '' }
+  });
 })()
 `
-}
 
 const getDetailScript = `
 (() => {
-  const item = document.querySelector('[data-testid="tweet"]');
-  const title = item.querySelector('[data-testid="tweetText"]')?.innerText;
-  const imgs = item.querySelectorAll('[data-testid="tweetPhoto"] img');
-  return Array.from(imgs).map(e => ({ url: e.src.replace(/&name=[^&]*/, '&name=large'), title }));
-  })()
+  const img = document.querySelector('[data-test-id="closeup-image-main"] img');
+  const title = document.querySelector('[data-test-id="closeup-title"]');
+  return [{ src: img.src, link: window.location.href, title: title?.innerText }];
+})()
 `
 
 const notLoginScript = `
 (() => {
-  const login = document.querySelector('[data-testid="google_sign_in_container"]');
+  const login = document.querySelector('[data-test-id="registerForm"]');
   return !!login;
 })()
 `
@@ -85,12 +41,11 @@ interface OriginalImgInfo {
   title: string
 }
 
-async function getImgs({ type, win }: {
-  type?: TweetType
+async function getImgs({ win }: {
   win: WebContentsView
 }) {
   const imgs: OriginalImgInfo[] = await win.webContents
-    .executeJavaScript(getImgsScript({ type }), true)
+    .executeJavaScript(getImgsScript, true)
     .catch((err) => {
       console.error('Failed to execute JavaScript to get images', err)
       return [] as OriginalImgInfo[]
@@ -102,14 +57,11 @@ async function scrollToBottom({ win }: { win: WebContentsView }) {
   await win.webContents.executeJavaScript('window.scrollTo(0, window.pageYOffset + window.innerHeight * 2)')
 }
 
-export async function handleX(params: SearchParams): Promise<SearchResult | SearchError> {
-  let url = `https://x.com/search?q=${encodeURIComponent(params.keywords)}&src=typed_query&f=top`
-  if (!params.keywords) {
-    url = 'https://x.com/home'
-  }
+export async function handlePinterest(params: SearchParams): Promise<SearchResult | SearchError> {
+  const url = params.keywords ? `https://www.pinterest.com/search/pins/?q=${params.keywords}` : 'https://www.pinterest.com/'
   const win = await createSubWindow({
     url,
-    id: 'search:x',
+    id: 'search:pinterest',
   })
   win.setVisible(true)
   if (url !== win.webContents.getURL() || params.page === 1) {
@@ -123,7 +75,6 @@ export async function handleX(params: SearchParams): Promise<SearchResult | Sear
     const stackedImgs: { [key: string]: OriginalImgInfo } = {}
     const res = await retry(async () => {
       const tmpImgs = (await getImgs({
-        type: params.keywords ? undefined : ((params.extra?.type || TweetType.Recommend) as TweetType),
         win,
       })).filter((e) => !stackedImgs[e.src] && !loadedImgs[e.src])
       const imgs = [...Object.values(stackedImgs), ...tmpImgs]
@@ -169,7 +120,7 @@ export async function handleX(params: SearchParams): Promise<SearchResult | Sear
           },
           name: e.title,
           code: e.link,
-          referer: 'https://www.x.com',
+          referer: 'https://www.pinterest.com',
         }
       }))
     }
@@ -189,7 +140,7 @@ export async function handleX(params: SearchParams): Promise<SearchResult | Sear
   }
 }
 
-export async function handleXDetail(params: DetailParams): Promise<DetailResult | SearchError> {
+export async function handlePinterestDetail(params: DetailParams): Promise<DetailResult | SearchError> {
   const win = await createSubWindow({
     url: params.url,
     id: 'detail',
@@ -211,23 +162,8 @@ export async function handleXDetail(params: DetailParams): Promise<DetailResult 
   }
 }
 
-export async function handleXOptions(): Promise<OptionResult> {
+export async function handlePinterestOptions(): Promise<OptionResult> {
   return {
-    options: [
-      {
-        label: '类型',
-        name: 'type',
-        value: 'recommend',
-        children: [
-          {
-            label: '推荐',
-            value: 'recommend'
-          }, {
-            label: '关注',
-            value: 'follow'
-          }
-        ]
-      }
-    ]
+    options: []
   }
 }

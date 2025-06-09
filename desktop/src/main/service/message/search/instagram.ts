@@ -10,71 +10,46 @@ let loadedImgs: {
   }
 } = {}
 
-enum TweetType {
-  Recommend = 'recommend',
-  Follow = 'follow',
-}
-
-const getImgsScript = ({ type }: { type?: TweetType }) => {
-  let prepare = ''
-  if (type) {
-    prepare += `
-if (!document.querySelector('[data-testid="ScrollSnap-List"]')) {
-    return []
-}
-`
-    let index = 0
-    switch (type) {
-      case TweetType.Recommend:
-        index = 1
-        break
-      case TweetType.Follow:
-        index = 2
-        break
+const getImgsScript = `
+(async () => {
+  const items = document.querySelectorAll('article');
+  const imgs = []
+  await Promise.all(Array.from(items).map(async e => {
+    const multiImgs = new Map()
+    const img = e.querySelector('div>img');
+    const link = e.querySelector('a[href*="/p/"]')?.href;
+    if (img && link) {
+      const title = e.querySelector('span>div>span')?.innerText
+      multiImgs.set(img.src, { src: img.src, link, title })
+      const slide = e.querySelector('[role="presentation"]')
+      if (slide) {
+        let btns
+        let run = true
+        let n = 0
+        while (run && n < 10) {
+          btns = slide.parentElement.querySelectorAll('button')
+          btns[btns.length - 1].click()
+          await new Promise((resolve) => setTimeout(resolve, 100))
+          const imgs = slide.querySelectorAll('img')
+          Array.from(imgs).forEach((e) => {
+            multiImgs.set(e.src, { src: e.src, link, title })
+          })
+          if (btns.length === 1) {
+            run = false
+          }
+          ++n
+        }
+      }
+      imgs.push(...Array.from(multiImgs.values()))
     }
-    prepare += `
-const tabDom = document.querySelector('[data-testid="ScrollSnap-List"]>div:nth-child(${index})>a');
-if (tabDom.getAttribute('aria-selected') !== 'true') {
-  tabDom.click();
-}
-`
-  }
-  return `
-(() => {
-  ${prepare}
-  const items = document.querySelectorAll('[data-testid="tweet"]');
-  const imgs = [];
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i];
-    const link = item.querySelector('a[href*="/status/"]').href;
-    const title = item.querySelector('[data-testid="tweetText"]')?.innerText;
-    const imgDoms = item.querySelectorAll('[data-testid="tweetPhoto"] img');
-    for (let j = 0; j < imgDoms.length; j++) {
-      const img = imgDoms[j];
-      imgs.push({
-        src: img.src,
-        link,
-        title,
-      });
-    }
-  }
-  return imgs;
+  }));
+  return imgs
 })()
-`
-}
-
-const getDetailScript = `
-(() => {
-  const item = document.querySelector('[data-testid="tweet"]');
-  const title = item.querySelector('[data-testid="tweetText"]')?.innerText;
-  const imgs = item.querySelectorAll('[data-testid="tweetPhoto"] img');
-  return Array.from(imgs).map(e => ({ url: e.src.replace(/&name=[^&]*/, '&name=large'), title }));
-  })()
 `
 
 const notLoginScript = `
 (() => {
-  const login = document.querySelector('[data-testid="google_sign_in_container"]');
+  const login = document.querySelector('[name="username"]');
   return !!login;
 })()
 `
@@ -85,16 +60,16 @@ interface OriginalImgInfo {
   title: string
 }
 
-async function getImgs({ type, win }: {
-  type?: TweetType
+async function getImgs({ win }: {
   win: WebContentsView
 }) {
   const imgs: OriginalImgInfo[] = await win.webContents
-    .executeJavaScript(getImgsScript({ type }), true)
+    .executeJavaScript(getImgsScript, true)
     .catch((err) => {
       console.error('Failed to execute JavaScript to get images', err)
       return [] as OriginalImgInfo[]
     })
+
   return imgs
 }
 
@@ -102,14 +77,11 @@ async function scrollToBottom({ win }: { win: WebContentsView }) {
   await win.webContents.executeJavaScript('window.scrollTo(0, window.pageYOffset + window.innerHeight * 2)')
 }
 
-export async function handleX(params: SearchParams): Promise<SearchResult | SearchError> {
-  let url = `https://x.com/search?q=${encodeURIComponent(params.keywords)}&src=typed_query&f=top`
-  if (!params.keywords) {
-    url = 'https://x.com/home'
-  }
+export async function handleInstagram(params: SearchParams): Promise<SearchResult | SearchError> {
+  const url = params.keywords ? `https://www.instagram.com/explore/search/keyword/?q=${params.keywords}` : 'https://www.instagram.com/'
   const win = await createSubWindow({
     url,
-    id: 'search:x',
+    id: 'search:instagram',
   })
   win.setVisible(true)
   if (url !== win.webContents.getURL() || params.page === 1) {
@@ -123,7 +95,6 @@ export async function handleX(params: SearchParams): Promise<SearchResult | Sear
     const stackedImgs: { [key: string]: OriginalImgInfo } = {}
     const res = await retry(async () => {
       const tmpImgs = (await getImgs({
-        type: params.keywords ? undefined : ((params.extra?.type || TweetType.Recommend) as TweetType),
         win,
       })).filter((e) => !stackedImgs[e.src] && !loadedImgs[e.src])
       const imgs = [...Object.values(stackedImgs), ...tmpImgs]
@@ -169,7 +140,7 @@ export async function handleX(params: SearchParams): Promise<SearchResult | Sear
           },
           name: e.title,
           code: e.link,
-          referer: 'https://www.x.com',
+          referer: 'https://www.instagram.com',
         }
       }))
     }
@@ -189,45 +160,23 @@ export async function handleX(params: SearchParams): Promise<SearchResult | Sear
   }
 }
 
-export async function handleXDetail(params: DetailParams): Promise<DetailResult | SearchError> {
+export async function handleInstagramDetail(params: DetailParams): Promise<DetailResult | SearchError> {
   const win = await createSubWindow({
     url: params.url,
     id: 'detail',
   })
   win.webContents.scrollToTop()
   win.setVisible(true)
-  await win.webContents.loadURL(params.url)
-  const imgs = await retry(async () => {
-    const res = await win.webContents.executeJavaScript(getDetailScript, true)
-    if (!res || res.length === 0) {
-      throw new Error('Failed to get detail')
-    }
-    return res
-  })
+  win.webContents.loadURL(params.url)
   win.setVisible(false)
   return {
-    imgs,
+    imgs: [],
     html: '',
   }
 }
 
-export async function handleXOptions(): Promise<OptionResult> {
+export async function handleInstagramOptions(): Promise<OptionResult> {
   return {
-    options: [
-      {
-        label: '类型',
-        name: 'type',
-        value: 'recommend',
-        children: [
-          {
-            label: '推荐',
-            value: 'recommend'
-          }, {
-            label: '关注',
-            value: 'follow'
-          }
-        ]
-      }
-    ]
+    options: []
   }
 }

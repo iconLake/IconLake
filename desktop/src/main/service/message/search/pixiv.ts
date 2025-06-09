@@ -1,27 +1,37 @@
-import { handleModifyRequestReferer } from "../modify-request"
+import { WebContentsView } from "electron"
+import { createSubWindow, createWindow, retry } from "../../../utils"
+import { handleModifyRequestReferer } from "../../modify-request"
 import { DetailParams, DetailResult, Media, OptionResult, SearchError, SearchParams, SearchResult } from "./types"
 
-export async function handlePixiv(params: SearchParams): Promise<SearchResult|SearchError> {
+const fetchInHost = ({ url, win }: { url: string; win: WebContentsView }) => {
+  return win.webContents
+    .executeJavaScript(`fetch("${url}").then(r => r.json())`, true)
+}
+
+export async function handlePixiv(params: SearchParams): Promise<SearchResult | SearchError> {
   let isFollow = false
   let isSearch = !!params.keywords
   let url = `https://www.pixiv.net/ajax/search/artworks/${encodeURIComponent(params.keywords)}?word=${encodeURIComponent(params.keywords)}&order=date_d&mode=all&p=${params.page}&csw=0&s_mode=s_tag_full&type=all`
+  let pageUrl = 'https://www.pixiv.net'
   if (!isSearch) {
     if (params.extra?.type === 'rank') {
       url = `https://www.pixiv.net/ranking.php?mode=${params.extra.mode || 'daily'}&p=${params.page}&format=json`
+      pageUrl = 'https://www.pixiv.net/ranking.php'
     } else {
       url = `https://www.pixiv.net/ajax/follow_latest/illust?p=${params.page}&mode=all`
       isFollow = true
     }
   }
-  const res = await fetch(url)
-    .then(e => {
-      if (e.status === 400) {
-        return {
-          error: 400,
-        }
-      }
-      return e.json()
-    })
+  const win = await createSubWindow({
+    url: pageUrl,
+    id: 'search:pixiv',
+  })
+  win.setVisible(true)
+  if (pageUrl !== win.webContents.getURL()) {
+    win.webContents.scrollToTop()
+    win.webContents.loadURL(pageUrl)
+  }
+  const res = await fetchInHost({ url, win })
     .catch(err => {
       console.error(err)
       return {
@@ -30,9 +40,13 @@ export async function handlePixiv(params: SearchParams): Promise<SearchResult|Se
       }
     })
   if (res.error) {
-    return {
-      error: res.error === 400 ? 'Unauthorized' : (res.message || res.error)
-    }
+    createWindow({
+      url: 'https://www.pixiv.net',
+      width: 1366,
+      height: 768,
+    })
+    win.setVisible(false)
+    throw new Error('Unauthorized')
   }
   let originalList = res.contents
   if (isSearch) {
@@ -56,30 +70,41 @@ export async function handlePixiv(params: SearchParams): Promise<SearchResult|Se
       referer: 'https://www.pixiv.net',
     }
   })
+
   await handleModifyRequestReferer(list.map((e) => {
     return {
       url: e.img!.url,
       referer: e.referer,
     }
   }))
+  win.setVisible(false)
   return {
     list,
-    total: res.total,
+    total: 0,
     page: params.page,
   }
 }
 
 export async function handlePixivDetail(params: DetailParams): Promise<DetailResult|SearchError> {
+  const win = await createSubWindow({
+    url: params.url,
+    id: 'detail',
+  })
+  win.webContents.scrollToTop()
+  win.setVisible(true)
+  win.webContents.loadURL(params.url)
   const id = params.url.split('/').pop()
-  const res = await fetch(`https://www.pixiv.net/ajax/illust/${id}/pages`)
-    .then(e => e.json())
+  const res = await fetchInHost({
+    url: `https://www.pixiv.net/ajax/illust/${id}/pages`,
+    win,
+  })
     .catch(err => {
       console.error(err)
       return {
         error: true,
         message: err.message || 'Unknown Error',
         body: []
-      }
+      } as any
     })
   if (res.error) {
     return {
@@ -95,6 +120,7 @@ export async function handlePixivDetail(params: DetailParams): Promise<DetailRes
       url: e.urls.original
     }
   })
+  win.setVisible(false)
   return {
     imgs,
     html: '',
