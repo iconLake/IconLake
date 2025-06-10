@@ -47,6 +47,16 @@ const getImgsScript = `
 })()
 `
 
+const getImgsScriptForSearch = `
+(() => {
+  const items = document.querySelectorAll('a[href*="/p/"]');
+  return Array.from(items).map(e => {
+    const img = e.querySelector('img')
+    return { src: img?.src, link: e.href, title: img?.alt }
+  });
+})()
+`
+
 const notLoginScript = `
 (() => {
   const login = document.querySelector('[name="username"]');
@@ -60,11 +70,12 @@ interface OriginalImgInfo {
   title: string
 }
 
-async function getImgs({ win }: {
+async function getImgs({ win, isSearch }: {
   win: WebContentsView
+  isSearch?: boolean
 }) {
   const imgs: OriginalImgInfo[] = await win.webContents
-    .executeJavaScript(getImgsScript, true)
+    .executeJavaScript(isSearch ? getImgsScriptForSearch : getImgsScript, true)
     .catch((err) => {
       console.error('Failed to execute JavaScript to get images', err)
       return [] as OriginalImgInfo[]
@@ -78,7 +89,7 @@ async function scrollToBottom({ win }: { win: WebContentsView }) {
 }
 
 export async function handleInstagram(params: SearchParams): Promise<SearchResult | SearchError> {
-  const url = params.keywords ? `https://www.instagram.com/explore/search/keyword/?q=${params.keywords}` : 'https://www.instagram.com/'
+  const url = params.keywords ? `https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(params.keywords)}` : 'https://www.instagram.com/'
   const win = await createSubWindow({
     url,
     id: 'search:instagram',
@@ -96,6 +107,7 @@ export async function handleInstagram(params: SearchParams): Promise<SearchResul
     const res = await retry(async () => {
       const tmpImgs = (await getImgs({
         win,
+        isSearch: !!params.keywords,
       })).filter((e) => !stackedImgs[e.src] && !loadedImgs[e.src])
       const imgs = [...Object.values(stackedImgs), ...tmpImgs]
       tmpImgs.forEach((e) => {
