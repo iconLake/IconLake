@@ -1,5 +1,5 @@
 import { WebContentsView } from "electron"
-import { createSubWindow, createWindow, retry } from "../../../utils"
+import { createSubWindow, createWindow } from "../../../utils"
 import { handleModifyRequestReferer } from "../../modify-request"
 import { DetailParams, DetailResult, Media, OptionResult, SearchError, SearchParams, SearchResult } from "./types"
 
@@ -12,13 +12,14 @@ export async function handlePixiv(params: SearchParams): Promise<SearchResult | 
   let isFollow = false
   let isSearch = !!params.keywords
   let url = `https://www.pixiv.net/ajax/search/artworks/${encodeURIComponent(params.keywords)}?word=${encodeURIComponent(params.keywords)}&order=date_d&mode=all&p=${params.page}&csw=0&s_mode=s_tag_full&type=all`
-  let pageUrl = 'https://www.pixiv.net'
+  let pageUrl = `https://www.pixiv.net/tags/${encodeURIComponent(params.keywords)}/artworks`
   if (!isSearch) {
     if (params.extra?.type === 'rank') {
       url = `https://www.pixiv.net/ranking.php?mode=${params.extra.mode || 'daily'}&p=${params.page}&format=json`
       pageUrl = 'https://www.pixiv.net/ranking.php'
     } else {
       url = `https://www.pixiv.net/ajax/follow_latest/illust?p=${params.page}&mode=all`
+      pageUrl = 'https://www.pixiv.net/'
       isFollow = true
     }
   }

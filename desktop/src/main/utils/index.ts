@@ -116,6 +116,12 @@ export async function createSubWindow({ url, width = 200, height = 120, parent, 
       scale,
     })
   })
+  _parent.on('resize', () => {
+    const parentBounds = _parent.getContentBounds()
+    const x = parentBounds ? parentBounds.width - width - 10 : undefined
+    const y = parentBounds ? parentBounds.height - height - 10 : undefined
+    win.setBounds({ x, y , width, height})
+  })
   _parent.on('closed', () => {
     if (id && subWindows[id]) {
       delete subWindows[id]
