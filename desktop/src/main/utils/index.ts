@@ -1,17 +1,14 @@
 import { app, BrowserWindow, screen, WebContentsView } from "electron"
 import * as path from "path"
+import * as net from "net"
 
 export const isProduction = app.isPackaged || process.env.NODE_ENV === 'production'
+
+export const certsPath = path.join(app.getPath('userData'), 'certs')
 
 export const codesPath = path.join(app.getPath('userData'), 'codes')
 
 export const themeCodesPath = path.join(codesPath, 'theme')
-
-export const servicePort = 19090
-
-export const mainPageUrl = `http://127.0.0.1:${servicePort}/manage/home`
-
-export const desktopUrl = `http://127.0.0.1:${servicePort}/desktop`
 
 export const proxyTarget = isProduction ? 'https://iconlake.com' : 'http://127.0.0.1:8080'
 
@@ -39,6 +36,7 @@ export async function createSettingsWindow() {
     height: 600,
     show: false,
   })
+  const desktopUrl = await getDesktopUrl()
   win.loadURL(`${desktopUrl}/settings`)
   win.once('ready-to-show', () => {
     win.show()
@@ -62,7 +60,7 @@ export async function createWindow({ url, width, height, alwaysOnTop }: {
     alwaysOnTop,
   })
 
-  win.loadURL(url ?? mainPageUrl)
+  win.loadURL(url ?? await getMainPageUrl())
 
   return win
 }
@@ -96,7 +94,7 @@ export async function createSubWindow({ url, width = 200, height = 120, parent, 
     subWindows[id] = win
   }
   _parent.contentView.addChildView(win)
-  win.webContents.loadURL(url ?? mainPageUrl)
+  win.webContents.loadURL(url ?? await getMainPageUrl())
   win.setBounds({ width, height, x, y })
   win.webContents.enableDeviceEmulation({
     screenPosition: 'desktop',
@@ -161,4 +159,44 @@ export function retry<T>(fn: () => Promise<T>, times = 20, interval = 500): Prom
     }
     tryFn()
   })
+}
+
+export async function isPortOccupied(port: number) {
+  return new Promise((resolve) => {
+    const tester = net.createServer().once('error', (err: any) => {
+      resolve(true)
+    }).once('listening', () => {
+      tester.once('close', () => {
+        resolve(false)
+      }).close()
+    }).listen(port)
+  })
+}
+
+let servicePort = 0
+export async function getServicePort() {
+  if (servicePort) {
+    return servicePort
+  }
+  let port = 19090
+  while (await isPortOccupied(port)) {
+    port++
+  }
+  servicePort = port
+  return port
+}
+
+export async function getDomain() {
+  const port = await getServicePort()
+  return `https://localhost.iconlake.com:${port}`
+}
+
+export async function getMainPageUrl() {
+  const domain = await getDomain()
+  return `${domain}/manage/home`
+}
+
+export async function getDesktopUrl() {
+  const domain = await getDomain()
+  return `${domain}/desktop`
 }

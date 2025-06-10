@@ -1,7 +1,7 @@
 import { session } from "electron"
 import { getRequestReferers, setRequestReferer } from "./store"
 
-const Domains = ['iconlake.com', '127.0.0.1', 'localhost']
+const Domains = ['localhost.iconlake.com', 'iconlake.com', '127.0.0.1', 'localhost']
 
 async function getRequestRefererFromStorage(): Promise<{
   [key: string]: string

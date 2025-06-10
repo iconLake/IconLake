@@ -30,7 +30,7 @@
   } = await fetch('/api/login/params').then(res => res.json())
 
   // redirect
-  if (params.domain !== location.origin) {
+  if (params.domain !== location.origin && !/^https:\/\/localhost.iconlake.com:\d+$/.test(location.origin)) {
     location.href = `${params.domain}${location.pathname}`
     return
   }

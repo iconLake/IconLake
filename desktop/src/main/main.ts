@@ -7,8 +7,8 @@ import { initRequestHandler } from "./service/modify-request"
 
 let mainWindow: BrowserWindow
 
-app.whenReady().then(() => {
-  startService()
+app.whenReady().then(async () => {
+  await startService()
   setMenu()
   createWindow().then((win) => {
     mainWindow = win
