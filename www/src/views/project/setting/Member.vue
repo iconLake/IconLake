@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { delMember, projectApis, Member, updateInviteCode } from '../../../apis/project';
+import { delMember, projectApis, type Member, updateInviteCode } from '../../../apis/project';
 import { confirm, copy, toast } from '../../../utils';
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router';

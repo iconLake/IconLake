@@ -10,15 +10,26 @@ const hunyuanClient = new OpenAI({
   baseURL: config.ai.hunyuan.endpoint
 })
 
+const qwenClient = new OpenAI({
+  apiKey: config.ai.qwen.apiKey,
+  baseURL: config.ai.qwen.endpoint,
+  temperature: 1.8
+})
+
 export const AI_MODELS = {
-  HUNYUAN: 'hunyuan'
+  APPRECIATE: 'appreciate',
+  CODER: 'coder'
 }
 
 export function getAI (model) {
   const models = {
-    hunyuan: {
+    appreciate: {
       model: 'hunyuan-turbos-vision',
       client: hunyuanClient
+    },
+    coder: {
+      model: 'qwen2.5-coder-32b-instruct',
+      client: qwenClient
     }
   }
   return model ? models[model] : models
@@ -113,6 +124,52 @@ export async function aiAppreciate ({ model, imgUrl, type, locale, userId }) {
             image_url: {
               url: imgUrl
             }
+          }
+        ]
+      }
+    ]
+  })
+
+  recordUsage({
+    model,
+    promptTokens: completion.usage.prompt_tokens,
+    completionTokens: completion.usage.completion_tokens,
+    userId
+  }).catch(console.error)
+
+  return completion.choices[0].message.content
+}
+
+export async function aiGenerateTheme ({ model, prompt, userId }) {
+  const ai = getAI(model)
+  if (!model) {
+    throw new Error('AI model not found')
+  }
+
+  const aiUsage = await getAIUsage({ userId, fields: 'ai.tokens' })
+  const totalTokens = aiUsage.tokens.total
+  if (totalTokens <= aiUsage.tokens.used) {
+    throw new Error('resourceExhausted')
+  }
+
+  const completion = await ai.client.chat.completions.create({
+    model: ai.model,
+    messages: [
+      {
+        role: 'system',
+        content: [
+          {
+            type: 'text',
+            text: '基于输入的代码做调整，输出完整代码'
+          }
+        ]
+      },
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: prompt
           }
         ]
       }

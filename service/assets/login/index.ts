@@ -30,7 +30,7 @@
   } = await fetch('/api/login/params').then(res => res.json())
 
   // redirect
-  if (params.domain !== location.origin) {
+  if (params.domain !== location.origin && !/^https:\/\/localhost.iconlake.com:\d+$/.test(location.origin)) {
     location.href = `${params.domain}${location.pathname}`
     return
   }
@@ -75,9 +75,25 @@
   if (params.login.code) {
     codeDom.classList.add('active')
     codeDom.addEventListener('click', () => {
-      const id = prompt('Input Code:')
-      if (id) {
-        location.href = `/api/oauth/code?id=${id}`
+      const prompt = document.querySelector('.prompt') as HTMLDivElement
+      if (!prompt) {
+        return
+      }
+      prompt.style.display = 'flex'
+      const input = prompt.querySelector('input')
+      if (!input) {
+        return
+      }
+      input.setAttribute('placeholder', 'Input Code')
+      input.focus()
+      input.onkeyup = (e) => {
+        if (e.key === 'Enter') {
+          prompt.style.display = 'none'
+          const code = input.value
+          if (code) {
+            location.href = `/api/oauth/code?id=${code}`
+          }
+        }
       }
     })
   } else {

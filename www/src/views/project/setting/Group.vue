@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { confirm } from '../../../utils'
-import { delGroup, editGroup, Group, projectApis } from '../../../apis/project'
+import { delGroup, editGroup, type Group, projectApis } from '../../../apis/project'
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router'
 

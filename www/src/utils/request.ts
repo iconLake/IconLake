@@ -1,5 +1,5 @@
 import i18n from '@/i18n'
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import { isPagePublic, toast } from './index'
 import { clearCache } from './cache'
 

@@ -3,7 +3,7 @@ import IconVue from '@/components/Icon.vue';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import CollectVue from './search/Collect.vue';
-import { SearchedIcon } from '@/apis/extension';
+import type { SearchedIcon } from '@/apis/extension';
 import { getIconUrl } from '@/utils/icon';
 
 const { t } = useI18n();

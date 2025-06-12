@@ -23,7 +23,7 @@
           </div>
         </div>
         <div
-          v-if="options.length"
+          v-if="options.length > 0"
           class="options flex end"
         >
           <template
@@ -132,10 +132,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import IconVue from '@/components/Icon.vue'
-import { extensionApis, OptionGroup, SearchedIcon } from '@/apis/extension';
+import { extensionApis, type OptionGroup, type SearchedIcon } from '@/apis/extension';
 import ReviewVue from '../Review.vue';
 import LoadingVue from '@/components/Loading.vue';
-import { PROJECT_TYPE, SEARCH_SITES, SearchSite } from '@/utils/const';
+import { PROJECT_TYPE, SEARCH_SITES, type SearchSite } from '@/utils/const';
 import { useI18n } from 'vue-i18n';
 import { storage } from '@/utils/storage';
 import Select from '@/components/Select.vue';
@@ -192,8 +192,10 @@ watch(() => props.projectType, (v) => {
 })
 
 watch(() => site.value, (v) => {
+  options.value = []
   storage.setProjectDefaultSearchSite(props.projectId, v)
   getOptions()
+  reload()
 })
 
 watch(() => reviewIndex.value, async () => {
@@ -257,11 +259,6 @@ watch(
       reload()
     }, 500)
   },
-)
-
-watch(
-  () => site.value,
-  reload
 )
 
 function review (index: number) {

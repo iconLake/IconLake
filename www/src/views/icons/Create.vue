@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
-import { addIcon, BaseIcon, projectApis, uploadFile } from '../../apis/project'
+import { addIcon, type BaseIcon, projectApis, uploadFile } from '../../apis/project'
 import HeaderVue from '../../components/Header.vue'
 import UserVue from '../../components/User.vue'
 import { readFileAsBlob, readFileAsText, toast } from '../../utils'

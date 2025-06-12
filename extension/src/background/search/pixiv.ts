@@ -1,4 +1,3 @@
-import { parseHTML } from "linkedom"
 import { handleModifyRequestReferer } from "../modify-request"
 import { DetailParams, DetailResult, Media, OptionResult, SearchError, SearchParams, SearchResult } from "./types"
 

@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <script lang="ts" setup>
 import { computed, nextTick, reactive, ref, watch, watchEffect } from 'vue'
-import { addTag, delTag, editGroup, editIcon, projectApis, Group, Icon, uploadFile } from '../../apis/project'
+import { addTag, delTag, editGroup, editIcon, projectApis, type Group, type Icon, uploadFile } from '../../apis/project'
 import IconComponent from '../../components/Icon.vue'
 import { copy, readFileAsBlob, readFileAsText, toast } from '../../utils'
 import { useI18n } from 'vue-i18n'

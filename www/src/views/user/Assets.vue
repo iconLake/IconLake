@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getBalance, getDropInfo, initDrop, mintDrop, signMsg, getNftClass, verifyUriHash, getInfo, getNFTs } from '@/apis/blockchain'
 import type { BlockchainInfo } from '@/apis/blockchain'
-import { UserInfo, userApis, loginByBlockchain } from '@/apis/user'
+import { type UserInfo, userApis, loginByBlockchain } from '@/apis/user'
 import { ref, onBeforeUnmount, reactive, computed, onMounted } from 'vue'
 import UserVue from '@/components/User.vue'
 import { formatDropAmount, formatLakeAmount, toast, copy, addCompressParams } from '@/utils'

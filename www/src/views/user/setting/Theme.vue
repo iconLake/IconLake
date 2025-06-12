@@ -2,27 +2,25 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router'
-import { ElUpload, UploadFile } from 'element-plus'
+import { ElUpload, type UploadFile } from 'element-plus'
 import { toast } from '@/utils';
 import { UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const';
-import { useRoute } from 'vue-router';
 import Loading from '@/components/Loading.vue';
 import { userApis } from '@/apis/user'
+import AIGenerate from '@/views/theme/AIGenerate.vue';
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
 
-const $route = useRoute()
-
-const projectId = $route.params.id as string
-
 const isDiy = ref(false)
+const isAiGenerating = ref(false)
 const isUploading = reactive({
   creator: false,
 })
 const fm = reactive({
   creator: '',
 })
+const userAddress = ref('')
 
 const isSaving = ref(false)
 
@@ -36,6 +34,7 @@ async function getTheme() {
   userApis.info().onUpdate(async info => {
     Object.assign(fm, info.theme)
     isDiy.value = !!info.theme?.creator
+    userAddress.value = info.blockchain?.id ?? ''
   })
 }
 
@@ -70,6 +69,24 @@ async function handleUpload(file: UploadFile, type: 'creator') {
   }
 }
 
+async function handleUploaContent(content: string, type: 'creator') {
+  if (!content) {
+    return
+  }
+  isUploading[type] = true
+  const res = await userApis.uploadFile({
+    _id: `${type}-${Date.now()}.js`,
+    data: content,
+    dir: UPLOAD_DIR.THEME
+  }).catch(() => {
+    toast(t('fileUploadFailed'))
+  })
+  isUploading[type] = false
+  if (res) {
+    fm[type] = res.key
+  }
+}
+
 async function handleUploadCreator(file: UploadFile) {
   await handleUpload(file, 'creator')
 }
@@ -91,6 +108,19 @@ async function save() {
   }
   toast(t('saveDone'))
   isSaving.value = false
+}
+
+function aiGenTheme() {
+  isAiGenerating.value = true
+}
+
+async function onAIGenerateFinish(text: string) {
+  isAiGenerating.value = false
+  await handleUploaContent(text, 'creator')
+}
+
+async function onAIGenerateCancel() {
+  isAiGenerating.value = false
 }
 </script>
 
@@ -152,6 +182,12 @@ async function save() {
           >
           <Loading v-if="isUploading.creator" />
         </ElUpload>
+        <div
+          class="ai flex center"
+          @click="aiGenTheme()"
+        >
+          <i class="iconfont icon-ai" />
+        </div>
       </div>
       <div class="flex center">
         <button
@@ -165,6 +201,13 @@ async function save() {
       </div>
     </div>
   </div>
+  <AIGenerate
+    v-if="isAiGenerating"
+    :on-finish="onAIGenerateFinish"
+    :on-cancel="onAIGenerateCancel"
+    type="creator"
+    :creator-id="userAddress"
+  />
 </template>
 
 <style lang="scss" scoped>
@@ -228,6 +271,7 @@ async function save() {
 }
 .input-item {
   margin-bottom: 2.4rem;
+  position: relative;
   .label {
     margin-bottom: 0.8rem;
   }
@@ -242,6 +286,18 @@ async function save() {
   }
   .loading {
     margin-left: 0.8rem;
+  }
+  .ai {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 4rem;
+    height: 4rem;
+    cursor: pointer;
+    color: var(--color-main);
+    .iconfont {
+      font-size: 1.8rem;
+    }
   }
 }
 </style>

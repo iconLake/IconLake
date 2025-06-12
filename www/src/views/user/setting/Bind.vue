@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { loginByBlockchain, LoginParams, LoginType, userApis, UserInfo } from '@/apis/user'
+import { loginByBlockchain, type LoginParams, LoginType, userApis, type UserInfo } from '@/apis/user'
 import { usePageLoading } from '@/hooks/router'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'

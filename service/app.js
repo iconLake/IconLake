@@ -26,7 +26,8 @@ app.use(helmet({
   },
   referrerPolicy: {
     policy: 'no-referrer-when-downgrade'
-  }
+  },
+  xFrameOptions: false
 }))
 app.use(compression())
 

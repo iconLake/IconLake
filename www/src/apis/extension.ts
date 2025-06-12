@@ -1,9 +1,13 @@
-import { Icon } from './project'
+import type { Icon } from './project'
 
-interface PingResult {
+export interface PingResult {
   timestamp: number
   search?: {
     sites: string[]
+  }
+  isDesktop?: boolean
+  nodejs?: {
+    version: string
   }
 }
 
@@ -193,6 +197,8 @@ export async function getExtensionInfo() {
   return {
     isReady: isExtensionReady,
     search: pingResult?.search,
+    isDesktop: pingResult?.isDesktop,
+    nodejs: pingResult?.nodejs,
   }
 }
 
@@ -225,6 +231,16 @@ export interface SearchedIcon extends Icon {
   html?: string
 }
 
+export function buildTheme(params: {
+  codes: string
+  type: string
+}): Promise<{
+  codes?: string
+  error?: string
+}> {
+  return requestExtension({type: 'buildTheme', params})
+}
+
 export const extensionApis = {
   search,
   detail,
@@ -233,4 +249,5 @@ export const extensionApis = {
   storage,
   isReady,
   onReady,
+  buildTheme,
 }

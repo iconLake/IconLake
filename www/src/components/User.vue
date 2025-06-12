@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref } from 'vue'
 import Cookies from 'js-cookie'
-import { logout, userApis, UserInfo } from '../apis/user'
+import { logout, userApis, type UserInfo } from '../apis/user'
 import { useI18n } from 'vue-i18n'
 import { clearCache } from '@/utils/cache';
 import { toast } from '@/utils';

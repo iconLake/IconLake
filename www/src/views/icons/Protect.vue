@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { editIcon, projectApis, Icon as IconType, uploadFile } from '@/apis/project'
+import { editIcon, projectApis, type Icon as IconType, uploadFile } from '@/apis/project'
 import { getHash, mintIcon, getChainAccount, burnIcon, getNftByTxHash } from '@/apis/blockchain'
 import Header from '@/components/Header.vue'
 import Icon from '@/components/Icon.vue'
