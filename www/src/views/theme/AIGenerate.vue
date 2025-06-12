@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Loading from '@/components/Loading.vue'
 import { userApis } from '@/apis/user'
@@ -28,6 +28,7 @@ const compressedCodes = ref('')
 const themeUrl = ref('')
 const promptInputDom = ref()
 const isDesktop = ref(false)
+const isDesktopReady = ref(false)
 const nodejs = ref({
   version: '',
 })
@@ -125,7 +126,7 @@ const buildTheme = async () => {
     compressedCodes.value += '.'
   }, 1000)
   let res
-  if (!isDesktop.value && await desktopApis.isReady()) {
+  if (!isDesktop.value && isDesktopReady.value) {
     res = await desktopApis.buildTheme({
       codes: codes.value,
       type: $props.type === 'class' ? 'exhibition' : $props.type
@@ -189,6 +190,19 @@ function onCompressedCodesChanged() {
   }
 }
 
+async function checkDesktopConnected() {
+  if (!isDesktopReady.value && !isDesktop.value) {
+    try {
+      const desktopInfo = await desktopApis.ping()
+      isDesktopReady.value = true
+      nodejs.value.version = desktopInfo.nodejs?.version || ''
+    } catch (e) {
+      isDesktopReady.value = false
+      nodejs.value.version = ''
+    }
+  }
+}
+
 onMounted(async () => {
   await initPrompt()
   promptInputDom.value.focus()
@@ -199,6 +213,17 @@ onMounted(async () => {
   }
   if ($props.type === 'nft') {
     nftId.value = await getNftId()
+  }
+
+  if (!isDesktop.value) {
+    checkDesktopConnected()
+    window.addEventListener('focus', checkDesktopConnected)
+  }
+})
+
+onUnmounted(() => {
+  if (!isDesktop.value) {
+    window.removeEventListener('focus', checkDesktopConnected)
   }
 })
 </script>
@@ -263,7 +288,15 @@ onMounted(async () => {
       v-if="!isDesktop"
       class="aigenerate-desc"
     >
-      <i18n-t keypath="builtCodesDesc">
+      <template
+        v-if="isDesktopReady && nodejs.version"
+      >
+        {{ t('desktopIsOpenAndReady') }}
+      </template>
+      <i18n-t
+        v-if="!isDesktopReady"
+        keypath="builtCodesDesc"
+      >
         <template #desktop>
           <a
             href="/download"
@@ -288,7 +321,7 @@ onMounted(async () => {
       </i18n-t>
     </div>
     <div
-      v-if="!isDesktop"
+      v-if="!isDesktop && !isDesktopReady"
       class="guide"
     >
       <p>{{ t('sbzBuildSteps') }}</p>
@@ -341,7 +374,7 @@ onMounted(async () => {
       </p>
     </div>
     <div
-      v-if="!nodejs.version && isDesktop"
+      v-if="!nodejs.version && (isDesktop || isDesktopReady)"
       class="warning"
     >
       <p class="c-danger">
@@ -417,6 +450,9 @@ onMounted(async () => {
   &-title {
     font-size: 2rem;
     padding: 5rem 0 1.6rem;
+  }
+  &-desc {
+    margin-bottom: 1.8rem;
   }
   &-input {
     position: relative;
