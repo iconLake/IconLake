@@ -23,7 +23,7 @@
           </div>
         </div>
         <div
-          v-if="options.length > 0 && !keywords"
+          v-if="options.length > 0"
           class="options flex end"
         >
           <template
