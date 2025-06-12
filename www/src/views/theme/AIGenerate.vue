@@ -66,11 +66,11 @@ const themeFileName = computed(() => {
 const previewUrl = computed(() => {
   switch ($props.type) {
     case 'class':
-      return `/exhibition/${$props.projectId}?theme=${themeUrl.value}`
+      return `/exhibition/${$props.projectId}?theme=${encodeURIComponent(themeUrl.value)}`
     case 'nft':
-      return `/exhibition/${$props.projectId}/${nftId.value}?theme=${themeUrl.value}`
+      return `/exhibition/${$props.projectId}/${nftId.value}?theme=${encodeURIComponent(themeUrl.value)}`
     case 'creator':
-      return `/exhibition/creator/${$props.creatorId}?theme=${themeUrl.value}`
+      return `/exhibition/creator/${$props.creatorId}?theme=${encodeURIComponent(themeUrl.value)}`
     default:
       return ''
   }
