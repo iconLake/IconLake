@@ -1,12 +1,15 @@
 import * as express from "express"
-import { rendererRootPath, isProduction, proxyTarget, getServicePort, getDomain, certsPath } from "../utils"
+import { rendererRootPath, isProduction, proxyTarget, getServicePort, certsPath } from "../utils"
 import { createProxyMiddleware } from "http-proxy-middleware/dist"
 import * as path from "path"
 import * as fs from "fs"
 import * as https from "https"
 import { X509Certificate } from "crypto"
+import { apiMiddleware, apiRouter } from "./api"
 
 const app = express()
+
+app.use('/desktop/api', express.json(), apiMiddleware, apiRouter)
 
 app.use((req, res, next) => {
   if (req.url.startsWith('/desktop')) {

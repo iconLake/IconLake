@@ -4,6 +4,7 @@ declare const iconlake: any
 
 contextBridge.exposeInMainWorld('iconlake', {
   version: '0.0.1',
+  isDesktop: true,
   sendMessage: (data: any) => {
     ipcRenderer.send('iconlakeRequest', data)
   }

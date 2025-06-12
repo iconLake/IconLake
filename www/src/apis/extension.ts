@@ -1,6 +1,6 @@
 import type { Icon } from './project'
 
-interface PingResult {
+export interface PingResult {
   timestamp: number
   search?: {
     sites: string[]

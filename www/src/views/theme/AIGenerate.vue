@@ -9,6 +9,7 @@ import creatorBaseCodes from './codes/creator.txt?raw'
 import { extensionApis } from '@/apis/extension'
 import { getNFTs } from '@/apis/blockchain'
 import { copy, toast } from '@/utils'
+import { desktopApis } from '@/apis/desktop'
 
 const { t } = useI18n()
 const $props = defineProps<{
@@ -107,6 +108,7 @@ const genTheme = async () => {
   clearInterval(timer)
   isGenerating.value = false
   codes.value = res.codes
+  onCodesChanged()
 }
 
 const buildTheme = async () => {
@@ -122,18 +124,32 @@ const buildTheme = async () => {
     }
     compressedCodes.value += '.'
   }, 1000)
-  const res = await extensionApis.buildTheme({
-    codes: codes.value,
-    type: $props.type === 'class' ? 'exhibition' : $props.type
-  }).catch(() => {
-    isBuilding.value = false
-    return {
-      codes: 'Error'
-    }
-  })
+  let res
+  if (!isDesktop.value && await desktopApis.isReady()) {
+    res = await desktopApis.buildTheme({
+      codes: codes.value,
+      type: $props.type === 'class' ? 'exhibition' : $props.type
+    }).catch(() => {
+      isBuilding.value = false
+      return {
+        codes: 'Error'
+      }
+    })
+  } else {
+    res = await extensionApis.buildTheme({
+      codes: codes.value,
+      type: $props.type === 'class' ? 'exhibition' : $props.type
+    }).catch(() => {
+      isBuilding.value = false
+      return {
+        codes: 'Error'
+      }
+    })
+  }
   clearInterval(timer)
   compressedCodes.value = res.codes || 'Error'
   isBuilding.value = false
+  onCompressedCodesChanged()
 }
 
 const previewTheme = async () => {
@@ -161,13 +177,17 @@ function copyPrompt () {
   toast(t('copyDone'))
 }
 
-watch(() => codes.value, () => {
-  !isGenerating.value && buildTheme()
-})
+function onCodesChanged() {
+  if (!isGenerating.value && codes.value && codes.value !== 'Error') {
+    buildTheme()
+  }
+}
 
-watch(() => compressedCodes.value, () => {
-  !isBuilding.value && previewTheme()
-})
+function onCompressedCodesChanged() {
+  if (!isBuilding.value && compressedCodes.value && compressedCodes.value !== 'Error') {
+    previewTheme()
+  }
+}
 
 onMounted(async () => {
   await initPrompt()
@@ -230,6 +250,7 @@ onMounted(async () => {
       <textarea
         v-model="codes"
         class="aigenerate-codes"
+        @blur="onCodesChanged"
       />
     </div>
     <div
@@ -340,6 +361,7 @@ onMounted(async () => {
       <textarea
         v-model="compressedCodes"
         class="aigenerate-codes compressed"
+        @blur="onCompressedCodesChanged"
       />
     </div>
     <div

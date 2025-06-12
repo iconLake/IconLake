@@ -51,13 +51,26 @@ export async function buildTheme({ codes, type }: { codes: string, type: ThemeTy
   await checkThemeCodes()
   fs.writeFileSync(path.join(themeCodesPath, `src/${type}/App.vue`), codes)
   await installDeps()
-  const p = spawn('npm', ['run', 'build'], {
-    stdio: 'inherit',
+  const p = spawn('npm', ['run', `build:${type}`], {
+    stdio: ['inherit', 'pipe', 'pipe'],
     cwd: themeCodesPath,
     env: process.env
   })
   await new Promise((resolve, reject) => {
-    p.on('close', resolve)
+    let stdData = ''
+    p.stdout.on('data', (data) => {
+      stdData += data.toString()
+    })
+    p.stderr.on('data', (data) => {
+      stdData += data.toString()
+    })
+    p.on('close', () => {
+      if (stdData.includes('error during build')) {
+        reject()
+      } else {
+        resolve(true)
+      }
+    })
     p.on('error', reject)
   })
 }

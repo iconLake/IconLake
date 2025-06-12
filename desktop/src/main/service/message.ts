@@ -51,7 +51,7 @@ export async function dealMessage(m: InternalMessage): Promise<InternalMessage> 
   }
 }
 
-async function handlePing(): Promise<{
+export async function handlePing(): Promise<{
   timestemp: number
   search: {
     sites: string[]

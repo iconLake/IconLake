@@ -1,0 +1,53 @@
+.main {
+  height: 100vh;
+  min-height: 800px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  &::before, &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 50%;
+    background: #fff;
+    transform: rotate(160deg);
+    width: 100vw;
+    height: 100vh;
+    transform-origin: bottom right;
+  }
+  &::after {
+    right: auto;
+    left: 50%;
+    transform: rotate(200deg);
+    transform-origin: bottom left;
+  }
+}
+
+.download {
+  .items {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100px;
+    padding-bottom: 80px;
+    gap: 36px;
+    a {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      gap: 15px;
+      width: 130px;
+      height: 130px;
+      background: rgba($color: #fff, $alpha: 0.2);
+      border-radius: 65px;
+      font-size: 15px;
+    }
+    .iconfont {
+      font-size: 40px;
+    }
+  }
+}

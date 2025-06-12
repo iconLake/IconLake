@@ -35,6 +35,7 @@ export default defineConfig({
       '/themes': proxyDomain,
       '/libs': proxyDomain,
       '/certs': proxyDomain,
+      '/download': proxyDomain,
     }
   },
   build: {
