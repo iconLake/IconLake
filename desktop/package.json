@@ -6,7 +6,7 @@
     "dev:ts": "tsc -w",
     "build:ts": "tsc --sourceMap false",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "dev:renderer": "parcel src/renderer/index.html -p 19091 --dist-dir source/renderer --public-url /desktop/ --host 127.0.0.1",
+    "dev:renderer": "parcel src/renderer/index.html -p 19080 --dist-dir source/renderer --public-url /desktop/ --host 127.0.0.1",
     "build:renderer": "parcel build src/renderer/index.html --dist-dir source/renderer --public-url /desktop/ --no-source-maps",
     "dev:electron": "electron source/main/main.js",
     "dev:main": "run-s build:ts dev:electron",

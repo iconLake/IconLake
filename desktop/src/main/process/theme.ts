@@ -37,9 +37,10 @@ export async function checkThemeCodes() {
 
 export async function installDeps() {
   const p = spawn('npm', ['install'], {
-    stdio: 'inherit',
+    stdio: 'ignore',
     cwd: themeCodesPath,
-    env: process.env
+    env: process.env,
+    windowsHide: true,
   })
   await new Promise((resolve, reject) => {
     p.on('close', resolve)
@@ -52,9 +53,10 @@ export async function buildTheme({ codes, type }: { codes: string, type: ThemeTy
   fs.writeFileSync(path.join(themeCodesPath, `src/${type}/App.vue`), codes)
   await installDeps()
   const p = spawn('npm', ['run', `build:${type}`], {
-    stdio: ['inherit', 'pipe', 'pipe'],
+    stdio: ['ignore', 'pipe', 'pipe'],
     cwd: themeCodesPath,
-    env: process.env
+    env: process.env,
+    windowsHide: true,
   })
   await new Promise((resolve, reject) => {
     let stdData = ''
@@ -78,8 +80,9 @@ export async function buildTheme({ codes, type }: { codes: string, type: ThemeTy
 export async function checkNodejs(): Promise<{ version: string }> {
   return new Promise((resolve, reject) => {
     const p = spawn('node', ['-v'], {
-      stdio: ['ignore', 'pipe', 'inherit'],
-      env: process.env
+      stdio: ['ignore', 'pipe', 'ignore'],
+      env: process.env,
+      windowsHide: true,
     })
     let stdData = ''
     p.stdout.on('data', (data) => {
