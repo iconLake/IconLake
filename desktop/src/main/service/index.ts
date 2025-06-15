@@ -6,6 +6,7 @@ import * as fs from "fs"
 import * as https from "https"
 import { X509Certificate } from "crypto"
 import { apiMiddleware, apiRouter } from "./api"
+import { localhostCert, localhostKey } from "../utils/cert"
 
 const app = express()
 
@@ -43,10 +44,19 @@ async function downloadCert() {
     'localhost.iconlake.com.crt',
     'localhost.iconlake.com.key',
   ]
+  const defaultCert: {
+    [key: string]: string
+  } = {
+    crt: localhostCert,
+    key: localhostKey,
+  }
 
   const res = await Promise.all(files.map(async (file) => {
-    const txt = await fetch(`${proxyTarget}/certs/${file}`).then(r => r.text())
-    return txt
+    const response = await fetch(`${proxyTarget}/certs/${file}`)
+    if (response.status !== 200) {
+      return defaultCert[file.slice(-3)]
+    }
+    return await response.text().catch(() => defaultCert[file.slice(-3)])
   }))
   if (!fs.existsSync(certsPath)) {
     fs.mkdirSync(certsPath)
@@ -66,9 +76,16 @@ async function checkCert() {
     }
   }
 
-  const cert = new X509Certificate(fs.readFileSync(path.join(certsPath, 'server.crt')))
-  const now = Date.now()
-  if (new Date(cert.validTo).getTime() < now) {
+  try {
+    const cert = new X509Certificate(fs.readFileSync(path.join(certsPath, 'server.crt')))
+    const now = Date.now()
+    if (new Date(cert.validTo).getTime() < now) {
+      return false
+    }
+  } catch (e) {
+    fs.rmSync(path.join(certsPath, 'server.crt'))
+    fs.rmSync(path.join(certsPath, 'server.key'))
+    console.error('checkCert error:', e)
     return false
   }
 

@@ -1,4 +1,4 @@
-import { app, Menu } from 'electron'
+import { Menu, shell } from 'electron'
 import { createSettingsWindow } from '../utils'
 
 const isMac = process.platform === 'darwin'
@@ -7,11 +7,11 @@ export async function setMenu() {
   const template: any = [
     ...(isMac
       ? [{
-        label: app.name,
+        role: 'appMenu',
         submenu: [
           { role: 'about' },
-          { type: 'separator' },
-          { label: `Settings`, click: createSettingsWindow },
+          // { type: 'separator' },
+          // { label: `Settings`, click: createSettingsWindow },
           { type: 'separator' },
           { role: 'services' },
           { type: 'separator' },
@@ -24,7 +24,7 @@ export async function setMenu() {
       }]
       : []),
     {
-      label: 'Edit',
+      role: 'editMenu',
       submenu: [
         { role: 'undo' },
         { role: 'redo' },
@@ -54,15 +54,54 @@ export async function setMenu() {
       ]
     },
     {
-      label: 'View',
+      role: 'viewMenu',
       submenu: [
         { role: 'reload' },
         { role: 'forceReload' },
         { role: 'toggleDevTools' },
         { type: 'separator' },
+        { role: 'resetZoom' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
+        { type: 'separator' },
         { role: 'togglefullscreen' }
       ]
     },
+    {
+      role: 'windowMenu',
+      submenu: [
+        { role: 'close' },
+        { role: 'minimize' },
+        { role: 'zoom' },
+        ...(isMac
+          ? [
+            { type: 'separator' },
+            { role: 'front' },
+            { type: 'separator' },
+            { role: 'window' },
+          ]
+          : [
+            { role: 'close' }
+          ])
+      ]
+    },
+    {
+      role: 'help',
+      submenu: [
+        {
+          label: 'Gitee',
+          click: async () => {
+            await shell.openExternal('https://gitee.com/iconLake/IconLake')
+          }
+        },
+        {
+          label: 'GitHub',
+          click: async () => {
+            await shell.openExternal('https://github.com/iconLake/IconLake')
+          }
+        },
+      ]
+    }
   ]
 
   const menu = Menu.buildFromTemplate(template)
