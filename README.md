@@ -1,3 +1,12 @@
+<center>
+  <img src="./service/public/imgs/logo.svg" alt="iconLake" width="200" />
+  <h1>iconLake</h1>
+  <p>
+    <a href="https://iconlake.com" target="_blank">官网（https://iconlake.com）</a>
+    | <a href="./documents/sponsor/README.md">赞助</a>
+  </p>
+</center>
+
 # iconLake
 
 iconLake - You Create, You Own!
@@ -77,4 +86,4 @@ DROP是为了让信息保存到链上所需支付的费用，但是这个费用�
 
 ## 赞助
 
-欢迎和感谢认可我们的企业及个人在您力所能及下对我们提供慷慨赞助。
+感谢您考虑为iconLake项目提供赞助支持！您的每一份贡献都将帮助我们建设一个更好的创作者生态系统。更多详情请参考[赞助指南](./documents/sponsor/README.md)。
