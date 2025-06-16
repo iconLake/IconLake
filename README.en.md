@@ -4,7 +4,7 @@
 <h1 align="center">iconLake</h1>
 <p align="center">
    <a href="https://iconlake.com" target="_blank">Official Website (https://iconlake.com)</a>
-   | <a href="./documents/sponsor/README.md">Sponsor</a>
+   | <a href="./documents/sponsor/README.en.md">Sponsor</a>
 </p>
 
 # iconLake
