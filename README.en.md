@@ -1,11 +1,11 @@
-<center>
+<p align="center">
   <img src="./service/public/imgs/logo.svg" alt="iconLake" width="200" />
-  <h1>iconLake</h1>
-  <p>
-    <a href="https://iconlake.com" target="_blank">Official Website (https://iconlake.com)</a>
-    | <a href="./documents/sponsor/README.md">Sponsor</a>
-  </p>
-</center>
+</p>
+<h1 align="center">iconLake</h1>
+<p align="center">
+   <a href="https://iconlake.com" target="_blank">Official Website (https://iconlake.com)</a>
+   | <a href="./documents/sponsor/README.md">Sponsor</a>
+</p>
 
 # iconLake
 
