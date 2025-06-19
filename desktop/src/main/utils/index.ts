@@ -13,7 +13,7 @@ export const logsPath = path.join(app.getPath('userData'), 'logs')
 
 export const themeCodesPath = path.join(codesPath, 'theme')
 
-export const proxyTarget = isProduction ? 'https://iconlake.com' : 'http://127.0.0.1:8080'
+export const mainOrigin = isProduction ? 'https://iconlake.com' : 'http://127.0.0.1:8080'
 
 export const appPath = isProduction ? app.getAppPath() : path.join(app.getAppPath(), '../../')
 export const mainRootPath = path.join(appPath, 'source/main')
@@ -189,19 +189,18 @@ export async function getServicePort() {
   return port
 }
 
-export async function getDomain() {
+export async function getLocalhostOrigin() {
   const port = await getServicePort()
   return `https://localhost.iconlake.com:${port}`
 }
 
 export async function getMainPageUrl() {
-  const domain = await getDomain()
-  return `${domain}/manage/home`
+  return `${mainOrigin}/manage/home`
 }
 
 export async function getDesktopUrl() {
-  const domain = await getDomain()
-  return `${domain}/desktop`
+  const origin = await getLocalhostOrigin()
+  return `${origin}/desktop`
 }
 
 export function isMac() {

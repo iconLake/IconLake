@@ -1,5 +1,5 @@
 import * as express from "express"
-import { rendererRootPath, isProduction, proxyTarget, getServicePort, certsPath } from "../utils"
+import { rendererRootPath, isProduction, getServicePort, certsPath, mainOrigin } from "../utils"
 import { createProxyMiddleware } from "http-proxy-middleware/dist"
 import * as path from "path"
 import * as fs from "fs"
@@ -30,14 +30,10 @@ app.use((req, res, next) => {
       })(req, res, next)
     }
   } else {
-    next()
+    const url = new URL(req.url)
+    res.redirect(req.url.replace(url.origin, mainOrigin))
   }
 })
-
-app.use(createProxyMiddleware({
-  target: proxyTarget,
-  changeOrigin: true,
-}))
 
 async function downloadCert() {
   const files = [
@@ -52,7 +48,7 @@ async function downloadCert() {
   }
 
   const res = await Promise.all(files.map(async (file) => {
-    const response = await fetch(`${proxyTarget}/certs/${file}`)
+    const response = await fetch(`${mainOrigin}/certs/${file}`)
     if (response.status !== 200) {
       return defaultCert[file.slice(-3)]
     }
