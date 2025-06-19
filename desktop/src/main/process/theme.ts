@@ -1,8 +1,9 @@
 import * as fs from 'fs'
 import * as AdmZip from 'adm-zip'
-import { codesPath, themeCodesPath } from "../utils"
+import { codesPath, getEnvPath, themeCodesPath } from "../utils"
 import * as path from "path"
 import { spawn } from 'child_process'
+import { log } from '../utils/log'
 
 export enum ThemeType {
   exhibition = 'exhibition',
@@ -79,9 +80,13 @@ export async function buildTheme({ codes, type }: { codes: string, type: ThemeTy
 
 export async function checkNodejs(): Promise<{ version: string }> {
   return new Promise((resolve, reject) => {
+    const env = {
+      ...process.env,
+      PATH: getEnvPath(),
+    }
     const p = spawn('node', ['-v'], {
       stdio: ['ignore', 'pipe', 'ignore'],
-      env: process.env,
+      env,
       windowsHide: true,
     })
     let stdData = ''

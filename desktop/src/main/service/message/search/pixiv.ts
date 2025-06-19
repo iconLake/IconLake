@@ -2,6 +2,7 @@ import { WebContentsView } from "electron"
 import { createSubWindow, createWindow } from "../../../utils"
 import { handleModifyRequestReferer } from "../../modify-request"
 import { DetailParams, DetailResult, Media, OptionResult, SearchError, SearchParams, SearchResult } from "./types"
+import { log } from "../../../utils/log"
 
 const fetchInHost = ({ url, win }: { url: string; win: WebContentsView }) => {
   return win.webContents
@@ -34,7 +35,7 @@ export async function handlePixiv(params: SearchParams): Promise<SearchResult | 
   }
   const res = await fetchInHost({ url, win })
     .catch(err => {
-      console.error(err)
+      log.error(err)
       return {
         error: true,
         message: err.message || 'Unknown Error'
@@ -100,7 +101,7 @@ export async function handlePixivDetail(params: DetailParams): Promise<DetailRes
     win,
   })
     .catch(err => {
-      console.error(err)
+      log.error(err)
       return {
         error: true,
         message: err.message || 'Unknown Error',

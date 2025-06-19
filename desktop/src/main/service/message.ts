@@ -1,4 +1,5 @@
 import { checkNodejs } from "../process/theme"
+import { log } from "../utils/log"
 import { handleDetail, handleOption, handleSearch } from "./message/search"
 import { Site } from "./message/search/types"
 import { handleBuildTheme } from "./message/theme"
@@ -67,7 +68,7 @@ export async function handlePing(): Promise<{
   try {
     nodejs = await checkNodejs()
   } catch (e) {
-    console.error(e)
+    log.error(e)
   }
   return {
     timestemp: Date.now(),

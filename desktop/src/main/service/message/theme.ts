@@ -1,3 +1,4 @@
+import { log } from "../../utils/log"
 import { buildTheme, ThemeType } from "../../process/theme"
 import { themeCodesPath } from "../../utils"
 import * as fs from "fs"
@@ -7,7 +8,7 @@ export async function handleBuildTheme({ codes, type }: { codes: string, type: T
   try {
     await buildTheme({ codes, type })
   } catch (e) {
-    console.error(e)
+    log.error(e)
     return {
       error: 'buildFail'
     }

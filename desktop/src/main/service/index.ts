@@ -7,6 +7,7 @@ import * as https from "https"
 import { X509Certificate } from "crypto"
 import { apiMiddleware, apiRouter } from "./api"
 import { localhostCert, localhostKey } from "../utils/cert"
+import { log } from "../utils/log"
 
 const app = express()
 
@@ -85,7 +86,7 @@ async function checkCert() {
   } catch (e) {
     fs.rmSync(path.join(certsPath, 'server.crt'))
     fs.rmSync(path.join(certsPath, 'server.key'))
-    console.error('checkCert error:', e)
+    log.error('checkCert error:', e)
     return false
   }
 
@@ -101,6 +102,6 @@ export async function startService() {
     cert: fs.readFileSync(path.join(certsPath, 'server.crt')),
     key: fs.readFileSync(path.join(certsPath, 'server.key')),
   }, app).listen(servicePort, () => {
-    console.log(`Service is running at https://localhost.iconlake.com:${servicePort}`)
+    log.info(`Service is running at https://localhost.iconlake.com:${servicePort}`)
   })
 }
