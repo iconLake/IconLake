@@ -37,7 +37,6 @@ app.use((req, res, next) => {
 app.use(createProxyMiddleware({
   target: proxyTarget,
   changeOrigin: true,
-  cookieDomainRewrite: 'localhost.iconlake.com',
 }))
 
 async function downloadCert() {
