@@ -3,7 +3,6 @@ import * as AdmZip from 'adm-zip'
 import { codesPath, getEnvPath, themeCodesPath } from "../utils"
 import * as path from "path"
 import { spawn } from 'child_process'
-import { log } from '../utils/log'
 
 export enum ThemeType {
   exhibition = 'exhibition',
@@ -19,12 +18,16 @@ export async function downloadThemeCodes() {
 }
 
 export async function checkThemeCodes() {
+  if (!fs.existsSync(codesPath)) {
+    fs.mkdirSync(codesPath, { recursive: true })
+  }
   if (!fs.existsSync(themeCodesPath)) {
-    fs.mkdirSync(themeCodesPath, { recursive: true })
+    return await downloadThemeCodes()
   }
 
   const files = fs.readdirSync(themeCodesPath)
-  if (files.length === 0) {
+  if (files.length === 0 || !fs.existsSync(path.join(themeCodesPath, 'package.json'))) {
+    fs.rmSync(themeCodesPath, { recursive: true, force: true })
     await downloadThemeCodes()
   } else {
     const lastestPackage = await fetch('https://gitee.com/iconLake/Theme/raw/master/package.json').then(res => res.json())
