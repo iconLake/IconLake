@@ -40,10 +40,14 @@ export async function checkThemeCodes() {
 }
 
 export async function installDeps() {
+  const env = {
+    ...process.env,
+    PATH: getEnvPath(),
+  }
   const p = spawn('npm', ['install'], {
     stdio: 'ignore',
     cwd: themeCodesPath,
-    env: process.env,
+    env,
     windowsHide: true,
   })
   await new Promise((resolve, reject) => {
@@ -56,10 +60,14 @@ export async function buildTheme({ codes, type }: { codes: string, type: ThemeTy
   await checkThemeCodes()
   fs.writeFileSync(path.join(themeCodesPath, `src/${type}/App.vue`), codes)
   await installDeps()
+  const env = {
+    ...process.env,
+    PATH: getEnvPath(),
+  }
   const p = spawn('npm', ['run', `build:${type}`], {
     stdio: ['ignore', 'pipe', 'pipe'],
     cwd: themeCodesPath,
-    env: process.env,
+    env,
     windowsHide: true,
   })
   await new Promise((resolve, reject) => {
