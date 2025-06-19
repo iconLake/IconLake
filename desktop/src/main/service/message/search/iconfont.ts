@@ -1,6 +1,7 @@
 import { WebContentsView } from "electron"
 import { createSubWindow, retry } from "../../../utils"
 import { Media, OptionResult, SearchError, SearchParams, SearchResult } from "./types"
+import { log } from "../../../utils/log"
 
 const getImgsScript = `
 (() => {
@@ -19,7 +20,7 @@ async function getImgs({ win }: { win: WebContentsView }) {
   const imgs: OriginalImgInfo[] = await win.webContents
     .executeJavaScript(getImgsScript, true)
     .catch((err) => {
-      console.error('Failed to execute JavaScript to get images', err)
+      log.error('Failed to execute JavaScript to get images', err)
       return [] as OriginalImgInfo[]
     })
   return imgs
@@ -46,7 +47,7 @@ export async function handleIconfont(params: SearchParams): Promise<SearchResult
       }
       return imgs
     }).catch((err) => {
-      console.error('Failed to get images', err)
+      log.error('Failed to get images', err)
       reject(err)
     })
     if (res && res.length) {

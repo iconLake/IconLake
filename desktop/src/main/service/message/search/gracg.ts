@@ -2,6 +2,7 @@ import { WebContentsView } from "electron"
 import { createSubWindow, createWindow, retry } from "../../../utils"
 import { handleModifyRequestReferer } from "../../modify-request"
 import { DetailParams, DetailResult, Media, OptionResult, SearchError, SearchParams, SearchResult } from "./types"
+import { log } from "../../../utils/log"
 
 let loadedImgs: {
   [key: string]: {
@@ -41,7 +42,7 @@ async function getImgs({ win }: { win: WebContentsView }) {
   const imgs: OriginalImgInfo[] = await win.webContents
     .executeJavaScript(getImgsScript, true)
     .catch((err) => {
-      console.error('Failed to execute JavaScript to get images', err)
+      log.error('Failed to execute JavaScript to get images', err)
       return [] as OriginalImgInfo[]
     })
   return imgs
@@ -98,7 +99,7 @@ export async function handleGracg(params: SearchParams): Promise<SearchResult | 
       }
       return newImgs
     }).catch((err) => {
-      console.error('Failed to get images', err)
+      log.error('Failed to get images', err)
       reject(err)
     })
     if (res && res.length) {

@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as AdmZip from 'adm-zip'
-import { codesPath, themeCodesPath } from "../utils"
+import { codesPath, getEnvPath, themeCodesPath } from "../utils"
 import * as path from "path"
 import { spawn } from 'child_process'
 
@@ -18,12 +18,16 @@ export async function downloadThemeCodes() {
 }
 
 export async function checkThemeCodes() {
+  if (!fs.existsSync(codesPath)) {
+    fs.mkdirSync(codesPath, { recursive: true })
+  }
   if (!fs.existsSync(themeCodesPath)) {
-    fs.mkdirSync(themeCodesPath, { recursive: true })
+    return await downloadThemeCodes()
   }
 
   const files = fs.readdirSync(themeCodesPath)
-  if (files.length === 0) {
+  if (files.length === 0 || !fs.existsSync(path.join(themeCodesPath, 'package.json'))) {
+    fs.rmSync(themeCodesPath, { recursive: true, force: true })
     await downloadThemeCodes()
   } else {
     const lastestPackage = await fetch('https://gitee.com/iconLake/Theme/raw/master/package.json').then(res => res.json())
@@ -36,10 +40,14 @@ export async function checkThemeCodes() {
 }
 
 export async function installDeps() {
+  const env = {
+    ...process.env,
+    PATH: getEnvPath(),
+  }
   const p = spawn('npm', ['install'], {
     stdio: 'ignore',
     cwd: themeCodesPath,
-    env: process.env,
+    env,
     windowsHide: true,
   })
   await new Promise((resolve, reject) => {
@@ -52,10 +60,14 @@ export async function buildTheme({ codes, type }: { codes: string, type: ThemeTy
   await checkThemeCodes()
   fs.writeFileSync(path.join(themeCodesPath, `src/${type}/App.vue`), codes)
   await installDeps()
+  const env = {
+    ...process.env,
+    PATH: getEnvPath(),
+  }
   const p = spawn('npm', ['run', `build:${type}`], {
     stdio: ['ignore', 'pipe', 'pipe'],
     cwd: themeCodesPath,
-    env: process.env,
+    env,
     windowsHide: true,
   })
   await new Promise((resolve, reject) => {
@@ -79,9 +91,13 @@ export async function buildTheme({ codes, type }: { codes: string, type: ThemeTy
 
 export async function checkNodejs(): Promise<{ version: string }> {
   return new Promise((resolve, reject) => {
+    const env = {
+      ...process.env,
+      PATH: getEnvPath(),
+    }
     const p = spawn('node', ['-v'], {
       stdio: ['ignore', 'pipe', 'ignore'],
-      env: process.env,
+      env,
       windowsHide: true,
     })
     let stdData = ''

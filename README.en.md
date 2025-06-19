@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="./service/public/imgs/logo.svg" alt="iconLake" width="200" />
+</p>
+<h1 align="center">iconLake</h1>
+<p align="center">
+   <a href="https://iconlake.com" target="_blank">Official Website (https://iconlake.com)</a>
+   | <a href="./documents/sponsor/README.en.md">Sponsor</a>
+</p>
+
 # iconLake
 
 iconLake - You Create, You Own!
@@ -77,4 +86,4 @@ All valid contributions will receive corresponding rewards. Each contribution wi
 
 ## Sponsorship
 
-We welcome and thank the companies and individuals who recognize us for their generous sponsorship within your means.
+Thank you for considering sponsoring the iconLake project! Your contribution will help us build a better ecosystem for creators. More information can be found in [Sponsorship Guide](./documents/sponsor/README.md)。

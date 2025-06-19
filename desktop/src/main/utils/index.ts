@@ -1,12 +1,15 @@
 import { app, BrowserWindow, screen, WebContentsView } from "electron"
 import * as path from "path"
 import * as net from "net"
+import { log } from "./log"
 
 export const isProduction = app.isPackaged || process.env.NODE_ENV === 'production'
 
 export const certsPath = path.join(app.getPath('userData'), 'certs')
 
 export const codesPath = path.join(app.getPath('userData'), 'codes')
+
+export const logsPath = path.join(app.getPath('userData'), 'logs')
 
 export const themeCodesPath = path.join(codesPath, 'theme')
 
@@ -150,7 +153,7 @@ export function retry<T>(fn: () => Promise<T>, times = 20, interval = 500): Prom
       } catch (e) {
         count++
         if (count >= times) {
-          console.error('retry error', count, e)
+          log.error('retry error', count, e)
           reject(e)
         } else {
           setTimeout(tryFn, interval)
@@ -199,4 +202,34 @@ export async function getMainPageUrl() {
 export async function getDesktopUrl() {
   const domain = await getDomain()
   return `${domain}/desktop`
+}
+
+export function isMac() {
+  return process.platform === 'darwin'
+}
+
+export function isWin() {
+  return process.platform === 'win32'
+}
+
+export function getEnvPath() {
+  const pathList = new Set(process.env.PATH.split(':'))
+  if (isMac()) {
+    pathList.add('/usr/local/bin')
+    pathList.add('/usr/local/sbin')
+    pathList.add('/usr/bin')
+    pathList.add('/usr/sbin')
+    pathList.add('/bin')
+    pathList.add('/sbin')
+    pathList.add('/opt/local/bin')
+    pathList.add('/opt/homebrew/bin')
+    pathList.add('/opt/homebrew/sbin')
+    return Array.from(pathList).join(':')
+  }
+  if (isWin()) {
+    pathList.add('C:\\Program Files\\nodejs\\')
+    pathList.add('C:\\Program Files (x86)\\nodejs\\')
+    return Array.from(pathList).join(';')
+  }
+  return ''
 }
