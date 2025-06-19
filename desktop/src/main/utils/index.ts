@@ -227,8 +227,8 @@ export function getEnvPath() {
     return Array.from(pathList).join(':')
   }
   if (isWin()) {
-    pathList.add('C:\\Program Files\\nodejs')
-    pathList.add('C:\\Program Files (x86)\\nodejs')
+    pathList.add('C:\\Program Files\\nodejs\\')
+    pathList.add('C:\\Program Files (x86)\\nodejs\\')
     return Array.from(pathList).join(';')
   }
   return ''
