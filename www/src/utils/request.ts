@@ -2,6 +2,7 @@ import i18n from '@/i18n'
 import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import { isPagePublic, toast } from './index'
 import { clearCache } from './cache'
+import Cookies from 'js-cookie'
 
 function showErrorMsg (res: any) {
   const redirectError = {
@@ -10,8 +11,9 @@ function showErrorMsg (res: any) {
   }
   if (res.error in redirectError) {
     if (!isPagePublic()) {
-      clearCache()
-      location.href = `/login?referer=${encodeURIComponent(location.href.replace(location.origin, ''))}`
+      clearCache().finally(() => {
+        location.href = `/login?referer=${encodeURIComponent(location.href.replace(location.origin, ''))}`
+      })
     }
     return
   }

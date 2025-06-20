@@ -47,6 +47,9 @@ export async function addCache(props: ICacheSetProps) {
 }
 
 export async function getCache(props: ICacheGetProps) {
+  if (!db.isOpen()) {
+    throw new Error('db not open')
+  }
   const res = await db.cache.where(props).first().catch(() => null)
   if (!res) {
     throw new Error('cache not found')
@@ -103,7 +106,9 @@ export const cache = {
 }
 
 export async function clearCache() {
-  await db.delete()
+  if (db.isOpen()) {
+    await db.delete()
+  }
 }
 
 async function clearUserCache(userId: string) {
