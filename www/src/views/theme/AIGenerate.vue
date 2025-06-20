@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Loading from '@/components/Loading.vue'
 import { userApis } from '@/apis/user'
@@ -83,6 +83,9 @@ const initPrompt = async () => {
     creator: creatorBaseCodes
   }[$props.type]
   prompt.value = `${baseCodes}\n\n${t('redesignAndRequirement')}\n1. \n2. `
+  nextTick(() => {
+    promptInputDom.value.focus()
+  })
 }
 
 const genTheme = async () => {
@@ -203,21 +206,23 @@ async function checkDesktopConnected() {
   }
 }
 
-onMounted(async () => {
-  await initPrompt()
-  promptInputDom.value.focus()
+async function initDesktop() {
   const extInfo = await extensionApis.getExtensionInfo()
   isDesktop.value = !!extInfo.isDesktop
   if (isDesktop.value && extInfo.nodejs) {
     nodejs.value = extInfo.nodejs
   }
-  if ($props.type === 'nft') {
-    nftId.value = await getNftId()
-  }
-
   if (!isDesktop.value) {
     checkDesktopConnected()
     window.addEventListener('focus', checkDesktopConnected)
+  }
+}
+
+onMounted(async () => {
+  initPrompt()
+  initDesktop()
+  if ($props.type === 'nft') {
+    nftId.value = await getNftId()
   }
 })
 

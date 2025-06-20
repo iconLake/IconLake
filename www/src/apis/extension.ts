@@ -191,8 +191,8 @@ export async function getExtensionInfo() {
     }, 50)
     const timeout = setTimeout(() => {
       clearInterval(timer)
-      reject(new Error('timeout'))
-    }, 3000)
+      resolve(null)
+    }, 1000)
   })
   return {
     isReady: isExtensionReady,
