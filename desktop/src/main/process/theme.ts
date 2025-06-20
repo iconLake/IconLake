@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as AdmZip from 'adm-zip'
-import { codesPath, getEnvPath, themeCodesPath } from "../utils"
+import { codesPath, getEnvPath, isWin, themeCodesPath } from "../utils"
 import * as path from "path"
 import { spawn } from 'child_process'
 
@@ -49,6 +49,7 @@ export async function installDeps() {
     cwd: themeCodesPath,
     env,
     windowsHide: true,
+    shell: isWin(),
   })
   await new Promise((resolve, reject) => {
     p.on('close', resolve)
@@ -69,6 +70,7 @@ export async function buildTheme({ codes, type }: { codes: string, type: ThemeTy
     cwd: themeCodesPath,
     env,
     windowsHide: true,
+    shell: isWin(),
   })
   await new Promise((resolve, reject) => {
     let stdData = ''
