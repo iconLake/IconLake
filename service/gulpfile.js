@@ -17,6 +17,10 @@ const i18n = {
   en: JSON.parse(fs.readFileSync('../www/src/i18n/messages/en-us.json'))
 }
 
+const desktopPackage = JSON.parse(fs.readFileSync('../desktop/package.json'))
+i18n.zh.desktopVersion = desktopPackage.version
+i18n.en.desktopVersion = desktopPackage.version
+
 const srcPath = './assets/'
 const destPath = './public/'
 const scssFiles = `${srcPath}**/*.scss`
@@ -61,7 +65,7 @@ export function json () {
 
 function htmlZh () {
   return gulp.src(i18nHtmlFiles, srcOptions)
-    .pipe(replace(/\$\{(.+)\}/g, (match, param) => {
+    .pipe(replace(/\$\{(.+?)\}/g, (match, param) => {
       return i18n.zh[param]
     }))
     .pipe(htmlmin({ collapseWhitespace: true }))
@@ -73,7 +77,7 @@ function htmlZh () {
 
 function htmlEn () {
   return gulp.src(i18nHtmlFiles, srcOptions)
-    .pipe(replace(/\$\{(.+)\}/g, (match, param) => {
+    .pipe(replace(/\$\{(.+?)\}/g, (match, param) => {
       return i18n.en[param]
     }))
     .pipe(htmlmin({ collapseWhitespace: true }))
