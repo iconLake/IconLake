@@ -1,6 +1,6 @@
 import { Appreciate } from '../../models/appreciate.js'
 import { Project } from '../../models/project.js'
-import { AI_MODELS, aiAppreciate } from '../../utils/ai.js'
+import { AI_MODELS, aiAppreciate, getAI } from '../../utils/ai.js'
 import { ERROR_CODE } from '../../utils/const.js'
 import { completeURL } from '../../utils/file.js'
 import { middleware as userMiddleware } from '../user/middleware.js'
@@ -61,6 +61,7 @@ export async function list (req, res) {
   })
 
   const appreciateByAI = async () => {
+    const ai = getAI(AI_MODELS.APPRECIATE)
     return {
       url: icon.img?.url ?? icon.svg?.url,
       text: await aiAppreciate({
@@ -70,7 +71,7 @@ export async function list (req, res) {
         locale: req.cookies.locale,
         userId: req.user._id
       }),
-      ai: AI_MODELS.APPRECIATE
+      ai: ai.name
     }
   }
 
