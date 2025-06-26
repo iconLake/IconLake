@@ -58,6 +58,9 @@
       transform: translateY(0);
       transition: all 0.3s ease-out;
       height: auto;
+      display: grid;
+      grid-template-columns: 50% 50%;
+      gap: 1.125rem;
       &.hide {
         visibility: hidden;
         height: 0;
@@ -74,10 +77,8 @@
       box-sizing: border-box;
       border: solid 0.063rem #f2f2f2;
       cursor: pointer;
-      margin-top: 1.125rem;
-      &:first-child {
-        margin-top: 0;
-      }
+      justify-content: center;
+      gap: 2.5rem;
       &:hover {
         border-color: $color-main;
       }
@@ -89,6 +90,9 @@
       }
       &.active {
         display: flex;
+      }
+      &.keplr {
+        grid-column: 1 / 3;
       }
     }
   }

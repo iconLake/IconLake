@@ -24,10 +24,12 @@ export const AI_MODELS = {
 export function getAI (model) {
   const models = {
     appreciate: {
+      name: 'hunyuan',
       model: 'hunyuan-turbos-vision',
       client: hunyuanClient
     },
     coder: {
+      name: 'qwen',
       model: 'qwen2.5-coder-32b-instruct',
       client: qwenClient
     }
