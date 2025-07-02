@@ -40,7 +40,8 @@
     "gitee": true,
     "github": true,
     "keplr": true,
-    "google": false
+    "google": false,
+    "webAuthn": true
   },
   "blockchain": {
     "public": {
