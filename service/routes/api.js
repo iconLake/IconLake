@@ -4,6 +4,7 @@ import { login as oauthGitee } from '../controllers/oauth/gitee.js'
 import { login as oauthGoogle } from '../controllers/oauth/google.js'
 import { login as oauthCode } from '../controllers/oauth/code.js'
 import { login as oauthBlockchain } from '../controllers/oauth/blockchain.js'
+import * as webAuthn from '../controllers/oauth/webAuthn.js'
 import * as userInfo from '../controllers/user/info.js'
 import * as userTheme from '../controllers/user/theme.js'
 import * as userSetting from '../controllers/user/setting.js'
@@ -37,6 +38,8 @@ router.get('/oauth/gitee', oauthGitee)
 router.get('/oauth/google', oauthGoogle)
 router.get('/oauth/code', oauthCode)
 router.post('/oauth/blockchain', oauthBlockchain)
+router.post('/oauth/webAuthn/register', webAuthn.register)
+router.post('/oauth/webAuthn/login', webAuthn.login)
 
 router.get('/user/info', userMiddleware, userInfo.info)
 router.post('/user/info/edit', userMiddleware, userInfo.edit)

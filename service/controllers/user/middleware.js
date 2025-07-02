@@ -54,6 +54,11 @@ export async function checkLogin (req) {
   }
   const _id = req.cookies.token.substring(0, i)
   const token = req.cookies.token.substring(i + 1)
+  if (!_id || !token) {
+    return {
+      error: ERROR_CODE.USER_NOT_LOGIN
+    }
+  }
   const user = await User.findById(_id, 'token tokenExpire')
   if (!user) {
     return {
