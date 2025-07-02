@@ -265,5 +265,7 @@
   "redesignAndRequirement": "重新设计UI，仅输出完整代码，设计要求如下：",
   "noNodejsAndGotoInstall": "你的电脑没有安装Nodejs，无法执行构建。前往 {nodejs} 下载安装。",
   "nodejsOfficialWebsite": "Nodejs官网",
-  "desktopIsOpenAndReady": "桌面应用已打开，构建环境已准备就绪。"
+  "desktopIsOpenAndReady": "桌面应用已打开，构建环境已准备就绪。",
+  "webAuthn": "无密码登录",
+  "newWebAuthn": "新建"
 }

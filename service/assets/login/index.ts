@@ -26,6 +26,7 @@
       github: boolean
       keplr: boolean
       google: boolean
+      webAuthn: boolean
     }
   } = await fetch('/api/login/params').then(res => res.json())
 
@@ -152,6 +153,88 @@
     })
   } else {
     codeDom.style.display = 'none'
+  }
+
+  // login with webAuthn
+  const webAuthnDom = document.querySelector('.auth .webAuthn') as HTMLDivElement
+  if (params.login.webAuthn) {
+    webAuthnDom.classList.add('active')
+    webAuthnDom.querySelector('.create')?.addEventListener('click', (e) => {
+      const t = new Date()
+      const name = `iconLake Creator (${t.getFullYear()}/${t.getMonth() + 1}/${t.getDate()} ${t.getHours()}:${t.getMinutes()})`
+      navigator.credentials.create({
+        publicKey: {
+          rp: {
+            name: 'iconLake'
+          },
+          challenge: new TextEncoder().encode(`Login iconLake\n${new Date().toISOString()}`),
+          user: {
+            id: new TextEncoder().encode(name),
+            name,
+            displayName: name
+          },
+          pubKeyCredParams: [
+            {
+              type: 'public-key',
+              alg: -7
+            },
+            {
+              type: 'public-key',
+              alg: -257
+            }
+          ],
+          timeout: 60000,
+          attestation: 'none'
+        }
+      }).then((cred) => {
+        setIsLoading(true)
+        fetch('/api/oauth/webAuthn/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: JSON.stringify(cred)
+        }).then(res => res.json()).then(res => {
+          if (res.error) {
+            setIsLoading(false)
+            alert(res.error)
+          } else {
+            window.location.href = res.redirect
+          }
+        })
+      })
+      e.stopPropagation()
+      return false
+    })
+    webAuthnDom.addEventListener('click', () => {
+      navigator.credentials.get({
+        publicKey: {
+          challenge: new TextEncoder().encode(`Login iconLake\n${new Date().toISOString()}`),
+          allowCredentials: []
+        }
+      }).then((cred) => {
+        const data = JSON.stringify(cred)
+        setIsLoading(true)
+        fetch('/api/oauth/webAuthn/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: data
+        }).then(res => res.json()).then(res => {
+          if (res.error) {
+            setIsLoading(false)
+            alert(res.error)
+          } else {
+            window.location.href = res.redirect
+          }
+        })
+      })
+    })
+  } else {
+    webAuthnDom.style.display = 'none'
   }
 
   const loadingDom = document.querySelector('#loading') as HTMLDivElement

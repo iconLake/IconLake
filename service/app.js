@@ -55,7 +55,7 @@ if (config.http && config.http.port) {
 
 if (config.https && config.https.port) {
   https.createServer({
-    ca: fs.readFileSync(config.https.ca),
+    ca: config.https.ca ? fs.readFileSync(config.https.ca) : undefined,
     key: fs.readFileSync(config.https.key),
     cert: fs.readFileSync(config.https.cert)
   }, app).listen(config.https.port, () => {

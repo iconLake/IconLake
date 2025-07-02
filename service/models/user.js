@@ -37,6 +37,12 @@ export const UserSchema = new Schema({
   },
   accessKey: {
     id: String
+  },
+  webAuthn: {
+    id: String,
+    publicKey: String,
+    counter: Number,
+    transports: [String]
   }
 })
 

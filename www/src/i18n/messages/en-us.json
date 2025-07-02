@@ -265,5 +265,7 @@
   "redesignAndRequirement": "Redesign UI, output only complete code, design requirements as follows:",
   "noNodejsAndGotoInstall": "Your computer does not have Nodejs installed, cannot execute the build. Go to {nodejs} to download and install.",
   "nodejsOfficialWebsite": "Nodejs official website",
-  "desktopIsOpenAndReady": "The desktop application is open and the build environment is ready."
+  "desktopIsOpenAndReady": "The desktop application is open and the build environment is ready.",
+  "webAuthn": "No Password Login",
+  "newWebAuthn": "Create"
 }
