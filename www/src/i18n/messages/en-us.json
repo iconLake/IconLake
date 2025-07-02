@@ -267,5 +267,6 @@
   "nodejsOfficialWebsite": "Nodejs official website",
   "desktopIsOpenAndReady": "The desktop application is open and the build environment is ready.",
   "webAuthn": "No Password Login",
-  "newWebAuthn": "Create"
+  "newWebAuthn": "Create",
+  "fido": "FIDO"
 }

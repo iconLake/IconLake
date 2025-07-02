@@ -267,5 +267,6 @@
   "nodejsOfficialWebsite": "Nodejs官网",
   "desktopIsOpenAndReady": "桌面应用已打开，构建环境已准备就绪。",
   "webAuthn": "无密码登录",
-  "newWebAuthn": "新建"
+  "newWebAuthn": "新建",
+  "fido": "通行密钥"
 }

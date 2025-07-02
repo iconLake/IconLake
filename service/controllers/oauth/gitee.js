@@ -48,9 +48,14 @@ export async function login (req, res) {
           'Content-Type': 'application/json;charset=UTF-8'
         }
       })
-      const user = await qq.json()
-      user.from = 'gitee'
-      user.avatar = user.avatar_url
+      const originalData = await qq.json()
+      const user = {
+        from: 'gitee',
+        id: originalData.id,
+        name: originalData.name,
+        avatar: originalData.avatar_url,
+        originalData: JSON.stringify(originalData)
+      }
       success(user, req, res)
       return
     }

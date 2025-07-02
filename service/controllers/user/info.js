@@ -26,6 +26,10 @@ export async function info (req, res) {
     'github.avatar',
     'code.id',
     'accessKey.id',
+    'google.id',
+    'google.name',
+    'google.avatar',
+    'webAuthn.id',
     'theme'
   ]
   const user = (await User.findById(req.user._id, fields.join(' '))).toJSON()
@@ -37,6 +41,9 @@ export async function info (req, res) {
   }
   if (user.github?.avatar) {
     user.github.avatar = completeURL(user.github.avatar)
+  }
+  if (user.google?.avatar) {
+    user.google.avatar = completeURL(user.google.avatar)
   }
   res.json(user)
 }
