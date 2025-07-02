@@ -45,9 +45,14 @@ export async function login (req, res) {
           Authorization: `token ${data.access_token}`
         }
       })
-      const user = await qq.json()
-      user.from = 'github'
-      user.avatar = user.avatar_url
+      const originalData = await qq.json()
+      const user = {
+        from: 'github',
+        id: originalData.id,
+        name: originalData.name,
+        avatar: originalData.avatar_url,
+        originalData: JSON.stringify(originalData)
+      }
       success(user, req, res)
       return
     }

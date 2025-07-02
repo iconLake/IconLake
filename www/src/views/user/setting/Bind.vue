@@ -19,6 +19,8 @@ const isDealing = reactive({
   blockchain: false,
   code: false,
   accessKey: false,
+  google: false,
+  webAuthn: false,
 })
 
 const pageLoading = usePageLoading()
@@ -56,6 +58,14 @@ async function bind(type: LoginType) {
   if (type === LoginType.Blockchain) {
     return await bindBlockchain()
   }
+  if (type === LoginType.WebAuthn) {
+    return await bindWebAuthn()
+  }
+  if (type === LoginType.Google) {
+    document.cookie = `referer=${location.href};path=/`
+    location.href = `https://accounts.google.com/o/oauth2/v2/auth?scope=${encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile')}&access_type=offline&include_granted_scopes=true&response_type=code&state=${loginParams.value.nonce}&client_id=${encodeURIComponent(loginParams.value.clientId.google)}&redirect_uri=${loginParams.value.domain}%2Fapi%2Foauth%2Fgoogle`
+    return
+  }
   if (type === LoginType.Gitee) {
     document.cookie = `referer=${location.href};path=/`
     location.href = `https://gitee.com/oauth/authorize?client_id=${loginParams.value.clientId.gitee}&redirect_uri=${loginParams.value.domain}%2Fapi%2Foauth%2Fgitee&response_type=code`
@@ -68,6 +78,40 @@ async function bind(type: LoginType) {
   }
   if (type === LoginType.Code) {
     return await bindCode()
+  }
+}
+
+async function bindWebAuthn() {
+  const t = new Date()
+  const name = userInfo.value?.name || `iconLake Creator (${t.getFullYear()}/${t.getMonth() + 1}/${t.getDate()} ${t.getHours()}:${t.getMinutes()})`
+  const cred = await navigator.credentials.create({
+    publicKey: {
+      rp: {
+        name: 'iconLake'
+      },
+      challenge: new TextEncoder().encode(`Login iconLake\n${new Date().toISOString()}`),
+      user: {
+        id: new TextEncoder().encode(name),
+        name,
+        displayName: name
+      },
+      pubKeyCredParams: [
+        {
+          type: 'public-key',
+          alg: -7
+        },
+        {
+          type: 'public-key',
+          alg: -257
+        }
+      ],
+      timeout: 60000,
+      attestation: 'none'
+    }
+  })
+  const res = await userApis.webAuthnRegister(cred)
+  if (!res || res.error) {
+    throw new Error('login error')
   }
 }
 
@@ -180,6 +224,56 @@ async function regenAccessKey() {
         <LoadingVue v-if="isDealing.blockchain" />
         <template v-else>
           {{ t(userInfo?.blockchain?.id ? 'unbind' : 'bind') }}
+        </template>
+      </div>
+    </div>
+  </div>
+  <div
+    v-if="loginParams?.login.webAuthn"
+    class="item"
+  >
+    <div class="item-label">
+      {{ t('webAuthn') }} ({{ t('fido') }})
+    </div>
+    <div class="item-value flex">
+      <div class="flex center">
+        <span>{{ userInfo?.webAuthn?.id || t('notBound') }}</span>
+      </div>
+      <div
+        class="btn"
+        @click="deal(LoginType.WebAuthn)"
+      >
+        <LoadingVue v-if="isDealing.webAuthn" />
+        <template v-else>
+          {{ t(userInfo?.webAuthn?.id ? 'unbind' : 'bind') }}
+        </template>
+      </div>
+    </div>
+  </div>
+  <div
+    v-if="loginParams?.login.google"
+    class="item"
+  >
+    <div class="item-label">
+      Google
+    </div>
+    <div class="item-value flex">
+      <div class="flex center">
+        <img
+          v-if="userInfo?.google?.avatar"
+          :src="userInfo?.google?.avatar"
+          :alt="userInfo?.google?.name"
+          class="avatar"
+        >
+        <span>{{ userInfo?.google?.name || userInfo?.google?.id || t('notBound') }}</span>
+      </div>
+      <div
+        class="btn"
+        @click="deal(LoginType.Google)"
+      >
+        <LoadingVue v-if="isDealing.google" />
+        <template v-else>
+          {{ t(userInfo?.google?.id ? 'unbind' : 'bind') }}
         </template>
       </div>
     </div>

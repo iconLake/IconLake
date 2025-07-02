@@ -36,7 +36,8 @@ export async function login (req, res) {
       from: 'google',
       id: data.id,
       name: data.name,
-      avatar: data.picture
+      avatar: data.picture,
+      originalData: JSON.stringify(data)
     }
     await success(user, req, res)
   } catch (e) {

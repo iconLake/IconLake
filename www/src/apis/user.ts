@@ -33,6 +33,14 @@ export interface UserInfo {
   theme?: {
     creator?: string
   }
+  google?: {
+    id: string
+    name?: string
+    avatar?: string
+  }
+  webAuthn?: {
+    id: string
+  }
 }
 
 export enum LoginType {
@@ -40,6 +48,8 @@ export enum LoginType {
   Github = 'github',
   Code = 'code',
   Blockchain = 'blockchain',
+  Google = 'google',
+  WebAuthn = 'webAuthn',
 }
 
 import { cache } from '@/utils/cache'
@@ -80,6 +90,7 @@ export const userApis = {
   getTheme,
   getUsage,
   generateTheme,
+  webAuthnRegister,
 }
 
 /**
@@ -157,13 +168,17 @@ export interface LoginParams {
   clientId: {
     gitee: string
     github: string
+    google: string
   }
   domain: string
+  nonce: string
   login: {
     gitee: boolean
     github: boolean
     keplr: boolean
     code: boolean
+    google: boolean
+    webAuthn: boolean
   }
 }
 
@@ -292,5 +307,14 @@ export function getUsage() {
     method: 'GET',
     url: '/info/usage',
     baseURL,
+  })
+}
+
+export function webAuthnRegister(data: any) {
+  return <Promise<Res>>request({
+    method: 'POST',
+    url: '/webAuthn/register',
+    baseURL: '/api/oauth',
+    data,
   })
 }

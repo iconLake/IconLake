@@ -16,13 +16,13 @@ export const UserSchema = new Schema({
   tokenExpire: Date,
   github: {
     id: String,
-    login: String,
+    originalData: String,
     name: String,
     avatar: String
   },
   gitee: {
     id: String,
-    login: String,
+    originalData: String,
     name: String,
     avatar: String
   },
@@ -37,6 +37,12 @@ export const UserSchema = new Schema({
   },
   accessKey: {
     id: String
+  },
+  google: {
+    id: String,
+    originalData: String,
+    name: String,
+    avatar: String
   },
   webAuthn: {
     id: String,

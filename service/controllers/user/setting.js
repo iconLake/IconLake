@@ -7,7 +7,7 @@ import crypto from 'crypto'
  */
 export async function unbind (req, res) {
   const type = req.query.type
-  const types = ['github', 'gitee', 'blockchain', 'code']
+  const types = ['github', 'gitee', 'blockchain', 'code', 'google', 'webAuthn']
   if (!types.includes(type)) {
     res.json({
       error: ERROR_CODE.ARGS_ERROR
