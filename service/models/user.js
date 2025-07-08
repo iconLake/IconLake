@@ -48,7 +48,13 @@ export const UserSchema = new Schema({
     id: String,
     publicKey: String,
     counter: Number,
-    transports: [String]
+    transports: [String],
+    updateTime: Date
+  },
+  mail: {
+    id: String,
+    password: String,
+    updateTime: Date
   }
 })
 

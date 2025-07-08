@@ -41,7 +41,8 @@
     "github": false,
     "keplr": true,
     "google": false,
-    "webAuthn": true
+    "webAuthn": true,
+    "mail": false
   },
   "blockchain": {
     "public": {
@@ -72,5 +73,11 @@
       "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
       "freeQuota": 10000
     }
+  },
+  "mail": {
+    "host": "gz-smtp.qcloudmail.com",
+    "port": 465,
+    "user": "auth@noreply.iconlake.com",
+    "pass": ""
   }
 }

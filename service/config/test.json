@@ -40,8 +40,9 @@
     "gitee": true,
     "github": true,
     "keplr": true,
-    "google": false,
-    "webAuthn": true
+    "google": true,
+    "webAuthn": true,
+    "mail": true
   },
   "blockchain": {
     "public": {
@@ -72,5 +73,11 @@
       "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
       "freeQuota": 10000
     }
+  },
+  "mail": {
+    "host": "gz-smtp.qcloudmail.com",
+    "port": 465,
+    "user": "auth@noreply.iconlake.com",
+    "pass": ""
   }
 }

@@ -27,6 +27,7 @@
       keplr: boolean
       google: boolean
       webAuthn: boolean
+      mail: boolean
     }
   } = await fetch('/api/login/params').then(res => res.json())
 
@@ -236,6 +237,111 @@
   } else {
     webAuthnDom.style.display = 'none'
   }
+
+  // login with mail
+  const mailDom = document.querySelector('.auth .mail') as HTMLDivElement
+  if (params.login.mail) {
+    mailDom.classList.add('active')
+    mailDom.addEventListener('click', () => {
+      const prompt = document.querySelector('.prompt.mail') as HTMLDivElement
+      if (!prompt) {
+        return
+      }
+      prompt.style.display = 'flex'
+      const input = prompt.querySelector('input')
+      if (!input) {
+        return
+      }
+      input.focus()
+    })
+    const mailSendDom = document.querySelector('#mail-send') as HTMLButtonElement
+    let isMailSending = false
+    mailSendDom.addEventListener('click', async () => {
+      if (isMailSending) {
+        return
+      }
+      isMailSending = true
+      mailSendDom.innerText = mailSendDom.dataset.loadingText as string
+      const mailInputDom = document.querySelector('.prompt.mail input[type="email"]') as HTMLInputElement
+      const mail = mailInputDom.value
+      if (!mail) {
+        mailInputDom.focus()
+        isMailSending = false
+        mailSendDom.innerText = mailSendDom.dataset.defaultText as string
+        return
+      }
+      const res = await fetch('/api/oauth/mail/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({
+          mail
+        })
+      }).then(res => res.json())
+      if (res.error) {
+        console.error(res.error)
+        mailSendDom.innerText = mailSendDom.dataset[`${res.error.toLowerCase()}Text`] || res.error
+      } else {
+        mailSendDom.innerText = mailSendDom.dataset.doneText as string
+      }
+    })
+    const mailLoginDom = document.querySelector('#mail-login') as HTMLButtonElement
+    let isMailLogining = false
+    mailLoginDom.addEventListener('click', async () => {
+      if (isMailLogining) {
+        return
+      }
+      isMailLogining = true
+      mailLoginDom.innerText = mailLoginDom.dataset.loadingText as string
+      const mailInputDom = document.querySelector('.prompt.mail input[type="email"]') as HTMLInputElement
+      const mail = mailInputDom.value
+      if (!mail) {
+        mailInputDom.focus()
+        isMailLogining = false
+        mailLoginDom.innerText = mailLoginDom.dataset.defaultText as string
+        return
+      }
+      const passwordInputDom = document.querySelector('.prompt.mail input[type="password"]') as HTMLInputElement
+      const password = passwordInputDom.value
+      if (!password) {
+        passwordInputDom.focus()
+        isMailLogining = false
+        mailLoginDom.innerText = mailLoginDom.dataset.defaultText as string
+        return
+      }
+      const res = await fetch('/api/oauth/mail/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({
+          mail,
+          password
+        })
+      }).then(res => res.json())
+      if (res.error) {
+        console.error(res.error)
+        mailLoginDom.innerText = res.error === 'fail' ? mailLoginDom.dataset.failText as string : res.error
+        isMailLogining = false
+      } else {
+        window.location.href = res.redirect
+      }
+    })
+  } else {
+    mailDom.style.display = 'none'
+  }
+
+  document.body.addEventListener('click', e => {
+    if (e.target) {
+      const targetDom = e.target as HTMLElement
+      if (targetDom.classList.contains('prompt')) {
+        targetDom.style.display = 'none'
+      }
+    }
+  })
 
   const loadingDom = document.querySelector('#loading') as HTMLDivElement
   const itemsDom = document.querySelector('#items') as HTMLDivElement

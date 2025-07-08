@@ -4,7 +4,7 @@ import { usePageLoading } from '@/hooks/router'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import i18n from '@/i18n'
-import { toast } from '@/utils'
+import { confirm, toast } from '@/utils'
 import LoadingVue from '@/components/Loading.vue'
 import { getSignMsg } from '@/utils/blockchain'
 import { signMsg } from '@/apis/blockchain'
@@ -21,7 +21,15 @@ const isDealing = reactive({
   accessKey: false,
   google: false,
   webAuthn: false,
+  mail: false,
 })
+const bindMailFm = ref({
+  mail: '',
+  password: '',
+})
+const bindMailFmDom = ref<HTMLDivElement | null>(null)
+const sendingMailStatus = ref(0)
+const sendMailText = ref(t('sendPasswordToEmail'))
 
 const pageLoading = usePageLoading()
 
@@ -55,30 +63,85 @@ async function bind(type: LoginType) {
   if (!loginParams.value) {
     throw new Error('no login params')
   }
-  if (type === LoginType.Blockchain) {
-    return await bindBlockchain()
+  switch (type) {
+    case LoginType.Mail:
+      return await bindMail()
+    case LoginType.Blockchain:
+      return await bindBlockchain()
+    case LoginType.WebAuthn:
+      return await bindWebAuthn()
+    case LoginType.Google:
+      document.cookie = `referer=${location.href};path=/`
+      location.href = `https://accounts.google.com/o/oauth2/v2/auth?scope=${encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile')}&access_type=offline&include_granted_scopes=true&response_type=code&state=${loginParams.value.nonce}&client_id=${encodeURIComponent(loginParams.value.clientId.google)}&redirect_uri=${loginParams.value.domain}%2Fapi%2Foauth%2Fgoogle`
+      return
+    case LoginType.Gitee:
+      document.cookie = `referer=${location.href};path=/`
+      location.href = `https://gitee.com/oauth/authorize?client_id=${loginParams.value.clientId.gitee}&redirect_uri=${loginParams.value.domain}%2Fapi%2Foauth%2Fgitee&response_type=code`
+      return
+    case LoginType.Github:
+      document.cookie = `referer=${location.href};path=/`
+      location.href = `https://github.com/login/oauth/authorize?client_id=${loginParams.value.clientId.github}&redirect_uri=${loginParams.value.domain}%2Fapi%2Foauth%2Fgithub`
+      return
+    case LoginType.Code:
+      return await bindCode()
+    default:
+      throw new Error('no type')
   }
-  if (type === LoginType.WebAuthn) {
-    return await bindWebAuthn()
-  }
-  if (type === LoginType.Google) {
-    document.cookie = `referer=${location.href};path=/`
-    location.href = `https://accounts.google.com/o/oauth2/v2/auth?scope=${encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile')}&access_type=offline&include_granted_scopes=true&response_type=code&state=${loginParams.value.nonce}&client_id=${encodeURIComponent(loginParams.value.clientId.google)}&redirect_uri=${loginParams.value.domain}%2Fapi%2Foauth%2Fgoogle`
+}
+
+async function bindMail() {
+  await new Promise((resolve, reject) => {
+    confirm(bindMailFmDom.value!, async () => {
+      if (!bindMailFm.value.mail || !bindMailFm.value.password) {
+        reject({
+          error: 'argsError'
+        })
+        return
+      }
+      const res = await userApis.mailLogin({
+        mail: bindMailFm.value.mail,
+        password: bindMailFm.value.password,
+      }).catch(e => e)
+      if (res.error) {
+        reject()
+        return
+      }
+      if (res.userId !== userInfo.value?._id) {
+        toast(t('alreadyBoundAndSwitch'))
+        userApis.clearCache()
+        await new Promise(() => {
+          setTimeout(() => {
+            location.reload()
+          }, 2000)
+        })
+      }
+      resolve(void 0)
+    }, {
+      cancel: () => {
+        reject({
+          error: 'cancel'
+        })
+      },
+    })
+  })
+}
+
+async function sendMail() {
+  if (sendingMailStatus.value !== 0 || !bindMailFm.value.mail) {
     return
   }
-  if (type === LoginType.Gitee) {
-    document.cookie = `referer=${location.href};path=/`
-    location.href = `https://gitee.com/oauth/authorize?client_id=${loginParams.value.clientId.gitee}&redirect_uri=${loginParams.value.domain}%2Fapi%2Foauth%2Fgitee&response_type=code`
+  sendingMailStatus.value = 1
+  sendMailText.value = t('sending')
+  const res = await userApis.sendMail({
+    mail: bindMailFm.value.mail,
+  }).catch(e => e)
+  if (res.error) {
+    sendMailText.value = t(res.error)
+    sendingMailStatus.value = 0
     return
   }
-  if (type === LoginType.Github) {
-    document.cookie = `referer=${location.href};path=/`
-    location.href = `https://github.com/login/oauth/authorize?client_id=${loginParams.value.clientId.github}&redirect_uri=${loginParams.value.domain}%2Fapi%2Foauth%2Fgithub`
-    return
-  }
-  if (type === LoginType.Code) {
-    return await bindCode()
-  }
+  sendingMailStatus.value = 2
+  sendMailText.value = t('sendMailDone')
 }
 
 async function bindWebAuthn() {
@@ -186,9 +249,9 @@ async function deal(type: LoginType) {
     userApis.info().onUpdate(async info => {
       userInfo.value = info
     })
-  } catch (e) {
+  } catch (e: any) {
     console.error(e)
-    toast.error(t('fail'))
+    toast.error(t(e?.error || 'fail'))
   }
   isDealing[type] = false
 }
@@ -341,6 +404,47 @@ async function regenAccessKey() {
     </div>
   </div>
   <div
+    v-if="loginParams?.login.mail"
+    class="item"
+  >
+    <div class="item-label">
+      Email
+    </div>
+    <div class="item-value flex">
+      <span>{{ userInfo?.mail?.id || t('notBound') }}</span>
+      <div
+        class="btn"
+        @click="deal(LoginType.Mail)"
+      >
+        <LoadingVue v-if="isDealing.mail" />
+        <template v-else>
+          {{ t(userInfo?.mail?.id ? 'unbind' : 'bind') }}
+        </template>
+      </div>
+    </div>
+    <div
+      ref="bindMailFmDom"
+      class="bind-mail-fm flex column"
+    >
+      <input
+        v-model="bindMailFm.mail"
+        type="email"
+        :placeholder="t('email')"
+      >
+      <input
+        v-model="bindMailFm.password"
+        type="password"
+        :placeholder="t('password')"
+      >
+      <div
+        class="bind-mail-send"
+        @click="sendMail"
+      >
+        {{ sendMailText }}
+      </div>
+    </div>
+  </div>
+  <div
     v-if="loginParams?.login.code"
     class="item"
   >
@@ -417,5 +521,28 @@ async function regenAccessKey() {
   padding: 0.8rem 0.8rem 0.8rem 1rem;
   border-radius: 0 0 0 1.2rem;
   font-size: 1rem;
+}
+
+.bind-mail-fm {
+  display: none;
+  gap: 1.4rem;
+  input {
+    padding: 0 1.4rem;
+    height: 4rem;
+    width: 100%;
+  }
+  .bind-mail-send {
+    cursor: pointer;
+    color: var(--color-main);
+    opacity: 0.6;
+    transition: var(--transition);
+    font-size: 1rem;
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+:global(.confirm .bind-mail-fm) {
+  display: flex;
 }
 </style>

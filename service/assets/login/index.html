@@ -44,13 +44,16 @@
               <span class="create flex center">${newWebAuthn}</span>
             </div>
             <div class="item google flex">
-              <img class="small" src="/imgs/google-wordmarks-2x.webp" alt="iconLake login with google">
+              <img class="small" src="/imgs/google.webp" alt="iconLake login with google">
             </div>
             <div class="item gitee flex">
-              <img class="small" src="/imgs/gitee.png" alt="iconLake login with gitee">
+              <img class="small" src="/imgs/gitee-logo.svg" alt="iconLake login with gitee">
             </div>
             <div class="item github flex">
-              <img class="small" src="/imgs/github.png" alt="iconLake login with github">
+              <img class="small" src="/imgs/github-logo.svg" alt="iconLake login with github">
+            </div>
+            <div class="item mail flex">
+              <img class="small" src="/imgs/mail.svg" alt="iconLake login with mail">
             </div>
             <div class="item code flex">
               <span>Code</span>
@@ -62,6 +65,28 @@
   </div>
   <div class="prompt flex center">
     <input type="text">
+  </div>
+  <div class="prompt mail flex center">
+    <input type="email" placeholder="${email}">
+    <input type="password" placeholder="${password}">
+    <div class="btns flex">
+      <button
+        class="btn secondary"
+        id="mail-send"
+        data-done-text="${sendMailDone}"
+        data-loading-text="${sending}"
+        data-default-text="${sendPasswordToEmail}"
+        data-fail-text="${fail}"
+        data-sentIn24Hours-text="${sentIn24Hours}"
+      >${sendPasswordToEmail}</button>
+      <button
+        class="btn"
+        id="mail-login"
+        data-fail-text="${fail}"
+        data-loading-text="${loading}"
+        data-default-text="${login}"
+      >${login}</button>
+    </div>
   </div>
   <script>
     var locale = "${locale}";

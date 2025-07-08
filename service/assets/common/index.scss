@@ -59,6 +59,7 @@ a {
 input[type="text"]:not(.el-input__inner),
 input[type="number"]:not(.el-input__inner),
 input[type="password"]:not(.el-input__inner),
+input[type="email"]:not(.el-input__inner),
 select,
 textarea {
   font-family: var(--font-family);
@@ -294,15 +295,6 @@ $align: left, center, right;
   }
 }
 
-@keyframes blur-up {
-  0% {
-    backdrop-filter: blur(0px);
-  }
-  100% {
-    backdrop-filter: blur(20px);
-  }
-}
-
 // confirm
 .confirm {
   background: #fff;
@@ -320,9 +312,8 @@ $align: left, center, right;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba($color: #000000, $alpha: 0.05);
+    background: rgba($color: #fff, $alpha: 0.8);
     backdrop-filter: blur(20px);
-    animation: blur-up 10s ease 0s 1;
   }
   &-body {
     font-size: 1.4rem;

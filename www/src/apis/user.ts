@@ -41,6 +41,9 @@ export interface UserInfo {
   webAuthn?: {
     id: string
   }
+  mail?: {
+    id: string
+  }
 }
 
 export enum LoginType {
@@ -50,6 +53,7 @@ export enum LoginType {
   Blockchain = 'blockchain',
   Google = 'google',
   WebAuthn = 'webAuthn',
+  Mail = 'mail',
 }
 
 import { cache } from '@/utils/cache'
@@ -91,6 +95,8 @@ export const userApis = {
   getUsage,
   generateTheme,
   webAuthnRegister,
+  mailLogin,
+  sendMail,
 }
 
 /**
@@ -179,6 +185,7 @@ export interface LoginParams {
     code: boolean
     google: boolean
     webAuthn: boolean
+    mail: boolean
   }
 }
 
@@ -314,6 +321,29 @@ export function webAuthnRegister(data: any) {
   return <Promise<Res>>request({
     method: 'POST',
     url: '/webAuthn/register',
+    baseURL: '/api/oauth',
+    data,
+  })
+}
+
+function mailLogin(data: {
+  mail: string
+  password: string
+}) {
+  return <Promise<Res>>request({
+    method: 'POST',
+    url: '/mail/login',
+    baseURL: '/api/oauth',
+    data,
+  })
+}
+
+function sendMail(data: {
+  mail: string
+}) {
+  return <Promise<Res>>request({
+    method: 'POST',
+    url: '/mail/send',
     baseURL: '/api/oauth',
     data,
   })
