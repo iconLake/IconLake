@@ -52,6 +52,9 @@
             <div class="item github flex">
               <img class="small" src="/imgs/github.png" alt="iconLake login with github">
             </div>
+            <div class="item mail flex">
+              <img class="small" src="/imgs/mail.svg" alt="iconLake login with mail">
+            </div>
             <div class="item code flex">
               <span>Code</span>
             </div>
@@ -62,6 +65,27 @@
   </div>
   <div class="prompt flex center">
     <input type="text">
+  </div>
+  <div class="prompt mail flex center">
+    <input type="email" placeholder="${email}">
+    <input type="password" placeholder="${password}">
+    <div class="btns flex">
+      <button
+        class="btn secondary"
+        id="mail-send"
+        data-done-text="${sendMailDone}"
+        data-fail-text="${fail}"
+        data-loading-text="${sending}"
+        data-default-text="${sendPasswordToEmail}"
+      >${sendPasswordToEmail}</button>
+      <button
+        class="btn"
+        id="mail-login"
+        data-fail-text="${fail}"
+        data-loading-text="${loading}"
+        data-default-text="${login}"
+      >${login}</button>
+    </div>
   </div>
   <script>
     var locale = "${locale}";

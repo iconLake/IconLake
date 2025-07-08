@@ -268,5 +268,11 @@
   "desktopIsOpenAndReady": "The desktop application is open and the build environment is ready.",
   "webAuthn": "No Password Login",
   "newWebAuthn": "Create",
-  "fido": "FIDO"
+  "fido": "FIDO",
+  "sendPasswordToEmail": "Send Password to Email",
+  "email": "Email",
+  "password": "Password",
+  "sendMailDone": "Email Sent",
+  "sending": "sending...",
+  "sentIn24Hours": "Email has been sent within 24 hours"
 }

@@ -5,6 +5,7 @@ import { login as oauthGoogle } from '../controllers/oauth/google.js'
 import { login as oauthCode } from '../controllers/oauth/code.js'
 import { login as oauthBlockchain } from '../controllers/oauth/blockchain.js'
 import * as webAuthn from '../controllers/oauth/webAuthn.js'
+import * as mailAuthn from '../controllers/oauth/mail/index.js'
 import * as userInfo from '../controllers/user/info.js'
 import * as userTheme from '../controllers/user/theme.js'
 import * as userSetting from '../controllers/user/setting.js'
@@ -40,6 +41,8 @@ router.get('/oauth/code', oauthCode)
 router.post('/oauth/blockchain', oauthBlockchain)
 router.post('/oauth/webAuthn/register', webAuthn.register)
 router.post('/oauth/webAuthn/login', webAuthn.login)
+router.post('/oauth/mail/send', mailAuthn.send)
+router.post('/oauth/mail/login', mailAuthn.login)
 
 router.get('/user/info', userMiddleware, userInfo.info)
 router.post('/user/info/edit', userMiddleware, userInfo.edit)

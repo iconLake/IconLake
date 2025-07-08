@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iconLake - 邮箱登录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f6f9fc;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px 10px;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #476de8, #6f91ff);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo {
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .logo-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 25px;
+            color: #444;
+        }
+        
+        .verification-box {
+            background: #f8f9fe;
+            border: 1px dashed #476de8;
+            border-radius: 10px;
+            padding: 25px 20px;
+            text-align: center;
+            margin: 25px 0;
+        }
+        
+        .code-label {
+            display: block;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #476de8;
+            font-size: 16px;
+        }
+        
+        .verification-code {
+            font-size: 22px;
+            font-weight: 700;
+            color: #476de8;
+            margin: 15px 0;
+            padding: 10px 0;
+            background: rgba(67, 97, 238, 0.05);
+            border-radius: 8px;
+        }
+        
+        .expiry {
+            color: #6c757d;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+        
+        .warning-box {
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 18px 20px;
+            margin: 30px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .warning-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .warning-list {
+            list-style-type: none;
+            margin: 15px 0;
+        }
+        
+        .warning-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .security-info {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #eee;
+        }
+        
+        .security-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #476de8;
+            margin-bottom: 15px;
+        }
+        
+        .security-points {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .point {
+            flex: 1 1 200px;
+            padding: 15px;
+            background: #f8f9fe;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .footer {
+            background: #f8f9fe;
+            padding: 25px 30px;
+            text-align: center;
+            font-size: 13px;
+            color: #6c757d;
+        }
+        
+        .footer-links {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: #476de8;
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .copyright {
+            margin-top: 15px;
+            color: #999;
+        }
+        
+        @media (max-width: 480px) {
+            .content {
+                padding: 25px 15px;
+            }
+            
+            .verification-code {
+                font-size: 32px;
+                letter-spacing: 5px;
+            }
+            
+            .point {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="https://iconlake.com/imgs/logo-white.svg" alt="iconLake">
+                </div>
+                <div class="logo-text">iconLake</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <p class="greeting">您好！</p>
+            <p>您正在尝试登录 iconLake 账户，请使用以下密码完成操作：</p>
+            
+            <div class="verification-box">
+                <span class="code-label">🔐 密码</span>
+                <div class="verification-code">{{password}}</div>
+                <div class="expiry">⏳ 有效期：长期有效（请勿泄露给他人）</div>
+            </div>
+            
+            <div class="warning-box">
+                <h3>⚠️ 安全提醒</h3>
+                <p>如果您未进行此操作：</p>
+                <ul class="warning-list">
+                    <li>1️⃣ 您的账号可能存在风险</li>
+                    <li>2️⃣ 您的邮箱地址可能正在被他人使用</li>
+                </ul>
+            </div>
+            
+            <div class="security-info">
+                <h3 class="security-title">🔒 安全提示</h3>
+                <div class="security-points">
+                    <div class="point">
+                        <span>•</span>
+                        <div>iconLake 官方邮件均来自 <strong>@noreply.iconlake.com</strong>（请认准发件地址）</div>
+                    </div>
+                    <div class="point">
+                        <span>•</span>
+                        <div>切勿转发密码，包括iconLake客服在内的任何人不会索要此密码</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-links">
+                <a href="https://iconlake.com">官方网站</a>
+            </div>
+            <div class="copyright">© 2022-2025 iconLake All Rights Reserved.</div>
+        </div>
+    </div>
+</body>
+</html>

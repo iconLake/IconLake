@@ -30,6 +30,7 @@ export async function info (req, res) {
     'google.name',
     'google.avatar',
     'webAuthn.id',
+    'mail.id',
     'theme'
   ]
   const user = (await User.findById(req.user._id, fields.join(' '))).toJSON()

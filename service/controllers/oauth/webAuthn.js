@@ -82,7 +82,8 @@ export async function login (req, res) {
   try {
     const data = JSON.parse(Buffer.from(req.body.response.clientDataJSON, 'base64').toString())
     const challenge = Buffer.from(data.challenge, 'base64').toString()
-    const time = Date.now() - new Date(challenge.split('\n')[1]).getTime()
+    const loginTime = +new Date(challenge.split('\n')[1])
+    const time = Date.now() - loginTime
     if (time < -EXPIRE_TIME || time > EXPIRE_TIME) {
       console.error('webAuthn login time error', time)
       fail({
@@ -93,6 +94,16 @@ export async function login (req, res) {
     const user = await User.findOne({
       'webAuthn.id': req.body.id
     }, '_id webAuthn')
+    if (!user) {
+      return fail({
+        error: ERROR_CODE.NOT_EXIST
+      }, req, res)
+    }
+    if (user?.webAuthn?.updateTime && loginTime <= +user.webAuthn.updateTime) {
+      return fail({
+        error: ERROR_CODE.ARGS_ERROR
+      }, req, res)
+    }
     const verify = await verifyAuthenticationResponse({
       response: req.body,
       expectedChallenge: data.challenge,
@@ -108,7 +119,8 @@ export async function login (req, res) {
       success({
         from: 'webAuthn',
         ...user.webAuthn,
-        counter: verify.authenticationInfo.newCounter
+        counter: verify.authenticationInfo.newCounter,
+        updateTime: new Date()
       }, req, res)
       return
     }

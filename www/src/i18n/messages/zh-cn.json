@@ -268,5 +268,11 @@
   "desktopIsOpenAndReady": "桌面应用已打开，构建环境已准备就绪。",
   "webAuthn": "无密码登录",
   "newWebAuthn": "新建",
-  "fido": "通行密钥"
+  "fido": "通行密钥",
+  "sendPasswordToEmail": "发送密码到邮箱",
+  "email": "邮箱",
+  "password": "密码",
+  "sendMailDone": "邮件已发送",
+  "sending": "发送中...",
+  "sentIn24Hours": "24小时内已发送过邮件"
 }
