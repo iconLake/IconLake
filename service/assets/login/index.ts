@@ -267,6 +267,7 @@
       if (!mail) {
         mailInputDom.focus()
         isMailSending = false
+        mailSendDom.innerText = mailSendDom.dataset.defaultText as string
         return
       }
       const res = await fetch('/api/oauth/mail/send', {
@@ -281,7 +282,7 @@
       }).then(res => res.json())
       if (res.error) {
         console.error(res.error)
-        mailSendDom.innerText = res.error === 'fail' ? mailSendDom.dataset.failText as string : res.error
+        mailSendDom.innerText = mailSendDom.dataset[`${res.error.toLowerCase()}Text`] || res.error
       } else {
         mailSendDom.innerText = mailSendDom.dataset.doneText as string
       }
@@ -332,6 +333,15 @@
   } else {
     mailDom.style.display = 'none'
   }
+
+  document.body.addEventListener('click', e => {
+    if (e.target) {
+      const targetDom = e.target as HTMLElement
+      if (targetDom.classList.contains('prompt')) {
+        targetDom.style.display = 'none'
+      }
+    }
+  })
 
   const loadingDom = document.querySelector('#loading') as HTMLDivElement
   const itemsDom = document.querySelector('#items') as HTMLDivElement

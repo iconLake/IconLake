@@ -59,7 +59,7 @@
       transition: all 0.3s ease-out;
       height: auto;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 1.125rem;
       &.hide {
         visibility: hidden;
@@ -96,7 +96,7 @@
         display: flex;
       }
       &.keplr, &.webAuthn {
-        grid-column: 1 / 4;
+        grid-column: 1 / 5;
       }
       &.webAuthn {
         position: relative;

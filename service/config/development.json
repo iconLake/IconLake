@@ -42,7 +42,7 @@
     "keplr": true,
     "google": false,
     "webAuthn": true,
-    "mail": true
+    "mail": false
   },
   "blockchain": {
     "public": {
