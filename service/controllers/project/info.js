@@ -4,7 +4,7 @@ import { Project } from '../../models/project.js'
 import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM, PROJECT_TYPE, PROJECT_STYLE } from '../../utils/const.js'
 import { isActive as isCosActive } from '../../utils/cos.js'
 import { deleteProjectDir } from './icon/gen/index.js'
-import { middleware as userMiddleware, checkLogin } from '../user/middleware.js'
+import { middleware as userMiddleware } from '../user/middleware.js'
 import { completeURL, slimURL } from '../../utils/file.js'
 const config = getConfig()
 
@@ -23,30 +23,39 @@ export async function info (req, res) {
     (typeof req.query.fields === 'string' && req.query.fields.length > 0)
     ? req.query.fields
     : '_id name desc'
-  } isPublic members`
+  } isPublic`
   const project = await Project.findOne({
     _id: req.params.id
   }, fields)
   if (project) {
-    if (project.isPublic) {
-      const { user } = await checkLogin(req)
-      if (!project.invite.$isEmpty() && (!user || !project.members.some(e => e.userId.equals(user._id)))) {
+    let members = project.members
+    if (!project.isPublic) {
+      await userMiddleware(req, res, () => {})
+      if (!members) {
+        const p = await Project.findOne({
+          _id: req.params.id
+        }, 'members')
+        members = p.members
+      }
+      if (!members.some(e => e.userId.equals(req.user._id))) {
         res.json({
           error: ERROR_CODE.PERMISSION_DENIED
         })
         return
       }
-    } else {
-      await userMiddleware(req, res, () => {})
-      const p = await Project.findOne({
-        _id: req.params.id,
-        members: {
-          $elemMatch: {
-            userId: req.user._id
-          }
-        }
-      }, '_id')
-      if (!p) {
+    }
+    if (!project.invite?.$isEmpty() || project.members?.length || !project.storage?.$isEmpty()) {
+      if (!req.user?._id) {
+        await userMiddleware(req, res, () => {})
+      }
+      if (!members) {
+        const p = await Project.findOne({
+          _id: req.params.id
+        }, 'members')
+        members = p.members
+      }
+      const member = members.find(e => e.userId.equals(req.user._id))
+      if (!member || !member.isAdmin) {
         res.json({
           error: ERROR_CODE.PERMISSION_DENIED
         })
@@ -76,6 +85,9 @@ export async function info (req, res) {
     }
     if ('cover' in result) {
       result.cover = completeURL(result.cover)
+    }
+    if (!('members' in result)) {
+      result.members = []
     }
     res.json(result)
   } else {
