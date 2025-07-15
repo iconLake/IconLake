@@ -108,6 +108,10 @@ export const ProjectSchema = new Schema({
       type: Number,
       default: 0
     }
+  },
+  storage: {
+    api: String,
+    token: String
   }
 })
 

@@ -23,38 +23,25 @@ export async function info (req, res) {
     (typeof req.query.fields === 'string' && req.query.fields.length > 0)
     ? req.query.fields
     : '_id name desc'
-  } isPublic`
+  } isPublic members`
   const project = await Project.findOne({
     _id: req.params.id
   }, fields)
   if (project) {
-    let members = project.members
     if (!project.isPublic) {
       await userMiddleware(req, res, () => {})
-      if (!members) {
-        const p = await Project.findOne({
-          _id: req.params.id
-        }, 'members')
-        members = p.members
-      }
-      if (!members.some(e => e.userId.equals(req.user._id))) {
+      if (!project.members.some(e => e.userId.equals(req.user._id))) {
         res.json({
           error: ERROR_CODE.PERMISSION_DENIED
         })
         return
       }
     }
-    if (!project.invite?.$isEmpty() || project.members?.length || !project.storage?.$isEmpty()) {
+    if (!project.invite?.$isEmpty() || !project.storage?.$isEmpty()) {
       if (!req.user?._id) {
         await userMiddleware(req, res, () => {})
       }
-      if (!members) {
-        const p = await Project.findOne({
-          _id: req.params.id
-        }, 'members')
-        members = p.members
-      }
-      const member = members.find(e => e.userId.equals(req.user._id))
+      const member = project.members.find(e => e.userId.equals(req.user._id))
       if (!member || !member.isAdmin) {
         res.json({
           error: ERROR_CODE.PERMISSION_DENIED
@@ -86,9 +73,6 @@ export async function info (req, res) {
     if ('cover' in result) {
       result.cover = completeURL(result.cover)
     }
-    if (!('members' in result)) {
-      result.members = []
-    }
     res.json(result)
   } else {
     res.json({
@@ -102,7 +86,17 @@ export async function info (req, res) {
  */
 export async function edit (req, res) {
   let _id = req.body._id
-  const data = includeKeys(req.body, ['name', 'desc', 'class', 'prefix', 'cover', 'isPublic', 'style.list'])
+  const data = includeKeys(req.body, [
+    'name',
+    'desc',
+    'class',
+    'prefix',
+    'cover',
+    'isPublic',
+    'style.list',
+    'storage.api',
+    'storage.token'
+  ])
   if (typeof _id === 'string' && _id.length > 0) {
     if ('cover' in data) {
       data.cover = slimURL(data.cover)

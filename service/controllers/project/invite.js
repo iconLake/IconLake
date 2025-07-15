@@ -2,6 +2,13 @@ import { nanoid } from 'nanoid'
 import { Project } from '../../models/project.js'
 import { ERROR_CODE } from '../../utils/const.js'
 
+function generateInviteCode () {
+  return {
+    code: nanoid(16),
+    expired: new Date(Date.now() + 24 * 3600 * 1000)
+  }
+}
+
 /**
  * @api {post} /project/invite/updateCode 邀请码
  */
@@ -12,10 +19,7 @@ export async function updateCode (req, res) {
     })
     return
   }
-  const invite = {
-    code: nanoid(16),
-    expired: new Date(Date.now() + 24 * 3600 * 1000)
-  }
+  const invite = generateInviteCode()
   const result = await Project.updateOne({
     _id: req.body._id,
     members: {
@@ -72,6 +76,15 @@ export async function accept (req, res) {
       res.json({})
       return
     }
+  } else {
+    const invite = generateInviteCode()
+    await Project.updateOne({
+      _id: req.body._id
+    }, {
+      $set: {
+        invite
+      }
+    })
   }
   res.json(result.matchedCount === 0 ? { error: ERROR_CODE.FAIL } : {})
 }

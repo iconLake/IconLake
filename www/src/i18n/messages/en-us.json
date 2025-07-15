@@ -274,5 +274,11 @@
   "password": "Password",
   "sendMailDone": "Email Sent",
   "sending": "sending...",
-  "sentIn24Hours": "Email has been sent within 24 hours"
+  "sentIn24Hours": "Email has been sent within 24 hours",
+  "uploadApiCustomizedDesc": "Files are uploaded directly to your server through the interface, iconLake does not save any files, only saves the access link to the file.",
+  "testAvailable": "Test It",
+  "howToBuildYourOwnUploadService": "How to quickly build your own file upload service?",
+  "setupUploadServiceWithOpensource": "We have developed an open-source decentralized file service system, deploy and use it immediately!",
+  "testSuccess": "Test Successful",
+  "testFailed": "Test Failed"
 }
