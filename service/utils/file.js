@@ -1,10 +1,11 @@
 import crypto from 'crypto'
-import fs, { createWriteStream } from 'fs'
-import { writeFile, access, unlink } from 'fs/promises'
+import fs, { createWriteStream } from 'node:fs'
+import { writeFile, access, unlink, readFile } from 'node:fs/promises'
 import fetch from 'node-fetch'
 import { pipeline } from 'stream/promises'
 import { getObject, isActive, putObject, getBucket, deleteObjects } from './cos.js'
 import { getConfig } from '../config/index.js'
+import { isURL } from './index.js'
 
 const config = getConfig()
 
@@ -39,6 +40,9 @@ export async function save (name, data, path = 'file/') {
  * @param {string} key
  */
 export async function getData (key) {
+  if (isURL(key)) {
+    return await fetch(key).then(res => res.arrayBuffer()).then(e => Buffer.from(e))
+  }
   if (isActive) {
     return await getObject(key)
   } else {
@@ -46,7 +50,7 @@ export async function getData (key) {
     if (!fs.existsSync(p)) {
       return null
     }
-    return await fs.readFile(p)
+    return await readFile(p)
   }
 }
 
@@ -170,4 +174,36 @@ export async function countDir (dir) {
     count,
     size
   }
+}
+
+/**
+ * 发送文件到自定义服务
+ * @param {Object} params - 参数对象
+ * @param {string} params.api - 服务API地址
+ * @param {string} params.token - 认证token
+ * @param {File} params.file - 要上传的文件
+ * @param {string} params.key - 文件标识key
+ * @returns {Promise<Object>} 返回服务端响应数据
+ * @throws {Error} 当上传失败时抛出错误
+ */
+export async function sendFileToCustomService ({
+  api,
+  token,
+  file,
+  key
+}) {
+  const body = new FormData()
+  body.append('file', file)
+  body.append('key', key)
+  const res = await fetch(api, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body
+  })
+  if (!res.ok) {
+    throw new Error(`Upload Error: ${res.statusText}`)
+  }
+  return res.json()
 }

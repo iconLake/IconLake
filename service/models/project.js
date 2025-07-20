@@ -54,6 +54,7 @@ export const ProjectSchema = new Schema({
     css: [{
       createTime: Date,
       hash: String,
+      url: String,
       expire: {
         type: Number,
         default: 30
@@ -62,6 +63,7 @@ export const ProjectSchema = new Schema({
     js: [{
       createTime: Date,
       hash: String,
+      url: String,
       expire: {
         type: Number,
         default: 30

@@ -77,6 +77,7 @@ export interface FileInfo {
   hash: string
   expire: number
   content?: string
+  url?: string
 }
 
 export interface Files {
