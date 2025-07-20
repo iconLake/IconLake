@@ -10,7 +10,7 @@ import { ERROR_CODE, ONE_DAY_SECONDS, TEMPORARY_FILE_EXPIRE } from '../../../../
 import { getConfig } from '../../../../config/index.js'
 import { deleteObjects, getBucket, isActive as isCosActive, putObject } from '../../../../utils/cos.js'
 import mongoose from 'mongoose'
-import { getText } from '../../../../utils/file.js'
+import { getText, sendFileToCustomService } from '../../../../utils/file.js'
 
 const config = getConfig()
 const domain = isCosActive ? config.cos.domain : config.domain
@@ -27,11 +27,108 @@ if (!fs.existsSync(srcPath)) {
 }
 
 /**
+ * 保存项目文件
+ * @param {string} projectId - 项目ID
+ * @param {string} hash - 文件哈希值
+ * @param {Object|Object[]} files - 要保存的文件，格式为 {name: string, content: string|Buffer}
+ * @param {Object} options - 选项
+ * @param {URL} options.sourceDir - 源目录
+ * @param {URL} options.cleanDir - 要清理的目录
+ * @returns {Promise<{files: {key: string; url: string}[]}>}
+ */
+async function saveProjectFile (projectId, hash, files, options = {}) {
+  if (!Array.isArray(files)) {
+    files = [files]
+  }
+
+  const project = await Project.findOne({
+    _id: projectId
+  }, '_id storage')
+  if (!project) {
+    throw new Error(ERROR_CODE.ARGS_ERROR)
+  }
+
+  let savedFiles = []
+  let isCleaned = false
+  if (project.storage.api) {
+    savedFiles = await Promise.all(files.map(file =>
+      sendFileToCustomService({
+        api: project.storage.api,
+        token: project.storage.token,
+        file: new File([file.content], file.name, { type: 'application/octet-stream' }),
+        key: `${projectId}/${hash}/${file.name}`
+      })
+    ))
+  } else if (isCosActive) {
+    const destPath = `src/${projectId}/${hash}/`
+
+    savedFiles = await Promise.all(files.map(async file => {
+      const key = `${destPath}${file.name}`
+      await putObject(key, file.content)
+      return {
+        key,
+        url: `${domain}/${key}`
+      }
+    }))
+  } else {
+    const destPath = new URL(`${projectId}/${hash}/`, srcPath)
+
+    if (fs.existsSync(destPath)) {
+      await rm(destPath, {
+        force: true,
+        recursive: true
+      })
+    }
+
+    if (options.sourceDir) {
+      await Promise.all(files.map(file =>
+        writeFile(new URL(file.name, options.sourceDir), file.content)
+      ))
+
+      if (options.cleanDir) {
+        isCleaned = true
+        await rm(options.cleanDir, {
+          recursive: true,
+          force: true
+        })
+      }
+
+      await rename(options.sourceDir, destPath)
+    } else {
+      await mkdir(destPath, {
+        recursive: true
+      })
+
+      await Promise.all(files.map(file =>
+        writeFile(new URL(file.name, destPath), file.content)
+      ))
+    }
+
+    savedFiles = files.map(file => ({
+      name: file.name,
+      key: `${projectId}/${hash}/${file.name}`,
+      url: `${domain}/src/${projectId}/${hash}/${file.name}`
+    }))
+  }
+
+  if (options.cleanDir && !isCleaned) {
+    await rm(options.cleanDir, {
+      recursive: true,
+      force: true
+    })
+  }
+
+  return {
+    files: savedFiles
+  }
+}
+
+/**
  * 记录生成的文件
  * @param {*} req
  * @param {string} projectId
  * @param {'css'|'js'} fileType
- * @param {{createTime: date, hash: string}} file
+ * @param {{createTime: date, hash: string, url: string}} file
  */
 export async function recordGenFile (req, projectId, fileType, file) {
   const project = await Project.findById(projectId, 'files')
@@ -39,7 +136,8 @@ export async function recordGenFile (req, projectId, fileType, file) {
     project.files &&
     project.files[fileType] &&
     project.files[fileType].length > 0 &&
-    file.hash === project.files[fileType][project.files[fileType].length - 1].hash
+    file.hash === project.files[fileType][project.files[fileType].length - 1].hash &&
+    file.url === project.files[fileType][project.files[fileType].length - 1].url
   ) {
     return
   }
@@ -73,18 +171,18 @@ export async function genCSS (req, res, projectId, project) {
   await mkdir(svgsPath)
   const metaMap = new Map()
   await Promise.all(project.icons.map(async icon => {
-    const file = new URL(`${icon.code}.svg`, svgsPath)
+    const file = new URL(`${icon.unicode}.svg`, svgsPath)
     if (!icon.svg.url) {
       return
     }
     const svgContent = await getText(icon.svg.url).catch(err => {
-      console.error('Cannot get svg content:', `${icon.code}.svg`, icon.svg.url, err)
+      console.error('Cannot get svg content:', `${icon.unicode}.svg`, icon.svg.url, err)
     })
     if (!svgContent) {
       return
     }
     await writeFile(file, svgContent)
-    metaMap.set(icon.code, {
+    metaMap.set(icon.unicode, {
       unicode: [String.fromCodePoint(+`0x${icon.unicode}`)],
       unicodeNum: icon.unicode
     })
@@ -108,37 +206,22 @@ export async function genCSS (req, res, projectId, project) {
       log () {}
     }
   }).then(async (result) => {
-    if (isCosActive) {
-      const destPath = `src/${projectId}/${result.hash}/`
-      await putObject(`${destPath}iconlake.ttf`, result.ttf)
-      await putObject(`${destPath}iconlake.woff`, result.woff)
-      await putObject(`${destPath}iconlake.woff2`, Buffer.from(result.woff2))
-      await putObject(`${destPath}iconlake.css`, cleanCSS.minify(result.template).styles)
-      await rm(new URL(projectId, srcPath), {
-        recursive: true,
-        force: true
-      })
-    } else {
-      const destPath = new URL(`${projectId}/${result.hash}/`, srcPath)
-      if (fs.existsSync(destPath)) {
-        await rm(destPath, {
-          force: true,
-          recursive: true
-        })
-      }
-      writeFile(new URL('iconlake.css', dir), cleanCSS.minify(result.template).styles)
-      writeFile(new URL('iconlake.ttf', dir), result.ttf)
-      writeFile(new URL('iconlake.woff', dir), result.woff)
-      writeFile(new URL('iconlake.woff2', dir), result.woff2)
-      await rm(svgsPath, {
-        recursive: true,
-        force: true
-      })
-      await rename(dir, destPath)
-    }
+    const files = [
+      { name: 'iconlake.ttf', content: result.ttf },
+      { name: 'iconlake.woff', content: result.woff },
+      { name: 'iconlake.woff2', content: Buffer.from(result.woff2) },
+      { name: 'iconlake.css', content: cleanCSS.minify(result.template).styles }
+    ]
+
+    const fileInfo = await saveProjectFile(projectId, result.hash, files, {
+      sourceDir: dir,
+      cleanDir: svgsPath
+    })
+
     const info = {
       createTime: new Date(),
-      hash: result.hash
+      hash: result.hash,
+      url: fileInfo.files[3].url
     }
     await recordGenFile(req, projectId, 'css', info)
     res.json(info)
@@ -173,27 +256,13 @@ export async function genJS (req, res, projectId, project) {
     })
     return
   }
-  if (isCosActive) {
-    await putObject(`src/${projectId}/${hash}/iconlake.js`, ugResult.code)
-  } else {
-    const dir = new URL(`${projectId}/${hash}/`, srcPath)
-    if (fs.existsSync(dir)) {
-      await rm(dir, {
-        force: true,
-        recursive: true
-      })
-    }
-    await mkdir(dir, {
-      recursive: true
-    })
-    await writeFile(
-      new URL('iconlake.js', dir),
-      ugResult.code
-    )
-  }
+
+  const fileInfo = await saveProjectFile(projectId, hash, { name: 'iconlake.js', content: ugResult.code })
+
   const info = {
     createTime: new Date(),
-    hash
+    hash,
+    url: fileInfo.files[0].url
   }
   await recordGenFile(req, projectId, 'js', info)
   res.json(info)

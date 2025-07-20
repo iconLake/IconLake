@@ -274,5 +274,11 @@
   "password": "密码",
   "sendMailDone": "邮件已发送",
   "sending": "发送中...",
-  "sentIn24Hours": "24小时内已发送过邮件"
+  "sentIn24Hours": "24小时内已发送过邮件",
+  "uploadApiCustomizedDesc": "文件通过接口直接上传到你的服务器，iconLake不会保存任何文件，仅保存访问文件的链接。",
+  "testAvailable": "测试一下",
+  "howToBuildYourOwnUploadService": "如何快速搭建自己的文件上传服务？",
+  "setupUploadServiceWithOpensource": "我们开发了开源的去中心化文件服务系统，部署即可使用！",
+  "testSuccess": "测试成功",
+  "testFailed": "测试失败"
 }

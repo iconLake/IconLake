@@ -143,6 +143,14 @@ onUnmounted(() => {
         <span>{{ t('theme') }}</span>
       </router-link>
       <router-link
+        class="item"
+        active-class="active"
+        to="./storage"
+      >
+        <i class="iconfont icon-storage" />
+        <span>{{ t('storage') }}</span>
+      </router-link>
+      <router-link
         v-if="project.type === PROJECT_TYPE.SVG"
         class="item"
         active-class="active"

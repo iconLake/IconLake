@@ -4,7 +4,7 @@ import { Project } from '../../models/project.js'
 import { ERROR_CODE, PERMAMENT_FILES_MAX_NUM, PROJECT_TYPE, PROJECT_STYLE } from '../../utils/const.js'
 import { isActive as isCosActive } from '../../utils/cos.js'
 import { deleteProjectDir } from './icon/gen/index.js'
-import { middleware as userMiddleware, checkLogin } from '../user/middleware.js'
+import { middleware as userMiddleware } from '../user/middleware.js'
 import { completeURL, slimURL } from '../../utils/file.js'
 const config = getConfig()
 
@@ -28,25 +28,21 @@ export async function info (req, res) {
     _id: req.params.id
   }, fields)
   if (project) {
-    if (project.isPublic) {
-      const { user } = await checkLogin(req)
-      if (!project.invite.$isEmpty() && (!user || !project.members.some(e => e.userId.equals(user._id)))) {
+    if (!project.isPublic) {
+      await userMiddleware(req, res, () => {})
+      if (!project.members.some(e => e.userId.equals(req.user._id))) {
         res.json({
           error: ERROR_CODE.PERMISSION_DENIED
         })
         return
       }
-    } else {
-      await userMiddleware(req, res, () => {})
-      const p = await Project.findOne({
-        _id: req.params.id,
-        members: {
-          $elemMatch: {
-            userId: req.user._id
-          }
-        }
-      }, '_id')
-      if (!p) {
+    }
+    if (!project.invite?.$isEmpty() || !project.storage?.$isEmpty()) {
+      if (!req.user?._id) {
+        await userMiddleware(req, res, () => {})
+      }
+      const member = project.members.find(e => e.userId.equals(req.user._id))
+      if (!member || !member.isAdmin) {
         res.json({
           error: ERROR_CODE.PERMISSION_DENIED
         })
@@ -90,7 +86,17 @@ export async function info (req, res) {
  */
 export async function edit (req, res) {
   let _id = req.body._id
-  const data = includeKeys(req.body, ['name', 'desc', 'class', 'prefix', 'cover', 'isPublic', 'style.list'])
+  const data = includeKeys(req.body, [
+    'name',
+    'desc',
+    'class',
+    'prefix',
+    'cover',
+    'isPublic',
+    'style.list',
+    'storage.api',
+    'storage.token'
+  ])
   if (typeof _id === 'string' && _id.length > 0) {
     if ('cover' in data) {
       data.cover = slimURL(data.cover)

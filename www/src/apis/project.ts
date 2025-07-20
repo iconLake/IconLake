@@ -77,6 +77,7 @@ export interface FileInfo {
   hash: string
   expire: number
   content?: string
+  url?: string
 }
 
 export interface Files {
@@ -116,6 +117,10 @@ export interface Project {
   theme: Theme
   style: {
     list: number
+  }
+  storage?: {
+    api: string
+    token: string
   }
 }
 
@@ -216,6 +221,8 @@ export function editInfo(_id: string, info: {
   name?: string
   desc?: string
   'style.list'?: number
+  'storage.api'?: string
+  'storage.token'?: string
 }) {
   return <Promise<Res>>request({
     method: 'POST',
@@ -467,6 +474,10 @@ export interface StorageUsage {
     count: number
     size: number
   }
+  custom?: {
+    api: string
+    token: string
+  }
 }
 
 export async function getStorageInfo(projectId?: string) {
@@ -509,18 +520,54 @@ async function uploadFileToLocal(params: {
   return res.files![0]
 }
 
+async function uploadFileToCustom(params: {
+  projectId: string
+  _id: string
+  data: string | ArrayBuffer | Blob
+  dir?: string
+}, config: {
+  api: string
+  token: string
+}): Promise<{
+  key: string
+  url: string
+}> {
+  const data = new FormData()
+  let file = params.data
+  if (file instanceof Blob) {
+    file = new File([await file.arrayBuffer()], params._id, { type: file.type })
+  } else if (file instanceof ArrayBuffer) {
+    file = new File([file], params._id, { type: 'application/octet-stream' })
+  } else {
+    file = new File([params.data], params._id, { type: 'image/svg+xml' })
+  }
+  data.append('file', file)
+  data.append('key', `${params.dir || 'icon'}/${params.projectId}/${params._id}`)
+  return await request({
+    method: 'POST',
+    url: config.api,
+    headers: {
+      authorization: `Bearer ${config.token}`,
+    },
+    data
+  })
+}
+
 export async function uploadFile(params: {
   projectId: string
   _id: string
   data: string | ArrayBuffer | Blob
   dir?: string
 }, options?: {
-  storageType?: 'iconlake' | 'local'
+  storageType?: 'iconlake' | 'local' | 'custom'
 }) {
   let storageType = options?.storageType
+  let storageInfo
   if (!storageType) {
-    const storageInfo = await getStorageInfo()
-    if (storageInfo.free > 0) {
+    storageInfo = await getStorageInfo(params.projectId)
+    if (storageInfo.custom) {
+      storageType = 'custom'
+    } else if (storageInfo.free > 0) {
       storageType = 'iconlake'
     }
   }
@@ -541,6 +588,14 @@ export async function uploadFile(params: {
       data: params.data,
       timeout: 1000 * 60 * 3,
     })
+  } else if (storageType === 'custom') {
+    if (!storageInfo) {
+      storageInfo = await getStorageInfo(params.projectId)
+    }
+    if (!storageInfo.custom) {
+      throw new Error('custom storage info not found')
+    }
+    res = await uploadFileToCustom(params, storageInfo.custom)
   } else {
     res = await uploadFileToLocal(params)
   }

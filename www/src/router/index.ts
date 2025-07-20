@@ -29,6 +29,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/project/setting/Info.vue')
       },
       {
+        path: 'storage',
+        name: 'projectStorageSetting',
+        component: () => import('../views/project/setting/Storage.vue')
+      },
+      {
         path: 'group',
         name: 'projectGroupSetting',
         component: () => import('../views/project/setting/Group.vue')

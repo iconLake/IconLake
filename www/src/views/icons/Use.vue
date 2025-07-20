@@ -52,7 +52,15 @@ const getLatestFile = (arr: FileInfo[] | undefined): FileInfo | undefined => {
   return undefined
 }
 
-const genFileLink = (hash: string, ext: 'js'|'css') => `${data.files.domain}/src/${data._id}/${hash}/iconlake.${ext}`
+const genFileLink = (file: FileInfo, ext: 'js'|'css') => {
+  if (file.url) {
+    return file.url
+  }
+  if (!file.hash) {
+    return ''
+  }
+  return `${data.files.domain}/src/${data._id}/${file.hash}/iconlake.${ext}`
+}
 
 const isPermanent = (days: number) => days >= PERMANENT_FILE_EXPIRE
 
@@ -89,7 +97,7 @@ watchPostEffect(() => {
     return
   }
   const file = getLatestFile(data.files[v])
-  data.src = file?.hash ? genFileLink(file.hash, v) : ''
+  data.src = file ? genFileLink(file, v) : ''
 })
 
 async function getInfo () {
@@ -353,10 +361,10 @@ async function onSetExpire(id: string, value: number) {
       :key="file._id"
       class="code flex"
       :title="t('copy')"
-      @click="copyContent(genFileLink(file.hash, data.activeTab as 'css'|'js'))"
+      @click="copyContent(genFileLink(file, data.activeTab as 'css'|'js'))"
     >
       <div>
-        <span>{{ genFileLink(file.hash, data.activeTab as 'js'|'css') }}</span>
+        <span>{{ genFileLink(file, data.activeTab as 'js'|'css') }}</span>
         <i class="iconfont icon-copy" />
       </div>
       <div class="expire">

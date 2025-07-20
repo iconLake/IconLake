@@ -57,15 +57,16 @@ export async function getStorageInfo ({ userId, projectId }) {
   }
   if (projectId) {
     q._id = projectId
-    const projects = await Project.find(q, '_id')
-    for (const project of projects) {
-      for (const cat of ['icon', 'cover', 'theme']) {
-        const data = await countDir(`${cat}/${project._id}/`)
-        usage[cat].count += data.count
-        usage[cat].size += data.size
-      }
+    const project = await Project.findOne(q, '_id storage')
+    for (const cat of ['icon', 'cover', 'theme']) {
+      const data = await countDir(`${cat}/${project._id}/`)
+      usage[cat].count += data.count
+      usage[cat].size += data.size
     }
     usage.used = usage.icon.size + usage.cover.size + usage.theme.size
+    if (project.storage?.api) {
+      usage.custom = project.storage
+    }
   } else {
     const res = await Usage.findOne({ user: userId }, 'storage')
     res && Object.assign(usage, res.storage)

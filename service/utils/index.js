@@ -55,3 +55,7 @@ export function enableFeature (isEnable, featureFunction) {
     })
   }
 }
+
+export function isURL (str) {
+  return /^https?:\/\/[^\s]+$/.test(str)
+}
