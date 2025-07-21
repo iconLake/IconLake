@@ -153,7 +153,7 @@ onMounted(async () => {
         target="_blank"
       >
         <img
-          src="/imgs/github-logo.svg"
+          :src="'/imgs/github-logo.svg'"
           height="18"
           alt="gitee"
         >
