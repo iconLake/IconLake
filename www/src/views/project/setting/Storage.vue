@@ -102,7 +102,7 @@ onMounted(async () => {
       type="text"
       class="input"
       maxlength="64"
-      placeholder="例如：https://your-domain.com/upload"
+      :placeholder="`${t('suchAs')}https://your-domain.com/upload`"
     >
     <p>Token</p>
     <input
@@ -143,7 +143,7 @@ onMounted(async () => {
         target="_blank"
       >
         <img
-          src="/imgs/gitee-logo.svg"
+          :src="'/imgs/gitee-logo.svg'"
           height="18"
           alt="gitee"
         >

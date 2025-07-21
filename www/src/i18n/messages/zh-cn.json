@@ -280,5 +280,6 @@
   "howToBuildYourOwnUploadService": "如何快速搭建自己的文件上传服务？",
   "setupUploadServiceWithOpensource": "我们开发了开源的去中心化文件服务系统，部署即可使用！",
   "testSuccess": "测试成功",
-  "testFailed": "测试失败"
+  "testFailed": "测试失败",
+  "suchAs": "例如："
 }
