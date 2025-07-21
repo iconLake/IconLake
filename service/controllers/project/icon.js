@@ -204,9 +204,23 @@ export async function edit (req, res) {
     $set['icons.$.groupId'] = req.body.groupId ? req.body.groupId : null
     isEmpty = false
   }
-  if (typeof req.body.txHash === 'string') {
-    $set['icons.$.txHash'] = req.body.txHash
-    isEmpty = false
+  if (req.body.blockchain) {
+    if (typeof req.body.blockchain.classId === 'string') {
+      $set['icons.$.blockchain.classId'] = req.body.blockchain.classId
+      isEmpty = false
+    }
+    if (typeof req.body.blockchain.nftId === 'string') {
+      $set['icons.$.blockchain.nftId'] = req.body.blockchain.nftId
+      isEmpty = false
+    }
+    if (typeof req.body.blockchain.txHash === 'string') {
+      $set['icons.$.blockchain.txHash'] = req.body.blockchain.txHash
+      isEmpty = false
+    }
+    if (typeof req.body.blockchain.height === 'number') {
+      $set['icons.$.blockchain.height'] = req.body.blockchain.height
+      isEmpty = false
+    }
   }
   if (typeof req.body.svg?.url === 'string') {
     $set['icons.$.svg.url'] = slimURL(req.body.svg.url)

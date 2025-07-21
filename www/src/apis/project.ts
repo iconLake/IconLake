@@ -35,7 +35,12 @@ export interface Icon extends BaseIcon {
   analyse?: {
     pageCount: number
   },
-  txHash?: string
+  blockchain?: {
+    classId: string
+    nftId: string
+    txHash?: string
+    height?: number
+  }
 }
 
 export interface IconPage {
@@ -364,6 +369,12 @@ export function editIcon(projectId: string, _id: string, info: {
   }
   img?: {
     url: string
+  }
+  blockchain?: {
+    classId: string
+    nftId: string
+    txHash?: string
+    height?: number
   }
 }) {
   return <Promise<Res>>request({

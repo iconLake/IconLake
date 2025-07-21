@@ -30,7 +30,16 @@ export const IconSchema = new Schema({
   img: {
     url: String
   },
-  txHash: String
+  /**
+   * @deprecated replace with 'blockchain.txHash'
+   */
+  txHash: String,
+  blockchain: {
+    classId: String,
+    nftId: String,
+    txHash: String,
+    height: Number
+  }
 })
 
 export const ProjectSchema = new Schema({
