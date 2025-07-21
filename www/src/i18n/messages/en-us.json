@@ -280,5 +280,6 @@
   "howToBuildYourOwnUploadService": "How to quickly build your own file upload service?",
   "setupUploadServiceWithOpensource": "We have developed an open-source decentralized file service system, deploy and use it immediately!",
   "testSuccess": "Test Successful",
-  "testFailed": "Test Failed"
+  "testFailed": "Test Failed",
+  "suchAs": "For example: "
 }
