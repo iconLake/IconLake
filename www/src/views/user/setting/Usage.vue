@@ -48,13 +48,13 @@ const aiTokensPercent = computed(() => {
 })
 
 const getInfo = async () => {
-  const usage = await userApis.getUsage()
-  storageInfo.value = usage.storage
-  aiTokens.value = {
-    total: usage.ai.tokens.total,
-    free: usage.ai.tokens.total - usage.ai.tokens.used,
-  }
-  return usage
+  await userApis.getUsage().onUpdate(async info => {
+    storageInfo.value = info.storage
+    aiTokens.value = {
+      total: info.ai.tokens.total,
+      free: info.ai.tokens.total - info.ai.tokens.used,
+    }
+  })
 }
 
 onMounted(async () => {

@@ -81,6 +81,16 @@ export const userApis = {
       executor: loginParams
     })
   },
+  get getTheme() {
+    return cache.user.enable({
+      executor: getTheme
+    })
+  },
+  get getUsage() {
+    return cache.user.enable({
+      executor: getUsage
+    })
+  },
 
   unbind,
   regenAccessKey,
@@ -90,8 +100,6 @@ export const userApis = {
   editInfo,
   uploadFile,
   editTheme,
-  getTheme,
-  getUsage,
   generateTheme,
   webAuthnRegister,
   mailLogin,
@@ -127,7 +135,7 @@ async function clearUserCache() {
 /**
  * 登出
  */
-export function logout() {
+function logout() {
   return request({
     url: '/logout',
     baseURL
@@ -137,7 +145,7 @@ export function logout() {
 /**
  * 登录或者绑定区块链账户
  */
-export function loginByBlockchain(data: {
+function loginByBlockchain(data: {
   msg: string
   sig: string
   pubkey: {
@@ -152,7 +160,7 @@ export function loginByBlockchain(data: {
   }) as Promise<loginRes>
 }
 
-export function loginByCode(data: {
+function loginByCode(data: {
   code: string
 }) {
   return request({
@@ -191,7 +199,7 @@ export interface LoginParams {
 /**
  * 获取登陆参数
  */
-export function loginParams() {
+function loginParams() {
   return request({
     url: '/api/login/params',
     method: 'GET',
@@ -201,7 +209,7 @@ export function loginParams() {
 /**
  * 解除绑定
  */
-export function unbind(type: string) {
+function unbind(type: string) {
   return request({
     url: '/setting/unbind',
     method: 'GET',
@@ -212,7 +220,7 @@ export function unbind(type: string) {
   }) as Promise<void>
 }
 
-export function regenAccessKey() {
+function regenAccessKey() {
   return <Promise<Res>>request({
     method: 'GET',
     url: '/setting/regenAccessKey',
@@ -220,7 +228,7 @@ export function regenAccessKey() {
   })
 }
 
-export function editInfo(data: {
+function editInfo(data: {
   name?: string
   desc?: string
   avatar?: string
@@ -240,7 +248,7 @@ export function editInfo(data: {
   })
 }
 
-export function uploadFile(params: {
+function uploadFile(params: {
   _id: string
   data: string | ArrayBuffer | Blob
   dir?: string
@@ -261,7 +269,7 @@ export function uploadFile(params: {
   })
 }
 
-export function editTheme(data: {
+function editTheme(data: {
   creator?: string
 }) {
   return <Promise<Res>>request({
@@ -272,7 +280,7 @@ export function editTheme(data: {
   })
 }
 
-export function getTheme(data: {
+function getTheme(data: {
   address: string
 }) {
   return <Promise<Res>>request({
@@ -283,7 +291,7 @@ export function getTheme(data: {
   })
 }
 
-export function generateTheme({ prompt }: {
+function generateTheme({ prompt }: {
   prompt: string
 }) {
   return <Promise<{
@@ -305,7 +313,7 @@ export interface AIUsage {
   }
 }
 
-export function getUsage() {
+function getUsage() {
   return <Promise<{
     storage: StorageUsage
     ai: AIUsage
@@ -316,7 +324,7 @@ export function getUsage() {
   })
 }
 
-export function webAuthnRegister(data: any) {
+function webAuthnRegister(data: any) {
   return <Promise<Res>>request({
     method: 'POST',
     url: '/webAuthn/register',

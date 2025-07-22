@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref } from 'vue'
 import Cookies from 'js-cookie'
-import { logout, userApis, type UserInfo } from '../apis/user'
+import { userApis, type UserInfo } from '../apis/user'
 import { useI18n } from 'vue-i18n'
 import { toast } from '@/utils';
 const { t } = useI18n()
@@ -66,7 +66,7 @@ function showPop (isShow: boolean) {
 async function userLogout() {
   showPop(false)
   toast(t('loggingOut'))
-  await logout()
+  await userApis.logout()
   await userApis.clearCache()
   gotoLogin()
 }

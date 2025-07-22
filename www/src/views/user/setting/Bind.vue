@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { loginByBlockchain, type LoginParams, LoginType, userApis, type UserInfo } from '@/apis/user'
+import { type LoginParams, LoginType, userApis, type UserInfo } from '@/apis/user'
 import { usePageLoading } from '@/hooks/router'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -211,7 +211,7 @@ async function bindBlockchain() {
   if (!signRes) {
     throw new Error('no sign')
   }
-  const res = await loginByBlockchain({
+  const res = await userApis.loginByBlockchain({
     msg,
     sig: signRes.signature,
     pubkey: signRes.pub_key

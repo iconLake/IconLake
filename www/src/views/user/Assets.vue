@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getBalance, getDropInfo, initDrop, mintDrop, signMsg, getNftClass, verifyUriHash, getInfo, getNFTs } from '@/apis/blockchain'
 import type { BlockchainInfo } from '@/apis/blockchain'
-import { type UserInfo, userApis, loginByBlockchain } from '@/apis/user'
+import { type UserInfo, userApis } from '@/apis/user'
 import { ref, onBeforeUnmount, reactive, computed, onMounted } from 'vue'
 import UserVue from '@/components/User.vue'
 import { formatDropAmount, formatLakeAmount, toast, copy, addCompressParams } from '@/utils'
@@ -135,7 +135,7 @@ async function bindBlockchain() {
   if (!signRes) {
     return
   }
-  const res = await loginByBlockchain({
+  const res = await userApis.loginByBlockchain({
     msg,
     sig: signRes.signature,
     pubkey: signRes.pub_key
