@@ -78,7 +78,6 @@ export const userApis = {
   },
   get loginParams() {
     return cache.user.enable({
-      // maxAge: ONE_DAY_SECONDS,
       executor: loginParams
     })
   },
