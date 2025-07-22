@@ -8,7 +8,8 @@ export async function migrate (project) {
   let nfts
   for (let i = 0; i < len; i++) {
     const icon = project.icons[i]
-    if (!icon.txHash) {
+    const txHash = icon.txHash
+    if (!txHash) {
       continue
     }
     if (!nfts) {
@@ -26,7 +27,7 @@ export async function migrate (project) {
       continue
     }
     icon.blockchain = {
-      txHash: icon.txHash,
+      txHash,
       height: 0,
       classId: nft.class_id,
       nftId: nft.id
