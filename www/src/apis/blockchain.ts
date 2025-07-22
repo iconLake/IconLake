@@ -169,7 +169,7 @@ export async function simulate({
     }
   })
   return {
-    gas: res.data.gas_info?.gas_used,
+    gas: Math.ceil((res.data.gas_info?.gas_used ? +res.data.gas_info?.gas_used : 0) * 1.2).toString(),
     data: res.data,
   }
 }
@@ -382,14 +382,6 @@ export async function getNftClass(id: string) {
     return undefined
   })
   return res?.data
-}
-
-export async function getNftByTxHash(txHash: string) {
-  const res = await getTx(txHash)
-  if (res?.body?.messages[0]['@type'] === '/iconlake.icon.MsgMint') {
-    return res.body.messages[0] as MsgMint
-  }
-  return undefined
 }
 
 export async function updateClass(value: MsgUpdateClass) {

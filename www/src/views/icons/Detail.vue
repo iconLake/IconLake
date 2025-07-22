@@ -266,7 +266,7 @@ async function handleUpload(file: UploadFile) {
     <RouterLink
       :to="`/icons/${projectId}/protect/${info._id}`"
       class="copyright"
-      :class="info.txHash ? 'protected' : ''"
+      :class="(info.blockchain?.classId && info.blockchain?.nftId) ? 'protected' : ''"
       :title="t('ownershipProtection')"
     >
       <i class="iconfont icon-protect" />

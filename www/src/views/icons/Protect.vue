@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { editIcon, projectApis, type Icon as IconType, uploadFile } from '@/apis/project'
-import { getHash, mintIcon, getChainAccount, burnIcon, getNftByTxHash } from '@/apis/blockchain'
+import { getHash, mintIcon, getChainAccount, burnIcon } from '@/apis/blockchain'
 import Header from '@/components/Header.vue'
 import Icon from '@/components/Icon.vue'
 import User from '@/components/User.vue'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { toast } from '@/utils'
 import { userApis } from '@/apis/user'
@@ -14,7 +14,6 @@ import { useI18n } from 'vue-i18n'
 import { ONLINE_DOMAIN, IS_PRODUCTION, DFS_PREFIX, UPLOAD_DIR } from '@/utils/const'
 import { usePageLoading } from '@/hooks/router'
 import { getIconUrl } from '@/utils/icon'
-import type { MsgMint } from '@iconlake/client/types/iconlake.icon/module'
 import i18n from '@/i18n'
 import { storage } from '@/apis/extension'
 
@@ -24,38 +23,22 @@ const pageLoading = usePageLoading()
 const $route = useRoute()
 const projectId = ref($route.params.projectId as string)
 const id = ref($route.params.id as string)
-const iconInfo = reactive({
-  txHash: undefined
-} as IconType)
-const nftInfo = reactive({} as MsgMint)
+const iconInfo = reactive({} as IconType)
 const isPending = ref(false)
 const isChainAccountReady = ref(false)
 const userInfo = ref<UserInfo>()
 
 const txUrl = computed(() => {
-  if (iconInfo.txHash) {
-    return `${IS_PRODUCTION ? 'https://ping.pub/iconLake' : 'https://testnet.ping.pub/iconLake'}/tx/${iconInfo.txHash}`
+  if (iconInfo.blockchain?.txHash) {
+    return `${IS_PRODUCTION ? 'https://ping.pub/iconLake' : 'https://testnet.ping.pub/iconLake'}/tx/${iconInfo.blockchain.txHash}`
   } else {
     return ''
   }
 })
 
-watch(() => iconInfo.txHash, () => {
-  getNftInfo()
+const isPublished = computed(() => {
+  return iconInfo.blockchain?.classId && iconInfo.blockchain?.nftId
 })
-
-async function getNftInfo() {
-  if (!iconInfo.txHash) {
-    return
-  }
-  const nft = await getNftByTxHash(iconInfo.txHash)
-  if (!nft) {
-    toast.error(t('txNotFound'))
-    iconInfo.txHash = undefined
-  } else {
-    Object.assign(nftInfo, nft)
-  }
-}
 
 async function getIconInfo() {
   await projectApis.getIcon(projectId.value, id.value).onUpdate(async (icon) => {
@@ -127,9 +110,14 @@ async function publish() {
     isPending.value = false
     return
   }
-  iconInfo.txHash = res.transactionHash
+  iconInfo.blockchain = {
+    classId: projectId.value,
+    nftId: hash.graphHash ?? '',
+    txHash: res.transactionHash,
+    height: res.height,
+  }
   await editIcon(projectId.value, id.value, {
-    txHash: res.transactionHash
+    blockchain: iconInfo.blockchain
   })
   toast(t('blockchainConfirmationSuccessful'), 'success')
   isPending.value = false
@@ -149,18 +137,12 @@ async function checkChainAccount() {
 }
 
 async function onBurnIcon() {
-  if (iconInfo.txHash && userInfo.value?.blockchain?.id) {
+  if (iconInfo.blockchain?.classId && iconInfo.blockchain.nftId && userInfo.value?.blockchain?.id) {
     isPending.value = true
-    const nft = await getNftByTxHash(iconInfo.txHash)
-    if (!nft) {
-      toast.error(t('txNotFound'))
-      isPending.value = false
-      return
-    }
     const res = await burnIcon({
       creator: userInfo.value.blockchain?.id,
-      classId: nft.classId,
-      id: nft.id
+      classId: iconInfo.blockchain.classId,
+      id: iconInfo.blockchain.nftId,
     })
     if (!res) {
       isPending.value = false
@@ -173,10 +155,15 @@ async function onBurnIcon() {
       return
     }
     await editIcon(projectId.value, id.value, {
-      txHash: '',
+      blockchain: {
+        classId: '',
+        nftId: '',
+        txHash: '',
+        height: 0,
+      }
     })
     toast(t('burnDone'))
-    iconInfo.txHash = undefined
+    iconInfo.blockchain = undefined
     isPending.value = false
   }
 }
@@ -205,7 +192,7 @@ onMounted(() => {
       <h2>{{ iconInfo.code }}</h2>
       <h3>Created by {{ userInfo?.blockchain?.id }}</h3>
       <div
-        v-if="iconInfo.txHash"
+        v-if="isPublished"
         class="burn flex center"
         :title="t('burnIcon')"
         @click="onBurnIcon"
@@ -221,7 +208,7 @@ onMounted(() => {
       class="operate"
     >
       <button
-        v-if="!iconInfo.txHash"
+        v-if="!isPublished"
         class="btn"
         :loading="isPending"
         :disabled="!isChainAccountReady"
@@ -235,25 +222,26 @@ onMounted(() => {
         class="flex center links"
       >
         <a
+          v-if="txUrl"
           target="_blank"
           :href="txUrl"
           class="success"
         >
           <i class="iconfont icon-info" />
-          {{ t('OnchainRecord') }}ID: {{ iconInfo.txHash }}
+          {{ t('OnchainRecord') }}ID: {{ iconInfo.blockchain?.txHash }}
         </a>
         <a
-          v-if="nftInfo.classId && nftInfo.id"
+          v-if="iconInfo.blockchain?.classId && iconInfo.blockchain?.nftId"
           target="_blank"
           class="success exhibition"
-          :href="`${ONLINE_DOMAIN}/exhibition/${nftInfo.classId}/${nftInfo.id}`"
+          :href="`${ONLINE_DOMAIN}/exhibition/${iconInfo.blockchain.classId}/${iconInfo.blockchain.nftId}`"
         >
           <i class="iconfont icon-exhibition" />
         </a>
       </div>
     </div>
     <div
-      v-if="!iconInfo.txHash"
+      v-if="!isPublished"
       class="warn flex start"
     >
       <i class="iconfont icon-warn" />
