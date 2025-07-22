@@ -3,7 +3,6 @@ import { onMounted, reactive, ref } from 'vue'
 import Cookies from 'js-cookie'
 import { logout, userApis, type UserInfo } from '../apis/user'
 import { useI18n } from 'vue-i18n'
-import { clearCache } from '@/utils/cache';
 import { toast } from '@/utils';
 const { t } = useI18n()
 
@@ -75,14 +74,6 @@ async function userLogout() {
 async function gotoLogin() {
   location.href = '/login'
 }
-
-function clearCachedData() {
-  clearCache()
-  toast(t('clearCacheDone&Reload'))
-  setTimeout(() => {
-    location.reload()
-  }, 1000)
-}
 </script>
 
 <template>
@@ -138,13 +129,6 @@ function clearCachedData() {
       >
         <span>{{ language?.label }}</span>
         <span>{{ language?.value }}</span>
-      </div>
-      <div
-        class="item flex"
-        @click="clearCachedData"
-      >
-        <span>{{ t('clearCachedData') }}</span>
-        <i class="iconfont icon-clean" />
       </div>
       <a
         :href="t('feedbackUrl')"
