@@ -1,24 +1,22 @@
 <script setup lang="ts">
-import { getBalance, getDropInfo, initDrop, mintDrop, signMsg, getNftClass, verifyUriHash, getInfo, getNFTs } from '@/apis/blockchain'
+import { getBalance, getDropInfo, initDrop, mintDrop, signMsg, getInfo } from '@/apis/blockchain'
 import type { BlockchainInfo } from '@/apis/blockchain'
-import { type UserInfo, userApis } from '@/apis/user'
-import { ref, onBeforeUnmount, reactive, computed, onMounted } from 'vue'
+import { userApis } from '@/apis/user'
+import { ref, onBeforeUnmount, computed, onMounted, watch } from 'vue'
 import UserVue from '@/components/User.vue'
-import { formatDropAmount, formatLakeAmount, toast, copy, addCompressParams } from '@/utils'
+import { formatDropAmount, formatLakeAmount, toast, copy } from '@/utils'
 import HeaderVue from '@/components/Header.vue'
 import LoadingVue from '@/components/Loading.vue'
 import { getSignMsg } from '@/utils/blockchain'
-import { DROP_DENOM_MINI, LAKE_DENOM_MINI, LAKE_DENOM, DROP_DENOM, MINT_DROP_AMOUNT_MAX, MINT_DROP_AMOUNT_MIN, ONLINE_DOMAIN } from '@/utils/const'
-import type { IconlakeiconClass } from '@iconlake/client/types/iconlake.icon/rest'
+import { DROP_DENOM_MINI, LAKE_DENOM_MINI, LAKE_DENOM, DROP_DENOM, MINT_DROP_AMOUNT_MAX, MINT_DROP_AMOUNT_MIN } from '@/utils/const'
+import NftListVue from './assets/nft/List.vue'
 import { useI18n } from 'vue-i18n'
 import { usePageLoading } from '@/hooks/router'
+import { useUser } from '@/hooks/user'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
-
-type ClassInfo = IconlakeiconClass & {
-  url?: string
-}
+const { userInfo } = useUser()
 
 const tokenSrc = {
   lake: {
@@ -40,11 +38,9 @@ const lakeAmount = ref(0)
 const isLAKEAmountLoaded = ref(false)
 const lastMintTime = ref(-1)
 const dropingAmount = ref(0)
-const userInfo = ref<UserInfo>()
 const isConfirming = ref(false)
 const isIniting = ref(false)
 const isBinding = ref(false)
-const classes = reactive<ClassInfo[]>([])
 const blockchainInfo = ref<BlockchainInfo>()
 
 const dropingTimer = setInterval(() => {
@@ -56,12 +52,12 @@ const dropingTimer = setInterval(() => {
 }, 1000)
 
 const canInitDROP = computed(() => blockchainInfo.value?.config?.backendService.initDROP || lakeAmount.value > 0)
-const isLoaded = computed(() => !!userInfo.value && !!blockchainInfo.value && isLAKEAmountLoaded.value)
+const isLoaded = computed(() => !!userInfo._id && !!blockchainInfo.value && isLAKEAmountLoaded.value)
 
-const shareMsg = computed(() => `${t('helpToInitMintingDROP')} ${location.origin}/manage/user/assets/drop/init?addr=${userInfo.value?.blockchain?.id}`)
+const shareMsg = computed(() => `${t('helpToInitMintingDROP')} ${location.origin}/manage/user/assets/drop/init?addr=${userInfo?.blockchain?.id}`)
 
 async function getAssets() {
-  const uInfo = userInfo.value
+  const uInfo = userInfo
   if (uInfo?.blockchain) {
     getBalance(uInfo.blockchain.id, LAKE_DENOM_MINI).then((balance: any) => {
       if (balance?.amount) {
@@ -97,10 +93,7 @@ async function confirmAssets() {
   if (isConfirming.value) {
     return
   }
-  await userApis.info().onUpdate(async info => {
-    userInfo.value = info
-  })
-  if (!userInfo.value?.blockchain) {
+  if (!userInfo?.blockchain) {
     toast(t('bindBlockchainAccount'))
     return
   }
@@ -109,7 +102,7 @@ async function confirmAssets() {
     return
   }
   isConfirming.value = true
-  const data = await mintDrop(userInfo.value.blockchain.id, `${dropingAmount.value}`)
+  const data = await mintDrop(userInfo.blockchain.id, `${dropingAmount.value}`)
   if (data) {
     if (data.code === 0) {
       getAssets()
@@ -143,11 +136,7 @@ async function bindBlockchain() {
   if (!res) {
     return
   }
-  let uid
-  await userApis.info().onUpdate(async info => {
-    uid = info._id
-  })
-  if (res.userId && res.userId !== uid) {
+  if (res.userId && res.userId !== userInfo.blockchain?.id) {
     toast(t('alreadyBoundAndSwitch'))
     userApis.clearCache()
     setTimeout(() => {
@@ -155,21 +144,17 @@ async function bindBlockchain() {
     }, 2000)
   } else {
     toast(t('boundAndLoadAssets'))
-    await userApis.clearCache()
-    await userApis.info().onUpdate(async info => {
-      userInfo.value = info
-    })
     await getAssets()
     isBinding.value = false
   }
 }
 
 async function initDropAccount() {
-  if (userInfo.value?.blockchain?.id && !isIniting.value) {
+  if (userInfo?.blockchain?.id && !isIniting.value) {
     isIniting.value = true
     const res = await initDrop(
-      userInfo.value?.blockchain?.id,
-      userInfo.value?.blockchain?.id,
+      userInfo?.blockchain?.id,
+      userInfo?.blockchain?.id,
       !!blockchainInfo.value?.config.backendService.initDROP,
     )
     if (res) {
@@ -178,42 +163,6 @@ async function initDropAccount() {
     }
     isIniting.value = false
   }
-}
-
-async function getNftClasses() {
-  if (!userInfo.value?.blockchain?.id) {
-    return
-  }
-  const res = await getNFTs({
-    owner: userInfo.value?.blockchain?.id,
-  })
-  if (!res) {
-    return
-  }
-  const classIds: {
-    [key: string]: number
-  } = {}
-  res.nfts?.forEach((e) => {
-    if (e.class_id) {
-      if (!classIds[e.class_id]) {
-        classIds[e.class_id] = 0
-        getNftClass(e.class_id).then(async (info) => {
-          if (info && info.class) {
-            classes.push({
-              ...info.class,
-              url: info.class.uri
-            })
-            const i = classes.length - 1
-            const verify = await verifyUriHash(info.class.uri, info.class.uri_hash).catch(() => {})
-            if (!verify) {
-              classes[i].url = undefined
-            }
-          }
-        })
-      }
-      classIds[e.class_id] += 1
-    }
-  })
 }
 
 async function getBlockchainInfo() {
@@ -227,12 +176,14 @@ function copyShareMsg() {
 
 onMounted(async () => {
   getBlockchainInfo()
-  await userApis.info().onUpdate(async info => {
-    userInfo.value = info
-  })
-  Promise.all([getAssets(), getNftClasses()]).finally(() => {
+})
+
+watch(() => userInfo.blockchain?.id, () => {
+  userInfo.blockchain?.id && getAssets().finally(() => {
     pageLoading.end()
   })
+}, {
+  immediate: true
 })
 </script>
 
@@ -374,36 +325,22 @@ onMounted(async () => {
           alt="x"
         >
       </a>
+      <a
+        target="_blank"
+        href="https://weibo.com/iconLake"
+        title="Weibo"
+      >
+        <img
+          class="weibo"
+          :src="'/imgs/weibo-logo.png'"
+          alt="weibo"
+        >
+      </a>
     </p>
   </div>
-  <div class="list flex start">
-    <a
-      v-for="item in classes"
-      :key="item.id"
-      class="item"
-      :href="`${ONLINE_DOMAIN}/exhibition/${item.id ? encodeURIComponent(item.id) : ''}`"
-      target="_blank"
-    >
-      <div class="item-cover">
-        <div
-          class="cover-img flex center"
-          :style="{
-            backgroundImage: item.url ? `url(${addCompressParams(item.url, { maxWidth: 600, maxHeight: 600 })})` : 'none'
-          }"
-        >
-          <i
-            v-if="!item.url"
-            class="iconfont icon-info"
-          />
-        </div>
-      </div>
-      <div class="item-info">
-        <div class="info-name">
-          {{ item.name || t('noInfoInBlockchain') }}
-        </div>
-      </div>
-    </a>
-  </div>
+  <NftListVue
+    v-if="userInfo?.blockchain?.id"
+  />
 </template>
 
 <style lang="scss" scoped>
@@ -475,6 +412,7 @@ onMounted(async () => {
   margin: 0 0 5rem;
 }
 .help-init {
+  margin-bottom: 5rem;
   p {
     text-align: center;
   }
@@ -502,58 +440,8 @@ onMounted(async () => {
       &.x {
         height: 1.6rem;
       }
-    }
-  }
-}
-.list {
-  $item-width: 29.25rem;
-  padding: 0 0 4rem;
-  gap: 2rem;
-  flex-wrap: wrap;
-  width: $item-width * 4 + 2 * 3;
-  margin: 0 auto;
-  .item {
-    width: 29.25rem;
-    background-color: #fff;
-    border-radius: 1rem;
-    overflow: hidden;
-    &-cover {
-      width: 100%;
-      aspect-ratio: 4/3;
-      overflow: hidden;
-    }
-    .cover-img {
-      width: 100%;
-      height: 100%;
-      transition: var(--transition);
-      background-position: center;
-      background-size: cover;
-      .iconfont {
-        font-size: 12rem;
-        color: #ddd;
-      }
-    }
-    &:hover {
-      .cover-img {
-        transform: scale(1.2);
-      }
-    }
-    &-info {
-      padding: 2rem;
-      line-height: 1.4;
-      div {
-        padding-top: 1.5rem;
-        &:first-child {
-          padding-top: 0;
-        }
-      }
-    }
-    .info {
-      &-name {
-        font-size: 1.3rem;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
+      &.weibo {
+        height: 2.2rem;
       }
     }
   }

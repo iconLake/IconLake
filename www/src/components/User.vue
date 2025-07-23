@@ -1,10 +1,13 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue'
+import { ref } from 'vue'
 import Cookies from 'js-cookie'
-import { userApis, type UserInfo } from '../apis/user'
+import { userApis } from '../apis/user'
 import { useI18n } from 'vue-i18n'
 import { toast } from '@/utils';
+import { useUser } from '@/hooks/user';
+
 const { t } = useI18n()
+const { userInfo } = useUser()
 
 const locale = ref(Cookies.get('locale') || 'zh-cn')
 const language = {
@@ -20,23 +23,7 @@ const language = {
 
 const isPopShow = ref(false)
 let popTimer: NodeJS.Timeout
-const userInfo = reactive({} as UserInfo)
 const isLoggedIn = ref(false)
-
-async function getUserInfo () {
-  userApis.info().onUpdate(async info => {
-    Object.assign(userInfo, info)
-    isLoggedIn.value = true
-  })
-}
-
-onMounted(() => {
-  getUserInfo().catch(e => {
-    if (e.error === 'userNotLogin') {
-      isLoggedIn.value = false
-    }
-  })
-})
 
 function setLocale (v:string) {
   locale.value = v

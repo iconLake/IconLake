@@ -362,26 +362,46 @@ export async function initDrop(creator: string, address: string, isBackendServic
   })
 }
 
+export type INFT = {
+  id: string
+  classId: string
+  uri?: string
+  uriHash?: string
+  data: {
+    name: string
+    description: string
+    createTime: string
+  }
+}
+
 export async function getNFTs(q: {
   owner?: string
   classId?: string
-}) {
+}): Promise<{
+  nfts: INFT[]
+}> {
   const res = await client.IconlakeIcon.query.queryNFTs({
     owner: q.owner,
     class_id: q.classId
   }).catch((e) => {
     console.error(e)
-    return undefined
+    return {
+      data: {
+        nfts: []
+      }
+    }
   })
-  return res?.data
+  return res?.data && camelcaseKeys(res.data as any, { deep: true })
 }
 
 export async function getNftClass(id: string) {
   const res = await client.IconlakeIcon.query.queryClass({ id }).catch((e) => {
     console.error(e)
-    return undefined
+    return {
+      data: undefined
+    }
   })
-  return res?.data
+  return res?.data && camelcaseKeys(res.data as any, { deep: true })
 }
 
 export async function updateClass(value: MsgUpdateClass) {

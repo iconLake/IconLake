@@ -360,4 +360,25 @@ $align: left, center, right;
   animation: rotate 2s linear 0s infinite;
 }
 
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.15);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.15);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+.heartbeat {
+  animation: heartbeat 2s ease 0s infinite;
+}
+
 @import "./element.scss";

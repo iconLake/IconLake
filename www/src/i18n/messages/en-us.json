@@ -281,5 +281,8 @@
   "setupUploadServiceWithOpensource": "We have developed an open-source decentralized file service system, deploy and use it immediately!",
   "testSuccess": "Test Successful",
   "testFailed": "Test Failed",
-  "suchAs": "For example: "
+  "suchAs": "For example: ",
+  "myCreations": "My Creations",
+  "noNFTsFound": "No works have been published yet",
+  "unknown": "Unknown"
 }

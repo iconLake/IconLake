@@ -11,7 +11,6 @@ import HeaderVue from '../../components/Header.vue'
 import UserVue from '../../components/User.vue'
 import { useI18n } from 'vue-i18n'
 import Select from '@/components/Select.vue'
-import { userApis, type UserInfo } from '@/apis/user'
 import { ElTooltip } from 'element-plus'
 import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
@@ -20,13 +19,14 @@ import { ONLINE_DOMAIN, PROJECT_TYPE, PROJECT_TYPE_STRING, PROJECT_STYLE, PROJEC
 import SearchWebVue from './search/Web.vue'
 import { event } from '@/utils/event'
 import Review from './Review.vue'
+import { useUser } from '@/hooks/user'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
+const { userInfo } = useUser()
 
 const $route = useRoute()
 
-const userInfo = ref({} as UserInfo)
 const isReview = ref(false)
 const reviewIndex = ref([-1, -1])
 
@@ -66,7 +66,7 @@ const editable = computed(() => {
   if (data.members.length === 0) {
     return false
   }
-  return data.members.some(e => e.userId === userInfo.value._id)
+  return data.members.some(e => e.userId === userInfo._id)
 })
 
 const reviewIcon = computed(() => {
@@ -222,9 +222,6 @@ function updateMainWidth () {
 
 onMounted(() => {
   detailWidth = detailDom.value?.root.getBoundingClientRect().width || 200
-  userApis.info().onUpdate(async u => {
-    userInfo.value = u
-  })
   getIcons().finally(() => {
     pageLoading.end()
   })
