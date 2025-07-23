@@ -18,7 +18,7 @@ import { useUser } from '@/hooks/user'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
-const { userInfo } = useUser()
+const { userInfo, getUserInfo } = useUser()
 
 const $route = useRoute()
 const projectId = ref($route.params.projectId as string)
@@ -123,6 +123,7 @@ async function publish() {
 }
 
 async function checkChainAccount() {
+  await getUserInfo()
   if (!userInfo?.blockchain?.id) {
     return
   }
