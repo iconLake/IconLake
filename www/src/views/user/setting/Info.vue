@@ -8,10 +8,11 @@ import { UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
 import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
 import { userApis, type UserInfo } from '@/apis/user'
-import { event } from '@/utils/event'
+import { useUser } from '@/hooks/user'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
+const { userInfo, getUserInfo, refreshUserInfo } = useUser()
 
 const info = ref<UserInfo>({
   _id: '',
@@ -45,9 +46,7 @@ async function save() {
   }
   toast(t('saveDone'))
   isSaving.value = false
-  event.emit(event.EventType.UserInfoChange, {
-    userInfo: info.value,
-  })
+  refreshUserInfo()
 }
 
 async function handleUpload(file: UploadFile) {
@@ -91,13 +90,12 @@ const delMedia = (index: number) => {
 }
 
 onMounted(async () => {
-  await userApis.info().onUpdate(async (user) => {
-    pageLoading.end()
-    info.value = {
-      ...user,
-      medias: (!user.medias || user.medias.length === 0) ? [{ name: '', content: '' }] : user.medias,
-    }
-  })
+  await getUserInfo()
+  pageLoading.end()
+  info.value = {
+    ...userInfo,
+    medias: (!userInfo.medias || userInfo.medias.length === 0) ? [{ name: '', content: '' }] : userInfo.medias,
+  }
 })
 </script>
 

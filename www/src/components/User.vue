@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import Cookies from 'js-cookie'
 import { userApis } from '../apis/user'
 import { useI18n } from 'vue-i18n'
@@ -23,7 +23,7 @@ const language = {
 
 const isPopShow = ref(false)
 let popTimer: NodeJS.Timeout
-const isLoggedIn = ref(false)
+const isLoggedIn = computed(() => !!userInfo?._id)
 
 function setLocale (v:string) {
   locale.value = v

@@ -7,8 +7,6 @@ import User from '@/components/User.vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { toast } from '@/utils'
-import { userApis } from '@/apis/user'
-import type { UserInfo } from '@/apis/user'
 import LoadingVue from '@/components/Loading.vue'
 import { useI18n } from 'vue-i18n'
 import { ONLINE_DOMAIN, IS_PRODUCTION, DFS_PREFIX, UPLOAD_DIR } from '@/utils/const'
@@ -16,9 +14,11 @@ import { usePageLoading } from '@/hooks/router'
 import { getIconUrl } from '@/utils/icon'
 import i18n from '@/i18n'
 import { storage } from '@/apis/extension'
+import { useUser } from '@/hooks/user'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
+const { userInfo } = useUser()
 
 const $route = useRoute()
 const projectId = ref($route.params.projectId as string)
@@ -26,7 +26,6 @@ const id = ref($route.params.id as string)
 const iconInfo = reactive({} as IconType)
 const isPending = ref(false)
 const isChainAccountReady = ref(false)
-const userInfo = ref<UserInfo>()
 
 const txUrl = computed(() => {
   if (iconInfo.blockchain?.txHash) {
@@ -50,7 +49,7 @@ async function publish() {
   if (isPending.value) {
     return
   }
-  if (!userInfo.value?.gitee?.id && i18n.global.locale.value === 'zh-cn') {
+  if (!userInfo?.gitee?.id && i18n.global.locale.value === 'zh-cn') {
     toast.error(t('bindRequiredAccount'))
     return
   }
@@ -86,13 +85,13 @@ async function publish() {
     uri = res.url
   }
   const hash = await getHash(uri.replace(/\?.*/, ''))
-  if (!hash || !userInfo.value || !userInfo.value.blockchain?.id) {
+  if (!hash || !userInfo || !userInfo.blockchain?.id) {
     toast.error(t('fail'))
     isPending.value = false
     return
   }
   const res = await mintIcon({
-    creator: userInfo.value.blockchain?.id,
+    creator: userInfo.blockchain?.id,
     classId: projectId.value,
     id: hash.graphHash ?? '',
     uri,
@@ -124,23 +123,20 @@ async function publish() {
 }
 
 async function checkChainAccount() {
-  await userApis.info().onUpdate(async info => {
-    userInfo.value = info
-  })
-  if (!userInfo.value?.blockchain?.id) {
+  if (!userInfo?.blockchain?.id) {
     return
   }
-  const account = await getChainAccount(userInfo.value.blockchain?.id)
+  const account = await getChainAccount(userInfo.blockchain?.id)
   if (account) {
     isChainAccountReady.value = true
   }
 }
 
 async function onBurnIcon() {
-  if (iconInfo.blockchain?.classId && iconInfo.blockchain.nftId && userInfo.value?.blockchain?.id) {
+  if (iconInfo.blockchain?.classId && iconInfo.blockchain.nftId && userInfo?.blockchain?.id) {
     isPending.value = true
     const res = await burnIcon({
-      creator: userInfo.value.blockchain?.id,
+      creator: userInfo.blockchain?.id,
       classId: iconInfo.blockchain.classId,
       id: iconInfo.blockchain.nftId,
     })

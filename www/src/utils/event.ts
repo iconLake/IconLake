@@ -1,10 +1,7 @@
-import type { UserInfo } from '@/apis/user'
-
 const EVENT_PREFIX = 'iconlake:'
 
 enum EventType {
   ProjectInfoChange = 'project_info_change',
-  UserInfoChange = 'user_info_change',
   IconCollected = 'icon_collected',
 }
 
@@ -15,9 +12,6 @@ interface EventData {
   [EventType.IconCollected]: {
     id: string
   }
-  [EventType.UserInfoChange]: {
-    userInfo: UserInfo
-  }
 }
 
 type EventListener<T extends EventType> = (data: EventData[T]) => void
@@ -27,7 +21,6 @@ class IconlakeEvent {
   private registedEvents: Record<EventType, number> = {
     [EventType.ProjectInfoChange]: 0,
     [EventType.IconCollected]: 0,
-    [EventType.UserInfoChange]: 0,
   }
   private listenerMap = new Map<any, EventListenerCall>()
   public EventType = EventType

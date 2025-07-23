@@ -8,18 +8,17 @@ import UserVue from '@/components/User.vue'
 import { copy, toast } from '@/utils'
 import { PERMANENT_FILE_EXPIRE, TEMPORARY_FILE_EXPIRE, ONE_DAY_SECONDS } from '@/utils/const'
 import { ElSwitch } from 'element-plus'
-import { userApis, type UserInfo } from '@/apis/user'
 import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
+import { useUser } from '@/hooks/user'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
+const { userInfo } = useUser()
 
 const $route = useRoute()
 
 type Tab = 'css'|'js'|'vue'|'react'
-
-const userInfo = ref({} as UserInfo)
 
 const data = reactive({
   _id: $route.params.id as string,
@@ -39,7 +38,7 @@ const editable = computed(() => {
   if (data.members.length === 0) {
     return false
   }
-  return data.members.some(e => e.userId === userInfo.value._id)
+  return data.members.some(e => e.userId === userInfo._id)
 })
 
 const getLatestFile = (arr: FileInfo[] | undefined): FileInfo | undefined => {
@@ -113,9 +112,6 @@ async function getInfo () {
 }
 
 onMounted(() => {
-  userApis.info().onUpdate(async u => {
-    userInfo.value = u
-  })
   getInfo().finally(() => {
     pageLoading.end()
   })

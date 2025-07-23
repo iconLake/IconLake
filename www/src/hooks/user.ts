@@ -1,4 +1,4 @@
-import { reactive, onMounted } from 'vue'
+import { reactive, onMounted, ref, watch } from 'vue'
 import { userApis, type UserInfo } from '@/apis/user'
 
 const userInfo = reactive<UserInfo>({
@@ -6,15 +6,28 @@ const userInfo = reactive<UserInfo>({
   tokenExpire: new Date(),
 })
 
-let isLoading = false
+let isLoading = ref(false)
 
 export function useUser() {
   const fetchUserInfo = async () => {
-    isLoading = true
+    if (isLoading.value) {
+      await new Promise(resolve => {
+        const unwatch = watch(isLoading, () => {
+          if (!isLoading.value) {
+            unwatch()
+            resolve(true)
+          }
+        }, {
+          immediate: true
+        })
+      })
+      return
+    }
+    isLoading.value = true
     await userApis.info().onUpdate(async info => {
       Object.assign(userInfo, info)
     })
-    isLoading = false
+    isLoading.value = false
   }
 
   const refreshUserInfo = async () => {
@@ -33,7 +46,7 @@ export function useUser() {
   }
 
   onMounted(() => {
-    !userInfo._id && !isLoading && fetchUserInfo()
+    !userInfo._id && fetchUserInfo()
   })
 
   return {

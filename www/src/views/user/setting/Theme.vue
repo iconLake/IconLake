@@ -8,9 +8,11 @@ import { UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const';
 import Loading from '@/components/Loading.vue';
 import { userApis } from '@/apis/user'
 import AIGenerate from '@/views/theme/AIGenerate.vue';
+import { useUser } from '@/hooks/user';
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
+const { userInfo, getUserInfo } = useUser()
 
 const isDiy = ref(false)
 const isAiGenerating = ref(false)
@@ -31,11 +33,10 @@ onMounted(() => {
 })
 
 async function getTheme() {
-  userApis.info().onUpdate(async info => {
-    Object.assign(fm, info.theme)
-    isDiy.value = !!info.theme?.creator
-    userAddress.value = info.blockchain?.id ?? ''
-  })
+  await getUserInfo()
+  Object.assign(fm, userInfo.theme)
+  isDiy.value = !!userInfo.theme?.creator
+  userAddress.value = userInfo.blockchain?.id ?? ''
 }
 
 function switchDiy() {
