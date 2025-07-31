@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { loginByBlockchain, type LoginParams, LoginType, userApis, type UserInfo } from '@/apis/user'
+import { type LoginParams, LoginType, userApis } from '@/apis/user'
 import { usePageLoading } from '@/hooks/router'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -8,10 +8,11 @@ import { confirm, toast } from '@/utils'
 import LoadingVue from '@/components/Loading.vue'
 import { getSignMsg } from '@/utils/blockchain'
 import { signMsg } from '@/apis/blockchain'
+import { useUser } from '@/hooks/user'
 
 const { t } = useI18n()
+const { userInfo, refreshUserInfo } = useUser()
 
-const userInfo = ref<UserInfo>()
 const loginParams = ref<LoginParams>()
 const isDealing = reactive({
   gitee: false,
@@ -40,7 +41,7 @@ const forceBindText = computed(() => {
 const boundCount = computed(() => {
   let count = 0
   Object.values(LoginType).forEach(t => {
-    if (userInfo.value?.[t]?.id) {
+    if (userInfo?.[t]?.id) {
       count++
     }
   })
@@ -49,9 +50,6 @@ const boundCount = computed(() => {
 
 onMounted(async () => {
   await Promise.all([
-    userApis.info().onUpdate(async info => {
-      userInfo.value = info
-    }),
     userApis.loginParams().onUpdate(async info => {
       loginParams.value = info
     }),
@@ -106,7 +104,7 @@ async function bindMail() {
         reject()
         return
       }
-      if (res.userId !== userInfo.value?._id) {
+      if (res.userId !== userInfo._id) {
         toast(t('alreadyBoundAndSwitch'))
         userApis.clearCache()
         await new Promise(() => {
@@ -146,7 +144,7 @@ async function sendMail() {
 
 async function bindWebAuthn() {
   const t = new Date()
-  const name = userInfo.value?.name || `iconLake Creator (${t.getFullYear()}/${t.getMonth() + 1}/${t.getDate()} ${t.getHours()}:${t.getMinutes()})`
+  const name = userInfo.name || `iconLake Creator (${t.getFullYear()}/${t.getMonth() + 1}/${t.getDate()} ${t.getHours()}:${t.getMinutes()})`
   const cred = await navigator.credentials.create({
     publicKey: {
       rp: {
@@ -187,7 +185,7 @@ async function bindCode() {
   if (!res || res.error) {
     throw new Error('login error')
   }
-  if (res.userId !== userInfo.value?._id) {
+  if (res.userId !== userInfo._id) {
     toast(t('alreadyBoundAndSwitch'))
     userApis.clearCache()
     await new Promise(() => {
@@ -211,7 +209,7 @@ async function bindBlockchain() {
   if (!signRes) {
     throw new Error('no sign')
   }
-  const res = await loginByBlockchain({
+  const res = await userApis.loginByBlockchain({
     msg,
     sig: signRes.signature,
     pubkey: signRes.pub_key
@@ -219,7 +217,7 @@ async function bindBlockchain() {
   if (!res || res.error) {
     throw new Error('no res')
   }
-  if (res.userId !== userInfo.value?._id) {
+  if (res.userId !== userInfo._id) {
     toast(t('alreadyBoundAndSwitch'))
     userApis.clearCache()
     await new Promise(() => {
@@ -232,23 +230,19 @@ async function bindBlockchain() {
 
 async function unbind(type: LoginType) {
   await userApis.unbind(type)
-  await userApis.info().onUpdate(async info => {
-    userInfo.value = info
-  })
+  await refreshUserInfo()
 }
 
 async function deal(type: LoginType) {
   isDealing[type] = true
   try {
-    if (userInfo.value?.[type]?.id) {
+    if (userInfo?.[type]?.id) {
       await unbind(type)
     } else {
       await bind(type)
     }
     toast.success(t('success'))
-    userApis.info().onUpdate(async info => {
-      userInfo.value = info
-    })
+    refreshUserInfo()
   } catch (e: any) {
     console.error(e)
     toast.error(t(e?.error || 'fail'))
@@ -261,9 +255,7 @@ async function regenAccessKey() {
   try {
     await userApis.regenAccessKey()
     toast.success(t('success'))
-    userApis.info().onUpdate(async info => {
-      userInfo.value = info
-    })
+    refreshUserInfo()
   } catch (e) {
     console.error(e)
     toast.error(t('fail'))

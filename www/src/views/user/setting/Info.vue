@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref, toRaw, toValue } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getExt, toast } from '../../../utils'
 import { ElUpload } from 'element-plus'
@@ -7,11 +7,12 @@ import type { UploadFile } from 'element-plus'
 import { UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
 import { usePageLoading } from '@/hooks/router'
 import Loading from '@/components/Loading.vue'
-import { uploadFile, userApis, type UserInfo } from '@/apis/user'
-import { event } from '@/utils/event'
+import { userApis, type UserInfo } from '@/apis/user'
+import { useUser } from '@/hooks/user'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
+const { userInfo, getUserInfo, refreshUserInfo } = useUser()
 
 const info = ref<UserInfo>({
   _id: '',
@@ -45,9 +46,7 @@ async function save() {
   }
   toast(t('saveDone'))
   isSaving.value = false
-  event.emit(event.EventType.UserInfoChange, {
-    userInfo: info.value,
-  })
+  refreshUserInfo()
 }
 
 async function handleUpload(file: UploadFile) {
@@ -63,7 +62,7 @@ async function handleUpload(file: UploadFile) {
     return
   }
   isCoverUploading.value = true
-  const res = await uploadFile({
+  const res = await userApis.uploadFile({
     _id: `${Date.now()}${getExt(file.name)}`,
     data: await file.raw.arrayBuffer(),
     dir: UPLOAD_DIR.AVATAR
@@ -91,13 +90,12 @@ const delMedia = (index: number) => {
 }
 
 onMounted(async () => {
-  await userApis.info().onUpdate(async (user) => {
-    pageLoading.end()
-    info.value = {
-      ...user,
-      medias: (!user.medias || user.medias.length === 0) ? [{ name: '', content: '' }] : user.medias,
-    }
-  })
+  await getUserInfo()
+  pageLoading.end()
+  info.value = {
+    ...userInfo,
+    medias: (!userInfo.medias || userInfo.medias.length === 0) ? [{ name: '', content: '' }] : userInfo.medias,
+  }
 })
 </script>
 

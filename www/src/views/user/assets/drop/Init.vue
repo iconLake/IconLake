@@ -11,15 +11,16 @@ import { toast } from '@/utils'
 import { useI18n } from 'vue-i18n'
 import { fromBech32 } from '@cosmjs/encoding'
 import { usePageLoading } from '@/hooks/router'
+import { useUser } from '@/hooks/user'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
+const { userInfo, getUserInfo } = useUser()
 
 const $route = useRoute()
 
 const bg = 'url(/imgs/init-drop-bg.png)'
 
-const userInfo = ref()
 const lakeAmount = ref(0)
 const lastMintTime = ref(0)
 const addr = ref('')
@@ -29,19 +30,19 @@ const helpMsg = computed(() => {
   if (lastMintTime.value > 0) {
     return t('initedAndNoNeedAgain')
   }
-  if (!userInfo.value?.blockchain?.id || lakeAmount.value <= 0) {
+  if (!userInfo?.blockchain?.id || lakeAmount.value <= 0) {
     return t('notEnoughLAKE')
   }
   return ''
 })
 
 async function init() {
-  if (isIniting.value) {
+  if (isIniting.value || !userInfo.blockchain?.id) {
     return
   }
   isIniting.value = true
   await initDrop(
-    userInfo.value?.blockchain?.id,
+    userInfo?.blockchain?.id,
     addr.value,
     false,
   ).then(() => {
@@ -53,14 +54,12 @@ async function init() {
 }
 
 async function getInfo() {
-  await userApis.info().onUpdate(async info => {
-    userInfo.value = info
-  })
-  if (!userInfo.value.blockchain?.id) {
+  await getUserInfo()
+  if (!userInfo.blockchain?.id) {
     return
   }
   await Promise.all([
-    getBalance(userInfo.value.blockchain.id, LAKE_DENOM_MINI).then((res: any) => {
+    getBalance(userInfo.blockchain.id, LAKE_DENOM_MINI).then((res: any) => {
       if (res?.amount) {
         lakeAmount.value = +res?.amount
       }

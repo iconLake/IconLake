@@ -5,16 +5,17 @@ import UserVue from '../../components/User.vue'
 import HeaderVue from '../../components/Header.vue'
 import { useI18n } from 'vue-i18n'
 import { projectApis } from '@/apis/project';
-import { userApis, type UserInfo } from '@/apis/user';
 import { getHash, updateClass, getNftClass } from '@/apis/blockchain'
 import Loading from '@/components/Loading.vue'
 import { toast } from '@/utils'
 import { usePageLoading } from '@/hooks/router'
 import { PROJECT_TYPE, ONLINE_DOMAIN } from '@/utils/const'
 import { event } from '@/utils/event'
+import { useUser } from '@/hooks/user'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
+const { userInfo } = useUser()
 
 const $route = useRoute()
 const projectId = $route.params.id as string
@@ -58,16 +59,12 @@ async function updateChain(e: Event) {
   }
   isUpdatingChain.value = true
   const hash = await getHash(uri)
-  let user: UserInfo|undefined
-  await userApis.info().onUpdate(async (info) => {
-    user = info
-  })
-  if (!hash || !user?.blockchain?.id) {
+  if (!hash || !userInfo?.blockchain?.id) {
     toast.error(t('fail'))
     return
   }
   const res = await updateClass({
-    creator: user.blockchain?.id,
+    creator: userInfo.blockchain?.id,
     id: projectId,
     name: project.value.name,
     description: project.value.desc,

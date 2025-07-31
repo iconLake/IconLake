@@ -40,6 +40,7 @@ const db = new Dexie('iconlake') as Dexie & {
 db.version(1).stores({
   cache: '&id,userId,value,createTime',
 })
+db.open().catch(console.error)
 
 export async function addCache(props: ICacheSetProps) {
   const userId = await userApis.userId()
@@ -48,7 +49,10 @@ export async function addCache(props: ICacheSetProps) {
 
 export async function getCache(props: ICacheGetProps) {
   if (!db.isOpen()) {
-    throw new Error('db not open')
+    await db.open()
+    if (!db.isOpen()) {
+      throw new Error('db not open')
+    }
   }
   const res = await db.cache.where(props).first().catch(() => null)
   if (!res) {
@@ -83,6 +87,7 @@ export function enableCache<T>({ module, code, maxAge = CACHE_MAX_AGE, executor 
           }
           await fn(value)
         } catch (e) {
+          import.meta.env.DEV && console.warn(id, e)
           const res = await executor(...args)
           addCache({
             id,
