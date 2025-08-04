@@ -4,7 +4,7 @@ import { toast } from '@/utils';
 import { PROJECT_TYPE_STRING } from '@/utils/const';
 import { getExtByMimeType } from '@/utils/file';
 import { getIconUrl } from '@/utils/icon';
-import { lib, MD5 } from 'crypto-js';
+import { lib, SHA256 } from 'crypto-js';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n'
 import LoadingVue from '@/components/Loading.vue';
@@ -35,7 +35,7 @@ async function collect(isDownload: boolean = false) {
     try {
       const imgBlob = await fetch(url).then(res => res.blob())
       const buf = await imgBlob.arrayBuffer()
-      const hash = MD5(lib.WordArray.create(Array.from(new Uint8Array(buf)))).toString()
+      const hash = SHA256(lib.WordArray.create(Array.from(new Uint8Array(buf)))).toString()
       const code  = `${hash}.${getExtByMimeType(imgBlob.type)}`
       if (isDownload) {
         saveAs(imgBlob, code)
