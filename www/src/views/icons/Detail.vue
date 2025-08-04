@@ -9,7 +9,7 @@ import Select from '@/components/Select.vue'
 import { ElUpload } from 'element-plus'
 import type { UploadFile } from 'element-plus'
 import { PROJECT_TYPE, PROJECT_TYPE_STRING, UPLOAD_DIR, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
-import { lib, MD5 } from 'crypto-js'
+import { lib, SHA256 } from 'crypto-js'
 import { getIconUrl } from '@/utils/icon'
 import { isImgFile, isSvgFile } from '@/utils/file'
 
@@ -204,7 +204,7 @@ async function handleUpload(file: UploadFile) {
   let url = oldUrl
   if (projectType === PROJECT_TYPE.SVG) {
     const svgText = await readFileAsText(file.raw)
-    const hash = MD5(svgText).toString()
+    const hash = SHA256(svgText).toString()
     const fileName = `${hash}.svg`
     if (new RegExp(`${fileName}$`).test(oldUrl)) {
       toast(t('fileIsSameAsOld'))
@@ -226,7 +226,7 @@ async function handleUpload(file: UploadFile) {
   } else if (projectType === PROJECT_TYPE.IMG) {
     const imgBlob = await readFileAsBlob(file.raw)
     const buf = await imgBlob.arrayBuffer()
-    const hash = MD5(lib.WordArray.create(Array.from(new Uint8Array(buf)))).toString()
+    const hash = SHA256(lib.WordArray.create(Array.from(new Uint8Array(buf)))).toString()
     const code  = `${hash}.${file.name.substring(file.name.lastIndexOf('.') + 1)}`
     const res = await uploadFile({
       projectId,

@@ -6,7 +6,7 @@ import { addIcon, type BaseIcon, projectApis, uploadFile } from '../../apis/proj
 import HeaderVue from '../../components/Header.vue'
 import UserVue from '../../components/User.vue'
 import { readFileAsBlob, readFileAsText, toast } from '../../utils'
-import { MD5, lib } from 'crypto-js'
+import { lib, SHA256 } from 'crypto-js'
 import { usePageLoading } from '@/hooks/router'
 import { PROJECT_TYPE, PROJECT_TYPE_STRING, UPLOAD_FILE_SIZE_LIMIT } from '@/utils/const'
 import Loading from '@/components/Loading.vue'
@@ -162,7 +162,7 @@ function onSVGChange(e: Event) {
       }
       const svgText = await readFileAsText(file)
       const code = file.name.substring(0, file.name.lastIndexOf('.'))
-      const hash = MD5(svgText).toString()
+      const hash = SHA256(svgText).toString()
       uploadMedia('svg', code, svgText, `${hash}.svg`)
     })
   }
@@ -182,7 +182,7 @@ function onImgChange(e: Event) {
       const imgBlob = await readFileAsBlob(file)
       const name = file.name.substring(0, file.name.lastIndexOf('.'))
       const buf = await imgBlob.arrayBuffer()
-      const hash = MD5(lib.WordArray.create(Array.from(new Uint8Array(buf)))).toString()
+      const hash = SHA256(lib.WordArray.create(Array.from(new Uint8Array(buf)))).toString()
       const code  = `${hash}.${file.name.substring(file.name.lastIndexOf('.') + 1)}`
       uploadMedia('img', code, imgBlob, name, code)
     })
@@ -206,7 +206,7 @@ function onIconfontJSChange(e: Event) {
           if (props) {
             const svgText = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="${props[2]}">${props[3]}</svg>`
             uploading.total++
-            const hash = MD5(svgText).toString()
+            const hash = SHA256(svgText).toString()
             uploadMedia('svg', props[1], svgText, `${hash}.svg`).then(() => {
               uploading.success++
             }).catch(() => {
