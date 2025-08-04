@@ -15,7 +15,10 @@ class CanvasUtil {
     toCanvas.height = height;
 
     const toCtx = toCanvas.getContext("2d");
-    toCtx!.drawImage(image, 0, 0, width, height);
+    if (!toCtx) {
+      throw new Error("cannot get context from canvas");
+    }
+    toCtx.drawImage(image, 0, 0, width, height);
 
     return toCanvas;
   }
