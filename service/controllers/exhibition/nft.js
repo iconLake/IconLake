@@ -32,7 +32,7 @@ function transferIconToNft ({ icon, projectId, userId }) {
 }
 
 export async function nftList (req, res) {
-  const _id = req.params.id
+  const _id = req.params.projectId
   if (!_id) {
     return res.json({
       nfts: []

@@ -101,7 +101,7 @@ router.get('/blacklist/verify/project', verifyProject)
 router.get('/blacklist/verify/address', verifyAddress)
 
 router.get('/exhibition/classInfo/:id', exhibition.classInfo)
-router.get('/exhibition/nftList/:id', exhibition.nftList)
+router.get('/exhibition/nftList/:projectId', exhibition.nftList)
 router.get('/exhibition/nftInfo/:projectId/:iconId', exhibition.nftInfo)
 router.get('/exhibition/creatorInfo/:id', exhibition.creatorInfo)
 

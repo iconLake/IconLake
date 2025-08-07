@@ -130,6 +130,11 @@ export const ProjectSchema = new Schema({
   storage: {
     api: String,
     token: String
+  },
+  ticket: {
+    code: String,
+    quantity: Number,
+    days: Number
   }
 })
 
