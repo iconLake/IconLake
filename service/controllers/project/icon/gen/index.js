@@ -183,6 +183,7 @@ export async function genCSS (req, res, projectId, project) {
     }
     await writeFile(file, svgContent)
     metaMap.set(icon.unicode, {
+      name: icon.code,
       unicode: [String.fromCodePoint(+`0x${icon.unicode}`)],
       unicodeNum: icon.unicode
     })
