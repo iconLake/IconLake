@@ -169,11 +169,19 @@ export interface Sharethis {
   })
   classAPI.getNfts = async (id?: string) => {
     const pid = id ?? classAPI.id
-    return await fetch(`${lcd}/iconlake/icon/nfts?class_id=${pid}`).then(res => res.json()).then(transferKey)
+    const res = await fetch(`${lcd}/iconlake/icon/nfts?class_id=${pid}`).then(res => res.json()).then(transferKey)
+    if (!res || +res.pagination?.total === 0) {
+      return await fetch(`${domain.master}/api/exhibition/nftList/${pid}`).then(res => res.json())
+    }
+    return res
   }
   classAPI.getInfo = async (id?: string) => {
     const pid = id ?? classAPI.id
-    return await fetch(`${lcd}/iconlake/icon/class?id=${pid}`).then(res => res.json()).then(res => transferKey(res.class))
+    const res = await fetch(`${lcd}/iconlake/icon/class?id=${pid}`).then(res => res.json()).then(transferKey)
+    if (!res?.class) {
+      return await fetch(`${domain.master}/api/exhibition/classInfo/${pid}`).then(res => res.json())
+    }
+    return res.class
   }
 
   /**
@@ -195,7 +203,11 @@ export interface Sharethis {
   })
   nftAPI.getInfo = async (id?: string) => {
     const nid = id ?? nftAPI.id
-    return await fetch(`${lcd}/iconlake/icon/nft?class_id=${classAPI.id}&id=${nid}`).then(res => res.json()).then(res => transferKey(res.nft))
+    const res = await fetch(`${lcd}/iconlake/icon/nft?class_id=${classAPI.id}&id=${nid}`).then(res => res.json()).then(transferKey)
+    if (!res?.nft) {
+      return await fetch(`${domain.master}/api/exhibition/nftInfo/${classAPI.id}/${nid}`).then(res => res.json())
+    }
+    return res.nft
   }
 
   /**
@@ -217,12 +229,16 @@ export interface Sharethis {
   })
   creatorAPI.getInfo = async (address?: string) => {
     const addr = address ?? creatorAPI.address
-    return await fetch(`${lcd}/iconlake/icon/creator/${addr}`).then(res => res.json()).then(res => {
+    const res = await fetch(`${lcd}/iconlake/icon/creator/${addr}`).then(res => res.json()).then(res => {
       if (res.error) {
         throw new Error(res.error)
       }
-      return transferKey(res.creator)
+      return transferKey(res)
     })
+    if (!res?.creator) {
+      return await fetch(`${domain.master}/api/exhibition/creatorInfo/${addr}`).then(res => res.json())
+    }
+    return res.creator
   }
 
   /**
@@ -295,6 +311,9 @@ export interface Sharethis {
   }
 
   function verifyHash (uri: string, uriHash: string) {
+    if (!uri || !uriHash) {
+      return Promise.resolve(0)
+    }
     return fetch(uri, {
       mode: 'cors',
       headers: {

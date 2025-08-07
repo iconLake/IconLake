@@ -29,6 +29,7 @@ import adminMiddleware from '../controllers/admin/middleware.js'
 import { verify as verifyAdmin } from '../controllers/admin/info.js'
 import { verifyNFT, verifyProject, verifyAddress } from '../controllers/blacklist/verify.js'
 import * as appreciate from '../controllers/icon/appreciate.js'
+import * as exhibition from '../controllers/exhibition/index.js'
 
 const router = Router()
 
@@ -98,5 +99,10 @@ router.post('/admin/blacklist/del', adminMiddleware, delBlacklist)
 router.get('/blacklist/verify/nft', verifyNFT)
 router.get('/blacklist/verify/project', verifyProject)
 router.get('/blacklist/verify/address', verifyAddress)
+
+router.get('/exhibition/classInfo/:id', exhibition.classInfo)
+router.get('/exhibition/nftList/:id', exhibition.nftList)
+router.get('/exhibition/nftInfo/:projectId/:iconId', exhibition.nftInfo)
+router.get('/exhibition/creatorInfo/:id', exhibition.creatorInfo)
 
 export default router
