@@ -28,6 +28,18 @@ export async function list (req, res) {
   })
 }
 
+async function reduceTicket (projectId) {
+  return await Project.updateOne({
+    _id: projectId
+  }, {
+    $inc: {
+      'ticket.quantity': -1
+    }
+  }, {
+    runValidators: true
+  })
+}
+
 export async function claim (req, res) {
   const projectId = req.body.projectId
   const code = req.body.code
@@ -38,12 +50,18 @@ export async function claim (req, res) {
   }
   const project = await Project.findOne({
     _id: projectId
-  }, 'ticket')
+  }, 'ticket type name desc cover prefix class')
   if (!project || !project.ticket || project.ticket.code !== code) {
     return res.json({
       error: ERROR_CODE.ARGS_ERROR
     })
   }
+  if (project.ticket.quantity <= 0) {
+    return res.json({
+      error: 'noMoreTickets'
+    })
+  }
+
   const ticket = await Ticket.findOne({
     projectId,
     userId: req.user._id
@@ -55,23 +73,49 @@ export async function claim (req, res) {
           error: 'hasClaimed'
         })
       }
-      ticket.code = code
       ticket.expired = new Date(+ticket.expired + (project.ticket.days * 24 * 3600 * 1000))
-      await ticket.save()
-      return res.json({})
     } else {
-      ticket.code = code
       ticket.expired = new Date(Date.now() + (project.ticket.days * 24 * 3600 * 1000))
-      await ticket.save()
-      return res.json({})
     }
+    ticket.code = code
+    const result = await reduceTicket(projectId)
+    if (result.modifiedCount === 0) {
+      return res.json({
+        error: 'noMoreTickets'
+      })
+    }
+    await ticket.save()
+    return res.json({
+      project: {
+        ...project.toJSON(),
+        cover: project.cover ? completeURL(project.cover) : '',
+        ticket: undefined
+      },
+      ...ticket.toJSON(),
+      code: undefined
+    })
   }
+
   const newTicket = new Ticket({
     projectId,
     userId: req.user._id,
     expired: new Date(Date.now() + (project.ticket.days * 24 * 3600 * 1000)),
     code
   })
+  const result = await reduceTicket(projectId)
+  if (result.modifiedCount === 0) {
+    return res.json({
+      error: 'noMoreTickets'
+    })
+  }
   await newTicket.save()
-  res.json({})
+  res.json({
+    project: {
+      ...project.toJSON(),
+      cover: project.cover ? completeURL(project.cover) : '',
+      ticket: undefined
+    },
+    ...newTicket.toJSON(),
+    code: undefined
+  })
 }

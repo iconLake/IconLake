@@ -135,11 +135,13 @@ export const ProjectSchema = new Schema({
     code: String,
     quantity: {
       type: Number,
-      default: 0
+      default: 0,
+      min: 0
     },
     days: {
       type: Number,
-      default: 1
+      default: 1,
+      min: 1
     }
   }
 })

@@ -46,7 +46,7 @@ async function updateCode() {
 
 async function getProject() {
   projectApis.info(projectId, 'ticket').onUpdate(async data => {
-    if (!data.ticket) {
+    if (!data.ticket || !data.ticket.code) {
       await updateCode()
       await getProject()
     } else {
@@ -135,7 +135,7 @@ onMounted(() => {
               loading: isRefreshing
             }"
             :title="t('refreshTicketCode')"
-            @click.prevent="updateCode()"
+            @click.stop="updateCode()"
           />
         </p>
       </div>
