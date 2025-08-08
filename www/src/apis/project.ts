@@ -127,6 +127,11 @@ export interface Project {
     api: string
     token: string
   }
+  ticket?: {
+    code: string
+    quantity: number
+    days: number
+  }
 }
 
 export interface Res {
@@ -167,6 +172,8 @@ export const projectApis = {
       executor: getIconPages
     })
   },
+
+  editTicket,
 }
 
 function list(fields?: string) {
@@ -307,6 +314,20 @@ export function updateInviteCode(_id: string) {
     data: {
       _id
     },
+  })
+}
+
+function editTicket(data: {
+  projectId: string
+  code?: string
+  quantity?: number
+  days?: number
+}) {
+  return <Promise<Invite>>request({
+    method: 'POST',
+    url: '/ticket/edit',
+    baseURL,
+    data,
   })
 }
 

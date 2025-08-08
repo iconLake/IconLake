@@ -8,6 +8,7 @@ import * as webAuthn from '../controllers/oauth/webAuthn.js'
 import * as mailAuthn from '../controllers/oauth/mail/index.js'
 import * as userInfo from '../controllers/user/info.js'
 import * as userTheme from '../controllers/user/theme.js'
+import * as userTicket from '../controllers/user/ticket.js'
 import * as userSetting from '../controllers/user/setting.js'
 import * as userFile from '../controllers/user/file.js'
 import userMiddleware from '../controllers/user/middleware.js'
@@ -20,6 +21,7 @@ import * as projectMember from '../controllers/project/member.js'
 import * as projectIcon from '../controllers/project/icon.js'
 import * as projectFile from '../controllers/project/file.js'
 import * as projectTheme from '../controllers/project/theme.js'
+import * as projectTicket from '../controllers/project/ticket.js'
 import * as iconInfo from '../controllers/icon/info.js'
 import { params as loginParams } from '../controllers/login/index.js'
 import { init as initDrop } from '../controllers/blockchain/drop.js'
@@ -57,6 +59,8 @@ router.post('/user/file/upload', userMiddleware, userFile.upload)
 router.post('/user/theme/edit', userMiddleware, userTheme.edit)
 router.post('/user/theme/generate', userMiddleware, userTheme.generate)
 router.get('/user/theme/info', userTheme.info)
+router.get('/user/ticket/list', userMiddleware, userTicket.list)
+router.post('/user/ticket/claim', userMiddleware, userTicket.claim)
 
 router.get('/project/list', userMiddleware, projectList.list)
 router.get('/project/info/:id', projectInfo.info)
@@ -84,6 +88,7 @@ router.post('/project/file/upload', userMiddleware, projectFile.upload)
 router.get('/project/file/storageInfo', userMiddleware, projectFile.storageInfo)
 router.post('/project/theme/edit', userMiddleware, projectTheme.edit)
 router.get('/project/theme/info', projectTheme.info)
+router.post('/project/ticket/edit', userMiddleware, projectTicket.edit)
 
 router.get('/icon/appreciate/list', appreciate.list)
 

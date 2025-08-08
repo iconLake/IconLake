@@ -284,5 +284,11 @@
   "suchAs": "For example: ",
   "myCreations": "My Creations",
   "noNFTsFound": "No works have been published yet",
-  "unknown": "Unknown"
+  "unknown": "Unknown",
+  "ticket": "Ticket",
+  "claimTicketLink": "Link to claim the ticket",
+  "ticketQuantity": "Ticket Quantity",
+  "ticketDays": "Validity Period (days)",
+  "hasClaimed": "Has claimed, cannot claim again.",
+  "refreshTicketCode": "Refresh the ticket claim link"
 }

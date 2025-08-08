@@ -133,8 +133,14 @@ export const ProjectSchema = new Schema({
   },
   ticket: {
     code: String,
-    quantity: Number,
-    days: Number
+    quantity: {
+      type: Number,
+      default: 0
+    },
+    days: {
+      type: Number,
+      default: 1
+    }
   }
 })
 
