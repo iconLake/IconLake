@@ -290,5 +290,7 @@
   "ticketQuantity": "门票数量",
   "ticketDays": "使用有效期（天）",
   "hasClaimed": "已领取过了，无法重复领取。",
-  "refreshTicketCode": "刷新门票领取链接"
+  "refreshTicketCode": "刷新门票领取链接",
+  "go": "进入",
+  "noMoreTickets": "门票已经被领完了，下次记得早点来哟！"
 }

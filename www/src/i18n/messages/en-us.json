@@ -290,5 +290,7 @@
   "ticketQuantity": "Ticket Quantity",
   "ticketDays": "Validity Period (days)",
   "hasClaimed": "Has claimed, cannot claim again.",
-  "refreshTicketCode": "Refresh the ticket claim link"
+  "refreshTicketCode": "Refresh the ticket claim link",
+  "go": "GO",
+  "noMoreTickets": "The tickets have all been claimed. Remember to come early next time!"
 }

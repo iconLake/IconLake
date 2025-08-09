@@ -8,6 +8,7 @@ import { userApis } from '@/apis/user'
 import { onMounted, ref } from 'vue'
 import { usePageLoading } from '@/hooks/router'
 import JSConfetti from 'js-confetti'
+import { ONLINE_DOMAIN } from '@/utils/const'
 
 const pageLoading = usePageLoading()
 const { t } = useI18n()
@@ -16,12 +17,11 @@ const tickets = ref<IUserTicket[]>([])
 const claimedTicket = ref<IUserTicket>()
 
 const jsConfetti = new JSConfetti()
-let timer
 
 function celebrate() {
-  timer = setInterval(() => {
+  setInterval(() => {
     jsConfetti.addConfetti({
-      emojis: ['🌈', '⚡️', '💥', '✨', '💫', '🌸', '🌹', '🌺', '💐', '🎉', '🎊', '🌟', '💖'],
+      emojis: ['🌈', '⚡️', '💥', '✨', '💫', '🌸', '🌷', '🌹', '🌺', '💐', '🎉', '🎊', '🌟', '💖', '🌼', '🌻', '🔥', '👏', '🙌', '😍', '🥰', '😘', '🤩', '🥳'],
       emojiSize: 50,
       confettiNumber: 100,
     })
@@ -51,6 +51,10 @@ async function getTickets() {
   })
 }
 
+function gotoExhibition() {
+  location.href = `${ONLINE_DOMAIN}/exhibition/${claimedTicket.value?.projectId}`
+}
+
 onMounted(async () => {
   await claimTicket()
   await getTickets()
@@ -66,6 +70,7 @@ onMounted(async () => {
   <div
     v-if="claimedTicket"
     class="claimed"
+    @click="gotoExhibition"
   >
     <div
       v-if="claimedTicket.project.cover"
