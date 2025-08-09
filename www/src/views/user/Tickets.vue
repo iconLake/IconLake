@@ -91,7 +91,7 @@ onMounted(async () => {
       {{ claimedTicket.project.desc }}
     </h2>
     <div class="ok">
-      进入
+      {{ t('go') }}
     </div>
   </div>
   <div class="tickets">

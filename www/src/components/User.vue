@@ -95,14 +95,35 @@ async function gotoLogin() {
       <RouterLink
         class="item flex"
         to="/user/assets"
+        alt="我在耕耘的隐形麦田"
       >
-        {{ t('myAssets') }}
+        <span>{{ t('myAssets') }}</span>
+        <img
+          :src="'/imgs/grain.svg'"
+          :alt="t('myAssets')"
+        >
       </RouterLink>
       <RouterLink
         class="item flex"
         to="/home"
+        alt="工作室灯光下的未眠星球"
       >
-        {{ t('myProjects') }}
+        <span>{{ t('myProjects') }}</span>
+        <img
+          :src="'/imgs/island.svg'"
+          :alt="t('myProjects')"
+        >
+      </RouterLink>
+      <RouterLink
+        class="item flex"
+        to="/user/tickets"
+        alt="在色彩与光影中游牧"
+      >
+        <span>{{ t('myExhibitions') }}</span>
+        <img
+          :src="'/imgs/exhibition.svg'"
+          :alt="t('myExhibitions')"
+        >
       </RouterLink>
       <RouterLink
         class="item flex"
@@ -192,6 +213,9 @@ async function gotoLogin() {
       cursor: pointer;
       &:hover {
         background-color: #f5f7fd;
+      }
+      img {
+        height: 1.7rem;
       }
     }
   }
