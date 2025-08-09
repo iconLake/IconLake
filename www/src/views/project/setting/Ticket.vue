@@ -2,7 +2,7 @@
 import { projectApis } from '@/apis/project';
 import { usePageLoading } from '@/hooks/router';
 import { copy, toast } from '@/utils';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import Loading from '@/components/Loading.vue'
@@ -16,14 +16,14 @@ interface Ticket {
 const { t } = useI18n()
 const pageLoading = usePageLoading()
 
-const ticket = ref<Ticket>({ code: '', quantity: 0, days: 1 })
+const ticket = reactive<Ticket>({ code: '', quantity: 0, days: 1 })
 const route = useRoute()
 const projectId = route.params.id as string
 const tickets = ref([])
 const isSaving = ref(false)
 const isRefreshing = ref(false)
 
-const claimLink = computed(() => `${window.location.origin}/manage/user/tickets?id=${projectId}&code=${ticket.value.code}`)
+const claimLink = computed(() => `${window.location.origin}/manage/user/tickets?id=${projectId}&code=${ticket.code}`)
 
 function copyLink() {
   copy(claimLink.value)
@@ -41,16 +41,16 @@ async function updateCode() {
   }).finally(() => {
     isRefreshing.value = false
   })
-  ticket.value.code = data.code
+  ticket.code = data.code
 }
 
-async function getProject() {
-  projectApis.info(projectId, 'ticket').onUpdate(async data => {
-    if (!data.ticket || !data.ticket.code) {
+async function getProject(isUpdated?: boolean) {
+  await projectApis.info(projectId, 'ticket').onUpdate(async data => {
+    if (!isUpdated && (!data.ticket || !data.ticket.code)) {
       await updateCode()
-      await getProject()
-    } else {
-      ticket.value = data.ticket
+      await getProject(true)
+    } else if (data.ticket) {
+      Object.assign(ticket, data.ticket)
     }
   })
 }
@@ -68,9 +68,9 @@ async function save() {
   isSaving.value = true
   await projectApis.editTicket({
     projectId,
-    code: ticket.value.code,
-    quantity: Number(ticket.value.quantity),
-    days: Number(ticket.value.days)
+    code: ticket.code,
+    quantity: Number(ticket.quantity),
+    days: Number(ticket.days)
   }).finally(() => {
     isSaving.value = false
   })

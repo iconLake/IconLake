@@ -173,6 +173,9 @@ onMounted(() => {
     font-size: 1.2rem;
 	  font-weight: bold;
     margin-bottom: 1.875rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 .icon-item {
