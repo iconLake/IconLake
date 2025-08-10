@@ -10,6 +10,8 @@ import { usePageLoading } from '@/hooks/router'
 import JSConfetti from 'js-confetti'
 import { ONLINE_DOMAIN } from '@/utils/const'
 import { dayjs } from 'element-plus'
+import Icon from '@/components/Icon.vue'
+import type { Icon as IIcon } from '@/apis/project'
 
 const pageLoading = usePageLoading()
 const { t } = useI18n()
@@ -56,6 +58,19 @@ function gotoExhibition() {
   location.href = `${ONLINE_DOMAIN}/exhibition/${claimedTicket.value?.projectId}`
 }
 
+function toIconInfo({ url }: { url: string }): IIcon {
+  return {
+    _id: '',
+    groupId: '',
+    tags: [],
+    name: '',
+    code: '',
+    img: {
+      url: url || '/imgs/img-error.svg',
+    }
+  }
+}
+
 onMounted(async () => {
   await claimTicket()
   await getTickets()
@@ -77,12 +92,13 @@ onMounted(async () => {
       v-if="claimedTicket.project.cover"
       class="cover"
     >
-      <img
-        :src="claimedTicket.project.cover || '/imgs/img-error.svg'"
-        onerror="this.src='/imgs/img-error.svg'"
-      >
+      <Icon
+        :info="toIconInfo({ url: claimedTicket.project.cover })"
+        :compress="{ maxWidth: 600, maxHeight: 600 }"
+        :lazy="true"
+      />
     </div>
-    <div class="info">
+    <div class="info flex column center">
       <div
         v-if="claimedTicket.project.name"
         class="title"
@@ -100,7 +116,10 @@ onMounted(async () => {
       {{ t('go') }}
     </div>
   </div>
-  <div class="tickets">
+  <div
+    class="tickets"
+    :class="{ blur: !!claimedTicket }"
+  >
     <a
       v-for="ticket in tickets"
       :key="ticket._id"
@@ -109,11 +128,11 @@ onMounted(async () => {
       target="_blank"
     >
       <div class="cover">
-        <img
-          :src="ticket.project.cover || '/imgs/img-error.svg'"
-          :alt="ticket.project.name"
-          onerror="this.src='/imgs/img-error.svg'"
-        >
+        <Icon
+          :info="toIconInfo({ url: ticket.project.cover })"
+          :compress="{ maxWidth: 600, maxHeight: 600 }"
+          :lazy="true"
+        />
       </div>
       <div class="info flex column center">
         <div class="dots flex">
@@ -156,9 +175,10 @@ onMounted(async () => {
   .cover {
     max-height: calc(100vh - 20rem);
     overflow: hidden;
-  }
-  img {
-    width: 100%;
+    .icon {
+      width: 100%;
+      height: auto;
+    }
   }
   .info {
     background: #000;
@@ -208,10 +228,13 @@ onMounted(async () => {
 
 .ticket {
   min-width: 260px;
-  img {
+  .cover .icon {
     aspect-ratio: 16/9;
-    object-fit: cover;
-    object-position: center top;
+    :deep(img) {
+      width: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
   }
   .info {
     position: relative;
@@ -253,5 +276,8 @@ onMounted(async () => {
   grid-column-gap: 2rem;
   grid-row-gap: 2rem;
   padding: 3rem;
+  &.blur {
+    filter: blur(10px);
+  }
 }
 </style>
