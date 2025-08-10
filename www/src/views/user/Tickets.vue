@@ -5,7 +5,7 @@ import HeaderVue from '@/components/Header.vue'
 import { useRoute } from 'vue-router'
 import type { IUserTicket } from '@/apis/user'
 import { userApis } from '@/apis/user'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { usePageLoading } from '@/hooks/router'
 import JSConfetti from 'js-confetti'
 import { ONLINE_DOMAIN } from '@/utils/const'
@@ -20,6 +20,14 @@ const tickets = ref<IUserTicket[]>([])
 const claimedTicket = ref<IUserTicket>()
 
 const jsConfetti = new JSConfetti()
+
+const likedTickets = computed(() => {
+  return [...tickets.value.filter(v => v.like.isLike)].sort((a, b) => (+new Date(a.like.time) < +new Date(b.like.time) ? 1 : -1))
+})
+
+const unlikedTickets = computed(() => {
+  return [...tickets.value.filter(v => !v.like.isLike)].reverse()
+})
 
 function celebrate() {
   setInterval(() => {
@@ -71,6 +79,17 @@ function toIconInfo({ url }: { url: string }): IIcon {
   }
 }
 
+async function like(ticket: IUserTicket) {
+  ticket.like.isLike = !ticket.like.isLike
+  ticket.like.time = dayjs().toISOString()
+  await userApis.likeTicket({
+    _id: ticket._id,
+    isLike: ticket.like.isLike,
+  }).catch(() => {
+    ticket.like.isLike = !ticket.like.isLike
+  })
+}
+
 onMounted(async () => {
   await claimTicket()
   await getTickets()
@@ -117,48 +136,68 @@ onMounted(async () => {
     </div>
   </div>
   <div
-    class="tickets"
-    :class="{ blur: !!claimedTicket }"
+    v-for="(list, i) in [likedTickets, unlikedTickets]"
+    :key="list[0]?._id"
+    class="tickets-wrapper"
+    :class="{'tickets-like': i === 0, 'tickets-unlike': i === 1, blur: !!claimedTicket }"
   >
-    <a
-      v-for="ticket in tickets"
-      :key="ticket._id"
-      class="ticket"
-      :href="`${ONLINE_DOMAIN}/exhibition/${ticket.projectId}`"
-      target="_blank"
+    <div
+      v-if="list.length>0"
+      class="tickets-title"
     >
-      <div class="cover">
-        <Icon
-          :info="toIconInfo({ url: ticket.project.cover })"
-          :compress="{ maxWidth: 600, maxHeight: 600 }"
-          :lazy="true"
-        />
-      </div>
-      <div class="info flex column center">
-        <div class="dots flex">
-          <div
-            v-for="v in new Array(15).map((_, i) => i)"
-            :key="v"
-            class="dot"
+      <i class="iconfont icon-heart" />
+    </div>
+    <div
+      v-if="list.length>0"
+      class="tickets"
+    >
+      <a
+        v-for="ticket in list"
+        :key="ticket._id"
+        class="ticket"
+        :href="`${ONLINE_DOMAIN}/exhibition/${ticket.projectId}`"
+        target="_blank"
+      >
+        <div class="cover">
+          <Icon
+            :info="toIconInfo({ url: ticket.project.cover })"
+            :compress="{ maxWidth: 600, maxHeight: 600 }"
+            :lazy="true"
           />
         </div>
-        <div
-          v-if="ticket.project.name"
-          class="title"
-        >
-          {{ ticket.project.name }}
+        <div class="info flex column center">
+          <div class="dots flex">
+            <div
+              v-for="v in new Array(15).map((_, i) => i)"
+              :key="v"
+              class="dot"
+            />
+          </div>
+          <div
+            v-if="ticket.project.name"
+            class="title"
+          >
+            {{ ticket.project.name }}
+          </div>
+          <div
+            v-if="ticket.project.desc"
+            class="desc"
+          >
+            {{ ticket.project.desc }}
+          </div>
         </div>
-        <div
-          v-if="ticket.project.desc"
-          class="desc"
-        >
-          {{ ticket.project.desc }}
+        <div class="opts">
+          <i
+            class="iconfont icon-heart"
+            :class="{ 'active heartbeat': ticket.like.isLike }"
+            @click.prevent="like(ticket)"
+          />
         </div>
-      </div>
-      <div class="expire flex">
-        有效期截止：{{ dayjs(ticket.expired).format('YYYY-MM-DD HH:mm') }}
-      </div>
-    </a>
+        <div class="expire flex">
+          {{ t('validUntil') }}{{ dayjs(ticket.expired).format('YYYY-MM-DD HH:mm') }}
+        </div>
+      </a>
+    </div>
   </div>
 </template>
 
@@ -253,6 +292,31 @@ onMounted(async () => {
       }
     }
   }
+  .opts {
+    position: relative;
+    top: -1rem;
+    height: 0;
+    color: var(--color-bg);
+    opacity: 0;
+    transition: var(--transition);
+    .iconfont {
+      font-size: 2.2rem;
+      text-shadow: 0 0 1px #000;
+      transition: var(--transition);
+      &:hover:not(.active) {
+        transform: scale(1.5);
+      }
+    }
+    .icon-heart.active {
+      color: #FF6E6E;
+      text-shadow: 0 0 1px #FF6E6E;
+    }
+  }
+  &:hover {
+    .opts {
+      opacity: 1;
+    }
+  }
   .expire {
     background: #fff;
     color: #000;
@@ -276,8 +340,25 @@ onMounted(async () => {
   grid-column-gap: 2rem;
   grid-row-gap: 2rem;
   padding: 3rem;
-  &.blur {
+  &-wrapper.blur {
     filter: blur(10px);
+  }
+  &-title {
+    text-align: center;
+    .iconfont {
+      font-size: 3rem;
+    }
+  }
+  &-like {
+    .tickets-title {
+      color: #FF6E6E;
+    }
+  }
+  &-unlike {
+    .tickets-title {
+      color: var(--color-bg);
+      text-shadow: 0 0 1px #000;
+    }
   }
 }
 </style>

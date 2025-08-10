@@ -119,3 +119,32 @@ export async function claim (req, res) {
     code: undefined
   })
 }
+
+export async function like (req, res) {
+  if (typeof req.body._id !== 'string' || req.body._id.length === 0 || typeof req.body.isLike !== 'boolean') {
+    res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+    return
+  }
+  const result = await Ticket.updateOne({
+    userId: req.user._id,
+    _id: req.body._id
+  }, {
+    $set: {
+      like: {
+        isLike: req.body.isLike,
+        time: new Date()
+      }
+    }
+  })
+  if (result.modifiedCount > 0) {
+    res.json({
+      isLike: req.body.isLike
+    })
+  } else {
+    res.json({
+      error: ERROR_CODE.FAIL
+    })
+  }
+}

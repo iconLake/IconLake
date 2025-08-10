@@ -110,6 +110,7 @@ export const userApis = {
   mailLogin,
   sendMail,
   claimTicket,
+  likeTicket,
 }
 
 /**
@@ -386,6 +387,10 @@ export interface IUserTicket {
     desc: string
     cover: string
   }
+  like: {
+    isLike: boolean
+    time: string
+  }
 }
 
 function getTickets() {
@@ -395,5 +400,17 @@ function getTickets() {
     method: 'GET',
     url: '/ticket/list',
     baseURL,
+  })
+}
+
+function likeTicket(data: {
+  _id: string
+  isLike: boolean
+}) {
+  return <Promise<Res>>request({
+    method: 'POST',
+    url: '/ticket/like',
+    baseURL,
+    data,
   })
 }

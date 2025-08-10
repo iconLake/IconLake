@@ -18,7 +18,17 @@ export const TicketSchema = new Schema({
     type: Date,
     default: Date.now
   },
-  code: String
+  code: String,
+  like: {
+    isLike: {
+      type: Boolean,
+      default: false
+    },
+    time: {
+      type: Date,
+      default: Date.now
+    }
+  }
 })
 
 export const Ticket = model('Ticket', TicketSchema)

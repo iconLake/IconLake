@@ -61,6 +61,7 @@ router.post('/user/theme/generate', userMiddleware, userTheme.generate)
 router.get('/user/theme/info', userTheme.info)
 router.get('/user/ticket/list', userMiddleware, userTicket.list)
 router.post('/user/ticket/claim', userMiddleware, userTicket.claim)
+router.post('/user/ticket/like', userMiddleware, userTicket.like)
 
 router.get('/project/list', userMiddleware, projectList.list)
 router.get('/project/info/:id', projectInfo.info)
