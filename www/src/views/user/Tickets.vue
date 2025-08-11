@@ -11,13 +11,15 @@ import JSConfetti from 'js-confetti'
 import { ONLINE_DOMAIN } from '@/utils/const'
 import { dayjs } from 'element-plus'
 import Icon from '@/components/Icon.vue'
-import type { Icon as IIcon } from '@/apis/project'
+import { toIcon } from '@/utils/icon'
+import { toast } from '@/utils'
 
 const pageLoading = usePageLoading()
 const { t } = useI18n()
 const route = useRoute()
 const tickets = ref<IUserTicket[]>([])
 const claimedTicket = ref<IUserTicket>()
+const passkey = ref(genPasskey())
 
 const jsConfetti = new JSConfetti()
 
@@ -28,6 +30,17 @@ const likedTickets = computed(() => {
 const unlikedTickets = computed(() => {
   return [...tickets.value.filter(v => !v.like.isLike)].reverse()
 })
+
+function genPasskey() {
+  const len = 32
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+  const maxPos = chars.length
+  const nums = []
+  for (let i = 0; i < len; i++) {
+    nums.push(chars.charAt(Math.floor(Math.random() * maxPos)))
+  }
+  return nums.join('')
+}
 
 function celebrate() {
   setInterval(() => {
@@ -62,21 +75,23 @@ async function getTickets() {
   })
 }
 
-function gotoExhibition() {
-  location.href = `${ONLINE_DOMAIN}/exhibition/${claimedTicket.value?.projectId}`
+async function setTicketPasskey(data: {
+  _id: string,
+  passkey: string
+}) {
+  await userApis.setTicketPasskey(data)
+  setTimeout(() => {
+    passkey.value = genPasskey()
+  }, 20)
 }
 
-function toIconInfo({ url }: { url: string }): IIcon {
-  return {
-    _id: '',
-    groupId: '',
-    tags: [],
-    name: '',
-    code: '',
-    img: {
-      url: url || '/imgs/img-error.svg',
-    }
-  }
+async function gotoExhibition() {
+  toast(t('loading'))
+  await setTicketPasskey({
+    _id: claimedTicket.value!._id,
+    passkey: passkey.value,
+  })
+  location.href = `${ONLINE_DOMAIN}/exhibition/${claimedTicket.value?.projectId}?ticket=${claimedTicket.value?._id}&passkey=${passkey.value}`
 }
 
 async function like(ticket: IUserTicket) {
@@ -112,7 +127,7 @@ onMounted(async () => {
       class="cover"
     >
       <Icon
-        :info="toIconInfo({ url: claimedTicket.project.cover })"
+        :info="toIcon({ img: { url: claimedTicket.project.cover } })"
         :compress="{ maxWidth: 600, maxHeight: 600 }"
         :lazy="true"
       />
@@ -155,12 +170,13 @@ onMounted(async () => {
         v-for="ticket in list"
         :key="ticket._id"
         class="ticket"
-        :href="`${ONLINE_DOMAIN}/exhibition/${ticket.projectId}`"
+        :href="`${ONLINE_DOMAIN}/exhibition/${ticket.projectId}?ticket=${ticket._id}&passkey=${passkey}`"
         target="_blank"
+        @click="setTicketPasskey({ _id: ticket._id, passkey })"
       >
         <div class="cover">
           <Icon
-            :info="toIconInfo({ url: ticket.project.cover })"
+            :info="toIcon({ img: { url: ticket.project.cover } })"
             :compress="{ maxWidth: 600, maxHeight: 600 }"
             :lazy="true"
           />
@@ -308,8 +324,8 @@ onMounted(async () => {
       }
     }
     .icon-heart.active {
-      color: #FF6E6E;
-      text-shadow: 0 0 1px #FF6E6E;
+      color: var(--color-danger);
+      text-shadow: 0 0 1px var(--color-danger);
     }
   }
   &:hover {
@@ -351,7 +367,7 @@ onMounted(async () => {
   }
   &-like {
     .tickets-title {
-      color: #FF6E6E;
+      color: var(--color-danger);
     }
   }
   &-unlike {

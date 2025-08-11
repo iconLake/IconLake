@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { IProjectTicket } from '@/apis/project';
 import { projectApis } from '@/apis/project';
 import { usePageLoading } from '@/hooks/router';
 import { copy, toast } from '@/utils';
@@ -6,6 +7,10 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import Loading from '@/components/Loading.vue'
+import Icon from '@/components/Icon.vue';
+import { toIcon } from '@/utils/icon';
+import { dayjs } from 'element-plus';
+import { ONLINE_DOMAIN } from '@/utils/const';
 
 interface Ticket {
   code: string
@@ -19,7 +24,7 @@ const pageLoading = usePageLoading()
 const ticket = reactive<Ticket>({ code: '', quantity: 0, days: 1 })
 const route = useRoute()
 const projectId = route.params.id as string
-const tickets = ref([])
+const tickets = ref<IProjectTicket[]>([])
 const isSaving = ref(false)
 const isRefreshing = ref(false)
 
@@ -56,9 +61,11 @@ async function getProject(isUpdated?: boolean) {
 }
 
 async function getList() {
-  // projectApis.getMembers(projectId).onUpdate(async data => {
-  //   tickets.value = data
-  // })
+  await projectApis.getTickets({
+    projectId
+  }).onUpdate(async data => {
+    tickets.value = data.tickets
+  })
 }
 
 async function save() {
@@ -168,11 +175,40 @@ onMounted(() => {
         </button>
       </div>
     </div>
+    <div class="list">
+      <div
+        v-for="(item, index) in tickets"
+        :key="item._id"
+        class="item flex"
+      >
+        <div class="flex">
+          <span class="rank">{{ index + 1 }}.</span>
+          <Icon
+            :info="toIcon({ img: { url: item.user.avatar }})"
+          />
+          <a
+            :href="`${ONLINE_DOMAIN}/exhibition/creator/${item.user._id}`"
+            class="name"
+            target="_blank"
+          >{{ item.user.name }}</a>
+        </div>
+        <div>
+          <i
+            v-if="item.like.isLike"
+            class="iconfont icon-heart"
+          />
+          <span :class="{ expired: +new Date(item.expired) <= Date.now() }">
+            {{ dayjs(item.expired).format('YYYY/MM/DD HH:mm') }}
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.claim {
+.claim,
+.list {
   background-color: #fff;
 	border-radius: 0.4rem;
   padding: 2.3rem 5.2rem;
@@ -185,6 +221,7 @@ onMounted(() => {
   background-color: #fff;
 	border-radius: 0.4rem;
   padding: 4rem 5.2rem;
+  margin-bottom: 2.2rem;
   .input {
     height: 4rem;
     width: 100%;
@@ -196,6 +233,44 @@ onMounted(() => {
 .btn {
   .loading {
     margin-left: 0.8rem;
+  }
+}
+
+.list {
+  .icon {
+    margin-right: 0.8rem;
+    :deep(img) {
+      height: 2rem;
+      background: var(--color-bg);
+      border-radius: 1rem;
+    }
+  }
+  .item {
+    margin-bottom: 1.5rem;
+    position: relative;
+    .icon-heart {
+      color: var(--color-danger);
+      margin-right: 0.8rem;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
+    &:hover::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      bottom: -0.75rem;
+      height: 2px;
+      background-color: var(--color-bg);
+    }
+    .expired {
+      text-decoration: line-through;
+    }
+    .rank {
+      font-size: 1rem;
+      color: var(--color-main);
+      margin-right: 0.8rem;
+    }
   }
 }
 </style>

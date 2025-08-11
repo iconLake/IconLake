@@ -111,6 +111,7 @@ export const userApis = {
   sendMail,
   claimTicket,
   likeTicket,
+  setTicketPasskey,
 }
 
 /**
@@ -410,6 +411,18 @@ function likeTicket(data: {
   return <Promise<Res>>request({
     method: 'POST',
     url: '/ticket/like',
+    baseURL,
+    data,
+  })
+}
+
+function setTicketPasskey(data: {
+  _id: string
+  passkey: string
+}) {
+  return <Promise<Res>>request({
+    method: 'POST',
+    url: '/ticket/setPasskey',
     baseURL,
     data,
   })

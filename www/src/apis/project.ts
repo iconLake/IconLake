@@ -172,6 +172,11 @@ export const projectApis = {
       executor: getIconPages
     })
   },
+  get getTickets() {
+    return cache.project.enable({
+      executor: getTickets
+    })
+  },
 
   editTicket,
 }
@@ -674,5 +679,36 @@ export function getAppreciateList (params: {
     url: '/icon/appreciate/list',
     baseURL: '/api',
     params,
+  })
+}
+
+export interface IProjectTicket {
+  _id: string
+  projectId: string
+  userId: string
+  user: {
+    _id: string
+    name?: string
+    desc?: string
+    avatar?: string
+  }
+  expired: string
+  createTime: string
+  like: {
+    isLike: boolean
+    time: string
+  }
+}
+
+function getTickets(params: {
+  projectId: string
+}) {
+  return request<{
+    tickets: IProjectTicket[]
+  }>({
+    method: 'GET',
+    url: '/ticket/list',
+    baseURL,
+    params
   })
 }

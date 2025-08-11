@@ -148,3 +148,30 @@ export async function like (req, res) {
     })
   }
 }
+
+export async function setPasskey (req, res) {
+  if (typeof req.body._id !== 'string' || req.body._id.length === 0 || typeof req.body.passkey !== 'string') {
+    res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+    return
+  }
+  const result = await Ticket.updateOne({
+    userId: req.user._id,
+    _id: req.body._id
+  }, {
+    $set: {
+      'auth.passkey': req.body.passkey,
+      'auth.expired': new Date(Date.now() + 24 * 3600 * 1000)
+    }
+  })
+  if (result.modifiedCount > 0) {
+    res.json({
+      passkey: req.body.passkey
+    })
+  } else {
+    res.json({
+      error: ERROR_CODE.FAIL
+    })
+  }
+}

@@ -28,6 +28,13 @@ export const TicketSchema = new Schema({
       type: Date,
       default: Date.now
     }
+  },
+  auth: {
+    passkey: String,
+    expired: {
+      type: Date,
+      default: Date.now
+    }
   }
 })
 

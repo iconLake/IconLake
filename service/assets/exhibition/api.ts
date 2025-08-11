@@ -87,6 +87,16 @@ export interface IconlakeAPI {
   share: {
     load: (container: string, options?: { nftId?: string, classId?: string }) => Promise<void>
   }
+  auth: {
+    url: string
+    ticket?: string
+    passkey?: string
+    getParams: () => {
+      ticket?: string
+      passkey?: string
+    }
+    getSearchParams: () => string
+  }
   verifyHash: (uri: string, uriHash: string) => Promise<number>
 }
 
@@ -171,7 +181,8 @@ export interface Sharethis {
     const pid = id ?? classAPI.id
     const res = await fetch(`${lcd}/iconlake/icon/nfts?class_id=${pid}`).then(res => res.json()).then(transferKey)
     if (!res || +res.pagination?.total === 0) {
-      return await fetch(`${domain.master}/api/exhibition/nftList/${pid}`).then(res => res.json())
+      const authSearchParams = authAPI.getSearchParams()
+      return await fetch(`${domain.master}/api/exhibition/nftList/${pid}${authSearchParams ? `?${authSearchParams}` : ''}`).then(res => res.json())
     }
     return res
   }
@@ -205,7 +216,8 @@ export interface Sharethis {
     const nid = id ?? nftAPI.id
     const res = await fetch(`${lcd}/iconlake/icon/nft?class_id=${classAPI.id}&id=${nid}`).then(res => res.json()).then(transferKey)
     if (!res?.nft) {
-      return await fetch(`${domain.master}/api/exhibition/nftInfo/${classAPI.id}/${nid}`).then(res => res.json())
+      const authSearchParams = authAPI.getSearchParams()
+      return await fetch(`${domain.master}/api/exhibition/nftInfo/${classAPI.id}/${nid}${authSearchParams ? `?${authSearchParams}` : ''}`).then(res => res.json())
     }
     return res.nft
   }
@@ -310,6 +322,35 @@ export interface Sharethis {
     }
   }
 
+  /**
+   * Auth
+   */
+  const authAPI = {
+    url: globalThis.location.href,
+    ticket: '',
+    passkey: '',
+    getParams () {
+      const url = new URL(authAPI.url)
+      return {
+        ticket: url.searchParams.get('ticket') || undefined,
+        passkey: url.searchParams.get('passkey') || undefined
+      }
+    },
+    getSearchParams () {
+      const params = authAPI.getParams()
+      const init: Record<string, string> = {}
+      if (params.ticket) {
+        init.ticket = params.ticket
+      }
+      if (params.passkey) {
+        init.passkey = params.passkey
+      }
+      return new URLSearchParams(init).toString()
+    }
+  }
+
+  Object.assign(authAPI, authAPI.getParams())
+
   function verifyHash (uri: string, uriHash: string) {
     if (!uri || !uriHash) {
       return Promise.resolve(0)
@@ -346,6 +387,7 @@ export interface Sharethis {
     nft: nftAPI,
     creator: creatorAPI,
     share: shareAPI,
+    auth: authAPI,
     verifyHash
   }
 })(window as never)

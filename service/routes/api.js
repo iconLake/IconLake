@@ -11,7 +11,7 @@ import * as userTheme from '../controllers/user/theme.js'
 import * as userTicket from '../controllers/user/ticket.js'
 import * as userSetting from '../controllers/user/setting.js'
 import * as userFile from '../controllers/user/file.js'
-import userMiddleware from '../controllers/user/middleware.js'
+import userMiddleware, { checkTicket } from '../controllers/user/middleware.js'
 import * as projectInfo from '../controllers/project/info.js'
 import * as projectList from '../controllers/project/list.js'
 import * as projectGroup from '../controllers/project/group.js'
@@ -62,6 +62,7 @@ router.get('/user/theme/info', userTheme.info)
 router.get('/user/ticket/list', userMiddleware, userTicket.list)
 router.post('/user/ticket/claim', userMiddleware, userTicket.claim)
 router.post('/user/ticket/like', userMiddleware, userTicket.like)
+router.post('/user/ticket/setPasskey', userMiddleware, userTicket.setPasskey)
 
 router.get('/project/list', userMiddleware, projectList.list)
 router.get('/project/info/:id', projectInfo.info)
@@ -90,6 +91,7 @@ router.get('/project/file/storageInfo', userMiddleware, projectFile.storageInfo)
 router.post('/project/theme/edit', userMiddleware, projectTheme.edit)
 router.get('/project/theme/info', projectTheme.info)
 router.post('/project/ticket/edit', userMiddleware, projectTicket.edit)
+router.get('/project/ticket/list', userMiddleware, projectTicket.list)
 
 router.get('/icon/appreciate/list', appreciate.list)
 
@@ -107,8 +109,8 @@ router.get('/blacklist/verify/project', verifyProject)
 router.get('/blacklist/verify/address', verifyAddress)
 
 router.get('/exhibition/classInfo/:id', exhibition.classInfo)
-router.get('/exhibition/nftList/:projectId', exhibition.nftList)
-router.get('/exhibition/nftInfo/:projectId/:iconId', exhibition.nftInfo)
+router.get('/exhibition/nftList/:projectId', checkTicket, exhibition.nftList)
+router.get('/exhibition/nftInfo/:projectId/:iconId', checkTicket, exhibition.nftInfo)
 router.get('/exhibition/creatorInfo/:id', exhibition.creatorInfo)
 
 export default router
