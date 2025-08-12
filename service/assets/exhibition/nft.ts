@@ -19,33 +19,35 @@ import type { IconlakeAPI } from './api';
     iconlakeAPI.loading.isShow = false
     return
   }
-  const verify = await fetch(
+  if (info.data?.author) {
+    const verify = await fetch(
     `/api/blacklist/verify/nft?address=${info.data.author}&projectId=${iconlakeAPI.class.id}&nftId=${iconlakeAPI.nft.id}`
-  )
-    .then((e) => e.json())
-    .catch(console.error)
-  if (verify.error) {
-    return
-  }
-  if (verify.block.nftId) {
-    const isAdmin = await fetch(
-      '/api/admin/info/verify'
-    ).then((e) => e.json()).then((data) => data.isAdmin)
-    if (!isAdmin) {
-      rootDom.innerHTML = '<h1 class="blocked">This NFT has been blocked.</h1>'
-      iconlakeAPI.loading.isShow = false
+    )
+      .then((e) => e.json())
+      .catch(console.error)
+    if (verify.error) {
       return
     }
-    const blockIcon = document.createElement('div')
-    let blockTarget = 'NFT'
-    if (verify.block.address) {
-      blockTarget = '作者'
-    } else if (verify.block.projectId) {
-      blockTarget = '项目'
+    if (verify.block.nftId) {
+      const isAdmin = await fetch(
+        '/api/admin/info/verify'
+      ).then((e) => e.json()).then((data) => data.isAdmin)
+      if (!isAdmin) {
+        rootDom.innerHTML = '<h1 class="blocked">This NFT has been blocked.</h1>'
+        iconlakeAPI.loading.isShow = false
+        return
+      }
+      const blockIcon = document.createElement('div')
+      let blockTarget = 'NFT'
+      if (verify.block.address) {
+        blockTarget = '作者'
+      } else if (verify.block.projectId) {
+        blockTarget = '项目'
+      }
+      blockIcon.innerText = `封:${blockTarget}`
+      blockIcon.className = 'blocked-admin'
+      document.body.appendChild(blockIcon)
     }
-    blockIcon.innerText = `封:${blockTarget}`
-    blockIcon.className = 'blocked-admin'
-    document.body.appendChild(blockIcon)
   }
 
   let themeUrl = '/themes/default/nft.js'

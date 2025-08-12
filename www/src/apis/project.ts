@@ -177,6 +177,11 @@ export const projectApis = {
       executor: getTickets
     })
   },
+  get getTicket() {
+    return cache.project.enable({
+      executor: getTicket
+    })
+  },
 
   editTicket,
 }
@@ -708,6 +713,17 @@ function getTickets(params: {
   }>({
     method: 'GET',
     url: '/ticket/list',
+    baseURL,
+    params
+  })
+}
+
+function getTicket(params: {
+  projectId: string
+}) {
+  return request<IProjectTicket>({
+    method: 'GET',
+    url: '/ticket/info',
     baseURL,
     params
   })

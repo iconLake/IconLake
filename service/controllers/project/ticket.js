@@ -96,3 +96,44 @@ export async function list (req, res) {
     })
   })
 }
+
+export async function info (req, res) {
+  if (!req.query.projectId || typeof req.query.projectId !== 'string') {
+    return res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+  }
+  const project = await Project.findOne({
+    _id: req.query.projectId,
+    members: {
+      $elemMatch: {
+        userId: req.user._id
+      }
+    }
+  }, 'ticket')
+  if (!project) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
+  let ticket = await Ticket.findOne({
+    userId: req.user._id,
+    projectId: req.query.projectId
+  }, '-code -auth')
+  const expired = new Date(Date.now() + 24 * 3600 * 1000)
+  if (!ticket) {
+    ticket = new Ticket({
+      userId: req.user._id,
+      projectId: req.query.projectId,
+      expired
+    })
+    await ticket.save()
+  } else {
+    if (+ticket.expired <= Date.now()) {
+      ticket.expired = expired
+      await ticket.save()
+    }
+  }
+  res.json(ticket.toJSON())
+}

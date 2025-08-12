@@ -13,13 +13,14 @@ import { dayjs } from 'element-plus'
 import Icon from '@/components/Icon.vue'
 import { toIcon } from '@/utils/icon'
 import { toast } from '@/utils'
+import { useTicket } from '@/hooks/ticket'
 
 const pageLoading = usePageLoading()
 const { t } = useI18n()
 const route = useRoute()
 const tickets = ref<IUserTicket[]>([])
 const claimedTicket = ref<IUserTicket>()
-const passkey = ref(genPasskey())
+const { passkey, setTicketPasskey } = useTicket()
 
 const jsConfetti = new JSConfetti()
 
@@ -30,17 +31,6 @@ const likedTickets = computed(() => {
 const unlikedTickets = computed(() => {
   return [...tickets.value.filter(v => !v.like.isLike)].reverse()
 })
-
-function genPasskey() {
-  const len = 32
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
-  const maxPos = chars.length
-  const nums = []
-  for (let i = 0; i < len; i++) {
-    nums.push(chars.charAt(Math.floor(Math.random() * maxPos)))
-  }
-  return nums.join('')
-}
 
 function celebrate() {
   setInterval(() => {
@@ -75,23 +65,13 @@ async function getTickets() {
   })
 }
 
-async function setTicketPasskey(data: {
-  _id: string,
-  passkey: string
-}) {
-  await userApis.setTicketPasskey(data)
-  setTimeout(() => {
-    passkey.value = genPasskey()
-  }, 20)
-}
-
 async function gotoExhibition() {
   toast(t('loading'))
-  await setTicketPasskey({
+  const res = await setTicketPasskey({
     _id: claimedTicket.value!._id,
     passkey: passkey.value,
   })
-  location.href = `${ONLINE_DOMAIN}/exhibition/${claimedTicket.value?.projectId}?ticket=${claimedTicket.value?._id}&passkey=${passkey.value}`
+  location.href = `${ONLINE_DOMAIN}/exhibition/${claimedTicket.value?.projectId}?ticket=${claimedTicket.value?._id}&passkey=${res.passkey}`
 }
 
 async function like(ticket: IUserTicket) {

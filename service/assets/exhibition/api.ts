@@ -161,6 +161,13 @@ export interface Sharethis {
   }
 
   /**
+   * Cache
+   */
+  const cache = {
+    data: new Map<string, unknown>()
+  }
+
+  /**
    * Class
    */
   const classAPI = {
@@ -179,19 +186,33 @@ export interface Sharethis {
   })
   classAPI.getNfts = async (id?: string) => {
     const pid = id ?? classAPI.id
-    const res = await fetch(`${lcd}/iconlake/icon/nfts?class_id=${pid}`).then(res => res.json()).then(transferKey)
+    const cacheKey = `class:getNfts:${pid}`
+    const cachedRes = cache.data.get(cacheKey)
+    if (cachedRes) {
+      return cachedRes
+    }
+    let res = await fetch(`${lcd}/iconlake/icon/nfts?class_id=${pid}`).then(res => res.json()).then(transferKey)
     if (!res || +res.pagination?.total === 0) {
       const authSearchParams = authAPI.getSearchParams()
-      return await fetch(`${domain.master}/api/exhibition/nftList/${pid}${authSearchParams ? `?${authSearchParams}` : ''}`).then(res => res.json())
+      res = await fetch(`${domain.master}/api/exhibition/nftList/${pid}${authSearchParams ? `?${authSearchParams}` : ''}`).then(res => res.json())
     }
+    cache.data.set(cacheKey, res)
     return res
   }
   classAPI.getInfo = async (id?: string) => {
     const pid = id ?? classAPI.id
-    const res = await fetch(`${lcd}/iconlake/icon/class?id=${pid}`).then(res => res.json()).then(transferKey)
-    if (!res?.class) {
-      return await fetch(`${domain.master}/api/exhibition/classInfo/${pid}`).then(res => res.json())
+    const cacheKey = `class:getInfo:${pid}`
+    const cachedRes = cache.data.get(cacheKey)
+    if (cachedRes) {
+      return cachedRes
     }
+    let res = await fetch(`${lcd}/iconlake/icon/class?id=${pid}`).then(res => res.json()).then(transferKey)
+    if (!res?.class) {
+      res = {
+        class: await fetch(`${domain.master}/api/exhibition/classInfo/${pid}`).then(res => res.json())
+      }
+    }
+    cache.data.set(cacheKey, res.class)
     return res.class
   }
 
@@ -214,11 +235,19 @@ export interface Sharethis {
   })
   nftAPI.getInfo = async (id?: string) => {
     const nid = id ?? nftAPI.id
-    const res = await fetch(`${lcd}/iconlake/icon/nft?class_id=${classAPI.id}&id=${nid}`).then(res => res.json()).then(transferKey)
+    const cacheKey = `nft:getInfo:${nid}`
+    const cachedRes = cache.data.get(cacheKey)
+    if (cachedRes) {
+      return cachedRes
+    }
+    let res = await fetch(`${lcd}/iconlake/icon/nft?class_id=${classAPI.id}&id=${nid}`).then(res => res.json()).then(transferKey)
     if (!res?.nft) {
       const authSearchParams = authAPI.getSearchParams()
-      return await fetch(`${domain.master}/api/exhibition/nftInfo/${classAPI.id}/${nid}${authSearchParams ? `?${authSearchParams}` : ''}`).then(res => res.json())
+      res = {
+        nft: await fetch(`${domain.master}/api/exhibition/nftInfo/${classAPI.id}/${nid}${authSearchParams ? `?${authSearchParams}` : ''}`).then(res => res.json())
+      }
     }
+    cache.data.set(cacheKey, res.nft)
     return res.nft
   }
 
@@ -241,15 +270,23 @@ export interface Sharethis {
   })
   creatorAPI.getInfo = async (address?: string) => {
     const addr = address ?? creatorAPI.address
-    const res = await fetch(`${lcd}/iconlake/icon/creator/${addr}`).then(res => res.json()).then(res => {
+    const cacheKey = `creator:getInfo:${addr}`
+    const cachedRes = cache.data.get(cacheKey)
+    if (cachedRes) {
+      return cachedRes
+    }
+    let res = await fetch(`${lcd}/iconlake/icon/creator/${addr}`).then(res => res.json()).then(res => {
       if (res.error) {
         throw new Error(res.error)
       }
       return transferKey(res)
     })
     if (!res?.creator) {
-      return await fetch(`${domain.master}/api/exhibition/creatorInfo/${addr}`).then(res => res.json())
+      res = {
+        creator: await fetch(`${domain.master}/api/exhibition/creatorInfo/${addr}`).then(res => res.json())
+      }
     }
+    cache.data.set(cacheKey, res.creator)
     return res.creator
   }
 

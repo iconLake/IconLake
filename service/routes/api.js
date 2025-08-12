@@ -92,6 +92,7 @@ router.post('/project/theme/edit', userMiddleware, projectTheme.edit)
 router.get('/project/theme/info', projectTheme.info)
 router.post('/project/ticket/edit', userMiddleware, projectTicket.edit)
 router.get('/project/ticket/list', userMiddleware, projectTicket.list)
+router.get('/project/ticket/info', userMiddleware, projectTicket.info)
 
 router.get('/icon/appreciate/list', appreciate.list)
 
