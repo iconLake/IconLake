@@ -54,7 +54,7 @@ import type { IconlakeAPI } from './api';
   if (!iconlakeAPI.isProduction || (iconlakeAPI.isProduction && location.origin !== iconlakeAPI.domain.master)) {
     const diyTheme = await fetch(`/api/project/theme/info?id=${iconlakeAPI.class.id}`).then((e) => e.json())
     if (diyTheme?.nft) {
-      themeUrl = `${iconlakeAPI.config.cdn}/${diyTheme.nft}`
+      themeUrl = /^https?:\/\//i.test(diyTheme.nft) ? diyTheme.nft : `${iconlakeAPI.config.cdn}/${diyTheme.nft}`
     }
   }
   const qUrl = new URL(location.href)

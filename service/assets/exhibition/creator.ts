@@ -47,7 +47,7 @@ import type { IconlakeAPI } from './api';
   if (!iconlakeAPI.isProduction || (iconlakeAPI.isProduction && location.origin !== iconlakeAPI.domain.master)) {
     const diyTheme = await fetch(`/api/user/theme/info?address=${info.address}`).then((e) => e.json())
     if (diyTheme?.creator) {
-      themeUrl = `${iconlakeAPI.config.cdn}/${diyTheme.creator}`
+      themeUrl = /^https?:\/\//i.test(diyTheme.creator) ? diyTheme.creator : `${iconlakeAPI.config.cdn}/${diyTheme.creator}`
     }
   }
   const qUrl = new URL(location.href)

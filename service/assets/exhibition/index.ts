@@ -50,7 +50,7 @@ import type { IconlakeAPI } from './api'
   if (!iconlakeAPI.isProduction || (iconlakeAPI.isProduction && location.origin !== iconlakeAPI.domain.master)) {
     const diyTheme = await fetch(`/api/project/theme/info?id=${iconlakeAPI.class.id}`).then((e) => e.json())
     if (diyTheme?.class) {
-      themeUrl = `${iconlakeAPI.config.cdn}/${diyTheme.class}`
+      themeUrl = /^https?:\/\//i.test(diyTheme.class) ? diyTheme.class : `${iconlakeAPI.config.cdn}/${diyTheme.class}`
     }
   }
   const qUrl = new URL(location.href)
