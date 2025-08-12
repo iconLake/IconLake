@@ -128,7 +128,11 @@
   "downloadFile": "Download File",
   "isPublic": "Is Public",
   "myAssets": "My Assets",
+  "myAssetsDesc": "Golden Grains Swaying in the Winds of Time",
   "myProjects": "My Projects",
+  "myProjectsDesc": "Islands Hatched from Heartbeats",
+  "myExhibitions": "My Exhibitions",
+  "myExhibitionsDesc": "Exhibitions That Made Me Stay",
   "exhibition": "Exhibition",
   "gotoInstall": "Go to install ",
   "publicAccess": "Public, anyone who obtains the page link can access it",
@@ -284,5 +288,14 @@
   "suchAs": "For example: ",
   "myCreations": "My Creations",
   "noNFTsFound": "No works have been published yet",
-  "unknown": "Unknown"
+  "unknown": "Unknown",
+  "ticket": "Ticket",
+  "claimTicketLink": "Link to claim the ticket",
+  "ticketQuantity": "Ticket Quantity",
+  "ticketDays": "Validity Period (days)",
+  "hasClaimed": "Has claimed, cannot claim again.",
+  "refreshTicketCode": "Refresh the ticket claim link",
+  "go": "GO",
+  "noMoreTickets": "The tickets have all been claimed. Remember to come early next time!",
+  "validUntil": "Valid until: "
 }

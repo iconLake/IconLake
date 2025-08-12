@@ -128,7 +128,11 @@
   "downloadFile": "下载文件",
   "isPublic": "是否公开",
   "myAssets": "我的资产",
+  "myAssetsDesc": "时间风里摇曳的金穗",
   "myProjects": "我的项目",
+  "myProjectsDesc": "我用心跳孵化的岛屿",
+  "myExhibitions": "我的看展",
+  "myExhibitionsDesc": "那些我驻足过的展览",
   "exhibition": "展览",
   "gotoInstall": "前往安装",
   "publicAccess": "公开，获得页面链接的任何人都可以访问",
@@ -284,5 +288,14 @@
   "suchAs": "例如：",
   "myCreations": "我的创作",
   "noNFTsFound": "还没有发布作品",
-  "unknown": "未知"
+  "unknown": "未知",
+  "ticket": "门票",
+  "claimTicketLink": "领取门票的链接",
+  "ticketQuantity": "门票数量",
+  "ticketDays": "使用有效期（天）",
+  "hasClaimed": "已领取过了，无法重复领取。",
+  "refreshTicketCode": "刷新门票领取链接",
+  "go": "进入",
+  "noMoreTickets": "门票已经被领完了，下次记得早点来哟！",
+  "validUntil": "有效期截止："
 }

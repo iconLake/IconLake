@@ -33,7 +33,7 @@ watch(() => props.info, async () => {
   isError.value = false
   const url = getIconUrl(props.info)
   if (!url) {
-    imgUrl.value = ''
+    imgUrl.value = '/imgs/img-error.svg'
     return
   }
   if (url.startsWith(DFS_PREFIX)) {
@@ -108,7 +108,8 @@ onMounted(() => {
   width: 100%;
   height: 100%;
 }
-.icon-img {
+.icon-img,
+.icon-unknown {
   height: auto;
   width: auto;
   max-width: 100%;

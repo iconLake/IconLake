@@ -91,6 +91,11 @@ export const userApis = {
       executor: getUsage
     })
   },
+  get getTickets() {
+    return cache.user.enable({
+      executor: getTickets
+    })
+  },
 
   unbind,
   regenAccessKey,
@@ -104,6 +109,9 @@ export const userApis = {
   webAuthnRegister,
   mailLogin,
   sendMail,
+  claimTicket,
+  likeTicket,
+  setTicketPasskey,
 }
 
 /**
@@ -352,6 +360,70 @@ function sendMail(data: {
     method: 'POST',
     url: '/mail/send',
     baseURL: '/api/oauth',
+    data,
+  })
+}
+
+function claimTicket(data: {
+  projectId: string
+  code: string
+}) {
+  return <Promise<Res>>request({
+    method: 'POST',
+    url: '/ticket/claim',
+    baseURL,
+    data,
+  })
+}
+
+export interface IUserTicket {
+  _id: string
+  projectId: string
+  userId: string
+  expired: string
+  createTime: string
+  project: {
+    _id: string
+    name: string
+    desc: string
+    cover: string
+  }
+  like: {
+    isLike: boolean
+    time: string
+  }
+}
+
+function getTickets() {
+  return <Promise<{
+    tickets: IUserTicket[]
+  }>>request({
+    method: 'GET',
+    url: '/ticket/list',
+    baseURL,
+  })
+}
+
+function likeTicket(data: {
+  _id: string
+  isLike: boolean
+}) {
+  return <Promise<Res>>request({
+    method: 'POST',
+    url: '/ticket/like',
+    baseURL,
+    data,
+  })
+}
+
+function setTicketPasskey(data: {
+  _id: string
+  passkey: string
+}) {
+  return <Promise<Res>>request({
+    method: 'POST',
+    url: '/ticket/setPasskey',
+    baseURL,
     data,
   })
 }

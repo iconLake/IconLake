@@ -95,14 +95,56 @@ async function gotoLogin() {
       <RouterLink
         class="item flex"
         to="/user/assets"
+        alt="我在耕耘的隐形麦田"
       >
-        {{ t('myAssets') }}
+        <div>
+          <p class="title">
+            {{ t('myAssets') }}
+          </p>
+          <p class="desc">
+            {{ t('myAssetsDesc') }}
+          </p>
+        </div>
+        <img
+          :src="'/imgs/grain.svg'"
+          :alt="t('myAssets')"
+        >
       </RouterLink>
       <RouterLink
         class="item flex"
         to="/home"
+        alt="工作室灯光下的未眠星球"
       >
-        {{ t('myProjects') }}
+        <div>
+          <p class="title">
+            {{ t('myProjects') }}
+          </p>
+          <p class="desc">
+            {{ t('myProjectsDesc') }}
+          </p>
+        </div>
+        <img
+          :src="'/imgs/island.svg'"
+          :alt="t('myProjects')"
+        >
+      </RouterLink>
+      <RouterLink
+        class="item flex"
+        to="/user/tickets"
+        alt="在色彩与光影中游牧"
+      >
+        <div>
+          <p class="title">
+            {{ t('myExhibitions') }}
+          </p>
+          <p class="desc">
+            {{ t('myExhibitionsDesc') }}
+          </p>
+        </div>
+        <img
+          :src="'/imgs/exhibition.svg'"
+          :alt="t('myExhibitions')"
+        >
       </RouterLink>
       <RouterLink
         class="item flex"
@@ -192,6 +234,13 @@ async function gotoLogin() {
       cursor: pointer;
       &:hover {
         background-color: #f5f7fd;
+      }
+      img {
+        height: 2.5rem;
+      }
+      .desc {
+        font-size: 1.1rem;
+        color: #999;
       }
     }
   }

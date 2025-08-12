@@ -49,6 +49,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/project/setting/Theme.vue')
       },
       {
+        path: 'ticket',
+        name: 'ticketSetting',
+        component: () => import('../views/project/setting/Ticket.vue')
+      },
+      {
         path: 'monitor',
         name: 'projectMonitorSetting',
         component: () => import('../views/project/setting/Monitor.vue')
@@ -99,6 +104,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/user/assets',
     name: 'userAssets',
     component: () => import('../views/user/Assets.vue')
+  },
+  {
+    path: '/user/tickets',
+    name: 'userTickets',
+    component: () => import('../views/user/Tickets.vue')
   },
   {
     path: '/user/assets/drop/init',

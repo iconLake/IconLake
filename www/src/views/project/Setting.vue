@@ -142,6 +142,14 @@ onUnmounted(() => {
       <router-link
         class="item"
         active-class="active"
+        to="./ticket"
+      >
+        <i class="iconfont icon-ticket" />
+        <span>{{ t('ticket') }}</span>
+      </router-link>
+      <router-link
+        class="item"
+        active-class="active"
         to="./storage"
       >
         <i class="iconfont icon-storage" />

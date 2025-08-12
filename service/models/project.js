@@ -39,6 +39,10 @@ export const IconSchema = new Schema({
     nftId: String,
     txHash: String,
     height: Number
+  },
+  createTime: {
+    type: Date,
+    default: Date.now
   }
 })
 
@@ -80,7 +84,10 @@ export const ProjectSchema = new Schema({
     }]
   },
   userId: Schema.Types.ObjectId,
-  createTime: Date,
+  createTime: {
+    type: Date,
+    default: Date.now
+  },
   members: [{
     userId: Schema.Types.ObjectId,
     isAdmin: {
@@ -123,6 +130,19 @@ export const ProjectSchema = new Schema({
   storage: {
     api: String,
     token: String
+  },
+  ticket: {
+    code: String,
+    quantity: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    days: {
+      type: Number,
+      default: 1,
+      min: 1
+    }
   }
 })
 

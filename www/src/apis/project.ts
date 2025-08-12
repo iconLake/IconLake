@@ -127,6 +127,11 @@ export interface Project {
     api: string
     token: string
   }
+  ticket?: {
+    code: string
+    quantity: number
+    days: number
+  }
 }
 
 export interface Res {
@@ -167,6 +172,18 @@ export const projectApis = {
       executor: getIconPages
     })
   },
+  get getTickets() {
+    return cache.project.enable({
+      executor: getTickets
+    })
+  },
+  get getTicket() {
+    return cache.project.enable({
+      executor: getTicket
+    })
+  },
+
+  editTicket,
 }
 
 function list(fields?: string) {
@@ -307,6 +324,20 @@ export function updateInviteCode(_id: string) {
     data: {
       _id
     },
+  })
+}
+
+function editTicket(data: {
+  projectId: string
+  code?: string
+  quantity?: number
+  days?: number
+}) {
+  return <Promise<Invite>>request({
+    method: 'POST',
+    url: '/ticket/edit',
+    baseURL,
+    data,
   })
 }
 
@@ -653,5 +684,47 @@ export function getAppreciateList (params: {
     url: '/icon/appreciate/list',
     baseURL: '/api',
     params,
+  })
+}
+
+export interface IProjectTicket {
+  _id: string
+  projectId: string
+  userId: string
+  user: {
+    _id: string
+    name?: string
+    desc?: string
+    avatar?: string
+  }
+  expired: string
+  createTime: string
+  like: {
+    isLike: boolean
+    time: string
+  }
+}
+
+function getTickets(params: {
+  projectId: string
+}) {
+  return request<{
+    tickets: IProjectTicket[]
+  }>({
+    method: 'GET',
+    url: '/ticket/list',
+    baseURL,
+    params
+  })
+}
+
+function getTicket(params: {
+  projectId: string
+}) {
+  return request<IProjectTicket>({
+    method: 'GET',
+    url: '/ticket/info',
+    baseURL,
+    params
   })
 }

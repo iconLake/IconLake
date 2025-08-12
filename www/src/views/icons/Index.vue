@@ -3,7 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } 
 import { useRoute } from 'vue-router'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
-import { type Group, type Icon, projectApis, delIcon, batchGroupIcon, editGroup, type Member } from '../../apis/project'
+import { type Group, type Icon, projectApis, delIcon, batchGroupIcon, editGroup, type Member, type IProjectTicket } from '../../apis/project'
 import IconVue from '../../components/Icon.vue'
 import { confirm, toast } from '../../utils'
 import Detail from './Detail.vue'
@@ -20,10 +20,12 @@ import SearchWebVue from './search/Web.vue'
 import { event } from '@/utils/event'
 import Review from './Review.vue'
 import { useUser } from '@/hooks/user'
+import { useTicket } from '@/hooks/ticket'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
 const { userInfo } = useUser()
+const { getTicket, passkey, setTicketPasskey } = useTicket()
 
 const $route = useRoute()
 
@@ -52,7 +54,8 @@ const data = reactive({
   keywords: '',
   batchGroupId: '',
   members: [] as Member[],
-  isPublic: false
+  isPublic: false,
+  ticket: {} as IProjectTicket
 })
 
 const batchGroupFormDom = ref<Element>()
@@ -224,6 +227,11 @@ onMounted(() => {
   detailWidth = detailDom.value?.root.getBoundingClientRect().width || 200
   getIcons().finally(() => {
     pageLoading.end()
+  })
+  getTicket({
+    projectId: data._id,
+  }, async (ticket) => {
+    data.ticket = ticket
   })
   event.on(event.EventType.IconCollected, getIcons)
 })
@@ -403,9 +411,10 @@ watch(() => data.keywords, () => {
     </router-link>
     <a
       class="iconfont icon-exhibition exhibition"
-      :href="`${ONLINE_DOMAIN}/exhibition/${data._id}`"
+      :href="`${ONLINE_DOMAIN}/exhibition/${data._id}?ticket=${data.ticket._id}&passkey=${passkey}`"
       target="_blank"
       :title="t('exhibition')"
+      @click="setTicketPasskey({ _id: data.ticket._id, passkey })"
     />
   </HeaderVue>
   <UserVue />
@@ -521,7 +530,7 @@ watch(() => data.keywords, () => {
           >
             <IconVue
               :info="icon"
-              :compress="{ maxWidth: 600, maxHeight: 600}"
+              :compress="{ maxWidth: 600, maxHeight: 600 }"
               :lazy="true"
             />
             <div class="name">

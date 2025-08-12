@@ -87,6 +87,16 @@ export interface IconlakeAPI {
   share: {
     load: (container: string, options?: { nftId?: string, classId?: string }) => Promise<void>
   }
+  auth: {
+    url: string
+    ticket?: string
+    passkey?: string
+    getParams: () => {
+      ticket?: string
+      passkey?: string
+    }
+    getSearchParams: () => string
+  }
   verifyHash: (uri: string, uriHash: string) => Promise<number>
 }
 
@@ -151,6 +161,13 @@ export interface Sharethis {
   }
 
   /**
+   * Cache
+   */
+  const cache = {
+    data: new Map<string, unknown>()
+  }
+
+  /**
    * Class
    */
   const classAPI = {
@@ -169,11 +186,34 @@ export interface Sharethis {
   })
   classAPI.getNfts = async (id?: string) => {
     const pid = id ?? classAPI.id
-    return await fetch(`${lcd}/iconlake/icon/nfts?class_id=${pid}`).then(res => res.json()).then(transferKey)
+    const cacheKey = `class:getNfts:${pid}`
+    const cachedRes = cache.data.get(cacheKey)
+    if (cachedRes) {
+      return cachedRes
+    }
+    let res = await fetch(`${lcd}/iconlake/icon/nfts?class_id=${pid}`).then(res => res.json()).then(transferKey)
+    if (!res || +res.pagination?.total === 0) {
+      const authSearchParams = authAPI.getSearchParams()
+      res = await fetch(`${domain.master}/api/exhibition/nftList/${pid}${authSearchParams ? `?${authSearchParams}` : ''}`).then(res => res.json())
+    }
+    cache.data.set(cacheKey, res)
+    return res
   }
   classAPI.getInfo = async (id?: string) => {
     const pid = id ?? classAPI.id
-    return await fetch(`${lcd}/iconlake/icon/class?id=${pid}`).then(res => res.json()).then(res => transferKey(res.class))
+    const cacheKey = `class:getInfo:${pid}`
+    const cachedRes = cache.data.get(cacheKey)
+    if (cachedRes) {
+      return cachedRes
+    }
+    let res = await fetch(`${lcd}/iconlake/icon/class?id=${pid}`).then(res => res.json()).then(transferKey)
+    if (!res?.class) {
+      res = {
+        class: await fetch(`${domain.master}/api/exhibition/classInfo/${pid}`).then(res => res.json())
+      }
+    }
+    cache.data.set(cacheKey, res.class)
+    return res.class
   }
 
   /**
@@ -195,7 +235,20 @@ export interface Sharethis {
   })
   nftAPI.getInfo = async (id?: string) => {
     const nid = id ?? nftAPI.id
-    return await fetch(`${lcd}/iconlake/icon/nft?class_id=${classAPI.id}&id=${nid}`).then(res => res.json()).then(res => transferKey(res.nft))
+    const cacheKey = `nft:getInfo:${nid}`
+    const cachedRes = cache.data.get(cacheKey)
+    if (cachedRes) {
+      return cachedRes
+    }
+    let res = await fetch(`${lcd}/iconlake/icon/nft?class_id=${classAPI.id}&id=${nid}`).then(res => res.json()).then(transferKey)
+    if (!res?.nft) {
+      const authSearchParams = authAPI.getSearchParams()
+      res = {
+        nft: await fetch(`${domain.master}/api/exhibition/nftInfo/${classAPI.id}/${nid}${authSearchParams ? `?${authSearchParams}` : ''}`).then(res => res.json())
+      }
+    }
+    cache.data.set(cacheKey, res.nft)
+    return res.nft
   }
 
   /**
@@ -217,12 +270,24 @@ export interface Sharethis {
   })
   creatorAPI.getInfo = async (address?: string) => {
     const addr = address ?? creatorAPI.address
-    return await fetch(`${lcd}/iconlake/icon/creator/${addr}`).then(res => res.json()).then(res => {
+    const cacheKey = `creator:getInfo:${addr}`
+    const cachedRes = cache.data.get(cacheKey)
+    if (cachedRes) {
+      return cachedRes
+    }
+    let res = await fetch(`${lcd}/iconlake/icon/creator/${addr}`).then(res => res.json()).then(res => {
       if (res.error) {
         throw new Error(res.error)
       }
-      return transferKey(res.creator)
+      return transferKey(res)
     })
+    if (!res?.creator) {
+      res = {
+        creator: await fetch(`${domain.master}/api/exhibition/creatorInfo/${addr}`).then(res => res.json())
+      }
+    }
+    cache.data.set(cacheKey, res.creator)
+    return res.creator
   }
 
   /**
@@ -294,7 +359,39 @@ export interface Sharethis {
     }
   }
 
+  /**
+   * Auth
+   */
+  const authAPI = {
+    url: globalThis.location.href,
+    ticket: '',
+    passkey: '',
+    getParams () {
+      const url = new URL(authAPI.url)
+      return {
+        ticket: url.searchParams.get('ticket') || undefined,
+        passkey: url.searchParams.get('passkey') || undefined
+      }
+    },
+    getSearchParams () {
+      const params = authAPI.getParams()
+      const init: Record<string, string> = {}
+      if (params.ticket) {
+        init.ticket = params.ticket
+      }
+      if (params.passkey) {
+        init.passkey = params.passkey
+      }
+      return new URLSearchParams(init).toString()
+    }
+  }
+
+  Object.assign(authAPI, authAPI.getParams())
+
   function verifyHash (uri: string, uriHash: string) {
+    if (!uri || !uriHash) {
+      return Promise.resolve(0)
+    }
     return fetch(uri, {
       mode: 'cors',
       headers: {
@@ -327,6 +424,7 @@ export interface Sharethis {
     nft: nftAPI,
     creator: creatorAPI,
     share: shareAPI,
+    auth: authAPI,
     verifyHash
   }
 })(window as never)
