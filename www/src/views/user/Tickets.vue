@@ -277,9 +277,9 @@ onMounted(async () => {
     .dots {
       $height: 1rem;
       position: absolute;
-      top: -$height / 2;
-      left: -$height / 2;
-      right: -$height / 2;
+      top: calc(-1 * $height / 2);
+      left: calc(-1 * $height / 2);
+      right: calc(-1 * $height / 2);
       .dot {
         width: $height;
         height: $height;
