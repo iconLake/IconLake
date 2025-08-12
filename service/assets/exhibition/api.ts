@@ -194,7 +194,7 @@ export interface Sharethis {
     let res = await fetch(`${lcd}/iconlake/icon/nfts?class_id=${pid}`).then(res => res.json()).then(transferKey)
     if (!res || +res.pagination?.total === 0) {
       const authSearchParams = authAPI.getSearchParams()
-      res = await fetch(`${domain.master}/api/exhibition/nftList/${pid}${authSearchParams ? `?${authSearchParams}` : ''}`).then(res => res.json())
+      res = await fetch(`/api/exhibition/nftList/${pid}${authSearchParams ? `?${authSearchParams}` : ''}`).then(res => res.json())
     }
     cache.data.set(cacheKey, res)
     return res
@@ -209,7 +209,7 @@ export interface Sharethis {
     let res = await fetch(`${lcd}/iconlake/icon/class?id=${pid}`).then(res => res.json()).then(transferKey)
     if (!res?.class) {
       res = {
-        class: await fetch(`${domain.master}/api/exhibition/classInfo/${pid}`).then(res => res.json())
+        class: await fetch(`/api/exhibition/classInfo/${pid}`).then(res => res.json())
       }
     }
     cache.data.set(cacheKey, res.class)
@@ -244,7 +244,7 @@ export interface Sharethis {
     if (!res?.nft) {
       const authSearchParams = authAPI.getSearchParams()
       res = {
-        nft: await fetch(`${domain.master}/api/exhibition/nftInfo/${classAPI.id}/${nid}${authSearchParams ? `?${authSearchParams}` : ''}`).then(res => res.json())
+        nft: await fetch(`/api/exhibition/nftInfo/${classAPI.id}/${nid}${authSearchParams ? `?${authSearchParams}` : ''}`).then(res => res.json())
       }
     }
     cache.data.set(cacheKey, res.nft)
@@ -283,7 +283,7 @@ export interface Sharethis {
     })
     if (!res?.creator) {
       res = {
-        creator: await fetch(`${domain.master}/api/exhibition/creatorInfo/${addr}`).then(res => res.json())
+        creator: await fetch(`/api/exhibition/creatorInfo/${addr}`).then(res => res.json())
       }
     }
     cache.data.set(cacheKey, res.creator)
