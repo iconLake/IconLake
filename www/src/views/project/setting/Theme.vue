@@ -81,7 +81,7 @@ async function handleUpload(file: UploadFile, type: ThemeType) {
   })
   isUploading[type] = false
   if (res) {
-    fm[type] = res.key
+    fm[type] = res.url || res.key
   }
 }
 
