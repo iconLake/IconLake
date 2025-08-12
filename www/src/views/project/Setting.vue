@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import UserVue from '../../components/User.vue'
 import HeaderVue from '../../components/Header.vue'
 import { useI18n } from 'vue-i18n'
-import { projectApis } from '@/apis/project';
+import { type IProjectTicket, projectApis } from '@/apis/project';
 import { getHash, updateClass, getNftClass } from '@/apis/blockchain'
 import Loading from '@/components/Loading.vue'
 import { toast } from '@/utils'
@@ -12,10 +12,13 @@ import { usePageLoading } from '@/hooks/router'
 import { PROJECT_TYPE, ONLINE_DOMAIN } from '@/utils/const'
 import { event } from '@/utils/event'
 import { useUser } from '@/hooks/user'
+import { useTicket } from '@/hooks/ticket'
 
 const { t } = useI18n()
 const pageLoading = usePageLoading()
 const { userInfo } = useUser()
+const { passkey, setTicketPasskey, getTicket } = useTicket()
+const ticket = ref<IProjectTicket>()
 
 const $route = useRoute()
 const projectId = $route.params.id as string
@@ -93,7 +96,9 @@ onMounted(() => {
   getProject().finally(() => {
     pageLoading.end()
   })
-
+  getTicket({ projectId }, async (t) => {
+    ticket.value = t
+  })
   event.on(event.EventType.ProjectInfoChange, handleProjectInfoChange)
 })
 
@@ -175,12 +180,13 @@ onUnmounted(() => {
     </div>
     <div class="content grow">
       <a
-        :href="`${ONLINE_DOMAIN}/exhibition/${projectId}`"
+        :href="`${ONLINE_DOMAIN}/exhibition/${projectId}?ticket=${ticket?._id}&passkey=${passkey}`"
         target="_blank"
         class="flex info"
         :style="{
           'background-image': `url(${project.cover})`
         }"
+        @click="ticket && setTicketPasskey({ _id: ticket._id, passkey })"
       >
         <div class="grow">
           <div class="flex">

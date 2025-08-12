@@ -3,9 +3,17 @@ import { onMounted, ref } from 'vue';
 
 const info = ref({})
 const verifyStatus = ref(2)
+const isNoTicket = ref(false)
+const authParams = iconlakeAPI.auth.getSearchParams()
 
 async function getNftInfo() {
-  info.value = await iconlakeAPI.nft.getInfo(iconlakeAPI.nft.id)
+  const res = await iconlakeAPI.nft.getInfo(iconlakeAPI.nft.id)
+  if (res.error === 'noTicket') {
+    isNoTicket.value = true
+  }
+  else {
+    info.value = res
+  }
 }
 
 function loadShare() {
@@ -58,7 +66,7 @@ onMounted(() => {
       </div>
       <div class="item">
         <div>系　列：</div>
-        <a :href="`/exhibition/${info.classId}`">{{info.classId}}&nbsp;
+        <a :href="`/exhibition/${info.classId}${authParams ? '?'+ authParams : ''}`">{{info.classId}}&nbsp;
           <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="9" height="9"
             fill="currentColor">
             <path
@@ -100,6 +108,9 @@ onMounted(() => {
       </div>
       <div class="item share"></div>
     </div>
+  </div>
+  <div class="no-ticket" v-if="isNoTicket">
+    <h1>云门半掩，金钥未至，暂隔蓬莱烟霞。</h1>
   </div>
 </template>
 
@@ -191,6 +202,11 @@ onMounted(() => {
       color: #E6BA35;
     }
   }
+}
+
+.no-ticket {
+  text-align: center;
+  padding: 100px 0;
 }
 </style>
 

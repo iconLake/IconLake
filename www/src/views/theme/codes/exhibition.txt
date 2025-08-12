@@ -3,6 +3,8 @@ import { onMounted, ref } from 'vue';
 
 const info = ref({})
 const nfts = ref([])
+const isNoTicket = ref(false)
+const authParams = iconlakeAPI.auth.getSearchParams()
 
 async function getClassInfo() {
   info.value = await iconlakeAPI.class.getInfo(iconlakeAPI.class.id)
@@ -10,7 +12,11 @@ async function getClassInfo() {
 
 async function getNfts() {
   const res = await iconlakeAPI.class.getNfts(iconlakeAPI.class.id)
-  nfts.value = res.nfts
+  if (res.nfts) {
+    nfts.value = res.nfts
+  } else if (res.error === 'noTicket') {
+    isNoTicket.value = true
+  }
 }
 
 function scrollToNfts() {
@@ -39,11 +45,14 @@ onMounted(() => {
     <div class="desc">{{ info.description }}</div>
     <div class="author">Created by <a :href="`/exhibition/creator/${info.data?.author}`">{{ info.data?.author }}</a> <span class="share"></span></div>
   </div>
-  <div class="list">
-    <a v-for="nft in nfts" class="item" :href="`/exhibition/${info.id}/${nft.id}`">
+  <div class="list" v-if="nfts.length">
+    <a v-for="nft in nfts" class="item" :href="`/exhibition/${info.id}/${nft.id}${authParams ? '?' + authParams : ''}`">
       <div class="cover" :style="`background-image: url(${nft.uri})`"></div>
       <p class="title">{{ nft.data?.name }}</p>
     </a>
+  </div>
+  <div class="no-ticket" v-if="isNoTicket">
+    <h1>云门半掩，金钥未至，暂隔蓬莱烟霞。</h1>
   </div>
 </template>
 
@@ -139,6 +148,11 @@ onMounted(() => {
     text-overflow: ellipsis;
     font-size: 12px;
   }
+}
+
+.no-ticket {
+  text-align: center;
+  padding: 100px 0;
 }
 </style>
 
