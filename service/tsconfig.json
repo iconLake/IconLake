@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es6",
+    "rootDirs": [
+      "./assets/",
+      "./public/"
+    ],
+    "allowUmdGlobalAccess": true,
+    "paths": {
+      "/*": ["./public/*"]
+    }
+  }
+}

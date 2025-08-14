@@ -24,7 +24,10 @@ router.get('/download', (req, res) => {
   })
 })
 
-router.get('/docs/:id', (req, res) => {
+router.get('/docs/:id', (req, res, next) => {
+  if (/\.(js|css)$/i.test(req.params.id)) {
+    return next()
+  }
   setLocale(req, res)
   res.sendFile(`./public/docs/${req.params.id}.${getLocale(req)}.html`, {
     root,

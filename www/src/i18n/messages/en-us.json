@@ -297,5 +297,6 @@
   "refreshTicketCode": "Refresh the ticket claim link",
   "go": "GO",
   "noMoreTickets": "The tickets have all been claimed. Remember to come early next time!",
-  "validUntil": "Valid until: "
+  "validUntil": "Valid until: ",
+  "whatCanDo": "What can iconLake do?"
 }
