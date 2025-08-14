@@ -6,11 +6,14 @@ export async function renderProject (req, res) {
   const [project, nfts] = await Promise.all([
     fetch(
       `${config.blockchain.public.lcd}/iconlake/icon/class?id=${req.params.projectId}`
-    ).then((res) => res.json()).then(res => res.class),
+    ).then((res) => res.json()).then(res => res.class).catch(console.error),
     fetch(
       `${config.blockchain.public.lcd}/iconlake/icon/nfts?class_id=${req.params.projectId}`
-    ).then((res) => res.json())
+    ).then((res) => res.json()).catch(console.error)
   ])
+  if (!project || !nfts || !nfts.nfts || !nfts.nfts.length) {
+    return res.status(404).end()
+  }
   res.send(`<!DOCTYPE html>
   <html lang="en">
   <head>
@@ -42,7 +45,10 @@ export async function renderProject (req, res) {
 export async function renderNft (req, res) {
   const nft = await fetch(
     `${config.blockchain.public.lcd}/iconlake/icon/nft?class_id=${req.params.projectId}&id=${req.params.nftId}`
-  ).then((res) => res.json()).then(res => res.nft)
+  ).then((res) => res.json()).then(res => res.nft).catch(console.error)
+  if (!nft) {
+    return res.status(404).end()
+  }
   res.send(`<!DOCTYPE html>
   <html lang="en">
   <head>
@@ -71,7 +77,10 @@ export async function renderNft (req, res) {
 export async function renderCreator (req, res) {
   const creator = await fetch(
     `${config.blockchain.public.lcd}/iconlake/icon/creator/${req.params.address}`
-  ).then((res) => res.json()).then(res => res.creator)
+  ).then((res) => res.json()).then(res => res.creator).catch(console.error)
+  if (!creator) {
+    return res.status(404).end()
+  }
   res.send(`<!DOCTYPE html>
   <html lang="en">
   <head>
