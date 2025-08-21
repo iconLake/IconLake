@@ -96,6 +96,7 @@ router.get('/project/ticket/info', userMiddleware, projectTicket.info)
 router.post('/project/ticket/createEmpty', userMiddleware, projectTicket.createEmptyTicket)
 router.get('/project/ticket/listEmpty', userMiddleware, projectTicket.listEmptyTickets)
 router.post('/project/ticket/deleteEmpty', userMiddleware, projectTicket.deleteEmptyTicket)
+router.post('/project/ticket/increaseQuantity', userMiddleware, projectTicket.increaseQuantity)
 
 router.get('/icon/appreciate/list', appreciate.list)
 

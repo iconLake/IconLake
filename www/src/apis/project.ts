@@ -191,6 +191,7 @@ export const projectApis = {
   editTicket,
   createEmptyTicket,
   deleteEmptyTicket,
+  increaseTicketQuantity,
 }
 
 function list(fields?: string) {
@@ -766,6 +767,7 @@ function createEmptyTicket(data: {
     data
   })
 }
+
 function deleteEmptyTicket(data: {
   _id: string
 }) {
@@ -774,6 +776,20 @@ function deleteEmptyTicket(data: {
   }>({
     method: 'POST',
     url: '/ticket/deleteEmpty',
+    baseURL,
+    data
+  })
+}
+
+function increaseTicketQuantity(data: {
+  _id: string
+  quantity: number
+}) {
+  return request<{
+    tickets: IProjectTicket[]
+  }>({
+    method: 'POST',
+    url: '/ticket/increaseQuantity',
     baseURL,
     data
   })

@@ -29,6 +29,9 @@ const emptyTickets = ref<(IProjectTicket & { isDeleting: boolean })[]>([])
 const isSaving = ref(false)
 const isRefreshing = ref(false)
 const isCreatingEmptyTicket = ref(false)
+const increaseQuantity = ref(1)
+const increaseQuantityFm = ref()
+const isIncreasingQuantity = ref(false)
 
 const claimLink = computed(() => `${window.location.origin}/manage/user/tickets?pid=${projectId}&code=${ticket.code}`)
 
@@ -130,6 +133,24 @@ async function deleteEmptyTicket(ticket: IProjectTicket & { isDeleting: boolean 
     })
     toast(t('deleteDone'))
     emptyTickets.value = emptyTickets.value.filter(t => t._id !== ticket._id)
+  })
+}
+
+async function addMoreTickets(ticket: IProjectTicket) {
+  isIncreasingQuantity.value = true
+  increaseQuantity.value = 10
+  confirm(increaseQuantityFm.value, async () => {
+    isIncreasingQuantity.value = false
+    await projectApis.increaseTicketQuantity({
+      _id: ticket._id,
+      quantity: Number(increaseQuantity.value)
+    })
+    toast(t('saveDone'))
+    await getEmptyTicketsList()
+  }, {
+    cancel: () => {
+      isIncreasingQuantity.value = false
+    }
   })
 }
 
@@ -264,6 +285,10 @@ onMounted(() => {
             {{ item.days }}D
           </span>
           <i
+            class="iconfont icon-plus m-left c-main pointer"
+            @click="addMoreTickets(item)"
+          />
+          <i
             v-if="!item.isDeleting"
             class="iconfont icon-delete m-left c-danger pointer"
             @click="deleteEmptyTicket(item)"
@@ -303,6 +328,20 @@ onMounted(() => {
         </div>
       </div>
     </div>
+  </div>
+  <div
+    v-show="isIncreasingQuantity"
+    ref="increaseQuantityFm"
+    class="increase-quantity"
+  >
+    <p>{{ t('increasedTicketQuantity') }}</p>
+    <input
+      v-model="increaseQuantity"
+      type="number"
+      class="input"
+      min="-999999999"
+      max="999999999"
+    >
   </div>
 </template>
 
@@ -383,6 +422,17 @@ onMounted(() => {
       opacity: 0.2;
       margin: 0 0.3rem;
     }
+  }
+}
+
+.increase-quantity {
+  text-align: left;
+  .input {
+    height: 4rem;
+    width: 100%;
+    padding: 0 1.4rem;
+    font-size: 1.4rem;
+    margin: 0.8rem 0 0;
   }
 }
 </style>

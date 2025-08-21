@@ -263,3 +263,60 @@ export async function deleteEmptyTicket (req, res) {
     })
   }
 }
+
+export async function increaseQuantity (req, res) {
+  if (
+    !req.body._id ||
+    typeof req.body._id !== 'string' ||
+    !req.body.quantity ||
+    typeof req.body.quantity !== 'number'
+  ) {
+    return res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+  }
+  const ticket = await Ticket.findOne({
+    _id: req.body._id
+  })
+  if (!ticket) {
+    res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+    return
+  }
+  if (ticket.userId) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
+  const project = await Project.findOne({
+    _id: ticket.projectId,
+    members: {
+      $elemMatch: {
+        userId: req.user._id,
+        isAdmin: true
+      }
+    }
+  }, 'ticket')
+  if (!project) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
+  const result = await Ticket.updateOne({
+    _id: req.body._id
+  }, {
+    $inc: {
+      quantity: req.body.quantity
+    }
+  })
+  if (result.modifiedCount) {
+    res.json({})
+  } else {
+    res.json({
+      error: ERROR_CODE.FAIL
+    })
+  }
+}

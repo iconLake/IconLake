@@ -300,5 +300,6 @@
   "validUntil": "Valid until: ",
   "whatCanDo": "What can iconLake do?",
   "createNoUserEmptyTicket": "Create blank tickets to bind the user",
-  "deleteConfirm": "Are you sure you want to delete?"
+  "deleteConfirm": "Are you sure you want to delete?",
+  "increasedTicketQuantity": "Additional quantity of tickets"
 }
