@@ -80,7 +80,10 @@ export async function list (req, res) {
     return
   }
   const tickets = await Ticket.find({
-    projectId
+    projectId,
+    userId: {
+      $exists: true
+    }
   }, '-code').sort('-expired').limit(100).populate('userId', 'name desc avatar').exec()
   res.json({
     tickets: tickets.map((ticket) => {
@@ -136,4 +139,184 @@ export async function info (req, res) {
     }
   }
   res.json(ticket.toJSON())
+}
+
+export async function createEmptyTicket (req, res) {
+  if (
+    !req.body.projectId ||
+    typeof req.body.projectId !== 'string' ||
+    !req.body.quantity ||
+    typeof req.body.quantity !== 'number' ||
+    req.body.quantity < 1 ||
+    !req.body.days ||
+    typeof req.body.days !== 'number' ||
+    req.body.days <= 0
+  ) {
+    return res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+  }
+  const project = await Project.findOne({
+    _id: req.body.projectId,
+    members: {
+      $elemMatch: {
+        userId: req.user._id,
+        isAdmin: true
+      }
+    }
+  }, 'ticket')
+  if (!project) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
+  const ticket = new Ticket({
+    projectId: req.body.projectId,
+    quantity: req.body.quantity,
+    days: req.body.days,
+    code: nanoid(32)
+  })
+  await ticket.save()
+  res.json(ticket.toJSON())
+}
+
+export async function listEmptyTickets (req, res) {
+  if (!req.query.projectId || typeof req.query.projectId !== 'string') {
+    return res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+  }
+  const project = await Project.findOne({
+    _id: req.query.projectId,
+    members: {
+      $elemMatch: {
+        userId: req.user._id,
+        isAdmin: true
+      }
+    }
+  }, 'ticket')
+  if (!project) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
+  const tickets = await Ticket.find({
+    projectId: req.query.projectId,
+    userId: {
+      $exists: false
+    }
+  }).sort('-createTime').limit(100).exec()
+  res.json({
+    tickets: tickets.map((ticket) => ticket.toJSON())
+  })
+}
+
+export async function deleteEmptyTicket (req, res) {
+  if (
+    !req.body._id ||
+    typeof req.body._id !== 'string'
+  ) {
+    return res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+  }
+  const ticket = await Ticket.findOne({
+    _id: req.body._id
+  })
+  if (!ticket) {
+    res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+    return
+  }
+  if (ticket.userId) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
+  const project = await Project.findOne({
+    _id: ticket.projectId,
+    members: {
+      $elemMatch: {
+        userId: req.user._id,
+        isAdmin: true
+      }
+    }
+  }, 'ticket')
+  if (!project) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
+  const result = await Ticket.deleteOne({
+    _id: req.body._id
+  })
+  if (result.deletedCount) {
+    res.json({})
+  } else {
+    res.json({
+      error: ERROR_CODE.FAIL
+    })
+  }
+}
+
+export async function increaseQuantity (req, res) {
+  if (
+    !req.body._id ||
+    typeof req.body._id !== 'string' ||
+    !req.body.quantity ||
+    typeof req.body.quantity !== 'number'
+  ) {
+    return res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+  }
+  const ticket = await Ticket.findOne({
+    _id: req.body._id
+  })
+  if (!ticket) {
+    res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+    return
+  }
+  if (ticket.userId) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
+  const project = await Project.findOne({
+    _id: ticket.projectId,
+    members: {
+      $elemMatch: {
+        userId: req.user._id,
+        isAdmin: true
+      }
+    }
+  }, 'ticket')
+  if (!project) {
+    res.json({
+      error: ERROR_CODE.PERMISSION_DENIED
+    })
+    return
+  }
+  const result = await Ticket.updateOne({
+    _id: req.body._id
+  }, {
+    $inc: {
+      quantity: req.body.quantity
+    }
+  })
+  if (result.modifiedCount) {
+    res.json({})
+  } else {
+    res.json({
+      error: ERROR_CODE.FAIL
+    })
+  }
 }

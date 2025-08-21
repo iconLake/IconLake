@@ -35,6 +35,16 @@ export const TicketSchema = new Schema({
       type: Date,
       default: Date.now
     }
+  },
+  quantity: {
+    type: Number,
+    default: 1,
+    min: 1
+  },
+  days: {
+    type: Number,
+    default: 0,
+    min: 0
   }
 })
 

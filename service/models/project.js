@@ -141,7 +141,7 @@ export const ProjectSchema = new Schema({
     days: {
       type: Number,
       default: 1,
-      min: 1
+      min: 0
     }
   }
 })

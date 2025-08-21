@@ -298,5 +298,8 @@
   "go": "进入",
   "noMoreTickets": "门票已经被领完了，下次记得早点来哟！",
   "validUntil": "有效期截止：",
-  "whatCanDo": "iconLake能干什么？"
+  "whatCanDo": "iconLake能干什么？",
+  "createNoUserEmptyTicket": "创建待绑定用户的空白票",
+  "deleteConfirm": "确定删除吗？",
+  "increasedTicketQuantity": "追加门票数量"
 }

@@ -40,7 +40,7 @@ async function reduceTicket (projectId) {
   })
 }
 
-export async function claim (req, res) {
+async function claimByProjectId (req, res) {
   const projectId = req.body.projectId
   const code = req.body.code
   if (!projectId || typeof projectId !== 'string' || !code || typeof code !== 'string') {
@@ -118,6 +118,113 @@ export async function claim (req, res) {
     ...newTicket.toJSON(),
     code: undefined
   })
+}
+
+async function claimByTicketId (req, res) {
+  const ticketId = req.body.ticketId
+  const code = req.body.code
+  if (!ticketId || typeof ticketId !== 'string' || !code || typeof code !== 'string') {
+    return res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+  }
+  let ticket = await Ticket.findOne({
+    _id: ticketId,
+    code
+  })
+  if (!ticket) {
+    return res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+  }
+  if (ticket.userId) {
+    return res.json({
+      error: 'hasClaimed'
+    })
+  }
+  if (ticket.quantity < 1) {
+    return res.json({
+      error: 'noMoreTickets'
+    })
+  }
+  const oldTicket = await Ticket.findOne({
+    projectId: ticket.projectId,
+    userId: req.user._id
+  })
+  if (oldTicket && oldTicket.code === code) {
+    return res.json({
+      error: 'hasClaimed'
+    })
+  }
+  if (ticket.quantity > 1) {
+    await Ticket.updateOne({
+      _id: ticketId
+    }, {
+      $inc: {
+        quantity: -1
+      }
+    })
+    if (oldTicket) {
+      let expired = oldTicket.expired
+      if (+expired > Date.now()) {
+        expired = new Date(+expired + (ticket.days * 24 * 3600 * 1000))
+      } else {
+        expired = new Date(Date.now() + (ticket.days * 24 * 3600 * 1000))
+      }
+      ticket = oldTicket
+      ticket.expired = expired
+      ticket.code = code
+    } else {
+      ticket = new Ticket({
+        projectId: ticket.projectId,
+        userId: req.user._id,
+        expired: new Date(Date.now() + (ticket.days * 24 * 3600 * 1000)),
+        code
+      })
+    }
+  } else {
+    if (oldTicket) {
+      await Ticket.deleteOne({
+        _id: ticketId
+      })
+      let expired = oldTicket.expired
+      if (+expired > Date.now()) {
+        expired = new Date(+expired + (ticket.days * 24 * 3600 * 1000))
+      } else {
+        expired = new Date(Date.now() + (ticket.days * 24 * 3600 * 1000))
+      }
+      ticket = oldTicket
+      ticket.expired = expired
+      ticket.code = code
+    } else {
+      ticket.userId = req.user._id
+      ticket.expired = new Date(Date.now() + (ticket.days * 24 * 3600 * 1000))
+    }
+  }
+  await ticket.save()
+  const project = await Project.findOne({
+    _id: ticket.projectId
+  }, 'type name desc cover prefix class')
+  res.json({
+    ...ticket.toJSON(),
+    project: {
+      ...project.toJSON(),
+      cover: project.cover ? completeURL(project.cover) : ''
+    },
+    code: undefined
+  })
+}
+
+export async function claim (req, res) {
+  if (req.body.projectId) {
+    await claimByProjectId(req, res)
+  } else if (req.body.ticketId) {
+    await claimByTicketId(req, res)
+  } else {
+    res.json({
+      error: ERROR_CODE.ARGS_ERROR
+    })
+  }
 }
 
 export async function like (req, res) {
