@@ -182,8 +182,15 @@ export const projectApis = {
       executor: getTicket
     })
   },
+  get getEmptyTickets() {
+    return cache.project.enable({
+      executor: getEmptyTickets
+    })
+  },
 
   editTicket,
+  createEmptyTicket,
+  deleteEmptyTicket,
 }
 
 function list(fields?: string) {
@@ -703,6 +710,9 @@ export interface IProjectTicket {
     isLike: boolean
     time: string
   }
+  quantity: number
+  days: number
+  code?: string
 }
 
 function getTickets(params: {
@@ -726,5 +736,45 @@ function getTicket(params: {
     url: '/ticket/info',
     baseURL,
     params
+  })
+}
+
+function getEmptyTickets(params: {
+  projectId: string
+}) {
+  return request<{
+    tickets: IProjectTicket[]
+  }>({
+    method: 'GET',
+    url: '/ticket/listEmpty',
+    baseURL,
+    params
+  })
+}
+
+function createEmptyTicket(data: {
+  projectId: string
+  quantity: number
+  days: number
+}) {
+  return request<{
+    tickets: IProjectTicket[]
+  }>({
+    method: 'POST',
+    url: '/ticket/createEmpty',
+    baseURL,
+    data
+  })
+}
+function deleteEmptyTicket(data: {
+  _id: string
+}) {
+  return request<{
+    tickets: IProjectTicket[]
+  }>({
+    method: 'POST',
+    url: '/ticket/deleteEmpty',
+    baseURL,
+    data
   })
 }

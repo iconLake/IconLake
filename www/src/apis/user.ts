@@ -365,7 +365,8 @@ function sendMail(data: {
 }
 
 function claimTicket(data: {
-  projectId: string
+  projectId?: string
+  ticketId?: string
   code: string
 }) {
   return <Promise<Res>>request({

@@ -43,9 +43,10 @@ function celebrate() {
 }
 
 async function claimTicket() {
-  if (route.query.id && route.query.code) {
+  if ((route.query.pid || route.query.tid) && route.query.code) {
     const res = await userApis.claimTicket({
-      projectId: route.query.id as string,
+      projectId: route.query.pid as string,
+      ticketId: route.query.tid as string,
       code: route.query.code as string,
     }).catch((err) => {
       console.error(err)

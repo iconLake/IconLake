@@ -2,7 +2,7 @@
 import type { IProjectTicket } from '@/apis/project';
 import { projectApis } from '@/apis/project';
 import { usePageLoading } from '@/hooks/router';
-import { copy, toast } from '@/utils';
+import { confirm, copy, toast } from '@/utils';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
@@ -25,13 +25,19 @@ const ticket = reactive<Ticket>({ code: '', quantity: 0, days: 1 })
 const route = useRoute()
 const projectId = route.params.id as string
 const tickets = ref<IProjectTicket[]>([])
+const emptyTickets = ref<(IProjectTicket & { isDeleting: boolean })[]>([])
 const isSaving = ref(false)
 const isRefreshing = ref(false)
+const isCreatingEmptyTicket = ref(false)
 
-const claimLink = computed(() => `${window.location.origin}/manage/user/tickets?id=${projectId}&code=${ticket.code}`)
+const claimLink = computed(() => `${window.location.origin}/manage/user/tickets?pid=${projectId}&code=${ticket.code}`)
 
-function copyLink() {
-  copy(claimLink.value)
+const genClaimLink = (ticket: IProjectTicket) => {
+  return `${window.location.origin}/manage/user/tickets?tid=${ticket._id}&code=${ticket.code}`
+}
+
+function copyLink(link: string) {
+  copy(link)
   toast(t('copyDone'))
 }
 
@@ -68,6 +74,17 @@ async function getList() {
   })
 }
 
+async function getEmptyTicketsList() {
+  await projectApis.getEmptyTickets({
+    projectId
+  }).onUpdate(async data => {
+    emptyTickets.value = data.tickets.map(t => ({
+      ...t,
+      isDeleting: false
+    }))
+  })
+}
+
 async function save() {
   if (isSaving.value) {
     return
@@ -84,8 +101,40 @@ async function save() {
   toast(t('saveDone'))
 }
 
+async function createEmptyTicket() {
+  if (isCreatingEmptyTicket.value) {
+    return
+  }
+  isCreatingEmptyTicket.value = true
+  await projectApis.createEmptyTicket({
+    projectId,
+    quantity: Number(ticket.quantity),
+    days: Number(ticket.days)
+  }).finally(() => {
+    isCreatingEmptyTicket.value = false
+  })
+  toast(t('saveDone'))
+  await getEmptyTicketsList()
+}
+
+async function deleteEmptyTicket(ticket: IProjectTicket & { isDeleting: boolean }) {
+  if (ticket.isDeleting) {
+    return
+  }
+  confirm(t('deleteConfirm'), async () => {
+    ticket.isDeleting = true
+    await projectApis.deleteEmptyTicket({
+      _id: ticket._id
+    }).finally(() => {
+      ticket.isDeleting = false
+    })
+    toast(t('deleteDone'))
+    emptyTickets.value = emptyTickets.value.filter(t => t._id !== ticket._id)
+  })
+}
+
 onMounted(() => {
-  Promise.all([getProject(), getList()]).finally(() => {
+  Promise.all([getProject(), getList(), getEmptyTicketsList()]).finally(() => {
     pageLoading.end()
   })
 })
@@ -131,7 +180,7 @@ onMounted(() => {
         <p>{{ t('claimTicketLink') }}</p>
         <p
           class="c-main pointer"
-          @click="copyLink"
+          @click="copyLink(claimLink)"
         >
           {{ claimLink }}<i
             class="iconfont icon-copy m-left"
@@ -168,11 +217,62 @@ onMounted(() => {
         <button
           type="submit"
           class="btn"
+          @click="createEmptyTicket"
+        >
+          {{ t('createNoUserEmptyTicket') }}
+          <Loading v-if="isCreatingEmptyTicket" />
+        </button>
+        <button
+          type="submit"
+          class="btn"
           @click="save"
         >
           {{ t('save') }}
           <Loading v-if="isSaving" />
         </button>
+      </div>
+    </div>
+    <div
+      v-if="emptyTickets.length"
+      class="list"
+    >
+      <div
+        v-for="(item, index) in emptyTickets"
+        :key="item._id"
+        class="item flex"
+      >
+        <div class="flex link-container">
+          <span class="rank">{{ index + 1 }}.</span>
+          <span
+            class="link-content c-main pointer"
+            @click="copyLink(genClaimLink(item))"
+          >
+            {{ genClaimLink(item) }}
+          </span>
+          <i
+            class="iconfont icon-copy m-left c-main pointer"
+            :title="t('copy')"
+            @click="copyLink(genClaimLink(item))"
+          />
+        </div>
+        <div class="m-left flex center">
+          <span>
+            {{ item.quantity }}
+          </span>
+          <span class="x"> × </span>
+          <span>
+            {{ item.days }}D
+          </span>
+          <i
+            v-if="!item.isDeleting"
+            class="iconfont icon-delete m-left c-danger pointer"
+            @click="deleteEmptyTicket(item)"
+          />
+          <Loading
+            v-else
+            class="m-left c-danger"
+          />
+        </div>
       </div>
     </div>
     <div class="list">
@@ -231,6 +331,7 @@ onMounted(() => {
   }
 }
 .btn {
+  margin: 0 0.8rem;
   .loading {
     margin-left: 0.8rem;
   }
@@ -246,7 +347,7 @@ onMounted(() => {
     }
   }
   .item {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.6rem;
     position: relative;
     .icon-heart {
       color: var(--color-danger);
@@ -259,7 +360,7 @@ onMounted(() => {
       content: "";
       position: absolute;
       width: 100%;
-      bottom: -0.75rem;
+      bottom: -0.8rem;
       height: 2px;
       background-color: var(--color-bg);
     }
@@ -270,6 +371,17 @@ onMounted(() => {
       font-size: 1rem;
       color: var(--color-main);
       margin-right: 0.8rem;
+    }
+    .link-container {
+      justify-content: start;
+    }
+    .link-content {
+      word-break: break-all;
+      font-size: 1.2rem;
+    }
+    .x {
+      opacity: 0.2;
+      margin: 0 0.3rem;
     }
   }
 }
