@@ -1,0 +1,1 @@
+import{_ as n,k as o,c as _}from"./index.c3ac6b9b.js";const e={},c={class:"loading iconfont icon-loading"};function a(s,t){return o(),_("span",c)}const i=n(e,[["render",a],["__scopeId","data-v-653a66d6"]]);export{i as L};

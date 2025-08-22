@@ -9,9 +9,9 @@
     "dev:front": "pnpm exec gulp",
     "dev": "pnpm i && pnpm exec npm-run-all -p dev:*",
     "dev-clean": "pnpm exec pm2 delete service-dev",
-    "build:server": "npm i -P=false && npm exec gulp build",
-    "build:www": "cd ../www && npm i -P=false && npm run build-only",
-    "build": "npm i -P=false && npm exec npm-run-all -p build:*",
+    "build:server": "pnpm i -P=false && pnpm exec gulp build",
+    "build:www": "cd ../www && pnpm i -P=false && pnpm run build-only",
+    "build": "pnpm i -P=false && pnpm exec npm-run-all -p build:*",
     "pro": "pnpm i -P && pm2 reload ecosystem.config.cjs --env production",
     "test": "pnpm i -P && pm2 reload ecosystem.config.cjs --env test"
   },
