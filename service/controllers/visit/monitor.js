@@ -5,7 +5,7 @@ import { Project } from '../../models/project.js'
 
 const config = getConfig()
 
-const jsContent = readFileSync(path.join(import.meta.url, '../../public/monitor/index.js')).toString()
+const jsContent = readFileSync(path.join(import.meta.url, '../../../public/monitor/index.js')).toString()
 
 export default async function monitor (req, res) {
   const _id = req.params[0]
