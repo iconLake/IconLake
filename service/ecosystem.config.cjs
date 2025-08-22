@@ -29,7 +29,7 @@ let watch = false
 if (env === ENV.DEVELOPMENT) { // dev环境
   name += '-dev'
   instances = 1
-  watch = ['./app.js', './routes', './controllers', './crons', './models', './utils', './config', './public/monitor/index.js']
+  watch = ['./index.js', './routes', './controllers', './crons', './models', './utils', './config', './public/monitor/index.js']
 } else if (env === ENV.TEST) { // test环境
   name += '-test'
   instances = 2
@@ -38,7 +38,7 @@ if (env === ENV.DEVELOPMENT) { // dev环境
 module.exports = {
   apps: [{
     name,
-    script: './app.js',
+    script: './index.js',
     [`env_${ENV.PRODUCTION}`]: {
       NODE_ENV: ENV.PRODUCTION
     },
