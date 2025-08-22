@@ -23,7 +23,11 @@ const cleanCSS = new CleanCSS()
 export const srcPath = new URL('../../../../public/src/', import.meta.url)
 
 if (!fs.existsSync(srcPath)) {
-  fs.mkdirSync(srcPath)
+  try {
+    fs.mkdirSync(srcPath)
+  } catch (err) {
+    console.error('Cannot create src directory:', err)
+  }
 }
 
 /**
