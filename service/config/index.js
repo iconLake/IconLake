@@ -20,6 +20,9 @@ export const configs = {
  */
 export function getConfig (env) {
   const config = process.env.CONFIG ? JSON.parse(process.env.CONFIG) : configs[env || NODE_ENV]
+  if (process.env.PORT) {
+    config.http.port = Number(process.env.PORT)
+  }
   if (!(config.http && config.http.port) && !(config.https && config.https.port)) {
     throw new Error('[ConfigError] HTTP(S) port is required.')
   }
