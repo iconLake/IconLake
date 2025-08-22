@@ -4,7 +4,7 @@
     "port": 8080
   },
   "https": {
-    "port": 8443,
+    "port": 0,
     "ca": "./security/certs/root_bundle.crt",
     "key": "./security/certs/iconlake.com.key",
     "cert": "./security/certs/iconlake.com.crt"
