@@ -72,3 +72,5 @@ initDB().then(() => {
    */
   initCron()
 })
+
+export default app
