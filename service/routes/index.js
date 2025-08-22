@@ -5,6 +5,7 @@ import loginIndex from '../controllers/login/index.js'
 import { view as exhibitionIndexView } from '../controllers/exhibition/index.js'
 import { view as exhibitionNftView } from '../controllers/exhibition/nft.js'
 import { view as exhibitionCreatorView } from '../controllers/exhibition/creator.js'
+import path from 'node:path'
 
 const router = Router()
 
@@ -41,7 +42,7 @@ router.get('/exhibition/creator/:address', express.static('public', { maxAge }),
 router.get('/exhibition/:projectId/:nftId', express.static('public', { maxAge }), exhibitionNftView)
 router.get('/exhibition/:projectId', express.static('public', { maxAge }), exhibitionIndexView)
 
-router.use('/', express.static('public', { maxAge }), (req, res, next) => {
+router.use('/', express.static(path.join(root, 'public'), { maxAge }), (req, res, next) => {
   if (/^\/manage\//i.test(req.path)) {
     res.sendFile('./public/manage/index.html', {
       root,
