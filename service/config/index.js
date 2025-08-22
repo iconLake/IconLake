@@ -19,7 +19,7 @@ export const configs = {
  * @returns {{domain: string; http: { port: number; } https: { port: number; ca: string; key: string; cert: string; } mongodb: { uri: string; } gitee: { clientId: string; clientSecret: string; } github: { clientId: string; clientSecret: string; } google: { clientId: string; clientSecret: string; } center: { domain: string; } cos: { domain: string; type: string; secretId: string; secretKey: string; bucket: string; region: string; } login: { code: boolean; gitee: boolean; github: boolean; keplr: boolean; google: boolean; webAuthn: boolean; } blockchain: { public: { rpc: string; lcd: string; backendService: { initDROP: boolean; } } private: { mnemonic: string; } } admin: { userIds: string[]; } storage: { freeQuota: number; } ai: { hunyuan: { apiKey: string; endpoint: string; freeQuota: number; } qwen: { apiKey: string; endpoint: string; freeQuota: number; } } mail: { host: string; port: number; user: string; pass: string; } }}
  */
 export function getConfig (env) {
-  const config = configs[env || NODE_ENV]
+  const config = process.env.CONFIG ? JSON.parse(process.env.CONFIG) : configs[env || NODE_ENV]
   if (!(config.http && config.http.port) && !(config.https && config.https.port)) {
     throw new Error('[ConfigError] HTTP(S) port is required.')
   }
