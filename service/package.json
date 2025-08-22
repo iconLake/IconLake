@@ -2,7 +2,7 @@
   "name": "service",
   "version": "2.2.0",
   "description": "iconLake Service",
-  "main": "app.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
     "dev:server": "pnpm exec pm2 reload ecosystem.config.cjs && pnpm exec pm2 logs service-dev",
