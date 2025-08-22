@@ -5,7 +5,12 @@ import { Project } from '../../models/project.js'
 
 const config = getConfig()
 
-const jsContent = readFileSync(path.join(import.meta.url, '../../../public/monitor/index.js')).toString()
+let jsContent = ''
+try {
+  jsContent = readFileSync(path.join(import.meta.url, '../../../public/monitor/index.js')).toString()
+} catch (err) {
+  console.error('Cannot read monitor/index.js', err)
+}
 
 export default async function monitor (req, res) {
   const _id = req.params[0]
