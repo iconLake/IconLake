@@ -5,8 +5,10 @@ import loginIndex from '../controllers/login/index.js'
 import { view as exhibitionIndexView } from '../controllers/exhibition/index.js'
 import { view as exhibitionNftView } from '../controllers/exhibition/nft.js'
 import { view as exhibitionCreatorView } from '../controllers/exhibition/creator.js'
+import path from 'node:path'
 
 const router = Router()
+const publicStatic = express.static(path.join(root, 'public'), { maxAge })
 
 router.get('/', (req, res) => {
   setLocale(req, res)
@@ -37,11 +39,11 @@ router.get('/docs/:id', (req, res, next) => {
 
 router.get('/login', loginIndex)
 
-router.get('/exhibition/creator/:address', express.static('public', { maxAge }), exhibitionCreatorView)
-router.get('/exhibition/:projectId/:nftId', express.static('public', { maxAge }), exhibitionNftView)
-router.get('/exhibition/:projectId', express.static('public', { maxAge }), exhibitionIndexView)
+router.get('/exhibition/creator/:address', publicStatic, exhibitionCreatorView)
+router.get('/exhibition/:projectId/:nftId', publicStatic, exhibitionNftView)
+router.get('/exhibition/:projectId', publicStatic, exhibitionIndexView)
 
-router.use('/', express.static('public', { maxAge }), (req, res, next) => {
+router.use('/', publicStatic, (req, res, next) => {
   if (/^\/manage\//i.test(req.path)) {
     res.sendFile('./public/manage/index.html', {
       root,

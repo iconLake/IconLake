@@ -1,7 +1,8 @@
 node_modules
 .DS_Store
 *.map
-public/src
+public/src/**/*
+!public/src/.gitkeep
 public/avatar
 public/icon
 public/tmp

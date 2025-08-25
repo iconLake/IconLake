@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+
 export const ONE_DAY_SECONDS = 24 * 3600 * 1000
 
 /**
@@ -30,7 +32,7 @@ export const NODE_ENV = Object.values(ENV).indexOf(process.env.NODE_ENV) > -1 ? 
 /**
  * 根路径
  */
-export const ROOT = process.cwd()
+export const ROOT = fileURLToPath(new URL('../', import.meta.url))
 
 /**
  * 头像路径

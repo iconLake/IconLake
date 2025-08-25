@@ -1,8 +1,8 @@
 {
   "name": "service",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "iconLake Service",
-  "main": "app.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
     "dev:server": "pnpm exec pm2 reload ecosystem.config.cjs && pnpm exec pm2 logs service-dev",
@@ -17,7 +17,7 @@
   },
   "engines": {
     "node": ">=16",
-    "pnpm": ">=7"
+    "pnpm": ">=6"
   },
   "packageManager": "pnpm@9.11.0",
   "author": "iconLake",

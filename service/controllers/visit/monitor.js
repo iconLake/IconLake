@@ -1,11 +1,19 @@
-import { readFileSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 import path from 'path'
 import { getConfig } from '../../config/index.js'
 import { Project } from '../../models/project.js'
+import { ROOT } from '../../utils/const.js'
 
 const config = getConfig()
 
-const jsContent = readFileSync(path.resolve(process.cwd(), 'public/monitor/index.js')).toString()
+const jsPath = path.join(ROOT, 'public/monitor/index.js')
+let jsContent = ''
+
+if (existsSync(jsPath)) {
+  jsContent = readFileSync(jsPath, 'utf8')
+} else {
+  console.error('Cannot find monitor/index.js')
+}
 
 export default async function monitor (req, res) {
   const _id = req.params[0]

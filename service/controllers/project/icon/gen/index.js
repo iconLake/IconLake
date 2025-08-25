@@ -22,10 +22,6 @@ const cleanCSS = new CleanCSS()
  */
 export const srcPath = new URL('../../../../public/src/', import.meta.url)
 
-if (!fs.existsSync(srcPath)) {
-  fs.mkdirSync(srcPath)
-}
-
 /**
  * 保存项目文件
  * @param {string} projectId - 项目ID

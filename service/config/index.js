@@ -13,6 +13,15 @@ export const configs = {
   development
 }
 
+if (process.env.CONFIG) {
+  try {
+    const config = JSON.parse(process.env.CONFIG)
+    configs[NODE_ENV] = config
+  } catch (e) {
+    throw new Error('[ConfigError] Invalid config from environment variable.')
+  }
+}
+
 /**
  * 获取配置
  * @param {string} [env] 默认当前环境
